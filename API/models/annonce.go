@@ -14,6 +14,6 @@ type Annonce struct {
 }
 
 type Categorie struct {
-	ID      int    `json:"id"`
+	Id      int    `json:"id"`
 	Libelle string `json:"libelle"`
 }
