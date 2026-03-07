@@ -3,11 +3,12 @@ package admin
 import (
 	"encoding/json"
 	"fmt"
+
 	"upcycleconnect/bdd"
 
 	"net/http"
+	"strconv"
 	"upcycleconnect/models"
-	// "strconv"
 )
 
 func GetAllUsers(w http.ResponseWriter, r *http.Request) {
@@ -32,12 +33,9 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("METHOD :", r.Method)
-fmt.Println("CONTENT TYPE :", r.Header.Get("Content-Type"))
-fmt.Println("URL :", r.URL.Path)
-	var UserDto models.User
 
-	err := json.NewDecoder(r.Body).Decode(&UserDto)
+	var user models.User
+err := json.NewDecoder(r.Body).Decode(&user)
 
 	if err != nil {
 		http.Error(w,
@@ -46,14 +44,28 @@ fmt.Println("URL :", r.URL.Path)
 		return
 
 	}
+}
 
-	err = bdd.CreateUser(UserDto)
-	if err != nil {
-		http.Error(w,
-			"erreur dans la création d'un utilisateur",
-			http.StatusInternalServerError)
+func DeletedUser(w http.ResponseWriter, r *http.Request) {
+
+	if r.Method != http.MethodDelete {
+		http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
 		return
 	}
 
-	w.WriteHeader(http.StatusCreated)
+	idStr := r.PathValue("id")
+
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "id invalide", http.StatusBadRequest)
+		return
+	}
+
+	err = bdd.DeletedUser(id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	fmt.Fprintln(w, "utilisateur suppr")
 }

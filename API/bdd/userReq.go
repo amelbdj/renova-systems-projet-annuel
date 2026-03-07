@@ -59,3 +59,24 @@ var count int
 	}
 	return nil
 }
+
+func DeletedUser(id int) error {
+
+	// Vérifie si ID EXISTE
+
+	_, err := Db.Query("SELECT id FROM pa2026.utilisateur WHERE id = ?", id)
+	if err != nil {
+
+		return fmt.Errorf("l'utilisateur n'existe pas : %d", id)
+
+	}
+
+	// sUPPRESSION
+	_, err = Db.Exec(
+		"DELETE FROM pa2026.utilisateur WHERE id = ?", id)
+	if err != nil {
+		return fmt.Errorf("mise à jour échouée : %v", err)
+	}
+
+	return nil
+}

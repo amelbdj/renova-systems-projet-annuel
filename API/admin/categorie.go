@@ -3,9 +3,9 @@ package admin
 import (
 	"encoding/json"
 	"fmt"
-	"upcycleconnect/bdd"
-
+	"io"
 	"net/http"
+	"upcycleconnect/bdd"
 	"upcycleconnect/models"
 	// "strconv"
 )
@@ -32,9 +32,9 @@ func GetAllCategories(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateCategorie(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("METHOD :", r.Method)
-fmt.Println("CONTENT TYPE :", r.Header.Get("Content-Type"))
-fmt.Println("URL :", r.URL.Path)
+fmt.Println("CONTENT TYPE:", r.Header.Get("Content-Type"))
+body, _ := io.ReadAll(r.Body)
+fmt.Println("BODY:", string(body))
 	var CategorieDto models.Categorie
 
 	err := json.NewDecoder(r.Body).Decode(&CategorieDto)

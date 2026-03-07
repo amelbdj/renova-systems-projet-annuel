@@ -1,7 +1,7 @@
 package models
 
 type Annonce struct {
-	ID               int     `json:"id"`
+	Id               int     `json:"id"`
 	Titre            string  `json:"titre"`
 	Description      string  `json:"description"`
 	Type             string  `json:"type"` // Don ou Vente
@@ -9,8 +9,9 @@ type Annonce struct {
 	StatutValidation string  `json:"statut_validation"` // En attente, Validé, Refusé
 	CodePostal       string  `json:"code_postal"`
 	Ville            string  `json:"ville"`
-	IdUser           int     `json:"id_user"`
-	IdCategorie      int     `json:"id_categorie"`
+	Prenom           string  `json:"prenom"`
+	Nom              string  `json:"nom"`
+	Categorie        string  `json:"categorie"`
 }
 
 type Categorie struct {

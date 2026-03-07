@@ -21,9 +21,14 @@ func main() {
 	http.HandleFunc("GET /{$}", Health)
 
 	http.HandleFunc("GET /admin/users", admin.GetAllUsers)
-	http.HandleFunc("POST /admin/users/add", admin.CreateUser)
+	http.HandleFunc("POST /admin/users/add/{$}", admin.CreateUser)
+	http.HandleFunc("DELETE /admin/users/delete/{id}", admin.DeletedUser)
+
 	http.HandleFunc("POST /admin/categories/add", admin.CreateCategorie)
 	http.HandleFunc("GET /admin/categories", admin.GetAllCategories)
+
+	http.HandleFunc("GET /admin/annonces", admin.GetAllAnnonces)
+
 
 	fmt.Println("test de : http://localhost:8081")
 	http.ListenAndServe(":8081", nil)
