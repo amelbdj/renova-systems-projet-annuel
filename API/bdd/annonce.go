@@ -35,27 +35,41 @@ func GetAnnonces() ([]models.Annonce, error) {
 	return Annonces, nil
 }
 
-// func CreateAnnonce(Annonce models.Annonce) error {
+func ValidateAnnonce(annonceId int) error {
 
-// var count int
-//     checkQuery := "SELECT COUNT(*) FROM Annonce WHERE libelle = ?"
-//     err := Db.QueryRow(checkQuery, Annonce.Libelle).Scan(&count)
-    
-//     if err != nil {
-//         return fmt.Errorf("Erreur vérification libellé : %s", err.Error())
-//     }
+	result, err := Db.Exec("UPDATE pa2026.annonce SET statut_validation = 'valide' WHERE id = ?", annonceId)
 
-//     if count > 0 {
-		
-//         return fmt.Errorf("Le libellé %s est déjà utilisé", Annonce.Libelle)
-//     }
+if err != nil {
+		return fmt.Errorf("mise à jour échouée : %v", err)
+	}
 
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
 
+	if rows == 0 {
+		return fmt.Errorf("aucune annonce trouvée avec l'id %d", annonceId)
+	}
 
-// 	_, err = Db.Exec("INSERT INTO pa2026.Annonce (libelle) VALUES (?)", Annonce.Libelle)
+	return nil
+}
 
-// 	if err != nil {
-// 		return fmt.Errorf("CreateAnnonce : %s", err.Error())
-// 	}
-// 	return nil
-// }
+func RefuseAnnonce(annonceId int) error {
+		result, err := Db.Exec("UPDATE pa2026.annonce SET statut_validation = 'refuse' WHERE id = ?", annonceId)
+
+	if err != nil {
+		return fmt.Errorf("mise à jour échouée : %v", err)
+	}
+
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rows == 0 {
+		return fmt.Errorf("aucune annonce trouvée avec l'id %d", annonceId)
+	}
+
+	return nil
+}

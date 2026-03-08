@@ -14,6 +14,9 @@ import (
 func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("hello from GetAllUsers")
 
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+    w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
 	users, err := bdd.GetUsers()
 
 	if err != nil {
@@ -33,25 +36,50 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Access-Control-Allow-Origin", "*")
+    w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+    w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
-	var user models.User
-err := json.NewDecoder(r.Body).Decode(&user)
+    if r.Method == "OPTIONS" {
+        w.WriteHeader(http.StatusOK)
+        return 
+    }
 
-	if err != nil {
-		http.Error(w,
-			"Impossible de décoder un modèle User au format json",
-			http.StatusBadRequest)
-		return
+    fmt.Println("hello from createUser")
 
-	}
+    var user models.User
+    err := json.NewDecoder(r.Body).Decode(&user)
+    if err != nil {
+        fmt.Println("Erreur décodage :", err)
+        http.Error(w, "Impossible de décoder le JSON", http.StatusBadRequest)
+        return
+    }
+
+    
+    err = bdd.CreateUser(user) 
+    if err != nil {
+        fmt.Println("Erreur lors de l'insertion en BDD :", err)
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+
+    
+    w.WriteHeader(http.StatusCreated)
+    fmt.Fprint(w, `user creer`)
+    
 }
 
 func DeletedUser(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
-	if r.Method != http.MethodDelete {
-		http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
-		return
-	}
+	fmt.Println("hello from DeletedUser")
+
+	if r.Method == "OPTIONS" {
+        w.WriteHeader(http.StatusOK)
+        return
+    }
 
 	idStr := r.PathValue("id")
 
@@ -68,4 +96,67 @@ func DeletedUser(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	fmt.Fprintln(w, "utilisateur suppr")
+}
+
+func UpdateUser(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	if r.Method == "OPTIONS" {
+        w.WriteHeader(http.StatusOK)
+        return
+    }
+
+		fmt.Println("hello from updateUser")
+
+
+	idStr := r.PathValue("id")
+
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, `{"error":"ID invalide"}`, http.StatusBadRequest)
+		return
+	}
+
+	var userDto models.User
+	if err := json.NewDecoder(r.Body).Decode(&userDto); err != nil {
+		http.Error(w, "JSON invalide", http.StatusBadRequest)
+		fmt.Println("Erreur décodage :", err)
+		return
+		
+	}
+
+
+	userDto.Id = id
+
+	if err := bdd.UpdateUserById(userDto); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+
+}
+
+func GetUserById(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	idStr := r.PathValue("id")
+
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "id invalide", http.StatusBadRequest)
+		return
+	}
+
+	user, err := bdd.GetUserById(id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(user)
 }

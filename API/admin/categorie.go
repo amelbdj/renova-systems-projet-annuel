@@ -3,7 +3,6 @@ package admin
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"upcycleconnect/bdd"
 	"upcycleconnect/models"
@@ -11,6 +10,10 @@ import (
 )
 
 func GetAllCategories(w http.ResponseWriter, r *http.Request) {
+
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+    w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	
 	fmt.Println("hello from GetAllCategories")
 
 	Categories, err := bdd.GetCategories()
@@ -32,9 +35,9 @@ func GetAllCategories(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateCategorie(w http.ResponseWriter, r *http.Request) {
-fmt.Println("CONTENT TYPE:", r.Header.Get("Content-Type"))
-body, _ := io.ReadAll(r.Body)
-fmt.Println("BODY:", string(body))
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+    w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
 	var CategorieDto models.Categorie
 
 	err := json.NewDecoder(r.Body).Decode(&CategorieDto)

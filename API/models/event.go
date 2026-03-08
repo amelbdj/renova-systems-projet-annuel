@@ -3,7 +3,7 @@ package models
 import "time"
 
 type Evenement struct {
-	ID               int       `json:"id"`
+	Id               int       `json:"id"`
 	Titre            string    `json:"titre"`
 	Description      string    `json:"description"`
 	DateDebut        time.Time `json:"date_debut"`
@@ -11,5 +11,6 @@ type Evenement struct {
 	NbPlaces         int       `json:"nb_places"`
 	StatutValidation string    `json:"statut_validation"`
 	Format           string    `json:"format"` // En ligne ou Présentiel
-	IdSalarie        int       `json:"id_salarie"`
+	NomSalarie       string       `json:"nom_salarie"`
+	PrenomSalarie    string       `json:"prenom_salarie"`
 }

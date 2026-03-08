@@ -10,20 +10,21 @@ import (
 	"strconv"
 )
 
-func GetAllAnnonces(w http.ResponseWriter, r *http.Request) {
+func GetAllEvenements(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
     w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-	fmt.Println("hello from GetAllAnnonces")
 
-	Annonces, err := bdd.GetAnnonces()
+	fmt.Println("hello from GetAllEvenements")
+
+	Evenements, err := bdd.GetEvenements()
 
 	if err != nil {
-		http.Error(w, "erreur de récupération des annonces", http.StatusInternalServerError)
+		http.Error(w, "erreur de récupération des Evenements", http.StatusInternalServerError)
 		fmt.Println("erreur", err)
 		return
 	}
 
-	response, err := json.Marshal(Annonces)
+	response, err := json.Marshal(Evenements)
 
 	if err != nil {
 		http.Error(w, "erreur de conversion", 500)
@@ -33,9 +34,11 @@ func GetAllAnnonces(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "%s", response)
 }
 
-func ValidateAnnonce(w http.ResponseWriter, r *http.Request) {
+func ValidateEvenement(w http.ResponseWriter, r *http.Request) {
+
 		w.Header().Set("Access-Control-Allow-Origin", "*")
     w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
 
 	id, err := strconv.Atoi(r.PathValue("id"))
 
@@ -43,20 +46,22 @@ func ValidateAnnonce(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "id invalide", http.StatusBadRequest)
 		return
 	}	
-	err = bdd.ValidateAnnonce(id)
+	err = bdd.ValidateEvenement(id)
 
 	if err != nil {
-		http.Error(w, "erreur de validation de l'annonce", http.StatusInternalServerError)
+		http.Error(w, "erreur de validation de l'Evenement", http.StatusInternalServerError)
 		fmt.Println("erreur", err)
 		return
 	}
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "Annonce validée avec succès")
+	fmt.Fprintf(w, "Evenement validée avec succès")
 }
 
-func RefuseAnnonce(w http.ResponseWriter, r *http.Request) {
+func RefuseEvenement(w http.ResponseWriter, r *http.Request) {
+
 		w.Header().Set("Access-Control-Allow-Origin", "*")
     w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	
 
 	id, err := strconv.Atoi(r.PathValue("id"))
 
@@ -64,13 +69,13 @@ func RefuseAnnonce(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "id invalide", http.StatusBadRequest)
 		return
 	}	
-	err = bdd.RefuseAnnonce(id)
+	err = bdd.RefuseEvenement(id)
 
 	if err != nil {
-		http.Error(w, "erreur de refus de l'annonce", http.StatusInternalServerError)
+		http.Error(w, "erreur de refus de l'Evenement", http.StatusInternalServerError)
 		fmt.Println("erreur", err)
 		return
 	}
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "Annonce refusée avec succès")
+	fmt.Fprintf(w, "Evenement refusée avec succès")
 }

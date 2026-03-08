@@ -21,13 +21,26 @@ func main() {
 	http.HandleFunc("GET /{$}", Health)
 
 	http.HandleFunc("GET /admin/users", admin.GetAllUsers)
-	http.HandleFunc("POST /admin/users/add/{$}", admin.CreateUser)
+	http.HandleFunc("POST /admin/users/add", admin.CreateUser)
+	http.HandleFunc("OPTIONS /admin/users/delete/{id}", admin.DeletedUser)
 	http.HandleFunc("DELETE /admin/users/delete/{id}", admin.DeletedUser)
+	http.HandleFunc("OPTIONS /admin/users/add", admin.CreateUser)
+	http.HandleFunc("PUT /admin/users/modify/{id}", admin.UpdateUser)
+	http.HandleFunc("OPTIONS /admin/users/modify/{id}", admin.UpdateUser)
+
 
 	http.HandleFunc("POST /admin/categories/add", admin.CreateCategorie)
 	http.HandleFunc("GET /admin/categories", admin.GetAllCategories)
 
 	http.HandleFunc("GET /admin/annonces", admin.GetAllAnnonces)
+	http.HandleFunc("PUT /admin/annonces/validate/{id}", admin.ValidateAnnonce)
+	http.HandleFunc("PUT /admin/annonces/refuse/{id}", admin.RefuseAnnonce)
+
+	http.HandleFunc("GET /admin/evenements", admin.GetAllEvenements)
+	http.HandleFunc("PUT /admin/evenements/validate/{id}", admin.ValidateEvenement)
+	http.HandleFunc("PUT /admin/evenements/refuse/{id}", admin.RefuseEvenement)
+
+
 
 
 	fmt.Println("test de : http://localhost:8081")
