@@ -1,4 +1,3 @@
-// On enlève le mot "async" devant la fonction
 function GetUsers() {
   const container = document.getElementById("users-container");
   container.innerHTML = "";
