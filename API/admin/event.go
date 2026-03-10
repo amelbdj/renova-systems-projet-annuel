@@ -36,8 +36,14 @@ func GetAllEvenements(w http.ResponseWriter, r *http.Request) {
 
 func ValidateEvenement(w http.ResponseWriter, r *http.Request) {
 
-		w.Header().Set("Access-Control-Allow-Origin", "*")
+ w.Header().Set("Access-Control-Allow-Origin", "*")
+    w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
     w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+    if r.Method == "OPTIONS" {
+        w.WriteHeader(http.StatusOK)
+        return 
+    }
 
 
 	id, err := strconv.Atoi(r.PathValue("id"))
@@ -59,8 +65,14 @@ func ValidateEvenement(w http.ResponseWriter, r *http.Request) {
 
 func RefuseEvenement(w http.ResponseWriter, r *http.Request) {
 
-		w.Header().Set("Access-Control-Allow-Origin", "*")
+ w.Header().Set("Access-Control-Allow-Origin", "*")
+    w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
     w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+    if r.Method == "OPTIONS" {
+        w.WriteHeader(http.StatusOK)
+        return 
+    }
 	
 
 	id, err := strconv.Atoi(r.PathValue("id"))

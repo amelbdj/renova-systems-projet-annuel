@@ -9,7 +9,7 @@ func GetAnnonces() ([]models.Annonce, error) {
 
 	var Annonces []models.Annonce
 
-	rows, err := Db.Query("SELECT annonce.id, annonce.titre, annonce.description, utilisateur.nom, utilisateur.prenom, categorie.libelle FROM pa2026.annonce INNER JOIN utilisateur ON utilisateur.id = annonce.id_user INNER JOIN categorie ON categorie.id = annonce.id_categorie")
+	rows, err := Db.Query("SELECT annonce.id, annonce.titre, annonce.description, annonce.statut_validation, utilisateur.nom, utilisateur.prenom, categorie.libelle FROM pa2026.annonce INNER JOIN utilisateur ON utilisateur.id = annonce.id_user INNER JOIN categorie ON categorie.id = annonce.id_categorie")
 
 	if err != nil {
 		return nil, fmt.Errorf("get Annonces : %v", err.Error())
@@ -20,7 +20,7 @@ func GetAnnonces() ([]models.Annonce, error) {
 
 		var Annonce models.Annonce
 	
-		err := rows.Scan(&Annonce.Id, &Annonce.Titre, &Annonce.Description, &Annonce.Nom, &Annonce.Prenom, &Annonce.Categorie)
+		err := rows.Scan(&Annonce.Id, &Annonce.Titre, &Annonce.Description, &Annonce.StatutValidation, &Annonce.Nom, &Annonce.Prenom, &Annonce.Categorie)
 
 		if err != nil {
 			return nil, fmt.Errorf("get Annonces : %v", err.Error())

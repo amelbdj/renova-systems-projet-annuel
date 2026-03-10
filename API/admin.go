@@ -34,10 +34,14 @@ func main() {
 
 	http.HandleFunc("GET /admin/annonces", admin.GetAllAnnonces)
 	http.HandleFunc("PUT /admin/annonces/validate/{id}", admin.ValidateAnnonce)
+	http.HandleFunc("OPTIONS /admin/annonces/validate/{id}", admin.ValidateAnnonce)
+	http.HandleFunc("OPTIONS /admin/annonces/refuse/{id}", admin.RefuseAnnonce)
 	http.HandleFunc("PUT /admin/annonces/refuse/{id}", admin.RefuseAnnonce)
 
 	http.HandleFunc("GET /admin/evenements", admin.GetAllEvenements)
 	http.HandleFunc("PUT /admin/evenements/validate/{id}", admin.ValidateEvenement)
+	http.HandleFunc("OPTIONS /admin/evenements/validate/{id}", admin.ValidateEvenement)
+	http.HandleFunc("OPTIONS /admin/evenements/refuse/{id}", admin.RefuseEvenement)
 	http.HandleFunc("PUT /admin/evenements/refuse/{id}", admin.RefuseEvenement)
 
 

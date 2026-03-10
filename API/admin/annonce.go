@@ -34,8 +34,14 @@ func GetAllAnnonces(w http.ResponseWriter, r *http.Request) {
 }
 
 func ValidateAnnonce(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
+    w.Header().Set("Access-Control-Allow-Origin", "*")
+    w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
     w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+    if r.Method == "OPTIONS" {
+        w.WriteHeader(http.StatusOK)
+        return 
+    }
 
 	id, err := strconv.Atoi(r.PathValue("id"))
 
@@ -55,8 +61,14 @@ func ValidateAnnonce(w http.ResponseWriter, r *http.Request) {
 }
 
 func RefuseAnnonce(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
+    w.Header().Set("Access-Control-Allow-Origin", "*")
+    w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
     w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+    if r.Method == "OPTIONS" {
+        w.WriteHeader(http.StatusOK)
+        return 
+    }
 
 	id, err := strconv.Atoi(r.PathValue("id"))
 
