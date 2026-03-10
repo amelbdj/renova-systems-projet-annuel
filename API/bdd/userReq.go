@@ -9,7 +9,7 @@ func GetUsers() ([]models.User, error) {
 
 	var Users []models.User
 
-	rows, err := Db.Query("SELECT id, nom, prenom, email, mot_de_passe, role, type_statut, nom_entreprise, siret FROM pa2026.utilisateur")
+	rows, err := Db.Query("SELECT id, nom, prenom, email, mot_de_passe, role, type_statut, nom_entreprise, siret, score FROM pa2026.utilisateur")
 
 	if err != nil {
 		return nil, fmt.Errorf("get Users : %v", err.Error())
@@ -20,7 +20,7 @@ func GetUsers() ([]models.User, error) {
 
 		var User models.User
 
-		err := rows.Scan(&User.Id, &User.Nom, &User.Prenom, &User.Email, &User.MotDePasse, &User.Role, &User.TypeStatut, &User.NomEntreprise, &User.Siret)
+		err := rows.Scan(&User.Id, &User.Nom, &User.Prenom, &User.Email, &User.MotDePasse, &User.Role, &User.TypeStatut, &User.NomEntreprise, &User.Siret, &User.Score)
 
 		if err != nil {
 			return nil, fmt.Errorf("get Users : %v", err.Error())
@@ -52,7 +52,7 @@ var count int
 
 
 
-	_, err = Db.Exec("INSERT INTO pa2026.utilisateur (nom, prenom, email, mot_de_passe, role, type_statut, nom_entreprise, siret) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", User.Nom, User.Prenom, User.Email, User.MotDePasse, User.Role, User.TypeStatut, User.NomEntreprise, User.Siret)
+	_, err = Db.Exec("INSERT INTO pa2026.utilisateur (nom, prenom, email, mot_de_passe, role, type_statut, nom_entreprise, siret) VALUES (UPPER(?), UPPER(?), ?, ?, ?, ?, ?, ?)", User.Nom, User.Prenom, User.Email, User.MotDePasse, User.Role, User.TypeStatut, User.NomEntreprise, User.Siret)
 
 	if err != nil {
 		return fmt.Errorf("CreateUser : %s", err.Error())
@@ -114,7 +114,7 @@ func UpdateUserById(user models.User) error {
 func GetUserById(id int) ([]models.User, error) {
 	var Users []models.User
 
-	rows, err := Db.Query("SELECT id, nom, prenom, email, mot_de_passe, role, type_statut, nom_entreprise, siret FROM partiel.User WHERE id = ?", id)
+	rows, err := Db.Query("SELECT id, nom, prenom, email, mot_de_passe, role, type_statut, nom_entreprise, siret, score FROM partiel.User WHERE id = ?", id)
 
 	if err != nil {
 		return nil, fmt.Errorf("get User by id : %v", err.Error())
@@ -124,7 +124,7 @@ func GetUserById(id int) ([]models.User, error) {
 	for rows.Next() {
 		var User models.User
 
-		err := rows.Scan(&User.Id, &User.Nom, &User.Prenom, &User.Email, &User.MotDePasse, &User.Role, &User.TypeStatut, &User.NomEntreprise, &User.Siret)
+		err := rows.Scan(&User.Id, &User.Nom, &User.Prenom, &User.Email, &User.MotDePasse, &User.Role, &User.TypeStatut, &User.NomEntreprise, &User.Siret, &User.Score)
 
 		if err != nil {
 			return nil, fmt.Errorf("get User by name : %v", err.Error())

@@ -18,7 +18,7 @@ const (
 
 var Db *sql.DB
 func NewDB() *sql.DB{
-	var sqlInfo = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", user, pass, host, port, dbname)
+var sqlInfo = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true", user, pass, host, port, dbname)
 	conn, err := sql.Open(driver, sqlInfo)
 	if err != nil{
 		panic(err.Error())
