@@ -12,6 +12,8 @@ func GetUsers() ([]models.User, error) {
 	rows, err := Db.Query("SELECT id, nom, prenom, email, mot_de_passe, role, type_statut, nom_entreprise, siret, score FROM pa2026.utilisateur")
 
 	if err != nil {
+				fmt.Println("Erreur lors de l'exécution de la requête : ", err)
+
 		return nil, fmt.Errorf("get Users : %v", err.Error())
 	}
 	defer rows.Close()
