@@ -120,12 +120,19 @@
             <div class="table-controls">
               <div class="search-input">
                 <span>🔍</span
-                ><input type="text" placeholder="Rechercher un utilisateur…" />
+                ><input
+                  id="search-user-input"
+                  type="text"
+                  placeholder="Rechercher un utilisateur…"
+                />
               </div>
-              <select style="width: auto; padding: 7px 10px; font-size: 12.5px">
+              <select
+                id="role-filter"
+                style="width: auto; padding: 7px 10px; font-size: 12.5px"
+              >
                 <option>Tous les rôles</option>
                 <option>Particulier</option>
-                <option>Professionnel</option>
+                <option>Pro</option>
                 <option>Salarié</option>
               </select>
               <select style="width: auto; padding: 7px 10px; font-size: 12.5px">
