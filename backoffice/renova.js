@@ -14,7 +14,7 @@ function AfficherCategories() {
       categories.forEach((category) => {
         const categoryElement = document.createElement("li");
         categoryElement.className = "category";
-        categoryElement.innerHTML = `<h5>${category.libelle}</h5>`;
+        categoryElement.innerHTML = `<h5>${category.libelle}</h5><button class="btn btn-xs btn-red" onclick="DeleteCategory(${category.id})"><span class="material-symbols-outlined">delete</span></button>`;
         container.appendChild(categoryElement);
       });
     });
@@ -42,6 +42,14 @@ function CreateCategory() {
       if (container)
         container.innerHTML = `<div style="padding:20px; color:red;">Erreur lors de la création.</div>`;
     });
+}
+
+function DeleteCategory(categoryId) {
+  if (confirm("Supprimer cette catégorie ?")) {
+    fetch(`http://localhost:8081/admin/categories/delete/${categoryId}`, {
+      method: "DELETE",
+    }).then(() => AfficherCategories());
+  }
 }
 
 document.addEventListener("DOMContentLoaded", () => {

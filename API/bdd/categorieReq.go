@@ -59,3 +59,24 @@ var count int
 	}
 	return nil
 }
+
+func DeleteCategorie(id int) error {
+
+	_, err := Db.Query("SELECT id FROM pa2026.categorie WHERE id = ?", id)
+	if err != nil {
+		fmt.Println("erreur",err)
+		return fmt.Errorf("la catégorie n'existe pas : %d", id)
+
+	}
+
+	// sUPPRESSION
+	_, err = Db.Exec(
+		"DELETE FROM pa2026.categorie WHERE id = ?", id)
+	if err != nil {
+				fmt.Println("erreur",err)
+
+		return fmt.Errorf("mise à jour échouée : %v", err)
+	}
+
+	return nil
+}

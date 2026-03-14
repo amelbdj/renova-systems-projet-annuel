@@ -34,6 +34,8 @@ func main() {
 
 	http.HandleFunc("POST /admin/categories/add", admin.CreateCategorie)
 	http.HandleFunc("OPTIONS /admin/categories/add", admin.CreateCategorie)
+	http.HandleFunc("DELETE /admin/categories/delete/{id}", admin.DeleteCategorie)
+	http.HandleFunc("OPTIONS /admin/categories/delete/{id}", admin.DeleteCategorie)
 	http.HandleFunc("GET /admin/categories", admin.GetAllCategories)
 
 	http.HandleFunc("GET /admin/annonces", admin.GetAllAnnonces)
