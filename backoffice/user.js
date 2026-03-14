@@ -104,8 +104,10 @@ function AfficherTableau(users) {
           <div><span class="tag t-grn">${user.score || 0}</span></div>
           <div style="font-size:11.5px; color:var(--txt-m)">ID : ${user.id}</div>
           <div class="u-actions">
-              <button class="btn btn-xs btn-g" onclick="OpenEditModalAPI(${user.id}, '${user.nom}', '${user.prenom}', '${user.email}', '${user.role}')">✏️</button>
-              <button class="btn btn-xs btn-red" onclick="DeleteUser(${user.id})">🚫</button>
+              <button class="btn btn-xs btn-g" onclick="OpenEditModalAPI(${user.id}, '${user.nom}', '${user.prenom}', '${user.email}', '${user.role}')"><span class="material-symbols-outlined">
+person_edit
+</span></button>
+              <button class="btn btn-xs btn-red" onclick="DeleteUser(${user.id})"><span class="material-symbols-outlined">delete</span></button>
           </div>
       </div>`;
   });

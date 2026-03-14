@@ -23,7 +23,7 @@ function GetAnnonce() {
                             <div class="val-body">
                                 <div class="val-title">${annonce.titre}</div>
                                 <div class="val-meta">
-                                    📦 Annonce · ${annonce.prenom} ${annonce.nom} · 
+                                    <span class="material-symbols-outlined">box</span> Annonce · ${annonce.prenom} ${annonce.nom} · 
                                     Publiée le ${new Date(annonce.date_publication).toLocaleDateString()}
                                 </div>
                                 <div class="val-desc">${annonce.description}</div>

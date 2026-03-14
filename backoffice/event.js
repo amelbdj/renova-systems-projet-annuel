@@ -20,7 +20,7 @@ function GetEvent() {
                             <div class="val-body">
                                 <div class="val-title">${event.titre}</div>
                                 <div class="val-meta">
-                                    📅 Event · ${event.prenom || "Organisateur"} · 
+                                    <span class="material-symbols-outlined">calendar_today</span>Event · ${event.prenom || "Organisateur"} · 
                                     Places : ${event.nb_places} · Le ${new Date(event.date_debut).toLocaleDateString()}
                                 </div>
                                 <div class="val-desc">${event.description}</div>
