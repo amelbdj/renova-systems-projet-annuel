@@ -1527,6 +1527,21 @@ footer strong {
   color: var(--txt-m);
 }
 
+.category {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.category .btn-red .material-symbols-outlined {
+  font-size: 20px;
+  color: #dc3545;
+}
+
+.category .btn-red:hover .material-symbols-outlined {
+  color: #ff4d4d;
+}
 /* ─── RESPONSIVE ──────────────────────────────────── */
 @media (max-width: 1024px) {
   .kpi-grid {
