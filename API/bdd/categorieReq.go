@@ -9,7 +9,7 @@ func GetCategories() ([]models.Categorie, error) {
 
 	var Categories []models.Categorie
 
-	rows, err := Db.Query("SELECT id_Categorie, libelle FROM pa2026.categorie")
+	rows, err := Db.Query("SELECT id, libelle FROM pa2026.categorie")
 
 	if err != nil {
 		return nil, fmt.Errorf("get Categories : %v", err.Error())
