@@ -2,6 +2,7 @@ package bdd
 
 import (
 	"fmt"
+	"strings"
 	"upcycleconnect/models"
 )
 
@@ -12,6 +13,8 @@ func GetUsers() ([]models.User, error) {
 	rows, err := Db.Query("SELECT id, nom, prenom, email, mot_de_passe, role, type_statut, nom_entreprise, siret, score FROM pa2026.utilisateur")
 
 	if err != nil {
+				fmt.Println("Erreur lors de l'exécution de la requête : ", err)
+
 		return nil, fmt.Errorf("get Users : %v", err.Error())
 	}
 	defer rows.Close()
@@ -114,7 +117,7 @@ func UpdateUserById(user models.User) error {
 func GetUserById(id int) ([]models.User, error) {
 	var Users []models.User
 
-	rows, err := Db.Query("SELECT id, nom, prenom, email, mot_de_passe, role, type_statut, nom_entreprise, siret, score FROM partiel.User WHERE id = ?", id)
+	rows, err := Db.Query("SELECT id, nom, prenom, email, mot_de_passe, role, type_statut, nom_entreprise, siret, score FROM pa2026.utilisateur WHERE id = ?", id)
 
 	if err != nil {
 		return nil, fmt.Errorf("get User by id : %v", err.Error())
@@ -141,3 +144,95 @@ func GetUserById(id int) ([]models.User, error) {
 	return Users, nil
 }
 
+func GetUserByRole(role string) ([]models.User, error) {
+	var Users []models.User
+
+	rows, err := Db.Query("SELECT id, nom, prenom, email, mot_de_passe, role, type_statut, nom_entreprise, siret, score FROM pa2026.utilisateur WHERE role = ?", role)
+
+	if err != nil {
+		return nil, fmt.Errorf("get User by role : %v", err.Error())
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var User models.User
+
+		err := rows.Scan(&User.Id, &User.Nom, &User.Prenom, &User.Email, &User.MotDePasse, &User.Role, &User.TypeStatut, &User.NomEntreprise, &User.Siret, &User.Score)
+
+		if err != nil {
+			return nil, fmt.Errorf("get User by role : %v", err.Error())
+		}
+
+		Users = append(Users, User)
+	}
+
+	err = rows.Err()
+
+	if err != nil {
+		return nil, fmt.Errorf("get User by role : %v", err.Error())
+	}
+	return Users, nil
+}
+
+func GetUserByName(query string, role string) ([]models.User, error) {
+	query = strings.ToUpper(query)
+	search := "%"+query+"%"
+if role != "Tous les rôles" && role != "" {
+			var Users []models.User
+		rows, err := Db.Query("SELECT id, nom, prenom, email, mot_de_passe, role, type_statut, nom_entreprise, siret, score FROM pa2026.utilisateur WHERE (UPPER(nom) LIKE ? OR UPPER(prenom) LIKE ?) AND role = ?", search, search, role)
+
+	if err != nil {
+		fmt.Println("Erreur lors de l'exécution de la requête : ", err)
+		return nil, fmt.Errorf("get User by name : %v", err.Error())
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var User models.User
+
+		err := rows.Scan(&User.Id, &User.Nom, &User.Prenom, &User.Email, &User.MotDePasse, &User.Role, &User.TypeStatut, &User.NomEntreprise, &User.Siret, &User.Score)
+
+		if err != nil {
+			fmt.Println("Erreur lors de l'exécution de la requête : ", err)
+			return nil, fmt.Errorf("get User by name : %v", err.Error())
+		}
+
+		Users = append(Users, User)
+	}
+
+	err = rows.Err()
+
+	if err != nil {
+		return nil, fmt.Errorf("get User by name : %v", err.Error())
+	}
+	return Users, nil
+} else {
+	var Users []models.User
+	search := "%"+query+"%"
+	rows, err := Db.Query("SELECT id, nom, prenom, email, mot_de_passe, role, type_statut, nom_entreprise, siret, score FROM pa2026.utilisateur WHERE (UPPER(nom) LIKE ? OR UPPER(prenom) LIKE ?)", search, search)
+
+	if err != nil {
+		return nil, fmt.Errorf("get User by name : %v", err.Error())
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var User models.User
+
+		err := rows.Scan(&User.Id, &User.Nom, &User.Prenom, &User.Email, &User.MotDePasse, &User.Role, &User.TypeStatut, &User.NomEntreprise, &User.Siret, &User.Score)
+
+		if err != nil {
+			return nil, fmt.Errorf("get User by name : %v", err.Error())
+		}
+
+		Users = append(Users, User)
+	}
+
+	err = rows.Err()
+
+	if err != nil {
+		return nil, fmt.Errorf("get User by name : %v", err.Error())
+	}
+	return Users, nil
+}
+}
