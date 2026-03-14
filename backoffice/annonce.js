@@ -23,7 +23,11 @@ function GetAnnonce() {
                             <div class="val-body">
                                 <div class="val-title">${annonce.titre}</div>
                                 <div class="val-meta">
+<<<<<<< HEAD
                                     📦 Annonce · ${annonce.prenom} ${annonce.nom} · 
+=======
+                                    <span class="material-symbols-outlined">box</span> Annonce · ${annonce.prenom} ${annonce.nom} · 
+>>>>>>> 496825d1f2a2e3b5fe1ededd3bd18fc880c36623
                                     Publiée le ${new Date(annonce.date_publication).toLocaleDateString()}
                                 </div>
                                 <div class="val-desc">${annonce.description}</div>
@@ -64,3 +68,7 @@ function RefuseAnnonce(id) {
     UpdateValidationCount();
   });
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  GetAnnonce();
+});

@@ -27,9 +27,13 @@ func main() {
 	http.HandleFunc("OPTIONS /admin/users/add", admin.CreateUser)
 	http.HandleFunc("PUT /admin/users/modify/{id}", admin.UpdateUser)
 	http.HandleFunc("OPTIONS /admin/users/modify/{id}", admin.UpdateUser)
+	http.HandleFunc("GET /admin/users/role/{role}", admin.GetUserByRole)
+	http.HandleFunc("GET /admin/users/search", admin.GetUserByName)
+
 
 
 	http.HandleFunc("POST /admin/categories/add", admin.CreateCategorie)
+	http.HandleFunc("OPTIONS /admin/categories/add", admin.CreateCategorie)
 	http.HandleFunc("GET /admin/categories", admin.GetAllCategories)
 
 	http.HandleFunc("GET /admin/annonces", admin.GetAllAnnonces)
