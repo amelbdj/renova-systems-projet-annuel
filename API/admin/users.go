@@ -4,12 +4,52 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"upcycleconnect/auth"
 	"upcycleconnect/bdd"
 
 	"net/http"
 	"strconv"
 	"upcycleconnect/models"
 )
+func Login(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+	
+	fmt.Println("hello from login")
+	
+	var user models.User
+	err := json.NewDecoder(r.Body).Decode(&user)
+	if err != nil {
+		fmt.Println("Erreur décodage :", err)
+		http.Error(w, "Impossible de décoder le JSON", http.StatusBadRequest)
+		return
+	}
+
+	userBdd, err := bdd.LoginUser(user.Email, user.MotDePasse)
+	if err != nil {
+		fmt.Println("Erreur login :", err)
+		http.Error(w, "Email ou mot de passe incorrect", http.StatusUnauthorized)
+		return
+	}
+
+	token, err := auth.GenerateJWT(userBdd.Id, userBdd.Role)
+	if err != nil {
+		fmt.Println("Erreur génération token :", err)
+		http.Error(w, "Erreur interne du serveur", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{
+		"token": token,
+	})
+}
 
 func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("hello from GetAllUsers")
@@ -54,7 +94,12 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
         http.Error(w, "Impossible de décoder le JSON", http.StatusBadRequest)
         return
     }
-
+		user.MotDePasse, err = auth.HashPassword(user.MotDePasse)
+		if err != nil {
+			fmt.Println("Erreur hashage mot de passe :", err)
+			http.Error(w, "Erreur lors du hashage du mot de passe", http.StatusInternalServerError)
+			return
+		}
     
     err = bdd.CreateUser(user) 
     if err != nil {
