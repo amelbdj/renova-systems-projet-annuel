@@ -23,6 +23,7 @@ func main() {
 	http.HandleFunc("POST /admin/login", admin.Login)
 
 	// Eviter les problèmes de CORS pour les requêtes préliminaires (OPTIONS)
+	// Note : definir un dossier route sera pertinant pour avoir des fichiers plus organisés et éviter d'avoir tout dans le main.go
 
 	http.HandleFunc("OPTIONS /admin/users/delete/{id}", admin.DeletedUser)
 	http.HandleFunc("OPTIONS /admin/users/add", admin.CreateUser)
