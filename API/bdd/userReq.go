@@ -1,11 +1,40 @@
 package bdd
 
 import (
+	"database/sql"
 	"fmt"
 	"strings"
 	"upcycleconnect/models"
+
+	"golang.org/x/crypto/bcrypt" //gestion hash mdp
 )
 
+func LoginUser(email string, motDePasse string) (models.User, error) {
+    var user models.User 
+    
+    err := Db.QueryRow("SELECT id, mot_de_passe, role FROM pa2026.utilisateur WHERE email = ?", email).Scan(&user.Id, &user.MotDePasse, &user.Role)
+
+    if err != nil {
+        if err == sql.ErrNoRows {
+            return user, fmt.Errorf("email ou mot de passe incorrect")
+        }
+        return user, fmt.Errorf("erreur BDD : %v", err)
+    }
+
+    // 🕵️ LES 3 LIGNES D'ESPIONNAGE :
+    fmt.Println("--- ESPIONNAGE LOGIN ---")
+    fmt.Printf("Mot de passe reçu du JSON : '%s'\n", motDePasse)
+    fmt.Printf("Hash BDD trouvé         : '%s'\n", user.MotDePasse)
+
+    err = bcrypt.CompareHashAndPassword([]byte(user.MotDePasse), []byte(motDePasse))
+    if err != nil {
+        fmt.Println("Erreur Bcrypt :", err) // Ça nous dira exactement pourquoi Bcrypt bloque !
+        return user, fmt.Errorf("email ou mot de passe incorrect")
+    }
+    
+    user.Email = email
+    return user, nil
+}
 func GetUsers() ([]models.User, error) {
 
 	var Users []models.User
@@ -40,9 +69,10 @@ func GetUsers() ([]models.User, error) {
 
 func CreateUser(User models.User) error {
 
+
 var count int
-    checkQuery := "SELECT COUNT(*) FROM utilisateur WHERE email = ?"
-    err := Db.QueryRow(checkQuery, User.Email).Scan(&count)
+    
+    err := Db.QueryRow( "SELECT COUNT(*) FROM utilisateur WHERE email = ?", User.Email).Scan(&count)
     
     if err != nil {
         return fmt.Errorf("Erreur vérification email : %s", err.Error())
