@@ -24,9 +24,10 @@ function CreateCategory() {
   const libelle = document.getElementById("add-libelle").value.trim();
 
   if (libelle === "") {
-    alert("Veuillez remplir le champ libellé.");
+    alert(t("backoffice.categories.alert_empty"));
     return;
   }
+
   fetch("http://localhost:8081/admin/categories/add", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -39,13 +40,14 @@ function CreateCategory() {
     })
     .catch((error) => {
       console.error("Erreur API :", error);
+      const container = document.getElementById("resultC");
       if (container)
-        container.innerHTML = `<div style="padding:20px; color:red;">Erreur lors de la création.</div>`;
+        container.innerHTML = `<div style="padding:20px; color:red;" data-i18n="backoffice.categories.create_error">${t("backoffice.categories.create_error")}</div>`;
     });
 }
 
 function DeleteCategory(categoryId) {
-  if (confirm("Supprimer cette catégorie ?")) {
+  if (confirm(t("backoffice.categories.confirm_delete"))) {
     fetch(`http://localhost:8081/admin/categories/delete/${categoryId}`, {
       method: "DELETE",
     }).then(() => AfficherCategories());
@@ -54,4 +56,54 @@ function DeleteCategory(categoryId) {
 
 document.addEventListener("DOMContentLoaded", () => {
   AfficherCategories();
+});
+
+let currentTranslations = {};
+
+function changerLangue(langue) {
+  fetch(`http://localhost:8081/api/translations?lang=${langue}`)
+    .then((res) => res.json())
+    .then((data) => {
+      currentTranslations = data;
+      appliquerTraductions();
+    })
+    .catch((err) =>
+      console.error("Erreur de chargement des traductions:", err),
+    );
+}
+
+function t(cle) {
+  const keys = cle.split(".");
+  let texteTraduit = currentTranslations;
+
+  for (let k of keys) {
+    if (texteTraduit && texteTraduit[k]) {
+      texteTraduit = texteTraduit[k];
+    } else {
+      return cle;
+    }
+  }
+  return typeof texteTraduit === "string" ? texteTraduit : cle;
+}
+
+function appliquerTraductions() {
+  document.querySelectorAll("[data-i18n]").forEach((element) => {
+    const cle = element.getAttribute("data-i18n");
+    const texteTraduit = t(cle);
+    if (texteTraduit !== cle) {
+      element.innerHTML = texteTraduit;
+    }
+  });
+
+  document.querySelectorAll("[data-i18n-placeholder]").forEach((element) => {
+    const cle = element.getAttribute("data-i18n-placeholder");
+    const texteTraduit = t(cle);
+    if (texteTraduit !== cle) {
+      element.placeholder = texteTraduit;
+    }
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  changerLangue("fr");
 });

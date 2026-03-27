@@ -8,8 +8,9 @@ function GetAnnonce() {
       return res.json();
     })
     .then((annonces) => {
-      const currentTab = document.querySelector(".vtab.on").textContent;
-      if (!currentTab.includes("Tout")) container.innerHTML = "";
+      // On vérifie l'ID et non le texte (qui va changer avec la trad)
+      const currentTabId = document.querySelector(".vtab.on").id;
+      if (currentTabId !== "tout") container.innerHTML = "";
 
       let htmlContent = "";
       annonces.forEach((annonce) => {
@@ -23,16 +24,16 @@ function GetAnnonce() {
                             <div class="val-body">
                                 <div class="val-title">${annonce.titre}</div>
                                 <div class="val-meta">
-                                    📦 Annonce · ${annonce.prenom} ${annonce.nom} · 
-                                    Publiée le ${new Date(annonce.date_publication).toLocaleDateString()}
+                                    📦 <span data-i18n="backoffice.ads.ad">Annonce</span> · ${annonce.prenom} ${annonce.nom} · 
+                                    <span data-i18n="backoffice.ads.published_on">Publiée le</span> ${new Date(annonce.date_publication).toLocaleDateString()}
                                 </div>
                                 <div class="val-desc">${annonce.description}</div>
                                 <div class="val-actions">
-                                    <button class="va-btn va-ok" onclick="ValidateAnnonce(${annonce.id})">✓ Approuver</button>
-                                    <button class="va-btn va-no" onclick="RefuseAnnonce(${annonce.id})">✕ Refuser</button>
+                                    <button class="va-btn va-ok" onclick="ValidateAnnonce(${annonce.id})" data-i18n="backoffice.btn.approve">✓ Approuver</button>
+                                    <button class="va-btn va-no" onclick="RefuseAnnonce(${annonce.id})" data-i18n="backoffice.btn.refuse">✕ Refuser</button>
                                 </div>
                             </div>
-                            <span class="tag t-or" style="flex-shrink: 0 font-size: 10px">Annonce</span>
+                            <span class="tag t-or" style="flex-shrink: 0; font-size: 10px" data-i18n="backoffice.ads.ad_tag">Annonce</span>
                         </div>
                     </div>`;
         }
@@ -41,7 +42,12 @@ function GetAnnonce() {
       if (htmlContent) {
         container.innerHTML += htmlContent;
       } else if (!container.innerHTML) {
-        container.innerHTML = `<div style="padding:20px">Aucune annonce en attente.</div>`;
+        container.innerHTML = `<div style="padding:20px" data-i18n="backoffice.ads.no_ads">Aucune annonce en attente.</div>`;
+      }
+
+      // On demande au script de traduire les nouveaux éléments fraîchement injectés
+      if (typeof appliquerTraductions === "function") {
+        appliquerTraductions();
       }
     })
     .catch((err) => console.error(err));

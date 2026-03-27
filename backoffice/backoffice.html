@@ -10,25 +10,46 @@
       href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Outfit:wght@300;400;500;600&display=swap"
       rel="stylesheet"
     />
-
   </head>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+  />
   <body>
     <div class="wrapper">
+      <div style="text-align: right; padding: 10px">
+        <button class="btn btn-sm btn-o" onclick="changerLangue('fr')">
+          🇫🇷 FR
+        </button>
+        <button class="btn btn-sm btn-o" onclick="changerLangue('en')">
+          🇬🇧 EN
+        </button>
+      </div>
+
       <section class="hero fu">
         <div class="hero-left">
-          <div class="hero-eyebrow">Back Office</div>
-          <h1 class="hero-title">Centre de<br />commande <em>ReNova</em></h1>
-          <p class="hero-desc">
+          <div class="hero-eyebrow" data-i18n="backoffice.hero.eyebrow">
+            Back Office
+          </div>
+          <h1 class="hero-title" data-i18n="backoffice.hero.title">
+            Centre de<br />commande <em>ReNova</em>
+          </h1>
+          <p class="hero-desc" data-i18n="backoffice.hero.desc">
             Gérez utilisateurs, validations, finances et logistique depuis ce
             panneau d'administration centralisé.
           </p>
           <div class="hero-actions">
             <button class="btn btn-o" onclick="sc('validations')">
-              <span class="material-symbols-outlined">electric_bolt</span> Traiter les validations
+              <span class="material-symbols-outlined">electric_bolt</span>
+              <span data-i18n="backoffice.btn.process_validations"
+                >Traiter les validations</span
+              >
             </button>
             <button class="btn btn-g" onclick="sc('users')">
-              Gérer les utilisateurs →
+              <span data-i18n="backoffice.btn.manage_users"
+                >Gérer les utilisateurs</span
+              >
+              →
             </button>
           </div>
         </div>
@@ -43,7 +64,9 @@
             <div class="kpi-delta up">Users</div>
           </div>
           <div class="kpi-val" id="totalUser"></div>
-          <div class="kpi-lbl">Utilisateurs inscrits</div>
+          <div class="kpi-lbl" data-i18n="backoffice.kpi.users">
+            Utilisateurs inscrits
+          </div>
           <div class="kpi-bar">
             <div
               class="kpi-fill"
@@ -51,23 +74,29 @@
             ></div>
           </div>
         </div>
+
         <div class="kpi" style="--kc: rgba(255, 152, 0, 0.1)">
           <div class="kpi-top">
             <div class="kpi-ico" style="background: rgba(255, 152, 0, 0.12)">
               <span class="material-symbols-outlined">check_circle_unread</span>
             </div>
-            <div class="kpi-delta neu">En attente</div>
+            <div class="kpi-delta neu" data-i18n="backoffice.kpi.pending_badge">
+              En attente
+            </div>
           </div>
           <div
             id="totalValidation"
             class="kpi-val"
             style="color: var(--or-l)"
           ></div>
-          <div class="kpi-lbl">Validations en attente</div>
+          <div class="kpi-lbl" data-i18n="backoffice.kpi.pending">
+            Validations en attente
+          </div>
           <div class="kpi-bar">
             <div class="kpi-fill" style="--w: 35%; background: var(--or)"></div>
           </div>
         </div>
+
         <div class="kpi" style="--kc: rgba(74, 144, 240, 0.08)">
           <div class="kpi-top">
             <div class="kpi-ico" style="background: rgba(74, 144, 240, 0.1)">
@@ -76,7 +105,9 @@
             <div class="kpi-delta up">+12%</div>
           </div>
           <div class="kpi-val">6 240 €</div>
-          <div class="kpi-lbl">Revenus ce mois (Stripe)</div>
+          <div class="kpi-lbl" data-i18n="backoffice.kpi.revenue">
+            Revenus ce mois (Stripe)
+          </div>
           <div class="kpi-bar">
             <div
               class="kpi-fill"
@@ -84,15 +115,20 @@
             ></div>
           </div>
         </div>
+
         <div class="kpi" style="--kc: rgba(240, 80, 80, 0.07)">
           <div class="kpi-top">
             <div class="kpi-ico" style="background: rgba(240, 80, 80, 0.1)">
               <span class="material-symbols-outlined">report</span>
             </div>
-            <div class="kpi-delta dn">À traiter</div>
+            <div class="kpi-delta dn" data-i18n="backoffice.kpi.todo">
+              À traiter
+            </div>
           </div>
           <div class="kpi-val" style="color: var(--red)">7</div>
-          <div class="kpi-lbl">Signalements critiques</div>
+          <div class="kpi-lbl" data-i18n="backoffice.kpi.reports">
+            Signalements critiques
+          </div>
           <div class="kpi-bar">
             <div
               class="kpi-fill"
@@ -105,13 +141,18 @@
       <section id="users" style="padding: 0 0 48px">
         <div class="sec-label fu">
           <div class="sec-num">1</div>
-          <div class="sec-title-text">Gestion des Utilisateurs</div>
+          <div class="sec-title-text" data-i18n="backoffice.users.title">
+            Gestion des Utilisateurs
+          </div>
           <div class="sec-divider"></div>
-          <span class="tag t-or" style="flex-shrink: 0">1 284 comptes</span>
+          <span class="tag t-or" style="flex-shrink: 0" id="users-count-badge"
+            >1 284 comptes</span
+          >
           <button
             class="btn btn-o btn-sm"
             style="flex-shrink: 0"
             onclick="openNewUser()"
+            data-i18n="backoffice.btn.create_user"
           >
             ＋ Créer un compte
           </button>
@@ -126,17 +167,18 @@
                   id="search-user-input"
                   type="text"
                   placeholder="Rechercher un utilisateur…"
+                  data-i18n-placeholder="backoffice.search.placeholder"
                 />
               </div>
               <select
                 id="role-filter"
                 style="width: auto; padding: 7px 10px; font-size: 12.5px"
               >
-                <option>Tous les rôles</option>
-                <option>Particulier</option>
-                <option>Admin</option>
-                <option>Pro</option>
-                <option>Salarié</option>
+                <option data-i18n="backoffice.role.all">Tous les rôles</option>
+                <option data-i18n="backoffice.role.user">Particulier</option>
+                <option data-i18n="backoffice.role.admin">Admin</option>
+                <option data-i18n="backoffice.role.pro">Pro</option>
+                <option data-i18n="backoffice.role.staff">Salarié</option>
               </select>
             </div>
             <div class="u-table"></div>
@@ -147,12 +189,24 @@
       <section id="validations" style="padding: 0 0 48px">
         <div class="sec-label fu">
           <div class="sec-num red">2</div>
-          <div class="sec-title-text">Validations</div>
+          <div class="sec-title-text" data-i18n="backoffice.validations.title">
+            Validations
+          </div>
           <div class="sec-divider"></div>
-          <span class="tag t-red" style="flex-shrink: 0">18 en attente</span>
+          <span
+            class="tag t-red"
+            style="flex-shrink: 0"
+            id="validations-count-badge"
+            >18 en attente</span
+          >
         </div>
         <div class="valid-tabs fu">
-          <button id="tout" class="vtab on" onclick="setVtab(this, 'all')">
+          <button
+            id="tout"
+            class="vtab on"
+            onclick="setVtab(this, 'all')"
+            data-i18n="backoffice.tabs.all"
+          >
             Tout
           </button>
           <button
@@ -160,27 +214,32 @@
             class="vtab"
             onclick="setVtab(this, 'ann')"
           >
-            <span class="material-symbols-outlined">box</span> Annonces
+            <span class="material-symbols-outlined">box</span>
+            <span data-i18n="backoffice.tabs.ads">Annonces</span>
           </button>
           <button id="eventbutton" class="vtab" onclick="setVtab(this, 'evt')">
-            <span class="material-symbols-outlined">calendar_today</span> Événements
+            <span class="material-symbols-outlined">calendar_today</span>
+            <span data-i18n="backoffice.tabs.events">Événements</span>
           </button>
           <button id="pro" class="vtab" onclick="setVtab(this, 'pro')">
-            <span class="material-symbols-outlined">business</span> Comptes Pro
+            <span class="material-symbols-outlined">business</span>
+            <span data-i18n="backoffice.tabs.pro">Comptes Pro</span>
           </button>
           <button id="contenu" class="vtab" onclick="setVtab(this, 'con')">
-            <span class="material-symbols-outlined">article</span> Contenus
+            <span class="material-symbols-outlined">article</span>
+            <span data-i18n="backoffice.tabs.content">Contenus</span>
           </button>
         </div>
 
         <div id="result"></div>
       </section>
 
-      <!-- SECTION CATEGORIES -->
       <section id="catégories" style="padding: 0 0 48px">
         <div class="sec-label fu">
           <div class="sec-num blue">3</div>
-          <div class="sec-title-text">Catégories</div>
+          <div class="sec-title-text" data-i18n="backoffice.categories.title">
+            Catégories
+          </div>
           <div class="sec-divider"></div>
         </div>
         <div class="valid-tabs fu">
@@ -188,59 +247,92 @@
             class="btn btn-o btn-sm"
             style="flex-shrink: 0"
             onclick="openNewCategory()"
+            data-i18n="backoffice.btn.create_cat"
           >
             ＋ Créer une catégorie
           </button>
-
-        
+        </div>
       </section>
       <div id="resultC"></div>
     </div>
+
     <div class="modal-bg" id="editUserModal">
       <div class="modal">
         <div class="modal-x" onclick="closeModal('editUserModal')">✕</div>
-        <div class="modal-h"><span class="material-symbols-outlined">edit</span> Modifier le compte</div>
-        <div class="modal-sub">
+        <div class="modal-h">
+          <span class="material-symbols-outlined">edit</span>
+          <span data-i18n="backoffice.modal.edit_user.title"
+            >Modifier le compte</span
+          >
+        </div>
+        <div class="modal-sub" data-i18n="backoffice.modal.edit_user.desc">
           Modifiez les informations et les droits de l'utilisateur.
         </div>
 
         <div class="frow">
           <div>
-            <label>Prénom <span class="req">*</span></label>
+            <label
+              ><span data-i18n="backoffice.form.firstname">Prénom</span>
+              <span class="req">*</span></label
+            >
             <input type="text" id="edit-prenom" value="" />
           </div>
           <div>
-            <label>Nom <span class="req">*</span></label>
+            <label
+              ><span data-i18n="backoffice.form.lastname">Nom</span>
+              <span class="req">*</span></label
+            >
             <input type="text" id="edit-nom" value="" />
           </div>
         </div>
 
         <div class="fgroup">
-          <label>Email <span class="req">*</span></label>
+          <label
+            ><span data-i18n="backoffice.form.email">Email</span>
+            <span class="req">*</span></label
+          >
           <input type="email" id="edit-email" value="" />
         </div>
 
         <div class="frow">
           <div>
-            <label>Rôle</label>
+            <label data-i18n="backoffice.form.role">Rôle</label>
             <select id="edit-role">
-              <option value="Particulier">Particulier</option>
-              <option value="Pro">Professionnel</option>
-              <option value="Salarie">Salarié</option>
-              <option value="Admin">Administrateur</option>
+              <option value="Particulier" data-i18n="backoffice.role.user">
+                Particulier
+              </option>
+              <option value="Pro" data-i18n="backoffice.role.pro">
+                Professionnel
+              </option>
+              <option value="Salarie" data-i18n="backoffice.role.staff">
+                Salarié
+              </option>
+              <option value="Admin" data-i18n="backoffice.role.admin">
+                Administrateur
+              </option>
             </select>
           </div>
           <div>
-            <label>Statut</label>
+            <label data-i18n="backoffice.form.status">Statut</label>
             <select>
-              <option value="Actif">Actif</option>
-              <option value="Suspendu">Suspendu</option>
-              <option value="Banni">Banni</option>
+              <option value="Actif" data-i18n="backoffice.status.active">
+                Actif
+              </option>
+              <option value="Suspendu" data-i18n="backoffice.status.suspended">
+                Suspendu
+              </option>
+              <option value="Banni" data-i18n="backoffice.status.banned">
+                Banni
+              </option>
             </select>
           </div>
         </div>
 
-        <button class="btn btn-o btn-full" onclick="UpdateUser()">
+        <button
+          class="btn btn-o btn-full"
+          onclick="UpdateUser()"
+          data-i18n="backoffice.btn.save_changes"
+        >
           Enregistrer les modifications
         </button>
       </div>
@@ -249,71 +341,112 @@
     <div class="modal-bg" id="NewuserModal">
       <div class="modal">
         <div class="modal-x" onclick="closeModal('NewuserModal')">✕</div>
-        <div class="modal-h">👤 Créer un compte</div>
-        <div class="modal-sub">
+        <div class="modal-h">
+          👤
+          <span data-i18n="backoffice.modal.new_user.title"
+            >Créer un compte</span
+          >
+        </div>
+        <div class="modal-sub" data-i18n="backoffice.modal.new_user.desc">
           Créer manuellement un compte sur la plateforme.
         </div>
         <div class="frow">
           <div>
-            <label>Prénom <span class="req">*</span></label
-            ><input id="add-prenom" type="text" placeholder="Jean" />
+            <label
+              ><span data-i18n="backoffice.form.firstname">Prénom</span>
+              <span class="req">*</span></label
+            >
+            <input id="add-prenom" type="text" placeholder="Jean" />
           </div>
           <div>
-            <label>Nom <span class="req">*</span></label
-            ><input id="add-nom" type="text" placeholder="Dupont" />
+            <label
+              ><span data-i18n="backoffice.form.lastname">Nom</span>
+              <span class="req">*</span></label
+            >
+            <input id="add-nom" type="text" placeholder="Dupont" />
           </div>
         </div>
         <div class="fgroup">
-          <label>Email <span class="req">*</span></label
-          ><input
+          <label
+            ><span data-i18n="backoffice.form.email">Email</span>
+            <span class="req">*</span></label
+          >
+          <input
             id="add-email"
             type="email"
             placeholder="jean.dupont@email.com"
           />
         </div>
         <div class="fgroup">
-          <label>Mot de passe <span class="req">*</span></label
-          ><input id="add-mdp" type="password" placeholder="Mot de passe" />
+          <label
+            ><span data-i18n="backoffice.form.password">Mot de passe</span>
+            <span class="req">*</span></label
+          >
+          <input
+            id="add-mdp"
+            type="password"
+            placeholder="Mot de passe"
+            data-i18n-placeholder="backoffice.form.password"
+          />
         </div>
         <div class="frow">
           <div>
-            <label>Rôle</label>
+            <label data-i18n="backoffice.form.role">Rôle</label>
             <select id="add-role">
-              <option>Particulier</option>
-              <option>Professionnel</option>
-              <option>Salarié</option>
-              <option>Administrateur</option>
+              <option data-i18n="backoffice.role.user">Particulier</option>
+              <option data-i18n="backoffice.role.pro">Professionnel</option>
+              <option data-i18n="backoffice.role.staff">Salarié</option>
+              <option data-i18n="backoffice.role.admin">Administrateur</option>
             </select>
           </div>
           <div>
-            <label>Statut initial</label>
+            <label data-i18n="backoffice.form.initial_status"
+              >Statut initial</label
+            >
             <select id="add-status">
-              <option>Actif</option>
-              <option>En attente</option>
+              <option data-i18n="backoffice.status.active">Actif</option>
+              <option data-i18n="backoffice.kpi.pending_badge">
+                En attente
+              </option>
             </select>
           </div>
         </div>
-        <button class="btn btn-o btn-full" onclick="CreateUser()">
+        <button
+          class="btn btn-o btn-full"
+          onclick="CreateUser()"
+          data-i18n="backoffice.btn.submit_create_user"
+        >
           Créer le compte ✓
         </button>
       </div>
     </div>
 
-
     <div class="modal-bg" id="NewCategoryModal">
       <div class="modal">
         <div class="modal-x" onclick="closeModal('NewCategoryModal')">✕</div>
-        <div class="modal-h">📜 Créer une catégorie</div>
-        <div class="modal-sub">
+        <div class="modal-h">
+          📜
+          <span data-i18n="backoffice.modal.new_cat.title"
+            >Créer une catégorie</span
+          >
+        </div>
+        <div class="modal-sub" data-i18n="backoffice.modal.new_cat.desc">
           Créer manuellement une catégorie d'annonces sur la plateforme.
         </div>
         <div class="frow">
           <div>
-            <label>Libellé <span class="req">*</span></label
-            ><input id="add-libelle" type="text" placeholder="Catégorie" />
+            <label
+              ><span data-i18n="backoffice.form.label">Libellé</span>
+              <span class="req">*</span></label
+            >
+            <input id="add-libelle" type="text" placeholder="Catégorie" />
           </div>
         </div>
-        <button class="btn btn-o btn-full" onclick="CreateCategory()">
+        <button
+          class="btn btn-o btn-full"
+          onclick="CreateCategory()"
+          data-i18n="backoffice.btn.submit_create_cat"
+        >
           Créer la catégorie ✓
         </button>
       </div>

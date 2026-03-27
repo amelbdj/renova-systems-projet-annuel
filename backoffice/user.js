@@ -7,7 +7,7 @@ function setVtab(element, type) {
   const container = document.getElementById("result");
   if (!container) return;
 
-  container.innerHTML = "<p style='padding:20px'>Chargement</p>";
+  container.innerHTML = `<p style='padding:20px'>${t("backoffice.common.loading")}</p>`;
 
   if (type === "ann") {
     GetAnnonce();
@@ -18,7 +18,7 @@ function setVtab(element, type) {
     GetAnnonce();
     GetEvent();
   } else {
-    container.innerHTML = "<p style='padding:20px'>En cours de dev</p>";
+    container.innerHTML = `<p style='padding:20px'>${t("backoffice.common.in_dev")}</p>`;
   }
 }
 
@@ -57,24 +57,24 @@ function AfficherTableau(users) {
     users = [];
   }
 
-  if (badge) badge.textContent = `${users.length} comptes`;
+  if (badge)
+    badge.textContent = `${users.length} ${t("backoffice.users.accounts_badge")}`;
   if (totalStat) totalStat.innerHTML = users.length;
 
   const headerHTML = `
       <div class="u-thead">
           <div></div>
-          <div>Utilisateur</div>
-          <div>Rôle</div>
-          <div>Score</div>
+          <div data-i18n="backoffice.users.th_user">${t("backoffice.users.th_user")}</div>
+          <div data-i18n="backoffice.form.role">${t("backoffice.form.role")}</div>
+          <div data-i18n="backoffice.users.th_score">${t("backoffice.users.th_score")}</div>
           <div>ID</div>
-          <div>Actions</div>
+          <div data-i18n="backoffice.users.th_actions">${t("backoffice.users.th_actions")}</div>
       </div>`;
 
   if (users.length === 0) {
-    //tab vide
     container.innerHTML =
       headerHTML +
-      `<div style="padding:20px; text-align:center; color:var(--txt-m);">Aucun utilisateur trouvé.</div>`;
+      `<div style="padding:20px; text-align:center; color:var(--txt-m);" data-i18n="backoffice.users.no_users_found">${t("backoffice.users.no_users_found")}</div>`;
     return;
   }
 
@@ -104,15 +104,17 @@ function AfficherTableau(users) {
           <div><span class="tag t-grn">${user.score || 0}</span></div>
           <div style="font-size:11.5px; color:var(--txt-m)">ID : ${user.id}</div>
           <div class="u-actions">
-              <button class="btn btn-xs btn-g" onclick="OpenEditModalAPI(${user.id}, '${user.nom}', '${user.prenom}', '${user.email}', '${user.role}')"><span class="material-symbols-outlined">
-person_edit
-</span></button>
+              <button class="btn btn-xs btn-g" onclick="OpenEditModalAPI(${user.id}, '${user.nom}', '${user.prenom}', '${user.email}', '${user.role}')"><span class="material-symbols-outlined">person_edit</span></button>
               <button class="btn btn-xs btn-red" onclick="DeleteUser(${user.id})"><span class="material-symbols-outlined">delete</span></button>
           </div>
       </div>`;
   });
 
   container.innerHTML = rowsHTML;
+
+  if (typeof appliquerTraductions === "function") {
+    appliquerTraductions();
+  }
 }
 
 function GetUsers() {
@@ -130,8 +132,19 @@ function GetUserByRole(role) {
 }
 
 function Search(query, role) {
-  url = `http://localhost:8081/admin/users/search?name=${encodeURIComponent(query)}`;
-  if (role && role !== "Tous les rôles" && role !== "") {
+  let url = `http://localhost:8081/admin/users/search?name=${encodeURIComponent(query)}`;
+
+  const roleAllText =
+    t("backoffice.role.all") !== "backoffice.role.all"
+      ? t("backoffice.role.all")
+      : "Tous les rôles";
+
+  if (
+    role &&
+    role !== roleAllText &&
+    role !== "Tous les rôles" &&
+    role !== ""
+  ) {
     url += `&role=${encodeURIComponent(role)}`;
   }
 
@@ -145,12 +158,12 @@ function Search(query, role) {
       console.error("Erreur GET Search:", err);
       const container = document.querySelector(".u-table");
       if (container)
-        container.innerHTML = `<div style="padding:20px; color:red;">Erreur lors de la recherche.</div>`;
+        container.innerHTML = `<div style="padding:20px; color:red;">${t("backoffice.users.search_error")}</div>`;
     });
 }
 
 function DeleteUser(userId) {
-  if (confirm("Supprimer cet utilisateur ?")) {
+  if (confirm(t("backoffice.users.confirm_delete"))) {
     fetch(`http://localhost:8081/admin/users/delete/${userId}`, {
       method: "DELETE",
     }).then(() => GetUsers());
@@ -165,7 +178,7 @@ function CreateUser() {
   const mdp = document.getElementById("add-mdp").value;
 
   if (nom === "" || prenom === "" || email === "" || mdp === "") {
-    alert("Veuillez remplir tous les champs.");
+    alert(t("backoffice.users.alert_empty"));
     return;
   }
 
@@ -202,7 +215,7 @@ function UpdateUser() {
       if (!response.ok) throw new Error("Erreur serveur lors de l'UPDATE");
       modal.style.display = "none";
       GetUsers();
-      alert("✅ Utilisateur mis à jour avec succès.");
+      alert(t("backoffice.users.success_update"));
     })
     .catch((error) => console.error("Erreur API :", error));
 }
@@ -234,7 +247,8 @@ function UpdateValidationCount() {
       const badgeTotal = document.querySelector(
         "#validations .sec-label .tag.t-red",
       );
-      if (badgeTotal) badgeTotal.textContent = `${total} en attente`;
+      if (badgeTotal)
+        badgeTotal.textContent = `${total} ${t("backoffice.kpi.pending_badge")}`;
 
       const kpiTotal = document.getElementById("kpi-validations");
       const totalStat = document.getElementById("totalValidation");
@@ -259,9 +273,14 @@ document.addEventListener("DOMContentLoaded", () => {
         const valeurRecherche = searchInput.value.trim();
         const role = roleFilter ? roleFilter.value : "";
 
+        const roleAllText =
+          t("backoffice.role.all") !== "backoffice.role.all"
+            ? t("backoffice.role.all")
+            : "Tous les rôles";
+
         if (
           valeurRecherche === "" &&
-          (role === "Tous les rôles" || role === "")
+          (role === roleAllText || role === "Tous les rôles" || role === "")
         ) {
           GetUsers();
         } else {
