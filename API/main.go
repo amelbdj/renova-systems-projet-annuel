@@ -66,8 +66,12 @@ func main() {
     http.HandleFunc("PUT /admin/evenements/refuse/{id}", auth.VerifyTokenMiddleware(admin.RefuseEvenement))
 
 	// Traductions
-	http.HandleFunc("GET /api/translations", admin.GetTranslationsHandler)
-	http.HandleFunc("GET /api/languages", admin.GetLanguagesHandler)
+	http.HandleFunc("GET /api/translations", admin.GetTranslations)
+	http.HandleFunc("GET /api/languages", admin.GetLanguages)
+	http.HandleFunc("POST /admin/translations/add", admin.AddLanguage)
+	http.HandleFunc("OPTIONS /admin/translations/add", admin.AddLanguage)
+	http.HandleFunc("GET /admin/translations/keys", admin.GetTranslationKeysHandler)
+
 
 	fmt.Println("test de : http://localhost:8081")
 	http.ListenAndServe(":8081", nil)
