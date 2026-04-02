@@ -12,7 +12,7 @@ import (
 func LoginUser(email string, motDePasse string) (models.User, error) {
     var user models.User 
     
-    err := Db.QueryRow("SELECT id, mot_de_passe, role FROM pa2026.utilisateur WHERE email = ?", email).Scan(&user.Id, &user.MotDePasse, &user.Role)
+    err := Db.QueryRow("SELECT id, mot_de_passe, role, validation FROM pa2026.utilisateur WHERE email = ?", email).Scan(&user.Id, &user.MotDePasse, &user.Role, &user.Validation)
 
     if err != nil {
         if err == sql.ErrNoRows {
@@ -21,10 +21,17 @@ func LoginUser(email string, motDePasse string) (models.User, error) {
         return user, fmt.Errorf("erreur BDD : %v", err)
     }
 
-    // 🕵️ LES 3 LIGNES D'ESPIONNAGE :
-    fmt.Println("--- ESPIONNAGE LOGIN ---")
     fmt.Printf("Mot de passe reçu du JSON : '%s'\n", motDePasse)
     fmt.Printf("Hash BDD trouvé         : '%s'\n", user.MotDePasse)
+
+	if user.Validation == "En attente" {
+		return user, fmt.Errorf("connexion refusée : votre compte est en cours de vérification (Kbis, diplômes, etc.)")
+	} else if user.Validation == "Rejeté" {
+		return user, fmt.Errorf("connexion refusée : vos documents n'ont pas été validés")
+	} else if user.Validation != "Validé" { 
+		// Sécurité au cas où le statut serait vide ou inconnu
+		return user, fmt.Errorf("connexion refusée : compte inactif")
+	}
 
     err = bcrypt.CompareHashAndPassword([]byte(user.MotDePasse), []byte(motDePasse))
     if err != nil {
@@ -39,7 +46,7 @@ func GetUsers() ([]models.User, error) {
 
 	var Users []models.User
 
-	rows, err := Db.Query("SELECT id, nom, prenom, email, mot_de_passe, role, type_statut, nom_entreprise, siret, score FROM pa2026.utilisateur")
+	rows, err := Db.Query("SELECT id, nom, prenom, email, mot_de_passe, role, type_statut, nom_entreprise, siret, score, validation FROM pa2026.utilisateur")
 
 	if err != nil {
 				fmt.Println("Erreur lors de l'exécution de la requête : ", err)
@@ -52,7 +59,7 @@ func GetUsers() ([]models.User, error) {
 
 		var User models.User
 
-		err := rows.Scan(&User.Id, &User.Nom, &User.Prenom, &User.Email, &User.MotDePasse, &User.Role, &User.TypeStatut, &User.NomEntreprise, &User.Siret, &User.Score)
+		err := rows.Scan(&User.Id, &User.Nom, &User.Prenom, &User.Email, &User.MotDePasse, &User.Role, &User.TypeStatut, &User.NomEntreprise, &User.Siret, &User.Score, &User.Validation)
 
 		if err != nil {
 			return nil, fmt.Errorf("get Users : %v", err.Error())
@@ -147,7 +154,7 @@ func UpdateUserById(user models.User) error {
 func GetUserById(id int) ([]models.User, error) {
 	var Users []models.User
 
-	rows, err := Db.Query("SELECT id, nom, prenom, email, mot_de_passe, role, type_statut, nom_entreprise, siret, score FROM pa2026.utilisateur WHERE id = ?", id)
+	rows, err := Db.Query("SELECT id, nom, prenom, email, mot_de_passe, role, type_statut, nom_entreprise, siret, score, validation FROM pa2026.utilisateur WHERE id = ?", id)
 
 	if err != nil {
 		return nil, fmt.Errorf("get User by id : %v", err.Error())
@@ -157,7 +164,7 @@ func GetUserById(id int) ([]models.User, error) {
 	for rows.Next() {
 		var User models.User
 
-		err := rows.Scan(&User.Id, &User.Nom, &User.Prenom, &User.Email, &User.MotDePasse, &User.Role, &User.TypeStatut, &User.NomEntreprise, &User.Siret, &User.Score)
+		err := rows.Scan(&User.Id, &User.Nom, &User.Prenom, &User.Email, &User.MotDePasse, &User.Role, &User.TypeStatut, &User.NomEntreprise, &User.Siret, &User.Score, &User.Validation)
 
 		if err != nil {
 			return nil, fmt.Errorf("get User by name : %v", err.Error())
@@ -265,4 +272,15 @@ if role != "Tous les rôles" && role != "" {
 	}
 	return Users, nil
 }
+}
+
+func ValidateUser(id int) error {
+	_, err := Db.Exec(
+		"UPDATE pa2026.utilisateur SET statut = 1 WHERE id = ?",
+		id,
+	)
+	if err != nil {
+		return fmt.Errorf("validate user : %v", err.Error())
+	}
+	return nil
 }
