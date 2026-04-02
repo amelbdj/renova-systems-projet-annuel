@@ -13,4 +13,9 @@ type User struct {
 	TypeStatut    *string `json:"type_statut,omitempty"`
 	NomEntreprise *string `json:"nom_entreprise,omitempty"`
 	Siret         *string `json:"siret,omitempty"`
+	CheminFichier string  `json:"chemin_fichier"`
+}
+
+type RefuseRequest struct {
+	Motif string `json:"motif"`
 }

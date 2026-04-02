@@ -45,8 +45,9 @@ func LoginUser(email string, motDePasse string) (models.User, error) {
 func GetUsers() ([]models.User, error) {
 
 	var Users []models.User
+	var cheminDoc sql.NullString
 
-	rows, err := Db.Query("SELECT id, nom, prenom, email, mot_de_passe, role, type_statut, nom_entreprise, siret, score, validation FROM pa2026.utilisateur")
+	rows, err := Db.Query("SELECT u.id, u.nom, u.prenom, u.email, u.role, u.score, u.validation, d.chemin_fichier FROM pa2026.utilisateur u LEFT JOIN pa2026.documents_legaux d ON u.id = d.user_id")
 
 	if err != nil {
 				fmt.Println("Erreur lors de l'exécution de la requête : ", err)
@@ -59,11 +60,24 @@ func GetUsers() ([]models.User, error) {
 
 		var User models.User
 
-		err := rows.Scan(&User.Id, &User.Nom, &User.Prenom, &User.Email, &User.MotDePasse, &User.Role, &User.TypeStatut, &User.NomEntreprise, &User.Siret, &User.Score, &User.Validation)
+		err := rows.Scan(&User.Id, 
+            &User.Nom, 
+            &User.Prenom, 
+            &User.Email, 
+            &User.Role, 
+            &User.Score, 
+            &User.Validation,
+            &cheminDoc,)
 
 		if err != nil {
 			return nil, fmt.Errorf("get Users : %v", err.Error())
 		}
+
+		if cheminDoc.Valid {
+            User.CheminFichier = cheminDoc.String
+        } else {
+            User.CheminFichier = ""
+        }
 		Users = append(Users, User)
 	}
 	err = rows.Err()
@@ -74,32 +88,37 @@ func GetUsers() ([]models.User, error) {
 	return Users, nil
 }
 
-func CreateUser(User models.User) error {
+// 1. On modifie la signature pour retourner (int64, error) au lieu de juste error
+func CreateUser(User models.User) (int64, error) {
 
+	var count int
+	
+	err := Db.QueryRow("SELECT COUNT(*) FROM pa2026.utilisateur WHERE email = ?", User.Email).Scan(&count)
+	
+	if err != nil {
+		return 0, fmt.Errorf("Erreur vérification email : %s", err.Error())
+	}
 
-var count int
-    
-    err := Db.QueryRow( "SELECT COUNT(*) FROM utilisateur WHERE email = ?", User.Email).Scan(&count)
-    
-    if err != nil {
-        return fmt.Errorf("Erreur vérification email : %s", err.Error())
-    }
+	if count > 0 {
+		return 0, fmt.Errorf("L'email %s est déjà utilisé", User.Email)
+	}
 
-    if count > 0 {
-		
-        return fmt.Errorf("L'email %s est déjà utilisé", User.Email)
-    }
-
-
-
-	_, err = Db.Exec("INSERT INTO pa2026.utilisateur (nom, prenom, email, mot_de_passe, role, type_statut, nom_entreprise, siret) VALUES (UPPER(?), UPPER(?), ?, ?, ?, ?, ?, ?)", User.Nom, User.Prenom, User.Email, User.MotDePasse, User.Role, User.TypeStatut, User.NomEntreprise, User.Siret)
+	// 2. On récupère le 'result' de Db.Exec
+	result, err := Db.Exec("INSERT INTO pa2026.utilisateur (nom, prenom, email, mot_de_passe, role, type_statut, nom_entreprise, siret) VALUES (UPPER(?), UPPER(?), ?, ?, ?, ?, ?, ?)", User.Nom, User.Prenom, User.Email, User.MotDePasse, User.Role, User.TypeStatut, User.NomEntreprise, User.Siret)
 
 	if err != nil {
-		return fmt.Errorf("CreateUser : %s", err.Error())
+		return 0, fmt.Errorf("CreateUser : %s", err.Error())
 	}
-	return nil
-}
 
+	// 3. On extrait l'ID qui vient d'être créé par MySQL
+	nouvelID, err := result.LastInsertId()
+	if err != nil {
+		return 0, fmt.Errorf("Erreur lors de la récupération de l'ID : %s", err.Error())
+	}
+
+	// 4. On retourne l'ID et "nil" pour dire qu'il n'y a pas d'erreur
+	return nouvelID, nil
+}
 func DeletedUser(id int) error {
 
 	// Vérifie si ID EXISTE
@@ -276,7 +295,7 @@ if role != "Tous les rôles" && role != "" {
 
 func ValidateUser(id int) error {
 	_, err := Db.Exec(
-		"UPDATE pa2026.utilisateur SET statut = 1 WHERE id = ?",
+		"UPDATE pa2026.utilisateur SET validation = 'Validé' WHERE id = ?",
 		id,
 	)
 	if err != nil {
@@ -284,3 +303,33 @@ func ValidateUser(id int) error {
 	}
 	return nil
 }
+
+func RefuseUser(id int, motif string) error {
+	_, err := Db.Exec(
+		"UPDATE pa2026.utilisateur SET validation = 'Rejeté', motif_refus = ? WHERE id = ?",
+		motif,
+		id,
+	)
+	if err != nil {
+				fmt.Println("Erreur:", err)
+
+		return fmt.Errorf("refuse user : %v", err.Error())
+	}
+	return nil
+}
+
+
+// Dans ton fichier bdd/documents.go (ou là où tu gères la BDD)
+func InsertDocument(userID string, typeDocument string, cheminFichier string) error {
+	// On insère le document avec le statut "En attente" par défaut
+	requeteSQL := `
+		INSERT INTO pa2026.documents_legaux (user_id, type_document, chemin_fichier, statut_document) 
+		VALUES (?, ?, ?, 'En attente')
+	`
+	_, err := Db.Exec(requeteSQL, userID, typeDocument, cheminFichier)
+	if err != nil {
+		return fmt.Errorf("erreur lors de l'insertion du document : %s", err.Error())
+	}
+	return nil
+}
+
