@@ -49,13 +49,12 @@ function OpenEditModalAPI(id, nom, prenom, email, role) {
 }
 
 function AfficherTableau(users) {
+  console.log("Voici ce que le serveur envoie :", users);
   const container = document.querySelector(".u-table");
   const totalStat = document.getElementById("totalUser");
   const badge = document.querySelector("#users .sec-label .tag.t-or");
 
-  if (!users) {
-    users = [];
-  }
+  if (!users) users = [];
 
   if (badge)
     badge.textContent = `${users.length} ${t("backoffice.users.accounts_badge")}`;
@@ -66,6 +65,8 @@ function AfficherTableau(users) {
           <div></div>
           <div data-i18n="backoffice.users.th_user">${t("backoffice.users.th_user")}</div>
           <div data-i18n="backoffice.form.role">${t("backoffice.form.role")}</div>
+          <div>Document</div>
+          <div>Statut</div>
           <div data-i18n="backoffice.users.th_score">${t("backoffice.users.th_score")}</div>
           <div>ID</div>
           <div data-i18n="backoffice.users.th_actions">${t("backoffice.users.th_actions")}</div>
@@ -79,10 +80,12 @@ function AfficherTableau(users) {
   }
 
   let rowsHTML = headerHTML;
+
   users.forEach((user) => {
     const init =
       ((user.prenom?.[0] || "") + (user.nom?.[0] || "")).toUpperCase() || "?";
 
+    // Couleur du tag Rôle
     let tagClass = "t-blue";
     if (user.role === "Admin") tagClass = "t-or";
     else if (user.role === "Salarié" || user.role === "Salarie")
@@ -90,9 +93,48 @@ function AfficherTableau(users) {
     else if (user.role === "Professionnel" || user.role === "Pro")
       tagClass = "t-or";
 
+    let docContent = "";
+    if (user.chemin_fichier) {
+      const safePath = user.chemin_fichier.replace(/\\/g, "/");
+      const fileUrl = `http://localhost:8081/view-uploads/${safePath.replace("uploads/", "")}`;
+      docContent = `
+          <button class="btn btn-xs btn-g" onclick="window.open('${fileUrl}', '_blank')" title="Voir le document">
+              <span class="material-symbols-outlined" style="font-size:16px;">description</span> Voir
+          </button>`;
+    } else {
+      docContent = `<span style="color:var(--txt-m); font-size:12px;">Aucun</span>`;
+    }
+
+    let validationContent = "";
+    if (user.validation === "En attente") {
+      // Boutons Approuver / Refuser si en attente
+      validationContent = `
+          <div style="display:flex; gap:6px;">
+              <button class="btn btn-xs" style="background-color: #28a745; color: white; border: none; padding: 4px 8px;" onclick="ValidateUser(${user.id})" title="Approuver">
+                  <span class="material-symbols-outlined" style="font-size: 16px;">check</span>
+              </button>
+              <button class="btn btn-xs" style="background-color: #dc3545; color: white; border: none; padding: 4px 8px;" onclick="RefuseUser(${user.id})" title="Refuser">
+                  <span class="material-symbols-outlined" style="font-size: 16px;">close</span>
+              </button>
+          </div>`;
+    } else if (user.validation === "Validé" || user.validation === "Valide") {
+      // Badge Validé
+      validationContent = `
+          <span style="display:flex; align-items:center; gap:4px; color:#2ecc71; font-size:12px; font-weight:600;">
+              <span class="material-symbols-outlined" style="font-size:16px;">verified</span> Validé
+          </span>`;
+    } else if (user.validation === "Rejeté" || user.validation === "Rejete") {
+      // Badge Rejeté
+      validationContent = `
+          <span style="display:flex; align-items:center; gap:4px; color:#f05050; font-size:12px; font-weight:600;">
+              <span class="material-symbols-outlined" style="font-size:16px;">block</span> Rejeté
+          </span>`;
+    }
+
     rowsHTML += `
       <div class="u-row">
           <input type="checkbox" class="u-chk">
+          
           <div class="u-info">
               <div class="u-ava">${init}</div>
               <div>
@@ -100,21 +142,30 @@ function AfficherTableau(users) {
                   <div class="u-email">${user.email}</div>
               </div>
           </div>
+          
           <div><span class="tag ${tagClass}">${user.role}</span></div>
+          
+          <div>${docContent}</div>
+          
+          <div>${validationContent}</div>
+          
           <div><span class="tag t-grn">${user.score || 0}</span></div>
+          
           <div style="font-size:11.5px; color:var(--txt-m)">ID : ${user.id}</div>
-          <div class="u-actions">
-              <button class="btn btn-xs btn-g" onclick="OpenEditModalAPI(${user.id}, '${user.nom}', '${user.prenom}', '${user.email}', '${user.role}')"><span class="material-symbols-outlined">person_edit</span></button>
-              <button class="btn btn-xs btn-red" onclick="DeleteUser(${user.id})"><span class="material-symbols-outlined">delete</span></button>
+          
+          <div class="u-actions" style="display: flex; gap: 6px; align-items: center;">
+              <button class="btn btn-xs btn-g" onclick="OpenEditModalAPI(${user.id}, '${user.nom}', '${user.prenom}', '${user.email}', '${user.role}')" title="Éditer">
+                  <span class="material-symbols-outlined" style="font-size: 16px;">person_edit</span>
+              </button>
+              <button class="btn btn-xs btn-red" onclick="DeleteUser(${user.id})" title="Supprimer">
+                  <span class="material-symbols-outlined" style="font-size: 16px;">delete</span>
+              </button>
           </div>
       </div>`;
   });
 
   container.innerHTML = rowsHTML;
-
-  if (typeof appliquerTraductions === "function") {
-    appliquerTraductions();
-  }
+  if (typeof appliquerTraductions === "function") appliquerTraductions();
 }
 
 function GetUsers() {
@@ -124,6 +175,22 @@ function GetUsers() {
     .catch((err) => console.error("Erreur GET Users:", err));
 }
 
+let currentUserIdToRefuse = null; // Variable temporaire pour stocker l'ID
+
+function RefuseUser(userId) {
+  currentUserIdToRefuse = userId; // On mémorise quel user on veut refuser
+  document.getElementById("modalRefus").style.display = "flex";
+  document.getElementById("motifTexte").value = ""; // On vide le texte
+}
+
+function ValidateUser(userId) {
+  fetch(`http://localhost:8081/admin/users/validate/${userId}`, {
+    method: "PUT",
+  })
+    .then((res) => res.json())
+    .then(AfficherTableau)
+    .catch((err) => console.error("Erreur GET Users:", err));
+}
 function GetUserByRole(role) {
   fetch(`http://localhost:8081/admin/users/role/${role}`)
     .then((res) => res.json())
@@ -257,6 +324,33 @@ function UpdateValidationCount() {
     })
     .catch((err) => console.error("Erreur comptage validations :", err));
 }
+
+function FermerModaleRefus() {
+  document.getElementById("modalRefus").style.display = "none";
+}
+
+// Écouteur sur le bouton "Confirmer" de la modale
+document.getElementById("btnConfirmerRefus").onclick = function () {
+  const raison = document.getElementById("motifTexte").value;
+
+  if (!raison) {
+    alert("Merci de saisir un motif pour l'utilisateur.");
+    return;
+  }
+
+  fetch(`http://localhost:8081/admin/users/refuse/${currentUserIdToRefuse}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ motif: raison }),
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      console.log(data.message);
+      FermerModaleRefus();
+      GetUsers(); // On rafraîchit le tableau
+    })
+    .catch((err) => console.error("Erreur refus:", err));
+};
 
 document.addEventListener("DOMContentLoaded", () => {
   GetUsers();

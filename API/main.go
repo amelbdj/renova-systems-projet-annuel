@@ -29,7 +29,8 @@ func main() {
 	http.HandleFunc("OPTIONS /admin/users/add", admin.CreateUser)
 	http.HandleFunc("OPTIONS /admin/users/modify/{id}", admin.UpdateUser)
 	http.HandleFunc("OPTIONS /admin/users/validate/{id}", admin.ValidateUser)
-	
+	http.HandleFunc("OPTIONS /admin/users/refuse/{id}", admin.RefuseUser)
+
 	http.HandleFunc("OPTIONS /admin/categories/add", admin.CreateCategorie)
 	http.HandleFunc("OPTIONS /admin/categories/delete/{id}", admin.DeleteCategorie)
 	
@@ -44,13 +45,17 @@ func main() {
 
 
 	// Users
-    http.HandleFunc("GET /admin/users", auth.VerifyTokenMiddleware(admin.GetAllUsers))
+    http.HandleFunc("GET /admin/users", admin.GetAllUsers)
     http.HandleFunc("POST /admin/users/add", auth.VerifyTokenMiddleware(admin.CreateUser))
     http.HandleFunc("DELETE /admin/users/delete/{id}", auth.VerifyTokenMiddleware(admin.DeletedUser))
     http.HandleFunc("PUT /admin/users/modify/{id}", auth.VerifyTokenMiddleware(admin.UpdateUser))
     http.HandleFunc("GET /admin/users/role/{role}", auth.VerifyTokenMiddleware(admin.GetUserByRole))
     http.HandleFunc("GET /admin/users/search", auth.VerifyTokenMiddleware(admin.GetUserByName))
 	http.HandleFunc("PUT /admin/users/validate/{id}", auth.VerifyTokenMiddleware(admin.ValidateUser))
+	http.HandleFunc("PUT /admin/users/refuse/{id}",admin.RefuseUser)
+	http.HandleFunc("/api/upload-document", auth.VerifyTokenMiddleware(admin.UploadDocumentHandler))
+	http.Handle("/view-uploads/", http.StripPrefix("/view-uploads/", http.FileServer(http.Dir("./uploads"))))
+
 
     // Categories
     http.HandleFunc("POST /admin/categories/add", auth.VerifyTokenMiddleware(admin.CreateCategorie))
