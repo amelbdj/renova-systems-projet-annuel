@@ -2,6 +2,7 @@ package bdd
 
 import (
 	"fmt"
+	"strings"
 	"upcycleconnect/models"
 )
 
@@ -9,7 +10,7 @@ func GetAnnonces() ([]models.Annonce, error) {
 
 	var Annonces []models.Annonce
 
-	rows, err := Db.Query("SELECT annonce.id, annonce.titre, annonce.description, annonce.statut_validation, utilisateur.nom, utilisateur.prenom, categorie.libelle FROM pa2026.annonce INNER JOIN utilisateur ON utilisateur.id = annonce.id_user INNER JOIN categorie ON categorie.id = annonce.id_categorie")
+	rows, err := Db.Query("SELECT a.id, a.titre, a.description, a.type, a.prix, a.statut_validation, a.code_postal, a.ville, a.etat, a.poids_kg, a.quantite, u.nom, u.prenom, c.libelle FROM pa2026.annonce a INNER JOIN pa2026.utilisateur u ON u.id = a.id_user INNER JOIN pa2026.categorie c ON c.id = a.id_categorie")
 
 	if err != nil {
 		return nil, fmt.Errorf("get Annonces : %v", err.Error())
@@ -20,7 +21,10 @@ func GetAnnonces() ([]models.Annonce, error) {
 
 		var Annonce models.Annonce
 	
-		err := rows.Scan(&Annonce.Id, &Annonce.Titre, &Annonce.Description, &Annonce.StatutValidation, &Annonce.Nom, &Annonce.Prenom, &Annonce.Categorie)
+		err := rows.Scan(&Annonce.Id, &Annonce.Titre, &Annonce.Description, &Annonce.Type, &Annonce.Prix, &Annonce.StatutValidation,
+            &Annonce.CodePostal, &Annonce.Ville, &Annonce.Etat, &Annonce.PoidsKg, &Annonce.Quantite,
+            &Annonce.Nom, &Annonce.Prenom, 
+            &Annonce.Categorie,)
 
 		if err != nil {
 			return nil, fmt.Errorf("get Annonces : %v", err.Error())
@@ -37,9 +41,29 @@ func GetAnnonces() ([]models.Annonce, error) {
 
 func ValidateAnnonce(annonceId int) error {
 
-	result, err := Db.Exec("UPDATE pa2026.annonce SET statut_validation = 'valide' WHERE id = ?", annonceId)
+	result, err := Db.Exec("UPDATE pa2026.annonce SET statut_validation = 'Validé' WHERE id = ?", annonceId)
 
 if err != nil {
+		return fmt.Errorf("mise à jour échouée : %v", err)
+	}
+
+	rows, err := result.RowsAffected()
+	if err != nil {
+
+		return err
+	}
+
+	if rows == 0 {
+		return fmt.Errorf("aucune annonce trouvée avec l'id %d", annonceId)
+	}
+
+	return nil
+}
+
+func RefuseAnnonce(annonceId int) error {
+		result, err := Db.Exec("UPDATE pa2026.annonce SET statut_validation = 'Rejeté' WHERE id = ?", annonceId)
+
+	if err != nil {
 		return fmt.Errorf("mise à jour échouée : %v", err)
 	}
 
@@ -55,21 +79,138 @@ if err != nil {
 	return nil
 }
 
-func RefuseAnnonce(annonceId int) error {
-		result, err := Db.Exec("UPDATE pa2026.annonce SET statut_validation = 'refuse' WHERE id = ?", annonceId)
+func CreateAnnonce(annonce models.Annonce) error {
+
+	_, err := Db.Exec("INSERT INTO pa2026.annonce (titre, description, type, prix, code_postal, ville, etat, poids_kg, quantite, id_user, id_categorie) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", annonce.Titre, annonce.Description, annonce.Type, annonce.Prix, annonce.CodePostal, annonce.Ville, annonce.Etat, annonce.PoidsKg, annonce.Quantite, annonce.IdUser, annonce.IdCategorie)
 
 	if err != nil {
+		return fmt.Errorf("CreateAnnonce : %s", err.Error())
+	}
+
+
+	return nil
+}
+
+func DeleteAnnonce(id int) error {
+
+	_, err := Db.Query("SELECT id FROM pa2026.annonce WHERE id = ?", id)
+	if err != nil {
+		fmt.Println("erreur",err)
+		return fmt.Errorf("l'annonce n'existe pas : %d", id)
+
+	}
+
+	// sUPPRESSION
+	_, err = Db.Exec(
+		"DELETE FROM pa2026.annonce WHERE id = ?", id)
+	if err != nil {
+				fmt.Println("erreur",err)
+
 		return fmt.Errorf("mise à jour échouée : %v", err)
 	}
 
-	rows, err := result.RowsAffected()
+	return nil
+}
+
+func UpdateAnnonce(annonceId int, annonce models.Annonce) error {
+	StatutVente := ""
+
+	_, err := Db.Query("SELECT id FROM pa2026.annonce WHERE id = ?", annonceId)
 	if err != nil {
-		return err
+		return fmt.Errorf("l'annonce n'existe pas : %d", annonceId)
 	}
 
-	if rows == 0 {
-		return fmt.Errorf("aucune annonce trouvée avec l'id %d", annonceId)
+	err = Db.QueryRow("SELECT statut_vente FROM pa2026.annonce WHERE id = ?", annonceId).Scan(&StatutVente)
+	if err != nil {
+		return fmt.Errorf("UpdateAnnonce : %s", err.Error())
 	}
+	if StatutVente != "EN ATTENTE DEPOT" {
+	_, err = Db.Exec(
+		"UPDATE pa2026.annonce SET titre = ?, description = ?, type = ?, prix = ?, code_postal = ?, ville = ?, etat = ?, poids_kg = ?, quantite = ?, id_user = ?, id_categorie = ? WHERE id = ?",
+		annonce.Titre, annonce.Description, annonce.Type, annonce.Prix,
+		annonce.CodePostal, annonce.Ville, annonce.Etat,
+		annonce.PoidsKg, annonce.Quantite, annonce.IdUser,
+		annonce.IdCategorie, annonceId,
+	)
+
+	if err != nil {
+		return fmt.Errorf("UpdateAnnonce : %s", err.Error())
+	}
+}
 
 	return nil
+}
+
+func GetAnnonceByTitle(query string, filtre string) ([]models.Annonce, error) {
+	query = strings.ToUpper(query)
+	search := "%"+query+"%"
+	if filtre != "Tout" && filtre != "" {
+			var Annonces []models.Annonce
+		rows, err := Db.Query("SELECT id, titre, description, type, prix, statut_validation, code_postal, ville, etat, poids_kg, quantite, nom, prenom, categorie FROM pa2026.annonce WHERE (UPPER(titre) LIKE ?) AND statut_validation = ?", search, filtre)
+
+	if err != nil {
+		fmt.Println("Erreur lors de l'exécution de la requête : ", err)
+		return nil, fmt.Errorf("get Annonce by title : %v", err.Error())
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var Annonce models.Annonce
+
+		err := rows.Scan(&Annonce.Id, &Annonce.Titre, &Annonce.Description, &Annonce.Type, &Annonce.Prix, &Annonce.StatutValidation, &Annonce.CodePostal, &Annonce.Ville, &Annonce.Etat, &Annonce.PoidsKg, &Annonce.Quantite, &Annonce.Nom, &Annonce.Prenom, &Annonce.Categorie)
+
+		if err != nil {
+			fmt.Println("Erreur lors de l'exécution de la requête : ", err)
+			return nil, fmt.Errorf("get Annonce by title : %v", err.Error())
+		}
+
+		Annonces = append(Annonces, Annonce)
+	}
+
+	err = rows.Err()
+
+	if err != nil {
+		return nil, fmt.Errorf("get Annonce by title : %v", err.Error())
+	}
+	return Annonces, nil
+	} else {
+	var Annonces []models.Annonce
+	search := "%"+query+"%"
+	rows, err := Db.Query("SELECT id, titre, description, type, prix, statut_validation, code_postal, ville, etat, poids_kg, quantite, nom, prenom, categorie FROM pa2026.annonce WHERE UPPER(titre) LIKE ?", search)
+
+	if err != nil {
+		return nil, fmt.Errorf("get Annonce by title : %v", err.Error())
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var Annonce models.Annonce
+
+		err := rows.Scan(&Annonce.Id, &Annonce.Titre, &Annonce.Description, &Annonce.Type, &Annonce.Prix, &Annonce.StatutValidation, &Annonce.CodePostal, &Annonce.Ville, &Annonce.Etat, &Annonce.PoidsKg, &Annonce.Quantite, &Annonce.Nom, &Annonce.Prenom, &Annonce.Categorie)
+
+		if err != nil {
+			return nil, fmt.Errorf("get Annonce by title : %v", err.Error())
+		}
+
+		Annonces = append(Annonces, Annonce)
+	}
+
+	err = rows.Err()
+
+	if err != nil {
+		return nil, fmt.Errorf("get Annonce by title : %v", err.Error())
+	}
+	return Annonces, nil
+			}
+}
+
+func GetAnnonceById(id int) (models.Annonce, error) {
+	var Annonce models.Annonce
+
+	err := Db.QueryRow("SELECT id, titre, description, type, prix, statut_validation, code_postal, ville, etat, poids_kg, quantite, nom, prenom, categorie FROM pa2026.annonce WHERE id = ?", id).Scan(&Annonce.Id, &Annonce.Titre, &Annonce.Description, &Annonce.Type, &Annonce.Prix, &Annonce.StatutValidation, &Annonce.CodePostal, &Annonce.Ville, &Annonce.Etat, &Annonce.PoidsKg, &Annonce.Quantite, &Annonce.Nom, &Annonce.Prenom, &Annonce.Categorie)
+
+	if err != nil {
+		return Annonce, fmt.Errorf("get Annonce by id : %v", err.Error())
+	}
+	return Annonce, nil
 }
