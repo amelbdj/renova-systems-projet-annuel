@@ -49,28 +49,23 @@ function OpenEditModalAPI(id, nom, prenom, email, role) {
 }
 
 function AfficherTableau(users) {
-  console.log("Voici ce que le serveur envoie :", users);
   const container = document.querySelector(".u-table");
   const totalStat = document.getElementById("totalUser");
-  const badge = document.querySelector("#users .sec-label .tag.t-or");
 
   if (!users) users = [];
-
-  if (badge)
-    badge.textContent = `${users.length} ${t("backoffice.users.accounts_badge")}`;
   if (totalStat) totalStat.innerHTML = users.length;
 
   const headerHTML = `
-      <div class="u-thead">
-          <div></div>
-          <div data-i18n="backoffice.users.th_user">${t("backoffice.users.th_user")}</div>
-          <div data-i18n="backoffice.form.role">${t("backoffice.form.role")}</div>
-          <div>Document</div>
-          <div>Statut</div>
-          <div data-i18n="backoffice.users.th_score">${t("backoffice.users.th_score")}</div>
-          <div>ID</div>
-          <div data-i18n="backoffice.users.th_actions">${t("backoffice.users.th_actions")}</div>
-      </div>`;
+        <div class="u-thead">
+            <div></div>
+            <div data-i18n="backoffice.users.th_user">${t("backoffice.users.th_user")}</div>
+            <div data-i18n="backoffice.form.role">${t("backoffice.form.role")}</div>
+            <div data-i18n="backoffice.users.th_document">${t("backoffice.users.th_document")}</div>
+            <div data-i18n="backoffice.users.th_status">${t("backoffice.users.th_status")}</div>
+            <div data-i18n="backoffice.users.th_score">${t("backoffice.users.th_score")}</div>
+            <div>ID</div>
+            <div data-i18n="backoffice.users.th_actions">${t("backoffice.users.th_actions")}</div>
+        </div>`;
 
   if (users.length === 0) {
     container.innerHTML =
@@ -85,7 +80,6 @@ function AfficherTableau(users) {
     const init =
       ((user.prenom?.[0] || "") + (user.nom?.[0] || "")).toUpperCase() || "?";
 
-    // Couleur du tag Rôle
     let tagClass = "t-blue";
     if (user.role === "Admin") tagClass = "t-or";
     else if (user.role === "Salarié" || user.role === "Salarie")
@@ -95,77 +89,72 @@ function AfficherTableau(users) {
 
     let docContent = "";
     if (user.chemin_fichier) {
-      const safePath = user.chemin_fichier.replace(/\\/g, "/");
-      const fileUrl = `http://localhost:8081/view-uploads/${safePath.replace("uploads/", "")}`;
+      const fileUrl = `http://localhost:8081/view-uploads/${user.chemin_fichier.replace(/\\/g, "/").replace("uploads/", "")}`;
       docContent = `
-          <button class="btn btn-xs btn-g" onclick="window.open('${fileUrl}', '_blank')" title="Voir le document">
-              <span class="material-symbols-outlined" style="font-size:16px;">description</span> Voir
-          </button>`;
+                <button class="btn btn-xs btn-g" onclick="window.open('${fileUrl}', '_blank')">
+                    <span class="material-symbols-outlined" style="font-size:16px;">description</span>
+                    <span data-i18n="backoffice.users.doc_view">${t("backoffice.users.doc_view")}</span>
+                </button>`;
     } else {
-      docContent = `<span style="color:var(--txt-m); font-size:12px;">Aucun</span>`;
+      docContent = `<span style="color:var(--txt-m); font-size:12px;" data-i18n="backoffice.users.doc_none">${t("backoffice.users.doc_none")}</span>`;
     }
 
     let validationContent = "";
     if (user.validation === "En attente") {
-      // Boutons Approuver / Refuser si en attente
       validationContent = `
-          <div style="display:flex; gap:6px;">
-              <button class="btn btn-xs" style="background-color: #28a745; color: white; border: none; padding: 4px 8px;" onclick="ValidateUser(${user.id})" title="Approuver">
-                  <span class="material-symbols-outlined" style="font-size: 16px;">check</span>
-              </button>
-              <button class="btn btn-xs" style="background-color: #dc3545; color: white; border: none; padding: 4px 8px;" onclick="RefuseUser(${user.id})" title="Refuser">
-                  <span class="material-symbols-outlined" style="font-size: 16px;">close</span>
-              </button>
-          </div>`;
-    } else if (user.validation === "Validé" || user.validation === "Valide") {
-      // Badge Validé
+                <div style="display:flex; gap:6px;">
+                    <button class="btn btn-xs btn-grn" onclick="ValidateUser(${user.id})">
+                        <span class="material-symbols-outlined" style="font-size: 16px;">check</span>
+                    </button>
+                    <button class="btn btn-xs btn-red" onclick="RefuseUser(${user.id})">
+                        <span class="material-symbols-outlined" style="font-size: 16px;">close</span>
+                    </button>
+                </div>`;
+    } else if (user.validation === "Validé") {
       validationContent = `
-          <span style="display:flex; align-items:center; gap:4px; color:#2ecc71; font-size:12px; font-weight:600;">
-              <span class="material-symbols-outlined" style="font-size:16px;">verified</span> Validé
-          </span>`;
-    } else if (user.validation === "Rejeté" || user.validation === "Rejete") {
-      // Badge Rejeté
+                <span style="display:flex; align-items:center; gap:4px; color:#2ecc71; font-size:12px; font-weight:600;">
+                    <span class="material-symbols-outlined" style="font-size:16px;">verified</span>
+                    <span data-i18n="backoffice.users.status_approved">${t("backoffice.users.status_approved")}</span>
+                </span>`;
+    } else {
       validationContent = `
-          <span style="display:flex; align-items:center; gap:4px; color:#f05050; font-size:12px; font-weight:600;">
-              <span class="material-symbols-outlined" style="font-size:16px;">block</span> Rejeté
-          </span>`;
+                <span style="display:flex; align-items:center; gap:4px; color:#f05050; font-size:12px; font-weight:600;">
+                    <span class="material-symbols-outlined" style="font-size:16px;">block</span>
+                    <span data-i18n="backoffice.users.status_rejected">${t("backoffice.users.status_rejected")}</span>
+                </span>`;
     }
 
     rowsHTML += `
-      <div class="u-row">
-          <input type="checkbox" class="u-chk">
-          
-          <div class="u-info">
-              <div class="u-ava">${init}</div>
-              <div>
-                  <div class="u-name">${user.prenom} ${user.nom}</div>
-                  <div class="u-email">${user.email}</div>
-              </div>
-          </div>
-          
-          <div><span class="tag ${tagClass}">${user.role}</span></div>
-          
-          <div>${docContent}</div>
-          
-          <div>${validationContent}</div>
-          
-          <div><span class="tag t-grn">${user.score || 0}</span></div>
-          
-          <div style="font-size:11.5px; color:var(--txt-m)">ID : ${user.id}</div>
-          
-          <div class="u-actions" style="display: flex; gap: 6px; align-items: center;">
-              <button class="btn btn-xs btn-g" onclick="OpenEditModalAPI(${user.id}, '${user.nom}', '${user.prenom}', '${user.email}', '${user.role}')" title="Éditer">
-                  <span class="material-symbols-outlined" style="font-size: 16px;">person_edit</span>
-              </button>
-              <button class="btn btn-xs btn-red" onclick="DeleteUser(${user.id})" title="Supprimer">
-                  <span class="material-symbols-outlined" style="font-size: 16px;">delete</span>
-              </button>
-          </div>
-      </div>`;
+            <div class="u-row">
+                <input type="checkbox" class="u-chk">
+                <div class="u-info">
+                    <div class="u-ava">${init}</div>
+                    <div>
+                        <div class="u-name">${user.prenom} ${user.nom}</div>
+                        <div class="u-email">${user.email}</div>
+                    </div>
+                </div>
+                <div><span class="tag ${tagClass}">${user.role}</span></div>
+                <div>${docContent}</div>
+                <div>${validationContent}</div>
+                <div><span class="tag t-grn">${user.score || 0}</span></div>
+                <div style="font-size:11.5px; color:var(--txt-m)">ID : ${user.id}</div>
+                <div class="u-actions" style="display: flex; gap: 6px; align-items: center;">
+                    <button class="btn btn-xs btn-g" onclick="OpenEditModalAPI(${user.id}, '${user.nom}', '${user.prenom}', '${user.email}', '${user.role}')">
+                        <span class="material-symbols-outlined" style="font-size: 16px;">person_edit</span>
+                    </button>
+                    <button class="btn btn-xs btn-red" onclick="DeleteUser(${user.id})">
+                        <span class="material-symbols-outlined" style="font-size: 16px;">delete</span>
+                    </button>
+                </div>
+            </div>`;
   });
 
   container.innerHTML = rowsHTML;
-  if (typeof appliquerTraductions === "function") appliquerTraductions();
+
+  if (typeof appliquerTraductions === "function") {
+    appliquerTraductions();
+  }
 }
 
 function GetUsers() {
