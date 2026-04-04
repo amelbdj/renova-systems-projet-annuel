@@ -68,3 +68,19 @@ func CollectObject(w http.ResponseWriter, r *http.Request) {
 
     fmt.Fprint(w, "Objet récupéré, box libéré et score mis à jour !")
 }
+
+func GetAllBoxs(w http.ResponseWriter, r *http.Request) {
+    Boxs, err := bdd.GetBox()
+    if err != nil {
+        http.Error(w, "Erreur lors de la récupération des boxs : "+err.Error(), http.StatusInternalServerError)
+        return
+    }
+   response, err := json.Marshal(Boxs)
+
+	if err != nil {
+		http.Error(w, "erreur de conversion", 500)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	fmt.Fprintf(w, "%s", response)
+}
