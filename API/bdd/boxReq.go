@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"math/big"
+	"upcycleconnect/models"
 )
 
 func ReserveBox(annonceId int, conteneurId int, particulierId int) error {
@@ -142,4 +143,80 @@ func CalculateAndAddScore(annonceId int, professionnelId int) error {
     _, err = Db.Exec("UPDATE users SET score = score + ? WHERE id = ?", gainScore, particulierId)
     
     return err
+}
+
+func GetBox() ([]models.Box, error) {
+
+	var Boxs []models.Box
+
+	rows, err := Db.Query("SELECT id, localisation, etat FROM box_conteneur")
+
+	if err != nil {
+				fmt.Println("Erreur lors de l'exécution de la requête : ", err)
+
+		return nil, fmt.Errorf("get Boxs : %v", err.Error())
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+
+		var Box models.Box
+
+		err := rows.Scan(&Box.Id, 
+            &Box.Localisation, 
+            &Box.Etat)
+
+		if err != nil {
+			return nil, fmt.Errorf("get Boxs : %v", err.Error())
+		}
+
+		Boxs = append(Boxs, Box)
+	}
+	err = rows.Err()
+	if err != nil {
+		return nil, fmt.Errorf("get Boxs : %v", err.Error())
+	}
+
+	return Boxs, nil
+}
+
+func GarbageCollectBox() error { // faire la suppre via cron
+
+// On utilise INTERVAL 2 DAY (48h) pour la rotation des box
+
+
+	rows, err := Db.Query("SELECT annonce_id, conteneur_id FROM historique_conteneurs WHERE date_reservation < NOW() - INTERVAL 2 DAY AND date_depot_effective IS NULL")
+	if err != nil {
+		return fmt.Errorf("Cleanup (select): %v", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+	var annonceId int
+    var conteneurId int
+    err := rows.Scan(&annonceId, &conteneurId)
+
+    if err != nil {
+    continue 
+    }       
+
+		// A. Libérer le BOX physique
+		_, err = Db.Exec("UPDATE box_conteneur SET etat = 'LIBRE' WHERE id = ?", conteneurId)
+		if err != nil {
+			fmt.Printf("Erreur libération box %d: %v", conteneurId, err)
+		}
+
+		// B. Remettre l'ANNONCE en ligne (pour qu'un autre pro puisse l'acheter)
+		_, err = Db.Exec("UPDATE annonce SET statut = 'En vente' WHERE id = ?", annonceId)
+		if err != nil {
+			fmt.Printf("Erreur remise en vente annonce %d: %v", annonceId, err)
+		}
+
+		// C. Marquer l'HISTORIQUE comme expiré (au lieu de DELETE pour garder la trace)
+		_, err = Db.Exec("UPDATE historique_conteneurs SET date_reservation = NULL WHERE annonce_id = ? AND date_depot_effective IS NULL", annonceId)
+            
+		fmt.Printf("Nettoyage réussi pour l'annonce %d (Box %d libéré)", annonceId, conteneurId)
+	}
+
+	return nil
 }
