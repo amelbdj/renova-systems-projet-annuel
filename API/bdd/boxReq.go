@@ -149,7 +149,7 @@ func GetBox() ([]models.Box, error) {
 
 	var Boxs []models.Box
 
-	rows, err := Db.Query("SELECT id, localisation, etat FROM box_conteneur")
+	rows, err := Db.Query("SELECT id, localisation, type_materiau_accepte, etat, capacite FROM box_conteneur")
 
 	if err != nil {
 				fmt.Println("Erreur lors de l'exécution de la requête : ", err)
@@ -164,7 +164,9 @@ func GetBox() ([]models.Box, error) {
 
 		err := rows.Scan(&Box.Id, 
             &Box.Localisation, 
-            &Box.Etat)
+            &Box.Type,
+            &Box.Etat,
+            &Box.Capacite)
 
 		if err != nil {
 			return nil, fmt.Errorf("get Boxs : %v", err.Error())
@@ -219,4 +221,13 @@ func GarbageCollectBox() error { // faire la suppre via cron
 	}
 
 	return nil
+}
+
+func CreateBox(localisation string, boxType string, capacite int) error {
+    _, err := Db.Exec("INSERT INTO box_conteneur (localisation, type_materiau_accepte, etat, capacite) VALUES (?, ?, 'LIBRE', ?)", localisation, boxType, capacite)
+    
+    if err != nil {
+        return fmt.Errorf("CreateBox: %v", err)
+    }
+    return nil
 }
