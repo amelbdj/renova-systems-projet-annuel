@@ -8,5 +8,7 @@ type DepositRequest struct {
 type Box struct {
 	Id           int    `json:"id"`
 	Localisation string `json:"localisation"`
+	Type         string `json:"type"`
 	Etat         string `json:"etat"`
+	Capacite     int    `json:"capacite"`
 }

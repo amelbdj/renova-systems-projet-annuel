@@ -301,6 +301,102 @@
         </div>
       </section>
       <div id="resultC"></div>
+      <!-- GESTION BOX -->
+
+      <section id="logistics" style="padding: 0 0 48px">
+        <div class="sec-label fu">
+          <div class="sec-num cyan">4</div>
+          <div class="sec-title-text">Logistique Conteneurs</div>
+          <div class="sec-divider"></div>
+        </div>
+
+        <div class="logistics-layout fu">
+          <div class="card" style="width: 100%">
+            <div class="card-hd">
+              <div class="card-ht">
+                <div class="cht-i" style="background: rgba(0, 212, 232, 0.1)">
+                  🗺️
+                </div>
+                État de toutes les box
+              </div>
+              <div style="display: flex; gap: 10px">
+                <span
+                  style="
+                    font-size: 11px;
+                    color: var(--txt-m);
+                    display: flex;
+                    align-items: center;
+                    gap: 4px;
+                  "
+                >
+                  <span
+                    class="box-led led-g"
+                    style="margin: 0; width: 6px; height: 6px"
+                  ></span>
+                  Libre
+                </span>
+                <span
+                  style="
+                    font-size: 11px;
+                    color: var(--txt-m);
+                    display: flex;
+                    align-items: center;
+                    gap: 4px;
+                  "
+                >
+                  <span
+                    class="box-led led-b"
+                    style="margin: 0; width: 6px; height: 6px"
+                  ></span>
+                  Occupé
+                </span>
+                <span
+                  style="
+                    font-size: 11px;
+                    color: var(--txt-m);
+                    display: flex;
+                    align-items: center;
+                    gap: 4px;
+                  "
+                >
+                  <span
+                    class="box-led led-r"
+                    style="margin: 0; width: 6px; height: 6px"
+                  ></span>
+                  Erreur
+                </span>
+              </div>
+            </div>
+            <div class="card-bd">
+              <div id="box-container" class="box-grid"></div>
+            </div>
+          </div>
+
+          <div class="logistics-stats" id="box-stats">
+            <div
+              style="
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                margin-top: 5px;
+              "
+            >
+              <button
+                class="btn btn-red btn-sm btn-full"
+                onclick="alert('Action maintenance envoyée.')"
+              >
+                🛠️ Envoyer maintenance (2)
+              </button>
+              <button class="btn btn-o btn-sm btn-full" onclick="openNewBox()">
+                ＋ Ajouter une box
+              </button>
+              <button class="btn btn-g btn-sm btn-full">
+                📄 Rapport logistique
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
 
     <div class="modal-bg" id="editUserModal">
@@ -529,11 +625,140 @@
         </div>
       </div>
     </div>
+    <div class="modal-bg" id="boxModal">
+      <div class="modal">
+        <div class="modal-x" onclick="closeModal('boxModal')">✕</div>
+        <div class="modal-h" id="boxModalTitle">BOX-042 — Actif</div>
+        <div class="modal-sub">Détails et gestion de ce conteneur.</div>
+        <div
+          style="
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 16px;
+          "
+        >
+          <div
+            style="
+              padding: 12px;
+              background: var(--bg3);
+              border: 1px solid var(--b0);
+              border-radius: 9px;
+            "
+          >
+            <div
+              style="font-size: 11px; color: var(--txt-m); margin-bottom: 3px"
+            >
+              Statut
+            </div>
+            <div
+              style="font-size: 14px; font-weight: 600; color: #fff"
+              id="boxModalStatus"
+            >
+              Actif
+            </div>
+          </div>
+          <div
+            style="
+              padding: 12px;
+              background: var(--bg3);
+              border: 1px solid var(--b0);
+              border-radius: 9px;
+            "
+          >
+            <div
+              style="font-size: 11px; color: var(--txt-m); margin-bottom: 3px"
+            >
+              Localisation
+            </div>
+            <div
+              id="boxModalLocation"
+              style="font-size: 14px; font-weight: 600; color: #fff"
+            >
+              Secteur A
+            </div>
+          </div>
+        </div>
+        <div class="fgroup">
+          <label>Changer le statut</label>
+          <select>
+            <option>Libre</option>
+            <option>Occupé</option>
+            <option>Maintenance</option>
+            <option>Hors service</option>
+          </select>
+        </div>
+        <div class="fgroup">
+          <label>Note de maintenance</label>
+          <textarea
+            style="min-height: 60px"
+            placeholder="Décrivez le problème ou l'intervention…"
+          ></textarea>
+        </div>
+        <div style="display: flex; gap: 8px">
+          <button
+            class="btn btn-o btn-full"
+            onclick="
+              closeModal('boxModal');
+              alert('✅ Box mise à jour.');
+            "
+          >
+            Mettre à jour ✓
+          </button>
+          <button
+            class="btn btn-red btn-sm"
+            onclick="
+              closeModal('boxModal');
+              alert('🛠️ Demande de maintenance envoyée.');
+            "
+          >
+            🛠️ Maintenance
+          </button>
+        </div>
+      </div>
+    </div>
 
+    <!-- MODAL: NEW BOX -->
+    <div class="modal-bg" id="newBoxModal">
+      <div class="modal">
+        <div class="modal-x" onclick="closeModal('newBoxModal')">✕</div>
+        <div class="modal-h">📦 Ajouter une box</div>
+        <div class="modal-sub">
+          Enregistrez un nouveau conteneur dans le système.
+        </div>
+
+        <div class="frow">
+          <div>
+            <label>Adresse</label
+            ><input
+              id="boxLocation"
+              type="text"
+              placeholder="ex : 12 rue des Arts, Paris 11e"
+            />
+          </div>
+          <div>
+            <label>Capacité (kg)</label
+            ><input id="boxCapacity" type="number" placeholder="50" />
+          </div>
+          <div>
+            <label>Type</label
+            ><input
+              id="boxType"
+              type="text"
+              placeholder="ex : Plastique, Métal"
+            />
+          </div>
+        </div>
+        <button class="btn btn-o btn-full" onclick="CreateBox()">
+          Enregistrer la box ✓
+        </button>
+      </div>
+    </div>
     <script src="user.js" defer></script>
     <script src="annonce.js" defer></script>
     <script src="event.js" defer></script>
     <script src="renova.js" defer></script>
     <script src="translate.js" defer></script>
+    <script src="box.js" defer></script>
   </body>
 </html>

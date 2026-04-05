@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"upcycleconnect/bdd"
+	"upcycleconnect/models"
 )
 
 func ReserveBox(w http.ResponseWriter, r *http.Request) {
@@ -70,6 +71,8 @@ func CollectObject(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetAllBoxs(w http.ResponseWriter, r *http.Request) {
+    	fmt.Println("hello from GetAllBoxs")
+
     Boxs, err := bdd.GetBox()
     if err != nil {
         http.Error(w, "Erreur lors de la récupération des boxs : "+err.Error(), http.StatusInternalServerError)
@@ -83,4 +86,30 @@ func GetAllBoxs(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	fmt.Fprintf(w, "%s", response)
+}
+
+func CreateBox(w http.ResponseWriter, r *http.Request) {
+     w.Header().Set("Access-Control-Allow-Origin", "*")
+    w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+    w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+    if r.Method == "OPTIONS" {
+        w.WriteHeader(http.StatusOK)
+        return 
+    }
+
+    fmt.Println("hello from create box")
+
+    var Box models.Box
+    if err := json.NewDecoder(r.Body).Decode(&Box); err != nil {
+        http.Error(w, "Données invalides", http.StatusBadRequest)
+        return
+    }
+    err := bdd.CreateBox(Box.Localisation, Box.Type, Box.Capacite)
+    if err != nil {
+        http.Error(w, "Erreur lors de la création du box : "+err.Error(), http.StatusInternalServerError)
+        return
+    }
+    w.WriteHeader(http.StatusCreated)
+    fmt.Fprint(w, "Box créé avec succès")
 }

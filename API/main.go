@@ -45,7 +45,8 @@ func main() {
 
 	http.HandleFunc("OPTIONS /admin/box/confirm-deposit", auth.VerifyTokenMiddleware(admin.ConfirmDeposit))
 	http.HandleFunc("OPTIONS /admin/box/collect-object", auth.VerifyTokenMiddleware(admin.CollectObject))
-	http.HandleFunc("OPTIONS /admin/box/create", auth.VerifyTokenMiddleware(admin.CreateOrder))
+	http.HandleFunc("OPTIONS /admin/order/create", auth.VerifyTokenMiddleware(admin.CreateOrder))
+	http.HandleFunc("OPTIONS /admin/box/create", admin.CreateBox)
 
 
 	// Routes protégées par le middleware d'authentification
@@ -97,6 +98,7 @@ func main() {
 	http.HandleFunc("POST /admin/box/confirm-deposit", auth.VerifyTokenMiddleware(admin.ConfirmDeposit))
 	http.HandleFunc("POST /admin/box/collect-object", auth.VerifyTokenMiddleware(admin.CollectObject))
 	http.HandleFunc("GET /admin/boxs", admin.GetAllBoxs)
+	http.HandleFunc("POST /admin/box/create", admin.CreateBox)
 
 
 
