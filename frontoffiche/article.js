@@ -51,8 +51,9 @@ function chargerArticles() {
               <div class="post-meta">
                   <span class="tag t-vi">${art.type}</span>
                   ${badgeStatut}
-                  <button class="btn btn-v btn-sm" style="flex-shrink: 0" onclick="editerArticle(${art.id_article})">
-            ＋ Modifier
+                  <button class="btn btn-v btn-sm" style="flex-shrink: 0" onclick="editerArticle(${art.id_article})">＋ Modifier</button>
+                    <button class="mod-btn mod-ban"onclick="DeleteArticle(${art.id_article})">Supprimer</button>
+
               </div>
           </button>
             </div>
@@ -165,6 +166,27 @@ function saveArticle(action) {
       console.error(err);
       alert("Erreur serveur : " + err.message);
     });
+}
+
+function DeleteArticle(id) {
+  if (!confirm("Êtes-vous sûr de vouloir supprimer cet article ?")) return;
+  fetch(`http://localhost:8081/admin/articles/delete/${id}`, {
+    method: "DELETE",
+  })
+    .then((res) => {
+      if (!res.ok) throw new Error("Erreur lors de la suppression");
+      return res.json();
+    })
+    .then((data) => {
+      alert("Article supprimé !");
+      chargerArticles();
+    })
+    .catch((err) => {
+      console.error(err);
+      alert("Erreur serveur : " + err.message);
+    });
+
+  chargerArticles();
 }
 
 // Lancer la fonction au chargement de la page

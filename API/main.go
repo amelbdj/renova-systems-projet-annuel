@@ -111,7 +111,7 @@ http.HandleFunc("OPTIONS /admin/articles/modify/{id}/{action}", admin.ModifyArti
 	http.HandleFunc("GET /admin/articles/{id}", admin.GetArticleById)
 	http.HandleFunc("PUT /admin/articles/validate/{id}", auth.VerifyTokenMiddleware(admin.ValidateArticle))
 	http.HandleFunc("PUT /admin/articles/refuse/{id}", auth.VerifyTokenMiddleware(admin.RefuseArticle))
-	http.HandleFunc("DELETE /admin/articles/delete/{id}", auth.VerifyTokenMiddleware(admin.DeleteArticle))
+	http.HandleFunc("DELETE /admin/articles/delete/{id}", admin.DeleteArticle)
 	http.HandleFunc("POST /admin/articles/add/{action}", admin.CreateArticle)
 	http.HandleFunc("PUT /admin/articles/modify/{id}/{action}", admin.ModifyArticle)
 
