@@ -41,15 +41,17 @@ func GetAllArticles(w http.ResponseWriter, r *http.Request) {
 
 func GetArticlesBySalarie(w http.ResponseWriter, r *http.Request) {
 
-	salarieId, err := strconv.Atoi(r.URL.Query().Get("salarieId"))
-	if err != nil {
-		http.Error(w, "ID de salarié invalide", http.StatusBadRequest)
-		return
-	}
-
+// Remplace "id" par "id_salarie"
+salarieId, err := strconv.Atoi(r.PathValue("id"))
+if err != nil {
+    fmt.Println("Erreur conversion ID :", err)
+    http.Error(w, "ID de salarié invalide ou manquant", http.StatusBadRequest)
+    return
+}
 	articles, err := bdd.GetArticlesBySalarie(salarieId)
 	if err != nil {
 		http.Error(w, "Erreur lors de la récupération des articles", http.StatusInternalServerError)
+
 		return
 	}	
 
@@ -151,10 +153,12 @@ func ModifyArticle(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
     w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
-	   if r.Method == "OPTIONS" {
+	    if r.Method == "OPTIONS" {
         w.WriteHeader(http.StatusOK)
         return 
     }
+
+
 
 	action := r.PathValue("action")
 	if action == "" {
@@ -187,7 +191,10 @@ func ModifyArticle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-
+// Ajoute ça tout en bas de ModifyArticle :
+    w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(http.StatusOK)
+    w.Write([]byte(`{"message": "article modifié avec succès"}`))
 
 }
 
@@ -195,17 +202,17 @@ func CreateArticle(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
     w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
     w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
+    if r.Method == "OPTIONS" {
+        w.WriteHeader(http.StatusOK)
+        return 
+    }
 	action := r.PathValue("action")
 	if action == "" {
 		http.Error(w, "Action invalide", http.StatusBadRequest)
 		return
 	}
 
-    if r.Method == "OPTIONS" {
-        w.WriteHeader(http.StatusOK)
-        return 
-    }
+
 
     fmt.Println("hello from create article")
 
@@ -226,9 +233,30 @@ func CreateArticle(w http.ResponseWriter, r *http.Request) {
     return
 }
     
-    w.Header().Set("Content-Type", "application/json") 
+w.Header().Set("Content-Type", "application/json") 
     w.WriteHeader(http.StatusCreated)
-	fmt.Fprintln(w, "article créé")                  
+    w.Write([]byte(`{"message": "article créé"}`)) // Vrai format JSON               
     
 
+}
+
+func GetArticleById(w http.ResponseWriter, r *http.Request) {
+	articleId, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		http.Error(w, "ID d'article invalide", http.StatusBadRequest)
+		return
+	}
+	article, err := bdd.GetArticleById(articleId)
+	if err != nil {
+		http.Error(w, "Erreur lors de la récupération de l'article", http.StatusInternalServerError)
+		return
+	}
+	response, err := json.Marshal(article)
+	if err != nil {
+		http.Error(w, "Erreur lors de la conversion de l'article en JSON", http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(response)
 }
