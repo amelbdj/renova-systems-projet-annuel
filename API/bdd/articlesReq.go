@@ -114,3 +114,15 @@ func ModifyArticle(id int, titre, contenu, articleType, action string) error {
 	}
 	return nil
 }
+
+func GetArticleById(id int) (models.Article, error) {
+
+    var article models.Article 
+
+    row := Db.QueryRow("SELECT id_article, id_salarie, titre, contenu, type, statut FROM article_news WHERE id_article = ?", id)
+    err := row.Scan(&article.Id, &article.IdSalarie, &article.Titre, &article.Contenu, &article.Type, &article.Statut)
+    if err != nil {
+        return models.Article{}, err
+    }
+    return article, nil
+}
