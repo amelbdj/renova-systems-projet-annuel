@@ -99,7 +99,6 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    // Hashage du mot de passe (Parfait !)
     user.MotDePasse, err = auth.HashPassword(user.MotDePasse)
     if err != nil {
         fmt.Println("Erreur hashage mot de passe :", err)
@@ -107,7 +106,6 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
         return
     }
     
-    // Appel à ta fonction BDD qui retourne maintenant le nouvelID
     nouvelID, err := bdd.CreateUser(user) 
     if err != nil {
         fmt.Println("Erreur lors de l'insertion en BDD :", err)
@@ -115,13 +113,10 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    // --------------------------------------------------------
-    // 🔄 NOUVEAUTÉ ICI : On renvoie un vrai JSON avec l'ID
-    // --------------------------------------------------------
-    w.Header().Set("Content-Type", "application/json") // On précise qu'on répond en JSON
-    w.WriteHeader(http.StatusCreated)                  // Code 201 (Créé)
     
-    // On encode la réponse avec l'ID pour que Fati puisse le récupérer
+    w.Header().Set("Content-Type", "application/json") 
+    w.WriteHeader(http.StatusCreated)                  
+    
     json.NewEncoder(w).Encode(map[string]interface{}{
         "message": "Utilisateur créé avec succès",
         "id":      nouvelID,

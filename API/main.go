@@ -48,6 +48,12 @@ func main() {
 	http.HandleFunc("OPTIONS /admin/order/create", auth.VerifyTokenMiddleware(admin.CreateOrder))
 	http.HandleFunc("OPTIONS /admin/box/create", admin.CreateBox)
 
+	http.HandleFunc("OPTIONS /admin/articles/validate/{id}", admin.ValidateArticle)
+	http.HandleFunc("OPTIONS /admin/articles/refuse/{id}", admin.RefuseArticle)
+	http.HandleFunc("OPTIONS /admin/articles/delete/{id}", admin.DeleteArticle)
+	http.HandleFunc("OPTIONS /admin/articles/add", auth.VerifyTokenMiddleware(admin.CreateArticle))
+	http.HandleFunc("OPTIONS /admin/articles/modify/{id}", auth.VerifyTokenMiddleware(admin.ModifyArticle))
+
 
 	// Routes protégées par le middleware d'authentification
 	// Note : Le middleware doit être appliqué à chaque route qui nécessite une authentification
@@ -100,7 +106,14 @@ func main() {
 	http.HandleFunc("GET /admin/boxs", admin.GetAllBoxs)
 	http.HandleFunc("POST /admin/box/create", admin.CreateBox)
 
-
+	// News
+	http.HandleFunc("GET /admin/articles", admin.GetAllArticles)
+	http.HandleFunc("GET /admin/articles/salarie", admin.GetArticlesBySalarie)
+	http.HandleFunc("PUT /admin/articles/validate/{id}", auth.VerifyTokenMiddleware(admin.ValidateArticle))
+	http.HandleFunc("PUT /admin/articles/refuse/{id}", auth.VerifyTokenMiddleware(admin.RefuseArticle))
+	http.HandleFunc("DELETE /admin/articles/delete/{id}", auth.VerifyTokenMiddleware(admin.DeleteArticle))
+	http.HandleFunc("POST /admin/articles/add", auth.VerifyTokenMiddleware(admin.CreateArticle))
+	http.HandleFunc("PUT /admin/articles/modify/{id}", auth.VerifyTokenMiddleware(admin.ModifyArticle))
 
 	fmt.Println("test de : http://localhost:8081")
 	http.ListenAndServe(":8081", nil)
