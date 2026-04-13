@@ -76,21 +76,24 @@ func DeleteArticle(w http.ResponseWriter, r *http.Request) {
         w.WriteHeader(http.StatusOK)
         return 
     }
-	articleId, err := strconv.Atoi(r.URL.Query().Get("articleId"))
+	articleId, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
 		http.Error(w, "ID d'article invalide", http.StatusBadRequest)
+		fmt.Println("Erreur conversion ID :", err)
 		return
 	}
 
 	err = bdd.DeleteArticle(articleId)
 	if err != nil {
 		http.Error(w, "Erreur lors de la suppression de l'article", http.StatusInternalServerError)
+				fmt.Println( err)
+
 		return
 	}
 	
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
-	fmt.Fprintln(w, "utilisateur suppr")
+	fmt.Fprintln(w, "article suppr")
 }
 func ValidateArticle(w http.ResponseWriter, r *http.Request) {
 
