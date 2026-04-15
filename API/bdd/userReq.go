@@ -10,37 +10,38 @@ import (
 )
 
 func LoginUser(email string, motDePasse string) (models.User, error) {
-    var user models.User 
-    
-    err := Db.QueryRow("SELECT id, mot_de_passe, role, validation FROM pa2026.utilisateur WHERE email = ?", email).Scan(&user.Id, &user.MotDePasse, &user.Role, &user.Validation)
+	var user models.User
 
-    if err != nil {
-        if err == sql.ErrNoRows {
-            return user, fmt.Errorf("email ou mot de passe incorrect")
-        }
-        return user, fmt.Errorf("erreur BDD : %v", err)
-    }
+	err := Db.QueryRow("SELECT id, mot_de_passe, role, type_statut FROM pa2026.utilisateur WHERE email = ?", email).Scan(&user.Id, &user.MotDePasse, &user.Role, &user.TypeStatut)
 
-    fmt.Printf("Mot de passe reçu du JSON : '%s'\n", motDePasse)
-    fmt.Printf("Hash BDD trouvé         : '%s'\n", user.MotDePasse)
-
-	if user.Validation == "En attente" {
-		return user, fmt.Errorf("connexion refusée : votre compte est en cours de vérification (Kbis, diplômes, etc.)")
-	} else if user.Validation == "Rejeté" {
-		return user, fmt.Errorf("connexion refusée : vos documents n'ont pas été validés")
-	} else if user.Validation != "Validé" { 
-		// Sécurité au cas où le statut serait vide ou inconnu
-		return user, fmt.Errorf("connexion refusée : compte inactif")
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return user, fmt.Errorf("email ou mot de passe incorrect")
+		}
+		return user, fmt.Errorf("erreur BDD : %v", err)
 	}
 
-    err = bcrypt.CompareHashAndPassword([]byte(user.MotDePasse), []byte(motDePasse))
-    if err != nil {
-        fmt.Println("Erreur Bcrypt :", err) // Ça nous dira exactement pourquoi Bcrypt bloque !
-        return user, fmt.Errorf("email ou mot de passe incorrect")
-    }
-    
-    user.Email = email
-    return user, nil
+	fmt.Printf("Mot de passe reçu du JSON : '%s'\n", motDePasse)
+	fmt.Printf("Hash BDD trouvé         : '%s'\n", user.MotDePasse)
+
+	// if user.Validation == "En attente" {
+	// 	return user, fmt.Errorf("connexion refusée : votre compte est en cours de vérification (Kbis, diplômes, etc.)")
+	// } else if user.Validation == "Rejeté" {
+	// 	return user, fmt.Errorf("connexion refusée : vos documents n'ont pas été validés")
+	// }
+	// else if user.Validation != "Validé" {
+	// 	// Sécurité au cas où le statut serait vide ou inconnu
+	// 	return user, fmt.Errorf("connexion refusée : compte inactif")
+	// }
+
+	err = bcrypt.CompareHashAndPassword([]byte(user.MotDePasse), []byte(motDePasse))
+	if err != nil {
+		fmt.Println("Erreur Bcrypt :", err) // Ça nous dira exactement pourquoi Bcrypt bloque !
+		return user, fmt.Errorf("email ou mot de passe incorrect")
+	}
+
+	user.Email = email
+	return user, nil
 }
 func GetUsers() ([]models.User, error) {
 
@@ -50,7 +51,7 @@ func GetUsers() ([]models.User, error) {
 	rows, err := Db.Query("SELECT u.id, u.nom, u.prenom, u.email, u.role, u.score, u.validation, d.chemin_fichier FROM pa2026.utilisateur u LEFT JOIN pa2026.documents_legaux d ON u.id = d.user_id")
 
 	if err != nil {
-				fmt.Println("Erreur lors de l'exécution de la requête : ", err)
+		fmt.Println("Erreur lors de l'exécution de la requête : ", err)
 
 		return nil, fmt.Errorf("get Users : %v", err.Error())
 	}
@@ -60,24 +61,24 @@ func GetUsers() ([]models.User, error) {
 
 		var User models.User
 
-		err := rows.Scan(&User.Id, 
-            &User.Nom, 
-            &User.Prenom, 
-            &User.Email, 
-            &User.Role, 
-            &User.Score, 
-            &User.Validation,
-            &cheminDoc,)
+		err := rows.Scan(&User.Id,
+			&User.Nom,
+			&User.Prenom,
+			&User.Email,
+			&User.Role,
+			&User.Score,
+			&User.Validation,
+			&cheminDoc)
 
 		if err != nil {
 			return nil, fmt.Errorf("get Users : %v", err.Error())
 		}
 
 		if cheminDoc.Valid {
-            User.CheminFichier = cheminDoc.String
-        } else {
-            User.CheminFichier = ""
-        }
+			User.CheminFichier = cheminDoc.String
+		} else {
+			User.CheminFichier = ""
+		}
 		Users = append(Users, User)
 	}
 	err = rows.Err()
@@ -92,9 +93,9 @@ func GetUsers() ([]models.User, error) {
 func CreateUser(User models.User) (int64, error) {
 
 	var count int
-	
+
 	err := Db.QueryRow("SELECT COUNT(*) FROM pa2026.utilisateur WHERE email = ?", User.Email).Scan(&count)
-	
+
 	if err != nil {
 		return 0, fmt.Errorf("Erreur vérification email : %s", err.Error())
 	}
@@ -141,7 +142,7 @@ func DeletedUser(id int) error {
 }
 
 func UpdateUserById(user models.User) error {
-	
+
 	result, err := Db.Exec(
 		"UPDATE pa2026.utilisateur SET nom = ?, prenom = ?, email = ?, mot_de_passe = ?, role = ?, type_statut = ?, nom_entreprise = ?, siret = ? WHERE id = ?",
 		user.Nom,
@@ -232,65 +233,65 @@ func GetUserByRole(role string) ([]models.User, error) {
 
 func GetUserByName(query string, role string) ([]models.User, error) {
 	query = strings.ToUpper(query)
-	search := "%"+query+"%"
-if role != "Tous les rôles" && role != "" {
-			var Users []models.User
+	search := "%" + query + "%"
+	if role != "Tous les rôles" && role != "" {
+		var Users []models.User
 		rows, err := Db.Query("SELECT id, nom, prenom, email, mot_de_passe, role, type_statut, nom_entreprise, siret, score FROM pa2026.utilisateur WHERE (UPPER(nom) LIKE ? OR UPPER(prenom) LIKE ?) AND role = ?", search, search, role)
-
-	if err != nil {
-		fmt.Println("Erreur lors de l'exécution de la requête : ", err)
-		return nil, fmt.Errorf("get User by name : %v", err.Error())
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var User models.User
-
-		err := rows.Scan(&User.Id, &User.Nom, &User.Prenom, &User.Email, &User.MotDePasse, &User.Role, &User.TypeStatut, &User.NomEntreprise, &User.Siret, &User.Score)
 
 		if err != nil {
 			fmt.Println("Erreur lors de l'exécution de la requête : ", err)
 			return nil, fmt.Errorf("get User by name : %v", err.Error())
 		}
+		defer rows.Close()
 
-		Users = append(Users, User)
-	}
+		for rows.Next() {
+			var User models.User
 
-	err = rows.Err()
+			err := rows.Scan(&User.Id, &User.Nom, &User.Prenom, &User.Email, &User.MotDePasse, &User.Role, &User.TypeStatut, &User.NomEntreprise, &User.Siret, &User.Score)
 
-	if err != nil {
-		return nil, fmt.Errorf("get User by name : %v", err.Error())
-	}
-	return Users, nil
-} else {
-	var Users []models.User
-	search := "%"+query+"%"
-	rows, err := Db.Query("SELECT id, nom, prenom, email, mot_de_passe, role, type_statut, nom_entreprise, siret, score FROM pa2026.utilisateur WHERE (UPPER(nom) LIKE ? OR UPPER(prenom) LIKE ?)", search, search)
+			if err != nil {
+				fmt.Println("Erreur lors de l'exécution de la requête : ", err)
+				return nil, fmt.Errorf("get User by name : %v", err.Error())
+			}
 
-	if err != nil {
-		return nil, fmt.Errorf("get User by name : %v", err.Error())
-	}
-	defer rows.Close()
+			Users = append(Users, User)
+		}
 
-	for rows.Next() {
-		var User models.User
-
-		err := rows.Scan(&User.Id, &User.Nom, &User.Prenom, &User.Email, &User.MotDePasse, &User.Role, &User.TypeStatut, &User.NomEntreprise, &User.Siret, &User.Score)
+		err = rows.Err()
 
 		if err != nil {
 			return nil, fmt.Errorf("get User by name : %v", err.Error())
 		}
+		return Users, nil
+	} else {
+		var Users []models.User
+		search := "%" + query + "%"
+		rows, err := Db.Query("SELECT id, nom, prenom, email, mot_de_passe, role, type_statut, nom_entreprise, siret, score FROM pa2026.utilisateur WHERE (UPPER(nom) LIKE ? OR UPPER(prenom) LIKE ?)", search, search)
 
-		Users = append(Users, User)
+		if err != nil {
+			return nil, fmt.Errorf("get User by name : %v", err.Error())
+		}
+		defer rows.Close()
+
+		for rows.Next() {
+			var User models.User
+
+			err := rows.Scan(&User.Id, &User.Nom, &User.Prenom, &User.Email, &User.MotDePasse, &User.Role, &User.TypeStatut, &User.NomEntreprise, &User.Siret, &User.Score)
+
+			if err != nil {
+				return nil, fmt.Errorf("get User by name : %v", err.Error())
+			}
+
+			Users = append(Users, User)
+		}
+
+		err = rows.Err()
+
+		if err != nil {
+			return nil, fmt.Errorf("get User by name : %v", err.Error())
+		}
+		return Users, nil
 	}
-
-	err = rows.Err()
-
-	if err != nil {
-		return nil, fmt.Errorf("get User by name : %v", err.Error())
-	}
-	return Users, nil
-}
 }
 
 func ValidateUser(id int) error {
@@ -311,13 +312,12 @@ func RefuseUser(id int, motif string) error {
 		id,
 	)
 	if err != nil {
-				fmt.Println("Erreur:", err)
+		fmt.Println("Erreur:", err)
 
 		return fmt.Errorf("refuse user : %v", err.Error())
 	}
 	return nil
 }
-
 
 // Dans ton fichier bdd/documents.go (ou là où tu gères la BDD)
 func InsertDocument(userID string, typeDocument string, cheminFichier string) error {
@@ -333,3 +333,20 @@ func InsertDocument(userID string, typeDocument string, cheminFichier string) er
 	return nil
 }
 
+func CheckEmailExists(email string) (bool, error) {
+	var count int
+
+	requete := "SELECT COUNT(*) FROM utilisateur WHERE email = ?"
+
+	err := Db.QueryRow(requete, email).Scan(&count)
+
+	if err != nil {
+		return false, fmt.Errorf("erreur lors de la vérification de l'email : %s", err.Error())
+	}
+
+	if count > 0 {
+		return true, nil
+	} else {
+		return false, nil
+	}
+}

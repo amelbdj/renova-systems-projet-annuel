@@ -14,6 +14,7 @@ import (
 	"strconv"
 	"upcycleconnect/models"
 )
+
 func Login(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
@@ -23,9 +24,9 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		return
 	}
-	
+
 	fmt.Println("hello from login")
-	
+
 	var user models.User
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
@@ -41,24 +42,66 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var monStatut string
+
+	if userBdd.TypeStatut == nil {
+		monStatut = "En attente"
+	} else {
+		monStatut = *userBdd.TypeStatut
+	}
+
 	token, err := auth.GenerateJWT(userBdd.Id, userBdd.Role)
 	if err != nil {
-		fmt.Println("Erreur génération token :", err)
-		http.Error(w, "Erreur interne du serveur", http.StatusInternalServerError)
+		http.Error(w, "Erreur serveur", http.StatusInternalServerError)
 		return
 	}
 
+	reponse := map[string]string{
+		"token":  token,
+		"role":   userBdd.Role,
+		"statut": monStatut,
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]string{
-		"token": token,
-	})
+	json.NewEncoder(w).Encode(reponse)
+}
+
+func Inscription(w http.ResponseWriter, r *http.Request) {
+	// 1. The "Security Bouncers" (CORS)
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	var newUser models.User
+	err := json.NewDecoder(r.Body).Decode(&newUser)
+	if err != nil {
+		http.Error(w, "Invalid data", http.StatusBadRequest)
+		return
+	}
+
+	hashedPwd, _ := auth.HashPassword(newUser.MotDePasse)
+	newUser.MotDePasse = hashedPwd
+
+	_, err = bdd.CreateUser(newUser)
+	if err != nil {
+		http.Error(w, "Database error or Email already exists", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(map[string]string{"message": "User created successfully"})
 }
 
 func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("hello from GetAllUsers")
 
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-    w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 	users, err := bdd.GetUsers()
 
@@ -80,47 +123,46 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Access-Control-Allow-Origin", "*")
-    w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-    w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
-    if r.Method == "OPTIONS" {
-        w.WriteHeader(http.StatusOK)
-        return 
-    }
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
 
-    fmt.Println("hello from createUser")
+	fmt.Println("hello from createUser")
 
-    var user models.User
-    err := json.NewDecoder(r.Body).Decode(&user)
-    if err != nil {
-        fmt.Println("Erreur décodage :", err)
-        http.Error(w, "Impossible de décoder le JSON", http.StatusBadRequest)
-        return
-    }
+	var user models.User
+	err := json.NewDecoder(r.Body).Decode(&user)
+	if err != nil {
+		fmt.Println("Erreur décodage :", err)
+		http.Error(w, "Impossible de décoder le JSON", http.StatusBadRequest)
+		return
+	}
 
-    user.MotDePasse, err = auth.HashPassword(user.MotDePasse)
-    if err != nil {
-        fmt.Println("Erreur hashage mot de passe :", err)
-        http.Error(w, "Erreur lors du hashage du mot de passe", http.StatusInternalServerError)
-        return
-    }
-    
-    nouvelID, err := bdd.CreateUser(user) 
-    if err != nil {
-        fmt.Println("Erreur lors de l'insertion en BDD :", err)
-        http.Error(w, err.Error(), http.StatusInternalServerError)
-        return
-    }
+	user.MotDePasse, err = auth.HashPassword(user.MotDePasse)
+	if err != nil {
+		fmt.Println("Erreur hashage mot de passe :", err)
+		http.Error(w, "Erreur lors du hashage du mot de passe", http.StatusInternalServerError)
+		return
+	}
 
-    
-    w.Header().Set("Content-Type", "application/json") 
-    w.WriteHeader(http.StatusCreated)                  
-    
-    json.NewEncoder(w).Encode(map[string]interface{}{
-        "message": "Utilisateur créé avec succès",
-        "id":      nouvelID,
-    })
+	nouvelID, err := bdd.CreateUser(user)
+	if err != nil {
+		fmt.Println("Erreur lors de l'insertion en BDD :", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"message": "Utilisateur créé avec succès",
+		"id":      nouvelID,
+	})
 }
 
 func DeletedUser(w http.ResponseWriter, r *http.Request) {
@@ -131,9 +173,9 @@ func DeletedUser(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("hello from DeletedUser")
 
 	if r.Method == "OPTIONS" {
-        w.WriteHeader(http.StatusOK)
-        return
-    }
+		w.WriteHeader(http.StatusOK)
+		return
+	}
 
 	idStr := r.PathValue("id")
 
@@ -158,12 +200,11 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 	if r.Method == "OPTIONS" {
-        w.WriteHeader(http.StatusOK)
-        return
-    }
+		w.WriteHeader(http.StatusOK)
+		return
+	}
 
-		fmt.Println("hello from updateUser")
-
+	fmt.Println("hello from updateUser")
 
 	idStr := r.PathValue("id")
 
@@ -178,9 +219,8 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "JSON invalide", http.StatusBadRequest)
 		fmt.Println("Erreur décodage :", err)
 		return
-		
-	}
 
+	}
 
 	userDto.Id = id
 
@@ -265,9 +305,11 @@ func ValidateUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	fmt.Fprintln(w, "utilisateur validé")
 }
+
 type RefuseRequest struct {
-    Motif string `json:"motif"`
+	Motif string `json:"motif"`
 }
+
 func RefuseUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
@@ -286,20 +328,20 @@ func RefuseUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var req RefuseRequest
-    err = json.NewDecoder(r.Body).Decode(&req)
-    if err != nil {
-        req.Motif = "Non spécifié"
-    }
+	err = json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		req.Motif = "Non spécifié"
+	}
 
-    err = bdd.RefuseUser(id, req.Motif) 
-    if err != nil {
-        http.Error(w, "Erreur BDD : "+err.Error(), http.StatusInternalServerError)
-        return
-    }
+	err = bdd.RefuseUser(id, req.Motif)
+	if err != nil {
+		http.Error(w, "Erreur BDD : "+err.Error(), http.StatusInternalServerError)
+		return
+	}
 
-    // 5. Réponse Pro en JSON
-    w.Header().Set("Content-Type", "application/json")
-    fmt.Fprint(w, `{"message": "Utilisateur refusé avec motif enregistré"}`)
+	// 5. Réponse Pro en JSON
+	w.Header().Set("Content-Type", "application/json")
+	fmt.Fprint(w, `{"message": "Utilisateur refusé avec motif enregistré"}`)
 }
 
 func UploadDocumentHandler(w http.ResponseWriter, r *http.Request) {
@@ -370,4 +412,30 @@ func UploadDocumentHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	fmt.Fprint(w, `{"message": "Document sauvegardé avec succès"}`)
+}
+
+func VerifierEmail(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Content-Type", "application/json")
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	emailTape := r.URL.Query().Get("email")
+
+	emailExiste, err := bdd.CheckEmailExists(emailTape)
+
+	if err != nil {
+		http.Error(w, "Erreur du serveur ou de la base de données", http.StatusInternalServerError)
+		return
+	}
+
+	if emailExiste == true {
+		fmt.Fprintf(w, "true")
+	} else {
+		fmt.Fprintf(w, "false")
+	}
 }
