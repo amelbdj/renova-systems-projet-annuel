@@ -306,7 +306,7 @@
           </div>
         </div>
 
-        <div class="evt-grid fu fu1">
+        <div class="evt-grid fu fu1" id="event-grid">
           <!-- Published -->
           <div class="evt-card">
             <div
@@ -1284,82 +1284,68 @@
     <!-- ════════════════════════════════════════
    MODAL: NOUVEL ÉVÉNEMENT
 ════════════════════════════════════════ -->
-    <div class="modal-bg" id="evtModal">
-      <div class="modal">
-        <div class="modal-x" onclick="closeEvt()">✕</div>
-        <div class="modal-h">📅 Créer un événement / formation</div>
-        <div class="modal-sub">
-          Votre création sera soumise à validation d'un responsable avant
-          publication.
-        </div>
-        <div
-          style="
-            background: rgba(245, 166, 35, 0.07);
-            border: 1px solid rgba(245, 166, 35, 0.22);
-            border-radius: 9px;
-            padding: 11px 14px;
-            margin-bottom: 16px;
-            font-size: 12.5px;
-            color: rgba(245, 166, 35, 0.9);
-          "
-        >
-          ⚠️ <strong>Validation obligatoire</strong> — Un responsable devra
-          approuver cet événement avant qu'il soit visible dans le catalogue
-          (24–48h).
-        </div>
-        <div class="frow">
-          <div>
-            <label>Titre <span class="req">*</span></label
-            ><input type="text" placeholder="Nom de l'événement" />
-          </div>
-          <div>
-            <label>Type <span class="req">*</span></label>
-            <select>
-              <option>Formation</option>
-              <option>Atelier</option>
-              <option>Événement</option>
-              <option>Réunion</option>
-            </select>
-          </div>
-        </div>
-        <div class="fgroup">
-          <label>Description <span class="req">*</span></label>
-          <textarea
-            placeholder="Objectif, public cible, matériel nécessaire…"
-          ></textarea>
-        </div>
-        <div class="frow">
-          <div>
-            <label>Date <span class="req">*</span></label
-            ><input type="date" />
-          </div>
-          <div>
-            <label>Lieu</label
-            ><input type="text" placeholder="ex : Atelier Nord" />
-          </div>
-        </div>
-        <div class="frow">
-          <div>
-            <label>Heure début</label><input type="time" value="10:00" />
-          </div>
-          <div><label>Heure fin</label><input type="time" value="13:00" /></div>
-        </div>
-        <div class="frow">
-          <div>
-            <label>Capacité max</label
-            ><input type="number" placeholder="ex : 15" />
-          </div>
-          <div>
-            <label>Tarif (€)</label
-            ><input type="number" placeholder="0 = gratuit" />
-          </div>
-        </div>
-        <button class="btn btn-v btn-full" onclick="submitEvt()">
-          Soumettre pour validation ✓
-        </button>
+<div class="modal-bg" id="evtModal">
+  <div class="modal">
+    <div class="modal-x" onclick="closeEvt()">✕</div>
+    <div class="modal-h">📅 Créer un événement / formation</div>
+    <div class="modal-sub">Votre création sera soumise à validation d'un responsable avant publication.</div>
+    <div style="background:rgba(245,166,35,.07);border:1px solid rgba(245,166,35,.22);border-radius:9px;padding:11px 14px;margin-bottom:16px;font-size:12.5px;color:rgba(245,166,35,.9)">
+      ⚠️ <strong>Validation obligatoire</strong> — Un responsable devra approuver cet événement avant qu'il soit visible dans le catalogue (24–48h).
+    </div>
+    <div class="frow" >
+      <div>
+        <label>Titre <span class="req">*</span></label>
+        <input type="text" id="evt-titre" placeholder="Nom de l'événement" />
+      </div>
+      <div>
+        <label>Type <span class="req">*</span></label>
+        <select id="evt-type">
+          <option value="formation">Formation</option>
+          <option value="atelier">Atelier</option>
+          <option value="evenement">Événement</option>
+          <option value="reunion">Réunion</option>
+        </select>
       </div>
     </div>
-
+    <div class="fgroup">
+      <label>Description <span class="req">*</span></label>
+      <textarea
+        id="evt-desc"
+        placeholder="Objectif, public cible, matériel nécessaire…"
+      ></textarea>
+    </div>
+    <div class="frow">
+      <div>
+        <label>Date <span class="req">*</span></label>
+        <input type="date" id="evt-date" />
+      </div>
+      <div>
+        <label>Lieu</label>
+        <input type="text" id="evt-lieu" placeholder="ex : Atelier Nord" />
+      </div>
+    </div>
+    <div class="frow">
+      <div>
+        <label>Heure début</label
+        ><input type="time" id="evt-heure-debut" value="10:00" />
+      </div>
+      <div>
+        <label>Heure fin</label
+        ><input type="time" id="evt-heure-fin" value="13:00" />
+      </div>
+    </div>
+    <div class="frow">
+      <div>
+        <label>Capacité max</label>
+        <input type="number" id="evt-capacite" placeholder="ex : 15" />
+      </div>
+      <div>
+        <label>Tarif (€)</label>
+        <input type="number" id="evt-tarif" placeholder="0 = gratuit" />
+      </div>
+      <button class="btn btn-v btn-full" onclick="CreateEvent()">Soumettre pour validation ✓</button>
+    </div>
+  </div>
     <!-- MODAL: NOUVEAU CRÉNEAU -->
     <div class="modal-bg" id="slotModal">
       <div class="modal">
@@ -1566,6 +1552,17 @@
       }
 
       function openNewPost() {
+        document.getElementById("edit-article-id").value = "";
+
+        document.getElementById("post-title").value = "";
+        document.getElementById("post-content").value = "";
+
+        document.getElementById("post-type").selectedIndex = 0;
+
+        const modalTitle = document.getElementById("modal-titre");
+        if (modalTitle) {
+          modalTitle.textContent = "✍️ Rédiger un article";
+        }
         document.getElementById("postModal").classList.add("open");
       }
       function closePost() {
@@ -1609,5 +1606,6 @@
       });
     </script>
     <script src="article.js" defer></script>
+    <script src="event.js" defer></script>
   </body>
 </html>
