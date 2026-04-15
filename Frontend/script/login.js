@@ -73,6 +73,7 @@ async function submitLogin() {
       let donneesServeur = await reponse.json();
       
       localStorage.setItem('token', donneesServeur.token);
+      localStorage.setItem('userRole', donneesServeur.role);
       
       if (donneesServeur.statut === "En attente") {
         window.location.href = "attente.html";
