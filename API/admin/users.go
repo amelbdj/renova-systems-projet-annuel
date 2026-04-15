@@ -57,9 +57,13 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	reponse := map[string]string{
-		"token":  token,
-		"role":   userBdd.Role,
-		"statut": monStatut,
+		"token":      token,
+		"id":         fmt.Sprintf("%d", userBdd.Id),
+		"role":       userBdd.Role,
+		"statut":     monStatut,
+		"prenom":     userBdd.Prenom,
+		"score":      fmt.Sprintf("%d", userBdd.Score),
+		"tutorielVu": fmt.Sprintf("%t", userBdd.TutorielVu),
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -438,4 +442,21 @@ func VerifierEmail(w http.ResponseWriter, r *http.Request) {
 	} else {
 		fmt.Fprintf(w, "false")
 	}
+}
+
+func UpdateTutorialStatus(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
+	var data struct {
+		UserID int `json:"id"`
+	}
+	json.NewDecoder(r.Body).Decode(&data)
+
+	_, err := bdd.Db.Exec("UPDATE pa2026.utilisateur SET tutoriel_vu = 1 WHERE id = ?", data.UserID)
+
+	if err != nil {
+		http.Error(w, "Erreur BDD", http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
 }

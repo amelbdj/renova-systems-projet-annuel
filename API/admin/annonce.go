@@ -12,8 +12,8 @@ import (
 )
 
 func GetAllAnnonces(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-    w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	fmt.Println("hello from GetAllAnnonces")
 
 	Annonces, err := bdd.GetAnnonces()
@@ -35,21 +35,21 @@ func GetAllAnnonces(w http.ResponseWriter, r *http.Request) {
 }
 
 func ValidateAnnonce(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Access-Control-Allow-Origin", "*")
-    w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-    w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
-    if r.Method == "OPTIONS" {
-        w.WriteHeader(http.StatusOK)
-        return 
-    }
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
 
 	id, err := strconv.Atoi(r.PathValue("id"))
 
 	if err != nil {
 		http.Error(w, "id invalide", http.StatusBadRequest)
 		return
-	}	
+	}
 	err = bdd.ValidateAnnonce(id)
 
 	if err != nil {
@@ -62,21 +62,21 @@ func ValidateAnnonce(w http.ResponseWriter, r *http.Request) {
 }
 
 func RefuseAnnonce(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Access-Control-Allow-Origin", "*")
-    w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-    w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
-    if r.Method == "OPTIONS" {
-        w.WriteHeader(http.StatusOK)
-        return 
-    }
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
 
 	id, err := strconv.Atoi(r.PathValue("id"))
 
 	if err != nil {
 		http.Error(w, "id invalide", http.StatusBadRequest)
 		return
-	}	
+	}
 	err = bdd.RefuseAnnonce(id)
 
 	if err != nil {
@@ -91,11 +91,11 @@ func RefuseAnnonce(w http.ResponseWriter, r *http.Request) {
 func CreateAnnonce(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
 	if r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
-		return 
+		return
 	}
 
 	var annonce models.Annonce
@@ -104,7 +104,7 @@ func CreateAnnonce(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "données invalides", http.StatusBadRequest)
 		return
 	}
-		err = bdd.CreateAnnonce(annonce)
+	err = bdd.CreateAnnonce(annonce)
 	if err != nil {
 		http.Error(w,
 			"erreur dans la création d'une annonce",
@@ -118,12 +118,12 @@ func CreateAnnonce(w http.ResponseWriter, r *http.Request) {
 func DeleteAnnonce(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-	fmt.Println("hello from DeleteAnnonce")	
+	fmt.Println("hello from DeleteAnnonce")
 	if r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
 		return
-	}	
-idStr := r.PathValue("id")
+	}
+	idStr := r.PathValue("id")
 
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
@@ -143,13 +143,13 @@ idStr := r.PathValue("id")
 func UpdateAnnonce(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "PUT, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
 	if r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
-		return 
+		return
 	}
-id, err := strconv.Atoi(r.PathValue("id"))
+	id, err := strconv.Atoi(r.PathValue("id"))
 
 	if err != nil {
 		http.Error(w, "id invalide", http.StatusBadRequest)
@@ -177,7 +177,7 @@ func GetAnnonceByTitle(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	fmt.Println("hello from GetAnnonceByTitle")
 	query := r.URL.Query().Get("query")
-	filtre := r.URL.Query().Get("filtre")	
+	filtre := r.URL.Query().Get("filtre")
 	Annonces, err := bdd.GetAnnonceByTitle(query, filtre)
 
 	if err != nil {
@@ -194,4 +194,22 @@ func GetAnnonceByTitle(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "%s", response)
 }
 
+func GetMyAnnonces(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
 
+	idStr := r.URL.Query().Get("id")
+	userID, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "ID nvalide", http.StatusBadRequest)
+		return
+	}
+
+	annonces, err := bdd.GetAnnoncesByUser(userID)
+	if err != nil {
+		http.Error(w, "Erreur lors de la recup de vos annonces", http.StatusInternalServerError)
+		return
+	}
+
+	json.NewEncoder(w).Encode(annonces)
+}
