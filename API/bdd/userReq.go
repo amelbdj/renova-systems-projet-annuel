@@ -12,8 +12,15 @@ import (
 func LoginUser(email string, motDePasse string) (models.User, error) {
 	var user models.User
 
-	err := Db.QueryRow("SELECT id, mot_de_passe, role, type_statut FROM pa2026.utilisateur WHERE email = ?", email).Scan(&user.Id, &user.MotDePasse, &user.Role, &user.TypeStatut)
-
+	err := Db.QueryRow("SELECT id, mot_de_passe, role, type_statut, prenom, score, tutoriel_vu FROM pa2026.utilisateur WHERE email = ?", email).Scan(
+		&user.Id,
+		&user.MotDePasse,
+		&user.Role,
+		&user.TypeStatut,
+		&user.Prenom,
+		&user.Score,
+		&user.TutorielVu,
+	)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return user, fmt.Errorf("email ou mot de passe incorrect")

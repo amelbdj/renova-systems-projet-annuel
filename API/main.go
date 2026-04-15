@@ -71,6 +71,7 @@ func main() {
 	http.HandleFunc("/auth/check-email", admin.VerifierEmail)
 	http.HandleFunc("/auth/inscription", admin.Inscription)
 	http.HandleFunc("/admin/login", admin.Login)
+	http.HandleFunc("/update-tutorial", admin.UpdateTutorialStatus)
 
 	// Categories
 	http.HandleFunc("POST /admin/categories/add", auth.VerifyTokenMiddleware(admin.CreateCategorie))
@@ -85,7 +86,7 @@ func main() {
 	http.HandleFunc("DELETE /admin/annonces/delete/{id}", auth.VerifyTokenMiddleware(admin.DeleteAnnonce))
 	http.HandleFunc("PUT /admin/annonces/modify/{id}", auth.VerifyTokenMiddleware(admin.UpdateAnnonce))
 	http.HandleFunc("GET /admin/annonces/search", auth.VerifyTokenMiddleware(admin.GetAnnonceByTitle))
-
+	http.HandleFunc("GET /mes-annonces", admin.GetMyAnnonces)
 	// Evenements
 	http.HandleFunc("GET /admin/evenements", auth.VerifyTokenMiddleware(admin.GetAllEvenements))
 	http.HandleFunc("PUT /admin/evenements/validate/{id}", auth.VerifyTokenMiddleware(admin.ValidateEvenement))
