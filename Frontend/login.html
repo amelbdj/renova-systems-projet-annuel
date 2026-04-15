@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Connexion — ReNova Systems</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./style/login.css">
+</head>
+<body>
+
+<div class="split">
+
+  <div class="left">
+    <div class="geo geo1"></div>
+    <div class="geo geo2"></div>
+    <div class="geo geo3"></div>
+
+    <div class="left-inner">
+      <div class="left-logo">
+        <div style="color: white; font-family: 'Syne'; font-weight: bold; font-size: 24px;">ReNova</div>
+      </div>
+
+      <div class="left-hero">
+        <div class="left-eyebrow">Plateforme ReNova</div>
+        <h1 class="left-title">L'économie<br>circulaire,<br><em>réinventée</em></h1>
+        <p class="left-desc">
+          Donnez, récupérez, créez. ReNova connecte particuliers, artisans et salariés autour d'une même vision : zéro déchet, 100% réutilisé.
+        </p>
+      </div>
+
+      <div class="left-footer">
+        <strong>ReNova Systems</strong> — Software · Infrastructure · Security · Cloud<br>
+        © 2026 · Tous droits réservés
+      </div>
+    </div>
+  </div>
+
+  <div class="right">
+    <div class="auth-box">
+
+      <div class="form-panel active" id="panelLogin">
+        <div class="form-title">Bon retour 👋</div>
+        <div class="form-sub">Connectez-vous à votre espace ReNova.</div>
+
+        <div class="fgroup">
+          <label>Adresse e-mail <span class="req">*</span></label>
+          <div class="input-wrap has-prefix">
+            <span class="prefix">✉️</span>
+            <input type="email" id="loginEmail" placeholder="votre@email.com" oninput="validateEmail(this)">
+          </div>
+          <div class="field-err" id="loginEmailErr">Adresse e-mail invalide.</div>
+        </div>
+
+        <div class="fgroup">
+          <label>Mot de passe <span class="req">*</span></label>
+          <div class="password-wrap">
+            <input type="password" id="loginPwd" placeholder="••••••••" oninput="validatePwdLogin(this)">
+            <button class="pwd-toggle" onclick="togglePwd('loginPwd',this)" type="button">👁</button>
+          </div>
+          <div class="field-err" id="loginPwdErr">Mot de passe requis.</div>
+        </div>
+
+        <div class="forgot"><a href="#" onclick="showForgot();return false">Mot de passe oublié ?</a></div>
+
+        <div style="margin-top:18px">
+          <button class="btn-primary" onclick="submitLogin()">Se connecter →</button>
+        </div>
+
+        <!-- <div class="divider">ou continuer avec</div>
+
+        <div class="social-row">
+          <div class="social-btn" onclick="socialLogin('Google')"><span class="social-ico">🌐</span>Google</div>
+          <div class="social-btn" onclick="socialLogin('LinkedIn')"><span class="social-ico">💼</span>LinkedIn</div>
+        </div> -->
+
+        <div class="switch-prompt">
+          Pas encore de compte ? <a href="register.html">S'inscrire →</a>
+        </div>
+      </div>
+
+      <div id="loginSuccess" class="success-msg">
+        <div class="success-ico">✅</div>
+        <div class="success-title">Connexion réussie !</div>
+        <div class="success-desc">Vous allez être redirigé vers votre espace dans un instant…</div>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+          <button class="btn-ghost" onclick="showSpaceSelect()">Choisir mon espace →</button>
+        </div>
+      </div>
+
+      <div id="spaceSelect" style="display:none;animation:fadeIn .3s ease both">
+        <div class="form-title" style="margin-bottom:6px">Choisir votre espace</div>
+        <div class="form-sub">Sélectionnez l'espace auquel vous souhaitez accéder.</div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:8px">
+          <div class="space-pill" style="cursor:pointer;border-radius:12px;padding:14px 16px;border:1px solid var(--b1)" onclick="goSpace('Particuliers')">
+            <div class="sp-ico" style="background:rgba(74,144,240,.15)">🏠</div>
+            <div><div class="sp-name">Espace Particuliers</div></div>
+            <div class="sp-arr" style="color:var(--vi-l);font-size:16px">›</div>
+          </div>
+          <div class="space-pill" style="cursor:pointer;border-radius:12px;padding:14px 16px;border:1px solid var(--b1)" onclick="goSpace('Professionnels')">
+            <div class="sp-ico" style="background:rgba(0,212,180,.15)">🔨</div>
+            <div><div class="sp-name">Espace Professionnels</div></div>
+            <div class="sp-arr" style="color:var(--vi-l);font-size:16px">›</div>
+          </div>
+          <div class="space-pill" style="cursor:pointer;border-radius:12px;padding:14px 16px;border:1px solid var(--b1)" onclick="goSpace('Salariés')">
+            <div class="sp-ico" style="background:rgba(240,106,170,.12)">🎓</div>
+            <div><div class="sp-name">Espace Salariés</div></div>
+            <div class="sp-arr" style="color:var(--vi-l);font-size:16px">›</div>
+          </div>
+          <div class="space-pill" style="cursor:pointer;border-radius:12px;padding:14px 16px;border:1px solid rgba(255,152,0,.2)" onclick="goSpace('Back Office')">
+            <div class="sp-ico" style="background:rgba(255,152,0,.12)">⚙️</div>
+            <div><div class="sp-name">Back Office</div></div>
+            <div class="sp-arr" style="color:#ffb84d;font-size:16px">›</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script src="./script/login.js"></script>
+</body>
+</html>

@@ -22,9 +22,9 @@ func GenerateJWT(userID int, role string) (string, error) {
 
 	claims := &Claims{
 		UserID: userID,
-		Role:   role, 
+		Role:   role,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(expirationTime), 
+			ExpiresAt: jwt.NewNumericDate(expirationTime),
 		},
 	}
 
@@ -35,10 +35,9 @@ func GenerateJWT(userID int, role string) (string, error) {
 	return tokenString, err
 }
 
-
 func VerifyTokenMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		
+
 		authHeader := r.Header.Get("Authorization")
 		if authHeader == "" {
 			http.Error(w, "Accès refusé : Token manquant", http.StatusUnauthorized)
