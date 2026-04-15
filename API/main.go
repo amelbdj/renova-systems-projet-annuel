@@ -28,27 +28,48 @@ func main() {
 	http.HandleFunc("OPTIONS /admin/users/delete/{id}", admin.DeletedUser)
 	http.HandleFunc("OPTIONS /admin/users/add", admin.CreateUser)
 	http.HandleFunc("OPTIONS /admin/users/modify/{id}", admin.UpdateUser)
-	
+	http.HandleFunc("OPTIONS /admin/users/validate/{id}", admin.ValidateUser)
+	http.HandleFunc("OPTIONS /admin/users/refuse/{id}", admin.RefuseUser)
+
 	http.HandleFunc("OPTIONS /admin/categories/add", admin.CreateCategorie)
 	http.HandleFunc("OPTIONS /admin/categories/delete/{id}", admin.DeleteCategorie)
 	
 	http.HandleFunc("OPTIONS /admin/annonces/validate/{id}", admin.ValidateAnnonce)
 	http.HandleFunc("OPTIONS /admin/annonces/refuse/{id}", admin.RefuseAnnonce)
+	http.HandleFunc("OPTIONS /admin/annonces/add", auth.VerifyTokenMiddleware(admin.CreateAnnonce))
+	http.HandleFunc("OPTIONS /admin/annonces/delete/{id}", auth.VerifyTokenMiddleware(admin.DeleteAnnonce))
+	http.HandleFunc("OPTIONS /admin/annonces/modify/{id}", auth.VerifyTokenMiddleware(admin.UpdateAnnonce))
 	
 	http.HandleFunc("OPTIONS /admin/evenements/validate/{id}", admin.ValidateEvenement)
 	http.HandleFunc("OPTIONS /admin/evenements/refuse/{id}", admin.RefuseEvenement)
+
+	http.HandleFunc("OPTIONS /admin/box/confirm-deposit", auth.VerifyTokenMiddleware(admin.ConfirmDeposit))
+	http.HandleFunc("OPTIONS /admin/box/collect-object", auth.VerifyTokenMiddleware(admin.CollectObject))
+	http.HandleFunc("OPTIONS /admin/order/create", auth.VerifyTokenMiddleware(admin.CreateOrder))
+	http.HandleFunc("OPTIONS /admin/box/create", admin.CreateBox)
+
+	http.HandleFunc("OPTIONS /admin/articles/validate/{id}", admin.ValidateArticle)
+	http.HandleFunc("OPTIONS /admin/articles/refuse/{id}", admin.RefuseArticle)
+	http.HandleFunc("OPTIONS /admin/articles/delete/{id}", admin.DeleteArticle)
+http.HandleFunc("OPTIONS /admin/articles/add/{action}", admin.CreateArticle)
+http.HandleFunc("OPTIONS /admin/articles/modify/{id}/{action}", admin.ModifyArticle)
 
 	// Routes protégées par le middleware d'authentification
 	// Note : Le middleware doit être appliqué à chaque route qui nécessite une authentification
 
 
 	// Users
-    http.HandleFunc("GET /admin/users", auth.VerifyTokenMiddleware(admin.GetAllUsers))
+    http.HandleFunc("GET /admin/users", admin.GetAllUsers)
     http.HandleFunc("POST /admin/users/add", auth.VerifyTokenMiddleware(admin.CreateUser))
     http.HandleFunc("DELETE /admin/users/delete/{id}", auth.VerifyTokenMiddleware(admin.DeletedUser))
     http.HandleFunc("PUT /admin/users/modify/{id}", auth.VerifyTokenMiddleware(admin.UpdateUser))
     http.HandleFunc("GET /admin/users/role/{role}", auth.VerifyTokenMiddleware(admin.GetUserByRole))
     http.HandleFunc("GET /admin/users/search", auth.VerifyTokenMiddleware(admin.GetUserByName))
+	http.HandleFunc("PUT /admin/users/validate/{id}", auth.VerifyTokenMiddleware(admin.ValidateUser))
+	http.HandleFunc("PUT /admin/users/refuse/{id}",auth.VerifyTokenMiddleware(admin.RefuseUser))
+	http.HandleFunc("/api/upload-document", auth.VerifyTokenMiddleware(admin.UploadDocumentHandler))
+	http.Handle("/view-uploads/", http.StripPrefix("/view-uploads/", http.FileServer(http.Dir("./uploads"))))
+
 
     // Categories
     http.HandleFunc("POST /admin/categories/add", auth.VerifyTokenMiddleware(admin.CreateCategorie))
@@ -56,15 +77,43 @@ func main() {
     http.HandleFunc("GET /admin/categories", auth.VerifyTokenMiddleware(admin.GetAllCategories))
 
     // Annonces
-    http.HandleFunc("GET /admin/annonces", auth.VerifyTokenMiddleware(admin.GetAllAnnonces))
+    http.HandleFunc("GET /admin/annonces", admin.GetAllAnnonces)
     http.HandleFunc("PUT /admin/annonces/validate/{id}", auth.VerifyTokenMiddleware(admin.ValidateAnnonce))
     http.HandleFunc("PUT /admin/annonces/refuse/{id}", auth.VerifyTokenMiddleware(admin.RefuseAnnonce))
+	http.HandleFunc("POST /admin/annonces/add", auth.VerifyTokenMiddleware(admin.CreateAnnonce))
+	http.HandleFunc("DELETE /admin/annonces/delete/{id}", auth.VerifyTokenMiddleware(admin.DeleteAnnonce))
+	http.HandleFunc("PUT /admin/annonces/modify/{id}", auth.VerifyTokenMiddleware(admin.UpdateAnnonce))
+	http.HandleFunc("GET /admin/annonces/search", auth.VerifyTokenMiddleware(admin.GetAnnonceByTitle))
+
 
     // Evenements
     http.HandleFunc("GET /admin/evenements", auth.VerifyTokenMiddleware(admin.GetAllEvenements))
     http.HandleFunc("PUT /admin/evenements/validate/{id}", auth.VerifyTokenMiddleware(admin.ValidateEvenement))
     http.HandleFunc("PUT /admin/evenements/refuse/{id}", auth.VerifyTokenMiddleware(admin.RefuseEvenement))
-	
+
+	// Traductions
+	http.HandleFunc("GET /api/translations", admin.GetTranslations)
+	http.HandleFunc("GET /api/languages", admin.GetLanguages)
+	http.HandleFunc("POST /admin/translations/add", admin.AddLanguage)
+	http.HandleFunc("OPTIONS /admin/translations/add", admin.AddLanguage)
+	http.HandleFunc("GET /admin/translations/keys", admin.GetTranslationKeysHandler)
+
+	// Logistique
+	http.HandleFunc("POST /admin/orders/create", auth.VerifyTokenMiddleware(admin.CreateOrder))
+	http.HandleFunc("POST /admin/box/confirm-deposit", auth.VerifyTokenMiddleware(admin.ConfirmDeposit))
+	http.HandleFunc("POST /admin/box/collect-object", auth.VerifyTokenMiddleware(admin.CollectObject))
+	http.HandleFunc("GET /admin/boxs", admin.GetAllBoxs)
+	http.HandleFunc("POST /admin/box/create", admin.CreateBox)
+
+	// News
+	http.HandleFunc("GET /admin/articles", admin.GetAllArticles)
+	http.HandleFunc("GET /admin/articles/salarie/{id}", admin.GetArticlesBySalarie)
+	http.HandleFunc("GET /admin/articles/{id}", admin.GetArticleById)
+	http.HandleFunc("PUT /admin/articles/validate/{id}", auth.VerifyTokenMiddleware(admin.ValidateArticle))
+	http.HandleFunc("PUT /admin/articles/refuse/{id}", auth.VerifyTokenMiddleware(admin.RefuseArticle))
+	http.HandleFunc("DELETE /admin/articles/delete/{id}", admin.DeleteArticle)
+	http.HandleFunc("POST /admin/articles/add/{action}", admin.CreateArticle)
+	http.HandleFunc("PUT /admin/articles/modify/{id}/{action}", admin.ModifyArticle)
 
 	fmt.Println("test de : http://localhost:8081")
 	http.ListenAndServe(":8081", nil)
