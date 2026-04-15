@@ -1,3 +1,5 @@
+let monToken = localStorage.getItem("token");
+
 function GetEvent() {
   const container = document.getElementById("result");
   if (!container) return;
@@ -60,6 +62,9 @@ function GetEvent() {
 function ValidateEvent(id) {
   fetch(`http://localhost:8081/admin/evenements/validate/${id}`, {
     method: "PUT",
+    headers: {
+      Authorization: "Bearer " + monToken,
+    },
   }).then(() => {
     GetEvent();
     UpdateValidationCount();
@@ -69,6 +74,9 @@ function ValidateEvent(id) {
 function RefuseEvent(id) {
   fetch(`http://localhost:8081/admin/evenements/refuse/${id}`, {
     method: "PUT",
+    headers: {
+      Authorization: "Bearer " + monToken,
+    },
   }).then(() => {
     GetEvent();
     UpdateValidationCount();

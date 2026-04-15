@@ -20,7 +20,7 @@ function CreateEvent() {
   }
 
   const eventData = {
-    idSalarie: 1,
+    idSalarie: parseInt(userId),
     titre: titre,
     type: type,
     description: desc,
@@ -34,6 +34,7 @@ function CreateEvent() {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      Authorization: "Bearer " + monToken,
     },
     body: JSON.stringify(eventData),
   })
@@ -69,7 +70,11 @@ function GetEvenements() {
   const container = document.getElementById("event-grid");
   if (!container) return;
 
-  fetch("http://localhost:8081/admin/evenements")
+  fetch(`http://localhost:8081/admin/evenements/salarie/${userId}`, {
+    headers: {
+      Authorization: "Bearer " + monToken,
+    },
+  })
     .then((res) => {
       if (!res.ok) throw new Error("Erreur serveur événements");
       return res.json();

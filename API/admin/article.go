@@ -11,6 +11,13 @@ import (
 
 func GetAllArticles(w http.ResponseWriter, r *http.Request) {
 
+	
+    w.Header().Set("Access-Control-Allow-Origin", "*")
+    w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+    w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+    w.WriteHeader(http.StatusOK)
+
+
 	fmt.Println("hello from get articles")
 
 	
@@ -70,8 +77,7 @@ func DeleteArticle(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Access-Control-Allow-Origin", "*")
     w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-    w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
+w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
    if r.Method == "OPTIONS" {
         w.WriteHeader(http.StatusOK)
         return 
@@ -99,7 +105,7 @@ func ValidateArticle(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Access-Control-Allow-Origin", "*")
     w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-    w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+    w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
    if r.Method == "OPTIONS" {
         w.WriteHeader(http.StatusOK)
@@ -126,7 +132,7 @@ func RefuseArticle(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Access-Control-Allow-Origin", "*")
     w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-    w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+    w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
 	   if r.Method == "OPTIONS" {
         w.WriteHeader(http.StatusOK)
@@ -154,7 +160,7 @@ func ModifyArticle(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Access-Control-Allow-Origin", "*")
     w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-    w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+    w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
 	    if r.Method == "OPTIONS" {
         w.WriteHeader(http.StatusOK)
@@ -203,7 +209,7 @@ func ModifyArticle(w http.ResponseWriter, r *http.Request) {
 func CreateArticle(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
     w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-    w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+    w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
     if r.Method == "OPTIONS" {
         w.WriteHeader(http.StatusOK)
         return 
