@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le : ven. 27 mars 2026 à 23:53
+-- Généré le : jeu. 02 avr. 2026 à 20:05
 -- Version du serveur : 8.0.42
 -- Version de PHP : 8.3.14
 
@@ -211,6 +211,36 @@ CREATE TABLE IF NOT EXISTS `document` (
 -- --------------------------------------------------------
 
 --
+-- Structure de la table `documents_legaux`
+--
+
+DROP TABLE IF EXISTS `documents_legaux`;
+CREATE TABLE IF NOT EXISTS `documents_legaux` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` bigint UNSIGNED NOT NULL,
+  `type_document` enum('KBIS','SIREN','DIPLOME','PIECE_IDENTITE') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `chemin_fichier` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `statut_document` enum('En attente','Validé','Rejeté') COLLATE utf8mb4_unicode_ci DEFAULT 'En attente',
+  `date_soumission` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Déchargement des données de la table `documents_legaux`
+--
+
+INSERT INTO `documents_legaux` (`id`, `user_id`, `type_document`, `chemin_fichier`, `statut_document`, `date_soumission`) VALUES
+(7, 1, 'KBIS', 'uploads/kbis_entreprise_1.pdf', 'En attente', '2026-04-02 20:43:16'),
+(8, 6, 'KBIS', 'uploads/cni_recto_verso.jpg', 'En attente', '2026-04-02 20:43:16'),
+(9, 7, 'KBIS', 'uploads/justificatif_pro.png', 'En attente', '2026-04-02 20:43:16'),
+(10, 9, 'KBIS', 'uploads/justificatif_pfffro.png', 'En attente', '2026-04-02 20:43:16'),
+(11, 11, 'KBIS', 'uploads/justificatif_pffro.png', 'En attente', '2026-04-02 20:43:16'),
+(12, 11, 'KBIS', 'uploads/justificatif_fpro.png', 'En attente', '2026-04-02 20:43:16');
+
+-- --------------------------------------------------------
+
+--
 -- Structure de la table `evenement`
 --
 
@@ -267,7 +297,7 @@ CREATE TABLE IF NOT EXISTS `languages` (
   `is_active` tinyint(1) DEFAULT '1',
   PRIMARY KEY (`id`),
   UNIQUE KEY `code` (`code`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Déchargement des données de la table `languages`
@@ -436,7 +466,7 @@ CREATE TABLE IF NOT EXISTS `translations` (
   `msg_value` text,
   PRIMARY KEY (`id`),
   KEY `lang_code` (`lang_code`)
-) ENGINE=InnoDB AUTO_INCREMENT=283 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=314 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Déchargement des données de la table `translations`
@@ -724,7 +754,23 @@ INSERT INTO `translations` (`id`, `lang_code`, `msg_key`, `msg_value`) VALUES
 (279, 'fr', 'backoffice.users.alert_empty', 'Veuillez remplir tous les champs.'),
 (280, 'en', 'backoffice.users.alert_empty', 'Please fill in all fields.'),
 (281, 'fr', 'backoffice.users.success_update', 'Utilisateur mis à jour avec succès.'),
-(282, 'en', 'backoffice.users.success_update', 'User successfully updated.');
+(282, 'en', 'backoffice.users.success_update', 'User successfully updated.'),
+(298, 'fr', 'backoffice.users.th_document', 'Document'),
+(299, 'fr', 'backoffice.users.th_status', 'Statut'),
+(300, 'fr', 'backoffice.users.doc_view', 'Voir'),
+(301, 'fr', 'backoffice.users.doc_none', 'Aucun'),
+(302, 'fr', 'backoffice.users.status_approved', 'Validé'),
+(303, 'fr', 'backoffice.users.status_rejected', 'Rejeté'),
+(304, 'fr', 'backoffice.users.action_approve', 'Approuver'),
+(305, 'fr', 'backoffice.users.action_refuse', 'Refuser'),
+(306, 'en', 'backoffice.users.th_document', 'Document'),
+(307, 'en', 'backoffice.users.th_status', 'Status'),
+(308, 'en', 'backoffice.users.doc_view', 'View'),
+(309, 'en', 'backoffice.users.doc_none', 'None'),
+(310, 'en', 'backoffice.users.status_approved', 'Approved'),
+(311, 'en', 'backoffice.users.status_rejected', 'Rejected'),
+(312, 'en', 'backoffice.users.action_approve', 'Approve'),
+(313, 'en', 'backoffice.users.action_refuse', 'Reject');
 
 -- --------------------------------------------------------
 
@@ -761,6 +807,8 @@ CREATE TABLE IF NOT EXISTS `utilisateur` (
   `nom_entreprise` varchar(150) DEFAULT NULL,
   `siret` varchar(14) DEFAULT NULL,
   `score` int NOT NULL DEFAULT '0',
+  `validation` enum('En attente','Validé','Rejeté') DEFAULT 'En attente',
+  `motif_refus` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_user` (`id`),
   UNIQUE KEY `email` (`email`)
@@ -770,17 +818,23 @@ CREATE TABLE IF NOT EXISTS `utilisateur` (
 -- Déchargement des données de la table `utilisateur`
 --
 
-INSERT INTO `utilisateur` (`id`, `role`, `nom`, `prenom`, `email`, `mot_de_passe`, `tutoriel_vu`, `type_statut`, `nom_entreprise`, `siret`, `score`) VALUES
-(1, 'Administrateur', 'BOUDJENANE', 'Amel', 'amelboudjenanee@icloud.com', '$2y$10$cm5C6PeLqY5q/OTKazT/KO68drOeCYJRqgwWtfzPWkEo1quHMvlN.', 1, NULL, NULL, NULL, 0),
-(6, 'Salarié', 'Martinnnn', 'Emma', 'emma.martin@mail.com', '', 1, NULL, NULL, NULL, 0),
-(7, 'Utilisateur', 'Bernard', 'Hugo', 'hugo.bernard@mail.com', '', 0, NULL, NULL, NULL, 0),
-(9, 'Utilisateur', 'Robert', 'Nathan', 'nathan.robert@mail.com', '', 0, NULL, NULL, NULL, 0),
-(10, 'Utilisateur', 'Richard', 'Lea', 'lea.richard@mail.com', '', 1, NULL, NULL, NULL, 0),
-(11, 'Prestataire', 'Durand', 'Tom', 'tom.durand@mail.com', '', 1, NULL, NULL, NULL, 0);
+INSERT INTO `utilisateur` (`id`, `role`, `nom`, `prenom`, `email`, `mot_de_passe`, `tutoriel_vu`, `type_statut`, `nom_entreprise`, `siret`, `score`, `validation`, `motif_refus`) VALUES
+(1, 'Administrateur', 'BOUDJENANE', 'Amel', 'amelboudjenanee@icloud.com', '$2y$10$cm5C6PeLqY5q/OTKazT/KO68drOeCYJRqgwWtfzPWkEo1quHMvlN.', 1, NULL, NULL, NULL, 0, 'En attente', NULL),
+(6, 'Salarié', 'Martinnnn', 'Emma', 'emma.martin@mail.com', '', 1, NULL, NULL, NULL, 0, 'Rejeté', 'dddd'),
+(7, 'Utilisateur', 'Bernard', 'Hugo', 'hugo.bernard@mail.com', '', 0, NULL, NULL, NULL, 0, 'Rejeté', NULL),
+(9, 'Utilisateur', 'Robert', 'Nathan', 'nathan.robert@mail.com', '', 0, NULL, NULL, NULL, 0, 'Rejeté', NULL),
+(10, 'Utilisateur', 'Richard', 'Lea', 'lea.richard@mail.com', '', 1, NULL, NULL, NULL, 0, 'Rejeté', NULL),
+(11, 'Prestataire', 'Durand', 'Tom', 'tom.durand@mail.com', '', 1, NULL, NULL, NULL, 0, 'Rejeté', NULL);
 
 --
 -- Contraintes pour les tables déchargées
 --
+
+--
+-- Contraintes pour la table `documents_legaux`
+--
+ALTER TABLE `documents_legaux`
+  ADD CONSTRAINT `documents_legaux_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `utilisateur` (`id`) ON DELETE CASCADE;
 
 --
 -- Contraintes pour la table `translations`

@@ -9,7 +9,13 @@ type User struct {
 	Score         int     `json:"score"`
 	MotDePasse    string  `json:"mot_de_passe,omitempty"`
 	TutorielVu    bool    `json:"tutoriel_vu"`
+	Validation    string  `json:"validation"`
 	TypeStatut    *string `json:"type_statut,omitempty"`
 	NomEntreprise *string `json:"nom_entreprise,omitempty"`
 	Siret         *string `json:"siret,omitempty"`
+	CheminFichier string  `json:"chemin_fichier"`
+}
+
+type RefuseRequest struct {
+	Motif string `json:"motif"`
 }

@@ -24,9 +24,10 @@ function CreateCategory() {
   const libelle = document.getElementById("add-libelle").value.trim();
 
   if (libelle === "") {
-    alert("Veuillez remplir le champ libellé.");
+    alert(t("backoffice.categories.alert_empty"));
     return;
   }
+
   fetch("http://localhost:8081/admin/categories/add", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -39,13 +40,14 @@ function CreateCategory() {
     })
     .catch((error) => {
       console.error("Erreur API :", error);
+      const container = document.getElementById("resultC");
       if (container)
-        container.innerHTML = `<div style="padding:20px; color:red;">Erreur lors de la création.</div>`;
+        container.innerHTML = `<div style="padding:20px; color:red;" data-i18n="backoffice.categories.create_error">${t("backoffice.categories.create_error")}</div>`;
     });
 }
 
 function DeleteCategory(categoryId) {
-  if (confirm("Supprimer cette catégorie ?")) {
+  if (confirm(t("backoffice.categories.confirm_delete"))) {
     fetch(`http://localhost:8081/admin/categories/delete/${categoryId}`, {
       method: "DELETE",
     }).then(() => AfficherCategories());
