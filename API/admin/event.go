@@ -12,8 +12,11 @@ import (
 )
 
 func GetAllEvenements(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-    w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+    w.Header().Set("Access-Control-Allow-Origin", "*")
+    w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+    w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+    w.WriteHeader(http.StatusOK)
+
 
 	fmt.Println("hello from GetAllEvenements")
 
@@ -39,7 +42,7 @@ func ValidateEvenement(w http.ResponseWriter, r *http.Request) {
 
  w.Header().Set("Access-Control-Allow-Origin", "*")
     w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-    w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
     if r.Method == "OPTIONS" {
         w.WriteHeader(http.StatusOK)
@@ -68,7 +71,7 @@ func RefuseEvenement(w http.ResponseWriter, r *http.Request) {
 
  w.Header().Set("Access-Control-Allow-Origin", "*")
     w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-    w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+    w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
     if r.Method == "OPTIONS" {
         w.WriteHeader(http.StatusOK)
@@ -97,7 +100,7 @@ func CreateEvenement(w http.ResponseWriter, r *http.Request) {
 
  w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
 	if r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
@@ -128,7 +131,7 @@ func DeleteEvenement(w http.ResponseWriter, r *http.Request) {
 
  w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "DELETE, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
 	if r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
@@ -155,7 +158,7 @@ func UpdateEvenement(w http.ResponseWriter, r *http.Request) {
 
  w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "PUT, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
 	if r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)

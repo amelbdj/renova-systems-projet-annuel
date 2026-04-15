@@ -24,19 +24,11 @@ func LoginUser(email string, motDePasse string) (models.User, error) {
 	fmt.Printf("Mot de passe reçu du JSON : '%s'\n", motDePasse)
 	fmt.Printf("Hash BDD trouvé         : '%s'\n", user.MotDePasse)
 
-	// if user.Validation == "En attente" {
-	// 	return user, fmt.Errorf("connexion refusée : votre compte est en cours de vérification (Kbis, diplômes, etc.)")
-	// } else if user.Validation == "Rejeté" {
-	// 	return user, fmt.Errorf("connexion refusée : vos documents n'ont pas été validés")
-	// }
-	// else if user.Validation != "Validé" {
-	// 	// Sécurité au cas où le statut serait vide ou inconnu
-	// 	return user, fmt.Errorf("connexion refusée : compte inactif")
-	// }
+
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.MotDePasse), []byte(motDePasse))
 	if err != nil {
-		fmt.Println("Erreur Bcrypt :", err) // Ça nous dira exactement pourquoi Bcrypt bloque !
+		fmt.Println("Erreur Bcrypt :", err) 
 		return user, fmt.Errorf("email ou mot de passe incorrect")
 	}
 
@@ -89,7 +81,6 @@ func GetUsers() ([]models.User, error) {
 	return Users, nil
 }
 
-// 1. On modifie la signature pour retourner (int64, error) au lieu de juste error
 func CreateUser(User models.User) (int64, error) {
 
 	var count int
@@ -104,25 +95,21 @@ func CreateUser(User models.User) (int64, error) {
 		return 0, fmt.Errorf("L'email %s est déjà utilisé", User.Email)
 	}
 
-	// 2. On récupère le 'result' de Db.Exec
 	result, err := Db.Exec("INSERT INTO pa2026.utilisateur (nom, prenom, email, mot_de_passe, role, type_statut, nom_entreprise, siret) VALUES (UPPER(?), UPPER(?), ?, ?, ?, ?, ?, ?)", User.Nom, User.Prenom, User.Email, User.MotDePasse, User.Role, User.TypeStatut, User.NomEntreprise, User.Siret)
 
 	if err != nil {
 		return 0, fmt.Errorf("CreateUser : %s", err.Error())
 	}
 
-	// 3. On extrait l'ID qui vient d'être créé par MySQL
 	nouvelID, err := result.LastInsertId()
 	if err != nil {
 		return 0, fmt.Errorf("Erreur lors de la récupération de l'ID : %s", err.Error())
 	}
 
-	// 4. On retourne l'ID et "nil" pour dire qu'il n'y a pas d'erreur
 	return nouvelID, nil
 }
 func DeletedUser(id int) error {
 
-	// Vérifie si ID EXISTE
 
 	_, err := Db.Query("SELECT id FROM pa2026.utilisateur WHERE id = ?", id)
 	if err != nil {
@@ -131,7 +118,6 @@ func DeletedUser(id int) error {
 
 	}
 
-	// sUPPRESSION
 	_, err = Db.Exec(
 		"DELETE FROM pa2026.utilisateur WHERE id = ?", id)
 	if err != nil {

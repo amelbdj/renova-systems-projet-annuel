@@ -1,3 +1,5 @@
+let monToken = localStorage.getItem("token");
+
 function openNewCategory() {
   const modal = document.getElementById("NewCategoryModal");
   if (modal) modal.style.display = "flex";
@@ -30,7 +32,10 @@ function CreateCategory() {
 
   fetch("http://localhost:8081/admin/categories/add", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + monToken,
+    },
     body: JSON.stringify({ libelle }),
   })
     .then((response) => {
@@ -50,6 +55,9 @@ function DeleteCategory(categoryId) {
   if (confirm(t("backoffice.categories.confirm_delete"))) {
     fetch(`http://localhost:8081/admin/categories/delete/${categoryId}`, {
       method: "DELETE",
+      headers: {
+        Authorization: "Bearer " + monToken,
+      },
     }).then(() => AfficherCategories());
   }
 }

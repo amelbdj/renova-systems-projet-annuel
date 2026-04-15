@@ -1,3 +1,18 @@
+const Auth = {
+  getToken: () => localStorage.getItem("token"),
+  getUserId: () => localStorage.getItem("userId"),
+  getUserRole: () => localStorage.getItem("userRole"),
+  isConnected: () => !!localStorage.getItem("token"),
+
+  // Pour se déconnecter proprement
+  logout: () => {
+    localStorage.clear();
+    window.location.href = "login.html";
+  },
+};
+
+let monToken = localStorage.getItem("token");
+
 function GetAnnonce() {
   const container = document.getElementById("result");
   if (!container) return;
@@ -78,6 +93,9 @@ function GetAnnonce() {
 function ValidateAnnonce(id) {
   fetch(`http://localhost:8081/admin/annonces/validate/${id}`, {
     method: "PUT",
+    headers: {
+      Authorization: "Bearer " + monToken,
+    },
   }).then(() => {
     GetAnnonce();
     UpdateValidationCount(); // Met à jour le total rouge en haut
@@ -87,6 +105,9 @@ function ValidateAnnonce(id) {
 function RefuseAnnonce(id) {
   fetch(`http://localhost:8081/admin/annonces/refuse/${id}`, {
     method: "PUT",
+    headers: {
+      Authorization: "Bearer " + monToken,
+    },
   }).then(() => {
     GetAnnonce();
     UpdateValidationCount();

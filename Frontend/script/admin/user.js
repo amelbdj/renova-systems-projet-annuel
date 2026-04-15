@@ -1,3 +1,5 @@
+let monToken = localStorage.getItem("token");
+
 function setVtab(element, type) {
   document
     .querySelectorAll(".vtab")
@@ -177,6 +179,10 @@ function RefuseUser(userId) {
 function ValidateUser(userId) {
   fetch(`http://localhost:8081/admin/users/validate/${userId}`, {
     method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + monToken,
+    },
   })
     .then((res) => res.json())
     .then(AfficherTableau)
@@ -224,6 +230,9 @@ function DeleteUser(userId) {
   if (confirm(t("backoffice.users.confirm_delete"))) {
     fetch(`http://localhost:8081/admin/users/delete/${userId}`, {
       method: "DELETE",
+      headers: {
+        Authorization: "Bearer " + monToken,
+      },
     }).then(() => GetUsers());
   }
 }
@@ -242,7 +251,10 @@ function CreateUser() {
 
   fetch("http://localhost:8081/admin/users/add", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + monToken,
+    },
     body: JSON.stringify({ nom, prenom, email, role, mot_de_passe: mdp }),
   })
     .then((response) => {
@@ -266,7 +278,10 @@ function UpdateUser() {
 
   fetch(`http://localhost:8081/admin/users/modify/${userId}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + monToken,
+    },
     body: JSON.stringify(data),
   })
     .then((response) => {
@@ -331,7 +346,10 @@ document.getElementById("btnConfirmerRefus").onclick = function () {
 
   fetch(`http://localhost:8081/admin/users/refuse/${currentUserIdToRefuse}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + monToken,
+    },
     body: JSON.stringify({ motif: raison }),
   })
     .then((res) => res.json())

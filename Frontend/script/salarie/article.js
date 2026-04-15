@@ -1,8 +1,14 @@
 /* ── FETCH & AFFICHAGE DES ARTICLES ──────────────────────────── */
+let monToken = localStorage.getItem("token");
+let userId = localStorage.getItem("userId");
 
 function chargerArticles() {
   // Appel à ton API Go
-  fetch("http://localhost:8081/admin/articles/salarie/1")
+  fetch(`http://localhost:8081/admin/articles/salarie/${userId}`, {
+    headers: {
+      Authorization: "Bearer " + monToken,
+    },
+  })
     .then((res) => {
       if (!res.ok) {
         throw new Error("Erreur réseau");
@@ -146,6 +152,7 @@ function saveArticle(action) {
     method: method,
     headers: {
       "Content-Type": "application/json",
+      Authorization: "Bearer " + monToken,
     },
     body: JSON.stringify(articleData),
   })
@@ -172,6 +179,9 @@ function DeleteArticle(id) {
   if (!confirm("Êtes-vous sûr de vouloir supprimer cet article ?")) return;
   fetch(`http://localhost:8081/admin/articles/delete/${id}`, {
     method: "DELETE",
+    headers: {
+      Authorization: "Bearer " + monToken,
+    },
   })
     .then((res) => {
       if (!res.ok) throw new Error("Erreur lors de la suppression");
