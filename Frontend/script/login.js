@@ -74,6 +74,11 @@ async function submitLogin() {
       
       localStorage.setItem('token', donneesServeur.token);
       localStorage.setItem('userRole', donneesServeur.role);
+      localStorage.setItem('userId', donneesServeur.id);
+
+      localStorage.setItem('userName', donneesServeur.prenom); 
+      localStorage.setItem('userScore', donneesServeur.score || 0);
+      localStorage.setItem('tutorielVu', donneesServeur.tutorielVu);
       
       if (donneesServeur.statut === "En attente") {
         window.location.href = "attente.html";
@@ -81,7 +86,7 @@ async function submitLogin() {
       }
 
       if (donneesServeur.role === "Utilisateur") {
-        window.location.href = "espace_particulier.html";
+        window.location.href = "espClient.html";
       } 
       else if (donneesServeur.role === "Prestataire") {
         window.location.href = "espace_pro.html";
