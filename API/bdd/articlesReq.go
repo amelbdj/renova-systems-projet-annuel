@@ -11,7 +11,7 @@ func GetArticles() ([]models.Article, error) {
 
 	
 
-	rows, err := Db.Query("SELECT id_article, id_salarie, titre, contenu, type, statut FROM article_news ORDER BY id_article DESC")
+	rows, err := Db.Query("SELECT id_article, id_salarie, titre, contenu, type, statut, utilisateur.nom, utilisateur.prenom FROM article_news INNER JOIN utilisateur ON article_news.id_salarie = utilisateur.id ORDER BY id_article DESC")
 
 	if err != nil {
 				fmt.Println("Erreur lors de l'exécution de la requête : ", err)
@@ -30,7 +30,9 @@ func GetArticles() ([]models.Article, error) {
             &Article.Contenu, 
             &Article.Type, 
             &Article.Statut,
-            )
+            &Article.NomAuteur,
+            &Article.PrenomAuteur,
+)
 
 		if err != nil {
 			return nil, fmt.Errorf("get Articles : %v", err.Error())
@@ -64,7 +66,7 @@ func GetArticlesBySalarie(salarieID int) ([]models.Article, error) {
     return articles, nil
 }
 
-func ValidateArticle( id int) error {
+func ValidateArticle(id int) error {
     _, err := Db.Exec("UPDATE article_news SET statut = 'valide' WHERE id_article = ?", id)
     return err
 }
@@ -79,7 +81,6 @@ func DeleteArticle(id int) error {
     return err
 }
 
-// Dans ton package base de données
 func CreateArticle(article models.Article, action string)error{
     var statutFinal string
     if action == "publier" {

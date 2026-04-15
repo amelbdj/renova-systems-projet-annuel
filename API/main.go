@@ -41,7 +41,10 @@ func main() {
 	http.HandleFunc("OPTIONS /admin/annonces/modify/{id}", auth.VerifyTokenMiddleware(admin.UpdateAnnonce))
 	
 	http.HandleFunc("OPTIONS /admin/evenements/validate/{id}", admin.ValidateEvenement)
+	http.HandleFunc("OPTIONS /admin/evenements/update/{id}", admin.UpdateEvenement)
+	http.HandleFunc("OPTIONS /admin/evenements/delete/{id}", admin.DeleteEvenement)
 	http.HandleFunc("OPTIONS /admin/evenements/refuse/{id}", admin.RefuseEvenement)
+	http.HandleFunc("OPTIONS /admin/evenements/add", admin.CreateEvenement)
 
 	http.HandleFunc("OPTIONS /admin/box/confirm-deposit", auth.VerifyTokenMiddleware(admin.ConfirmDeposit))
 	http.HandleFunc("OPTIONS /admin/box/collect-object", auth.VerifyTokenMiddleware(admin.CollectObject))
@@ -87,7 +90,10 @@ http.HandleFunc("OPTIONS /admin/articles/modify/{id}/{action}", admin.ModifyArti
 
 
     // Evenements
-    http.HandleFunc("GET /admin/evenements", auth.VerifyTokenMiddleware(admin.GetAllEvenements))
+    http.HandleFunc("GET /admin/evenements", admin.GetAllEvenements)
+	http.HandleFunc("POST /admin/evenements/add", admin.CreateEvenement)
+	http.HandleFunc("PUT /admin/evenements/{id}", admin.UpdateEvenement)
+	http.HandleFunc("DELETE /admin/evenements/{id}", admin.DeleteEvenement)
     http.HandleFunc("PUT /admin/evenements/validate/{id}", auth.VerifyTokenMiddleware(admin.ValidateEvenement))
     http.HandleFunc("PUT /admin/evenements/refuse/{id}", auth.VerifyTokenMiddleware(admin.RefuseEvenement))
 
@@ -109,7 +115,7 @@ http.HandleFunc("OPTIONS /admin/articles/modify/{id}/{action}", admin.ModifyArti
 	http.HandleFunc("GET /admin/articles", admin.GetAllArticles)
 	http.HandleFunc("GET /admin/articles/salarie/{id}", admin.GetArticlesBySalarie)
 	http.HandleFunc("GET /admin/articles/{id}", admin.GetArticleById)
-	http.HandleFunc("PUT /admin/articles/validate/{id}", auth.VerifyTokenMiddleware(admin.ValidateArticle))
+	http.HandleFunc("PUT /admin/articles/validate/{id}", admin.ValidateArticle)
 	http.HandleFunc("PUT /admin/articles/refuse/{id}", auth.VerifyTokenMiddleware(admin.RefuseArticle))
 	http.HandleFunc("DELETE /admin/articles/delete/{id}", admin.DeleteArticle)
 	http.HandleFunc("POST /admin/articles/add/{action}", admin.CreateArticle)

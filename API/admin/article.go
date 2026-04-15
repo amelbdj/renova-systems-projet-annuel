@@ -17,6 +17,7 @@ func GetAllArticles(w http.ResponseWriter, r *http.Request) {
 	articles, err := bdd.GetArticles()
 	if err != nil {
 		http.Error(w, "Erreur lors de la récupération des articles", http.StatusInternalServerError)
+		fmt.Println(err)
 		return
 	}
 
@@ -41,7 +42,6 @@ func GetAllArticles(w http.ResponseWriter, r *http.Request) {
 
 func GetArticlesBySalarie(w http.ResponseWriter, r *http.Request) {
 
-// Remplace "id" par "id_salarie"
 salarieId, err := strconv.Atoi(r.PathValue("id"))
 if err != nil {
     fmt.Println("Erreur conversion ID :", err)
@@ -105,7 +105,7 @@ func ValidateArticle(w http.ResponseWriter, r *http.Request) {
         w.WriteHeader(http.StatusOK)
         return 
     }
-	articleId, err := strconv.Atoi(r.URL.Query().Get("articleId"))
+	articleId, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
 		http.Error(w, "ID d'article invalide", http.StatusBadRequest)
 		return
@@ -133,7 +133,7 @@ func RefuseArticle(w http.ResponseWriter, r *http.Request) {
         return 
     }
 
-	articleId, err := strconv.Atoi(r.URL.Query().Get("articleId"))
+	articleId, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
 		http.Error(w, "ID d'article invalide", http.StatusBadRequest)
 		return
@@ -194,7 +194,6 @@ func ModifyArticle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-// Ajoute ça tout en bas de ModifyArticle :
     w.Header().Set("Content-Type", "application/json")
     w.WriteHeader(http.StatusOK)
     w.Write([]byte(`{"message": "article modifié avec succès"}`))
@@ -238,7 +237,7 @@ func CreateArticle(w http.ResponseWriter, r *http.Request) {
     
 w.Header().Set("Content-Type", "application/json") 
     w.WriteHeader(http.StatusCreated)
-    w.Write([]byte(`{"message": "article créé"}`)) // Vrai format JSON               
+    w.Write([]byte(`{"message": "article créé"}`))               
     
 
 }

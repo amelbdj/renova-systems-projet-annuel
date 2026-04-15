@@ -17,6 +17,8 @@ function setVtab(element, type) {
     container.innerHTML = "";
     GetAnnonce();
     GetEvent();
+  } else if (type === "con") {
+    GetArticle();
   } else {
     container.innerHTML = `<p style='padding:20px'>${t("backoffice.common.in_dev")}</p>`;
   }
