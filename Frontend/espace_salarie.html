@@ -1563,8 +1563,11 @@
         if (modalTitle) {
           modalTitle.textContent = "✍️ Rédiger un article";
         }
+
+        console.log("Ouvrir modal de création d'article");
         document.getElementById("postModal").classList.add("open");
       }
+      
       function closePost() {
         document.getElementById("postModal").classList.remove("open");
       }

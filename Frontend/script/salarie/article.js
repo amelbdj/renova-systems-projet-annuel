@@ -1,9 +1,7 @@
-/* ── FETCH & AFFICHAGE DES ARTICLES ──────────────────────────── */
 let monToken = localStorage.getItem("token");
 let userId = localStorage.getItem("userId");
 
 function chargerArticles() {
-  // Appel à ton API Go
   fetch(`http://localhost:8081/admin/articles/salarie/${userId}`, {
     headers: {
       Authorization: "Bearer " + monToken,
@@ -13,11 +11,9 @@ function chargerArticles() {
       if (!res.ok) {
         throw new Error("Erreur réseau");
       }
-      // On convertit la réponse en JSON
       return res.json();
     })
     .then((articles) => {
-      // Cette partie s'exécute quand on a reçu les articles
       const conteneurPublies = document.getElementById("liste-publies");
       const conteneurBrouillons = document.getElementById("liste-brouillons");
 
@@ -41,15 +37,12 @@ function chargerArticles() {
           compteurPublies++;
         }
 
-        // 2. Choix de l'icône selon le type
         let icone = "📝";
         if (art.type.toLowerCase().includes("conseil")) icone = "💡";
         if (art.type.toLowerCase().includes("news")) icone = "📰";
         if (art.type.toLowerCase().includes("tuto")) icone = "🛠️";
 
-        // 3. Création de la carte HTML en Template Literal
         const card = `
-          <div class="post-item" onclick="editerArticle(${art.id_article})">
             <div class="post-ico" style="background:rgba(48,212,192,.09)">${icone}</div>
             <div class="post-body">
               <div class="post-title">${art.titre}</div>
@@ -57,8 +50,8 @@ function chargerArticles() {
               <div class="post-meta">
                   <span class="tag t-vi">${art.type}</span>
                   ${badgeStatut}
-                  <button class="btn btn-v btn-sm" style="flex-shrink: 0" onclick="editerArticle(${art.id_article})">＋ Modifier</button>
-                    <button class="mod-btn mod-ban"onclick="DeleteArticle(${art.id_article})">Supprimer</button>
+              <button class="btn btn-v btn-sm" onclick="editerArticle(${art.id})">＋ Modifier</button>
+              <button class="mod-btn mod-ban" onclick="DeleteArticle(${art.id})">Supprimer</button>
 
               </div>
           </button>
@@ -66,7 +59,6 @@ function chargerArticles() {
           </div>
         `;
 
-        // 4. Tri : Les brouillons et refusés à droite, le reste à gauche
         if (art.statut === "brouillon" || art.statut === "refuse") {
           conteneurBrouillons.innerHTML += card;
         } else {
@@ -74,35 +66,24 @@ function chargerArticles() {
         }
       });
 
-      // Mettre à jour le petit compteur en haut de section
       document.getElementById("compteur-articles").textContent =
         `${compteurPublies} en ligne`;
     })
     .catch((error) => {
-      // Cette partie s'exécute s'il y a une erreur (serveur éteint, etc.)
       console.error("Impossible de récupérer les articles", error);
       document.getElementById("liste-publies").innerHTML =
         `<p style="color:var(--red); font-size:13px;">Serveur indisponible.</p>`;
     });
 }
 
-// Fonction appelée quand on clique sur un article
 function editerArticle(id) {
-  // Ici, on va appeler une route pour récupérer l'article par son ID,
-  // remplir le 'postModal' avec les valeurs, et l'ouvrir !
-  console.log("Édition de l'article :", id);
-  // openNewPost(); // On ouvrira ton modal existant
-}
-
-function editerArticle(id) {
-  // 1. Appel à ton API Go pour récupérer l'article par son ID
   fetch(`http://localhost:8081/admin/articles/${id}`)
     .then((res) => {
       if (!res.ok) throw new Error("Impossible de récupérer l'article");
       return res.json();
     })
     .then((art) => {
-      document.getElementById("edit-article-id").value = art.id_article;
+      document.getElementById("edit-article-id").value = art.id;
       document.getElementById("post-title").value = art.titre;
       document.getElementById("post-content").value = art.contenu;
       document.getElementById("post-type").value = art.type;
@@ -119,7 +100,6 @@ function editerArticle(id) {
 }
 
 function saveArticle(action) {
-  // 1. Récupération des données du formulaire
   const id = document.getElementById("edit-article-id").value;
   const titre = document.getElementById("post-title").value;
   const contenu = document.getElementById("post-content").value;
@@ -131,7 +111,7 @@ function saveArticle(action) {
   }
 
   const articleData = {
-    id_salarie: 1, // À remplacer par l'ID réel du salarié connecté apre sync avec faty
+    id_salarie: userId, // À remplacer par l'ID réel du salarié connecté apre sync avec faty
     titre: titre,
     contenu: contenu,
     type: type,
@@ -161,7 +141,6 @@ function saveArticle(action) {
       return res.json();
     })
     .then((data) => {
-      // Succès !
       const message =
         action === "publier" ? "Article publié !" : "Brouillon enregistré.";
       alert(message);
@@ -199,5 +178,4 @@ function DeleteArticle(id) {
   chargerArticles();
 }
 
-// Lancer la fonction au chargement de la page
 document.addEventListener("DOMContentLoaded", chargerArticles);

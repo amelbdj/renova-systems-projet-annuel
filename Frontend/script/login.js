@@ -82,7 +82,7 @@ async function submitLogin() {
       localStorage.setItem("userRole", donneesServeur.role);
       localStorage.setItem("userId", donneesServeur.id);
 
-      if (donneesServeur.statut === "En attente") {
+      if (donneesServeur.validation === "En attente") {
         window.location.href = "attente.html";
         return;
       }
