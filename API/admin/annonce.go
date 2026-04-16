@@ -13,7 +13,7 @@ import (
 
 func GetAllAnnonces(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 	fmt.Println("hello from GetAllAnnonces")
 
 	Annonces, err := bdd.GetAnnonces()
@@ -37,7 +37,7 @@ func GetAllAnnonces(w http.ResponseWriter, r *http.Request) {
 func ValidateAnnonce(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
 	if r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
@@ -64,7 +64,7 @@ func ValidateAnnonce(w http.ResponseWriter, r *http.Request) {
 func RefuseAnnonce(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
 	if r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
@@ -117,7 +117,7 @@ func CreateAnnonce(w http.ResponseWriter, r *http.Request) {
 
 func DeleteAnnonce(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 	fmt.Println("hello from DeleteAnnonce")
 	if r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
@@ -174,7 +174,7 @@ func UpdateAnnonce(w http.ResponseWriter, r *http.Request) {
 
 func GetAnnonceByTitle(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 	fmt.Println("hello from GetAnnonceByTitle")
 	query := r.URL.Query().Get("query")
 	filtre := r.URL.Query().Get("filtre")

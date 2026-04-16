@@ -72,7 +72,7 @@ func CollectObject(w http.ResponseWriter, r *http.Request) {
 
 func GetAllBoxs(w http.ResponseWriter, r *http.Request) {
     	fmt.Println("hello from GetAllBoxs")
-
+w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
     Boxs, err := bdd.GetBox()
     if err != nil {
         http.Error(w, "Erreur lors de la récupération des boxs : "+err.Error(), http.StatusInternalServerError)
@@ -91,8 +91,7 @@ func GetAllBoxs(w http.ResponseWriter, r *http.Request) {
 func CreateBox(w http.ResponseWriter, r *http.Request) {
      w.Header().Set("Access-Control-Allow-Origin", "*")
     w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-    w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
+w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
     if r.Method == "OPTIONS" {
         w.WriteHeader(http.StatusOK)
         return 

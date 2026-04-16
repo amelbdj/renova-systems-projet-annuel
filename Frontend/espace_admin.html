@@ -5,9 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Back Office — ReNova Systems</title>
     <script src="../Frontend/script/auth_guard.js"></script>
-    <script>checkSession('Administrateur');</script>
+    <script>
+      checkSession("Administrateur");
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="../Frontend/style/admin.css" />
     <link
       href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Outfit:wght@300;400;500;600&display=swap"
       rel="stylesheet"
@@ -756,12 +758,127 @@
         </button>
       </div>
     </div>
-    
-    <script src="user.js" defer></script>
-    <script src="annonce.js" defer></script>
-    <script src="event.js" defer></script>
-    <script src="renova.js" defer></script>
-    <script src="translate.js" defer></script>
-    <script src="box.js" defer></script>
+
+    <div
+      id="articleModModal"
+      class="modal-bg"
+      style="
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.85);
+        z-index: 10000;
+        justify-content: center;
+        align-items: center;
+        backdrop-filter: blur(4px);
+      "
+    >
+      <div
+        class="modal"
+        style="
+          background: var(--bg2);
+          padding: 30px;
+          border-radius: 16px;
+          max-width: 700px;
+          width: 95%;
+          border: 1px solid var(--b1);
+          box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+          position: relative;
+        "
+      >
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 20px;
+          "
+        >
+          <div>
+            <h2
+              id="modal-art-title"
+              style="
+                margin: 0 0 5px 0;
+                font-size: 22px;
+                color: var(--txt);
+                font-family: &quot;Syne&quot;, sans-serif;
+              "
+            >
+              Titre de l'article
+            </h2>
+            <div
+              id="modal-art-meta"
+              style="color: var(--txt-m); font-size: 13px"
+            ></div>
+          </div>
+          <div
+            style="
+              cursor: pointer;
+              font-size: 24px;
+              color: var(--txt-m);
+              transition: 0.2s;
+            "
+            onclick="closeArticleModal()"
+            onmouseover="this.style.color = 'var(--txt)'"
+          >
+            ✕
+          </div>
+        </div>
+
+        <div
+          id="modal-art-content"
+          style="
+            background: var(--bg3);
+            padding: 20px;
+            border-radius: 12px;
+            font-size: 15px;
+            line-height: 1.7;
+            color: var(--txt-m);
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid var(--b0);
+            margin-bottom: 25px;
+          "
+        >
+          Chargement du contenu...
+        </div>
+
+        <div
+          style="
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            border-top: 1px solid var(--b1);
+            padding-top: 20px;
+          "
+        >
+          <button
+            id="btn-modal-refuser"
+            class="va-btn va-no"
+            style="padding: 10px 20px"
+          >
+            ✕ Refuser
+          </button>
+          <button
+            id="btn-modal-valider"
+            class="va-btn va-ok"
+            style="padding: 10px 20px"
+          >
+            ✓ Valider la publication
+          </button>
+        </div>
+      </div>
+    </div>
+    <script src="../Frontend/script/admin/user.js" defer></script>
+    <script src="../Frontend/script/admin/annonce.js" defer></script>
+    <script src="../Frontend/script/admin/event.js" defer></script>
+    <script src="../Frontend/script/admin/renova.js" defer></script>
+    <script src="../Frontend/script/admin/translate.js" defer></script>
+    <script src="../Frontend/script/admin/articles.js" defer></script>
+    <script src="../Frontend/script/admin/box.js" defer></script>
   </body>
 </html>
