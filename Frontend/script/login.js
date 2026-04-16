@@ -45,7 +45,6 @@ function showForgot(){
 function socialLogin(p){alert('🔐 Authentification '+p+' — à connecter au back-end OAuth2.')}
 
 /* ─── SUBMIT LOGIN (API) ────────────────────────── */
-/* ─── SUBMIT LOGIN (API) ────────────────────────── */
 async function submitLogin() {
   let emailInfo = document.getElementById('loginEmail').value;
   let motDePasseInfo = document.getElementById('loginPwd').value;
