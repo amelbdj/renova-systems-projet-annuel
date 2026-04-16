@@ -35,7 +35,6 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log("showing the tutorial");
     }
     
-    // --- FIX: Call the function here, inside the same block! ---
     loadMyAnnonces(); 
 });
 

@@ -1360,6 +1360,7 @@ async function submitAnn() {
     const token  = localStorage.getItem('token');
     const editId = document.getElementById('editAnnId').value;
 
+    // le fichier JSON que tu doit envoyee
     const payload = {
         titre:        document.querySelector('#annForm input[type="text"]').value,
         type:         document.querySelector('#annForm select').value,
@@ -1396,7 +1397,7 @@ async function submitAnn() {
             }
             
             document.getElementById('editAnnId').value = "";
-            document.getElementById('formTitle').textContent = "Créer une annonce";
+            document.getElementById('formTitle').textContent = "Creer une annonce";
             toggleAnnForm(); 
             loadMyAnnonces(); 
         } else {
