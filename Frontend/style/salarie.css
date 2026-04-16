@@ -1401,9 +1401,26 @@ select option {
   color: var(--txt-m);
   margin-bottom: 20px;
 }
+/* Force l'affichage au premier plan absolu */
+#postModal.open {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 10000 !important;
+}
 
-/* ─── FOOTER ──────────────────────────────────── */
-footer {
+/* On s'assure que toutes les modales partagent le même comportement */
+.modal-bg {
+  position: fixed !important;
+  inset: 0 !important;
+  background: rgba(0, 0, 0, 0.75) !important;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.3s ease;
+  display: none; /* Caché par défaut */
+}
+
+─── FOOTER ─────────────────────────────────── */ footer {
   border-top: 1px solid var(--b0);
   padding: 28px 0 40px;
   text-align: center;

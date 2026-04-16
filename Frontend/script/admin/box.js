@@ -1,5 +1,3 @@
-let monToken = localStorage.getItem("token");
-
 function GetBox() {
   const container = document.getElementById("box-container");
   const statContainer = document.getElementById("box-stats");
@@ -10,7 +8,11 @@ function GetBox() {
 
   container.innerHTML = "";
 
-  fetch("http://localhost:8081/admin/boxs")
+  fetch("http://localhost:8081/admin/boxs", {
+    headers: {
+      Authorization: "Bearer " + monToken,
+    },
+  })
     .then((response) => response.json())
     .then((boxs) => {
       boxs.forEach((box) => {

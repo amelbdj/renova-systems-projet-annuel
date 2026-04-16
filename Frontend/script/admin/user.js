@@ -1,5 +1,3 @@
-let monToken = localStorage.getItem("token");
-
 function setVtab(element, type) {
   document
     .querySelectorAll(".vtab")
@@ -162,7 +160,11 @@ function AfficherTableau(users) {
 }
 
 function GetUsers() {
-  fetch("http://localhost:8081/admin/users")
+  fetch("http://localhost:8081/admin/users", {
+    headers: {
+      Authorization: "Bearer " + monToken,
+    },
+  })
     .then((res) => res.json())
     .then(AfficherTableau)
     .catch((err) => console.error("Erreur GET Users:", err));

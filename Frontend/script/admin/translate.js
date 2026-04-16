@@ -1,7 +1,11 @@
 let currentTranslations = {};
 
 function changerLangue(langue) {
-  fetch(`http://localhost:8081/api/translations?lang=${langue}`)
+  fetch(`http://localhost:8081/api/translations?lang=${langue}`, {
+    headers: {
+      Authorization: "Bearer " + monToken,
+    },
+  })
     .then((res) => res.json())
     .then((data) => {
       currentTranslations = data;
@@ -45,7 +49,11 @@ function appliquerTraductions() {
 }
 
 function LoadFormulaireTraduction() {
-  fetch("http://localhost:8081/admin/translations/keys")
+  fetch("http://localhost:8081/admin/translations/keys", {
+    headers: {
+      Authorization: "Bearer " + monToken,
+    },
+  })
     .then((res) => {
       if (!res.ok) throw new Error("Erreur réseau");
       return res.json();
@@ -92,7 +100,10 @@ document
 
     fetch("http://localhost:8081/admin/translations/add", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + monToken,
+      },
       body: JSON.stringify(dataToSend),
     })
       .then((res) => {
@@ -126,7 +137,11 @@ document
 
 // Affichage dynamique des boutons de langue
 function GetLanguages() {
-  fetch("http://localhost:8081/api/languages")
+  fetch("http://localhost:8081/api/languages", {
+    headers: {
+      Authorization: "Bearer " + monToken,
+    },
+  })
     .then((res) => {
       if (!res.ok) throw new Error("Erreur réseau");
       return res.json();
