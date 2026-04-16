@@ -12,7 +12,7 @@ import (
 func LoginUser(email string, motDePasse string) (models.User, error) {
 	var user models.User
 
-	err := Db.QueryRow("SELECT id, mot_de_passe, role, type_statut FROM pa2026.utilisateur WHERE email = ?", email).Scan(&user.Id, &user.MotDePasse, &user.Role, &user.TypeStatut)
+	err := Db.QueryRow("SELECT id, mot_de_passe, role, validation FROM pa2026.utilisateur WHERE email = ?", email).Scan(&user.Id, &user.MotDePasse, &user.Role, &user.Validation)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -95,7 +95,7 @@ func CreateUser(User models.User) (int64, error) {
 		return 0, fmt.Errorf("L'email %s est déjà utilisé", User.Email)
 	}
 
-	result, err := Db.Exec("INSERT INTO pa2026.utilisateur (nom, prenom, email, mot_de_passe, role, type_statut, nom_entreprise, siret) VALUES (UPPER(?), UPPER(?), ?, ?, ?, ?, ?, ?)", User.Nom, User.Prenom, User.Email, User.MotDePasse, User.Role, User.TypeStatut, User.NomEntreprise, User.Siret)
+	result, err := Db.Exec("INSERT INTO pa2026.utilisateur (nom, prenom, email, mot_de_passe, role, validation, nom_entreprise, siret) VALUES (UPPER(?), UPPER(?), ?, ?, ?, ?, ?, ?)", User.Nom, User.Prenom, User.Email, User.MotDePasse, User.Role, User.Validation, User.NomEntreprise, User.Siret)
 
 	if err != nil {
 		return 0, fmt.Errorf("CreateUser : %s", err.Error())

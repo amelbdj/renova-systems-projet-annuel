@@ -42,12 +42,12 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var monStatut string
+	var validation string
 
-	if userBdd.TypeStatut == nil {
-		monStatut = "En attente"
+	if userBdd.Validation == "" {
+		validation = "En attente"
 	} else {
-		monStatut = *userBdd.TypeStatut
+		validation = userBdd.Validation
 	}
 
 	token, err := auth.GenerateJWT(userBdd.Id, userBdd.Role)
@@ -59,7 +59,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 reponse := map[string]interface{}{
         "token":  token,
         "role":   userBdd.Role,
-        "statut": monStatut,
+        "validation": validation,
         "id":     userBdd.Id, 
     }
 

@@ -46,6 +46,7 @@ function CreateEvent() {
       alert("Événement soumis avec succès. Il est en attente de validation.");
       closeEvt();
       resetEvtForm();
+      GetEvenements();
     })
     .catch((err) => {
       console.error(err);
@@ -70,7 +71,7 @@ function GetEvenements() {
   const container = document.getElementById("event-grid");
   if (!container) return;
 
-  fetch(`http://localhost:8081/admin/evenements/salarie/${userId}`, {
+  fetch(`http://localhost:8081/admin/evenements`, {
     headers: {
       Authorization: "Bearer " + monToken,
     },
@@ -89,42 +90,47 @@ function GetEvenements() {
       }
 
       evenements.forEach((evt) => {
-        let statusBadge = "";
-        let actionButtons = "";
+        if (evt.idSalarie == userId) {
+          // Sécurité supplémentaire
+          let statusBadge = "";
+          let actionButtons = "";
 
-        const statut = evt.statut_validation
-          ? evt.statut_validation.toLowerCase()
-          : "en attente";
+          const statut = evt.statut_validation
+            ? evt.statut_validation.toLowerCase()
+            : "en attente";
 
-        if (statut === "validé" || statut === "en ligne") {
-          statusBadge = `<div class="evt-status t-green">✓ En ligne</div>`;
-          actionButtons = `
+          if (statut === "validé" || statut === "en ligne") {
+            statusBadge = `<div class="evt-status t-green">✓ En ligne</div>`;
+            actionButtons = `
             <span class="tag t-green">Publiée</span>
             <div style="display:flex;gap:5px">
               <button class="btn btn-g btn-xs">Modifier</button>
               <button class="btn btn-danger btn-xs" onclick="DeleteEvenement(${evt.id})">Annuler</button>
             </div>`;
-        } else {
-          statusBadge = `<div class="evt-status t-amber">⏳ En attente</div>`;
-          actionButtons = `
+          } else {
+            statusBadge = `<div class="evt-status t-amber">⏳ En attente</div>`;
+            actionButtons = `
             <span class="tag t-amber">Validation en cours</span>
             <button class="btn btn-g btn-xs">Modifier</button>`;
-        }
+          }
 
-        let dateFormatee = "Date inconnue";
-        let heureFormatee = "";
-        if (evt.date_debut) {
-          const d = new Date(evt.date_debut);
-          dateFormatee = d.toLocaleDateString("fr-FR", {
-            day: "numeric",
-            month: "short",
-          }); // "15 mars"
-          heureFormatee = d
-            .toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })
-            .replace(":", "h"); // "10h00"
-        }
-        // mettre une img specail event et formation par def
-        htmlContent += `
+          let dateFormatee = "Date inconnue";
+          let heureFormatee = "";
+          if (evt.date_debut) {
+            const d = new Date(evt.date_debut);
+            dateFormatee = d.toLocaleDateString("fr-FR", {
+              day: "numeric",
+              month: "short",
+            }); // "15 mars"
+            heureFormatee = d
+              .toLocaleTimeString("fr-FR", {
+                hour: "2-digit",
+                minute: "2-digit",
+              })
+              .replace(":", "h"); // "10h00"
+          }
+          // mettre une img specail event et formation par def
+          htmlContent += `
         <div class="evt-card">
           <div class="evt-banner" style="background:linear-gradient(135deg,#100820,#1c1040)">
             📅 
@@ -144,6 +150,11 @@ function GetEvenements() {
             </div>
           </div>
         </div>`;
+        } else {
+          container.innerHTML = `<div style="color:var(--txt-m); padding:20px;">Aucun événement trouvé.</div>
+          <div class="evt-add" onclick="openNewEvt()"><div class="plus">＋</div><span>Créer un événement</span></div>`;
+          return;
+        }
       });
 
       htmlContent += `

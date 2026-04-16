@@ -15,8 +15,10 @@ func GetAllArticles(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Access-Control-Allow-Origin", "*")
     w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
     w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-    w.WriteHeader(http.StatusOK)
-
+if r.Method == "OPTIONS" {
+        w.WriteHeader(http.StatusOK)
+        return
+    }
 
 	fmt.Println("hello from get articles")
 
@@ -48,6 +50,15 @@ func GetAllArticles(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetArticlesBySalarie(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+    w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+    w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	
+	if r.Method == "OPTIONS" {
+        w.WriteHeader(http.StatusOK)
+        return
+    }
 
 salarieId, err := strconv.Atoi(r.PathValue("id"))
 if err != nil {
