@@ -30,11 +30,14 @@ func main() {
 	http.HandleFunc("OPTIONS /admin/users/modify/{id}", admin.UpdateUser)
 	http.HandleFunc("OPTIONS /admin/users/validate/{id}", admin.ValidateUser)
 	http.HandleFunc("OPTIONS /admin/users/refuse/{id}", admin.RefuseUser)
+    http.HandleFunc("OPTIONS /admin/users", admin.GetAllUsers)
 
 	http.HandleFunc("OPTIONS /admin/categories/add", admin.CreateCategorie)
 	http.HandleFunc("OPTIONS /admin/categories/delete/{id}", admin.DeleteCategorie)
+    http.HandleFunc("OPTIONS /admin/categories", admin.GetAllCategories)
 
 	http.HandleFunc("OPTIONS /admin/annonces/validate/{id}", admin.ValidateAnnonce)
+    http.HandleFunc("OPTIONS /admin/annonces", admin.GetAllAnnonces)
 	http.HandleFunc("OPTIONS /admin/annonces/refuse/{id}", admin.RefuseAnnonce)
 	http.HandleFunc("OPTIONS /admin/annonces/add", admin.CreateAnnonce)
 	http.HandleFunc("OPTIONS /admin/annonces/delete/{id}", admin.DeleteAnnonce)
@@ -45,12 +48,13 @@ func main() {
 	http.HandleFunc("OPTIONS /admin/evenements/delete/{id}", admin.DeleteEvenement)
 	http.HandleFunc("OPTIONS /admin/evenements/refuse/{id}", admin.RefuseEvenement)
 	http.HandleFunc("OPTIONS /admin/evenements/add", admin.CreateEvenement)
-    http.HandleFunc("OPTIONS /admin/evenements",admin.GetAllEvenements)
+    http.HandleFunc("OPTIONS /admin/evenements", admin.GetAllEvenements)
 
 	http.HandleFunc("OPTIONS /admin/box/confirm-deposit", admin.ConfirmDeposit)
 	http.HandleFunc("OPTIONS /admin/box/collect-object", admin.CollectObject)
 	http.HandleFunc("OPTIONS /admin/order/create", admin.CreateOrder)
 	http.HandleFunc("OPTIONS /admin/box/create", admin.CreateBox)
+    http.HandleFunc("OPTIONS /admin/boxs", admin.GetAllBoxs)
 
 	http.HandleFunc("OPTIONS /admin/articles/validate/{id}", admin.ValidateArticle)
 	http.HandleFunc("OPTIONS /admin/articles/refuse/{id}", admin.RefuseArticle)
@@ -58,6 +62,12 @@ func main() {
 	http.HandleFunc("OPTIONS /admin/articles/add/{action}", admin.CreateArticle)
 	http.HandleFunc("OPTIONS /admin/articles/modify/{id}/{action}", admin.ModifyArticle)
     http.HandleFunc("OPTIONS /admin/articles/salarie/{id}", admin.GetArticlesBySalarie)
+    http.HandleFunc("OPTIONS /admin/articles/{id}", admin.GetArticleById)
+
+    http.HandleFunc("OPTIONS /api/translations", admin.GetTranslations)
+	http.HandleFunc("OPTIONS /api/languages", admin.GetLanguages)
+	http.HandleFunc("OPTIONS /admin/translations/add", admin.AddLanguage)
+	http.HandleFunc("OPTIONS /admin/translations/keys", admin.GetTranslationKeysHandler)
 
 
     // --- USERS ---
@@ -90,10 +100,10 @@ func main() {
     http.HandleFunc("PUT /admin/annonces/modify/{id}", auth.VerifyTokenMiddleware(admin.UpdateAnnonce))
 
     // --- EVENEMENTS ---
-    http.HandleFunc("GET /admin/evenements", admin.GetAllEvenements) 
+    http.HandleFunc("GET /admin/evenements", auth.VerifyTokenMiddleware(admin.GetAllEvenements)) 
     http.HandleFunc("POST /admin/evenements/add", auth.VerifyTokenMiddleware(admin.CreateEvenement)) // AJOUTÉ
     http.HandleFunc("PUT /admin/evenements/{id}", auth.VerifyTokenMiddleware(admin.UpdateEvenement)) // AJOUTÉ
-    http.HandleFunc("DELETE /admin/evenements/{id}", auth.VerifyTokenMiddleware(admin.DeleteEvenement)) // AJOUTÉ
+    http.HandleFunc("DELETE /admin/evenements/delete/{id}", auth.VerifyTokenMiddleware(admin.DeleteEvenement)) // AJOUTÉ
     http.HandleFunc("PUT /admin/evenements/validate/{id}", auth.VerifyTokenMiddleware(admin.ValidateEvenement))
     http.HandleFunc("PUT /admin/evenements/refuse/{id}", auth.VerifyTokenMiddleware(admin.RefuseEvenement))
 
@@ -113,6 +123,12 @@ func main() {
     http.HandleFunc("DELETE /admin/articles/delete/{id}", auth.VerifyTokenMiddleware(admin.DeleteArticle)) // AJOUTÉ
     http.HandleFunc("POST /admin/articles/add/{action}", auth.VerifyTokenMiddleware(admin.CreateArticle)) // AJOUTÉ
     http.HandleFunc("PUT /admin/articles/modify/{id}/{action}", auth.VerifyTokenMiddleware(admin.ModifyArticle)) // AJOUTÉ
+
+    // --- TRADUCTIONS ---
+    http.HandleFunc("GET /api/translations", admin.GetTranslations)
+	http.HandleFunc("GET /api/languages", admin.GetLanguages)
+	http.HandleFunc("POST /admin/translations/add", admin.AddLanguage)
+	http.HandleFunc("GET /admin/translations/keys", admin.GetTranslationKeysHandler)
 
     fmt.Println("test de : http://localhost:8081")
  

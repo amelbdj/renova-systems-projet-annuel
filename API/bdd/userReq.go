@@ -95,7 +95,7 @@ func CreateUser(User models.User) (int64, error) {
 		return 0, fmt.Errorf("L'email %s est déjà utilisé", User.Email)
 	}
 
-	result, err := Db.Exec("INSERT INTO pa2026.utilisateur (nom, prenom, email, mot_de_passe, role, validation, nom_entreprise, siret) VALUES (UPPER(?), UPPER(?), ?, ?, ?, ?, ?, ?)", User.Nom, User.Prenom, User.Email, User.MotDePasse, User.Role, User.Validation, User.NomEntreprise, User.Siret)
+	result, err := Db.Exec("INSERT INTO pa2026.utilisateur (nom, prenom, email, mot_de_passe, role, validation, nom_entreprise, siret) VALUES (UPPER(?), UPPER(?), ?, ?, ?, 'En attente', ?, ?)", User.Nom, User.Prenom, User.Email, User.MotDePasse, User.Role, User.NomEntreprise, User.Siret)
 
 	if err != nil {
 		return 0, fmt.Errorf("CreateUser : %s", err.Error())

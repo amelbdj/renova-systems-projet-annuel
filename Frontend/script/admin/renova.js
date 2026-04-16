@@ -1,5 +1,3 @@
-let monToken = localStorage.getItem("token");
-
 function openNewCategory() {
   const modal = document.getElementById("NewCategoryModal");
   if (modal) modal.style.display = "flex";
@@ -10,7 +8,11 @@ function AfficherCategories() {
   if (!container) return;
   container.innerHTML = "";
 
-  fetch("http://localhost:8081/admin/categories")
+  fetch("http://localhost:8081/admin/categories", {
+    headers: {
+      Authorization: "Bearer " + monToken,
+    },
+  })
     .then((response) => response.json())
     .then((categories) => {
       categories.forEach((category) => {

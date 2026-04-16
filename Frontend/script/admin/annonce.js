@@ -11,13 +11,15 @@ const Auth = {
   },
 };
 
-let monToken = localStorage.getItem("token");
-
 function GetAnnonce() {
   const container = document.getElementById("result");
   if (!container) return;
 
-  fetch("http://localhost:8081/admin/annonces")
+  fetch("http://localhost:8081/admin/annonces", {
+    headers: {
+      Authorization: "Bearer " + monToken,
+    },
+  })
     .then((res) => {
       if (!res.ok) throw new Error("Erreur serveur annonces");
       return res.json();

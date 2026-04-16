@@ -9,8 +9,14 @@ import (
 )
 
 func ReserveBox(w http.ResponseWriter, r *http.Request) {
-    // Structure pour lire ce que le Front envoie
-    var req struct {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	
+	if r.Method == "OPTIONS" {
+        w.WriteHeader(http.StatusOK)
+        return 
+    }
+	    var req struct {
         AnnonceId     int `json:"annonce_id"`
         ConteneurId   int `json:"conteneur_id"`
         ParticulierId int `json:"particulier_id"`
@@ -32,6 +38,15 @@ func ReserveBox(w http.ResponseWriter, r *http.Request) {
 }
 
 func ConfirmDeposit(w http.ResponseWriter, r *http.Request) {
+
+    	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	
+	if r.Method == "OPTIONS" {
+        w.WriteHeader(http.StatusOK)
+        return 
+    }
+	
     var req struct {
         PinCode string `json:"pin_code"`
     }
@@ -51,6 +66,15 @@ func ConfirmDeposit(w http.ResponseWriter, r *http.Request) {
 }
 
 func CollectObject(w http.ResponseWriter, r *http.Request) {
+
+    	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	
+	if r.Method == "OPTIONS" {
+        w.WriteHeader(http.StatusOK)
+        return 
+    }
+	
     var req struct {
         Barcode        string `json:"barcode"`
         ProfessionnelId int  `json:"professionnel_id"`
@@ -71,8 +95,16 @@ func CollectObject(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetAllBoxs(w http.ResponseWriter, r *http.Request) {
-    	fmt.Println("hello from GetAllBoxs")
-w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+    fmt.Println("hello from GetAllBoxs")
+    w.Header().Set("Access-Control-Allow-Origin", "*")
+    w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+    
+    if r.Method == "OPTIONS" {
+        w.WriteHeader(http.StatusOK)
+        return 
+    }
+
     Boxs, err := bdd.GetBox()
     if err != nil {
         http.Error(w, "Erreur lors de la récupération des boxs : "+err.Error(), http.StatusInternalServerError)
@@ -89,9 +121,11 @@ w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 }
 
 func CreateBox(w http.ResponseWriter, r *http.Request) {
-     w.Header().Set("Access-Control-Allow-Origin", "*")
+
+    w.Header().Set("Access-Control-Allow-Origin", "*")
     w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+    w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
     if r.Method == "OPTIONS" {
         w.WriteHeader(http.StatusOK)
         return 
