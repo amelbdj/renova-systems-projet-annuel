@@ -37,7 +37,6 @@ func GenerateJWT(userID int, role string) (string, error) {
 
 func VerifyTokenMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// --- NECESSARY ADDITION FOR BROWSER PERMISSION ---
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
@@ -46,9 +45,6 @@ func VerifyTokenMiddleware(next http.HandlerFunc) http.HandlerFunc {
 			w.WriteHeader(http.StatusOK)
 			return
 		}
-		// --- END OF NECESSARY ADDITION ---
-
-		// Your friend's code starts here exactly as before:
 		authHeader := r.Header.Get("Authorization")
 		if authHeader == "" {
 			http.Error(w, "Accès refusé : Token manquant", http.StatusUnauthorized)
