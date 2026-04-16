@@ -118,6 +118,8 @@ func CreateAnnonce(w http.ResponseWriter, r *http.Request) {
 func DeleteAnnonce(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Access-Control-Allow-Methods", "DELETE, OPTIONS")
+
 	fmt.Println("hello from DeleteAnnonce")
 	if r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)

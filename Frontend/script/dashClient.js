@@ -120,7 +120,7 @@ function openEditForm(ann) {
     document.getElementById('editAnnId').value = ann.id;
     
     document.getElementById('formTitle').textContent = "Modifier l'annonce";
-    document.querySelector('#annForm .btn-p').textContent = "Enregistrer les modifications ✓";
+    document.querySelector('#annForm .btn-p').textContent = "Enregistrer les modifications";
     
     const f = document.getElementById('annForm');
     f.style.display = 'block';
