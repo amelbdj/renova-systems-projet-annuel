@@ -1,3 +1,5 @@
+let monToken = localStorage.getItem("token");
+
 function GetBox() {
   const container = document.getElementById("box-container");
   const statContainer = document.getElementById("box-stats");
@@ -124,6 +126,7 @@ function CreateBox() {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      Authorization: "Bearer " + monToken,
     },
     body: JSON.stringify(newBoxData),
   })

@@ -42,12 +42,12 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var monStatut string
+	var validation string
 
-	if userBdd.TypeStatut == nil {
-		monStatut = "En attente"
+	if userBdd.Validation == "" {
+		validation = "En attente"
 	} else {
-		monStatut = *userBdd.TypeStatut
+		validation = userBdd.Validation
 	}
 
 	token, err := auth.GenerateJWT(userBdd.Id, userBdd.Role)
@@ -56,14 +56,14 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	reponse := map[string]string{
+	reponse := map[string]interface{}{
 		"token":      token,
-		"id":         fmt.Sprintf("%d", userBdd.Id),
+		"id":         userBdd.Id,
 		"role":       userBdd.Role,
-		"statut":     monStatut,
 		"prenom":     userBdd.Prenom,
-		"score":      fmt.Sprintf("%d", userBdd.Score),
-		"tutorielVu": fmt.Sprintf("%t", userBdd.TutorielVu),
+		"score":      userBdd.Score,
+		"tutorielVu": userBdd.TutorielVu,
+		"validation": validation,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -71,7 +71,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func Inscription(w http.ResponseWriter, r *http.Request) {
-	// 1. The "Security Bouncers" (CORS)
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
@@ -105,8 +104,7 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("hello from GetAllUsers")
 
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 	users, err := bdd.GetUsers()
 
 	if err != nil {
@@ -129,7 +127,7 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 func CreateUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
 	if r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
@@ -172,7 +170,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 func DeletedUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
 	fmt.Println("hello from DeletedUser")
 
@@ -201,7 +199,7 @@ func DeletedUser(w http.ResponseWriter, r *http.Request) {
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
 	if r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
@@ -240,8 +238,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 func GetUserById(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 	idStr := r.PathValue("id")
 
 	id, err := strconv.Atoi(idStr)
@@ -262,7 +259,7 @@ func GetUserById(w http.ResponseWriter, r *http.Request) {
 func GetUserByRole(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 	role := r.PathValue("role")
 
 	users, err := bdd.GetUserByRole(role)
@@ -277,7 +274,7 @@ func GetUserByRole(w http.ResponseWriter, r *http.Request) {
 func GetUserByName(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 	nameQuery := r.URL.Query().Get("name") // recup les valeurs de la query string(diff de path variable)
 	roleQuery := r.URL.Query().Get("role")
 
@@ -293,7 +290,7 @@ func GetUserByName(w http.ResponseWriter, r *http.Request) {
 func ValidateUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 	idStr := r.PathValue("id")
 
 	id, err := strconv.Atoi(idStr)
@@ -317,7 +314,7 @@ type RefuseRequest struct {
 func RefuseUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
 	if r.Method == http.MethodOptions {
 		w.WriteHeader(http.StatusOK)
@@ -343,17 +340,14 @@ func RefuseUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 5. Réponse Pro en JSON
 	w.Header().Set("Content-Type", "application/json")
 	fmt.Fprint(w, `{"message": "Utilisateur refusé avec motif enregistré"}`)
 }
 
 func UploadDocumentHandler(w http.ResponseWriter, r *http.Request) {
-	// 1. Gestion des CORS (comme tu as fait pour CreateUser)
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 	if r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
 		return
@@ -361,7 +355,6 @@ func UploadDocumentHandler(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println("hello from uploadDocument")
 
-	// 2. On limite la taille du fichier (ici 10 MB maximum)
 	err := r.ParseMultipartForm(10 << 20)
 	if err != nil {
 		fmt.Println("Erreur ParseMultipartForm :", err)
@@ -369,20 +362,17 @@ func UploadDocumentHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 3. Récupération des champs textes (envoyés par le JS)
 	userID := r.FormValue("user_id")
-	typeDocument := r.FormValue("type_document") // ex: "KBIS" ou "DIPLOME"
+	typeDocument := r.FormValue("type_document")
 
-	// 4. Récupération du fichier physique
 	file, handler, err := r.FormFile("document")
 	if err != nil {
 		fmt.Println("Erreur récupération fichier :", err)
 		http.Error(w, "Impossible de lire le fichier joint", http.StatusBadRequest)
 		return
 	}
-	defer file.Close() // Très important pour ne pas bloquer la mémoire !
+	defer file.Close()
 
-	// 5. Création du dossier "uploads" s'il n'existe pas
 	cheminDossier := "./uploads/documents/"
 	err = os.MkdirAll(cheminDossier, os.ModePerm)
 	if err != nil {
@@ -390,8 +380,6 @@ func UploadDocumentHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 6. Sauvegarde du fichier sur le serveur
-	// On met l'ID de l'utilisateur dans le nom du fichier pour éviter les doublons
 	nomFichierFinal := fmt.Sprintf("user_%s_%s", userID, handler.Filename)
 	cheminComplet := filepath.Join(cheminDossier, nomFichierFinal)
 
@@ -402,9 +390,8 @@ func UploadDocumentHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer dst.Close()
-	io.Copy(dst, file) // On copie le contenu du fichier téléchargé dans notre nouveau fichier
+	io.Copy(dst, file)
 
-	// 7. Enregistrement en Base de Données
 	err = bdd.InsertDocument(userID, typeDocument, cheminComplet)
 	if err != nil {
 		fmt.Println("Erreur BDD :", err)
@@ -412,7 +399,6 @@ func UploadDocumentHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 8. Réponse finale (JSON)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	fmt.Fprint(w, `{"message": "Document sauvegardé avec succès"}`)
