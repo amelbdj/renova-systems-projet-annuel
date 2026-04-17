@@ -3,7 +3,9 @@ package admin
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
+	"os"
 	"upcycleconnect/bdd"
 	"upcycleconnect/models"
 
@@ -98,21 +100,49 @@ func CreateAnnonce(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var annonce models.Annonce
-	err := json.NewDecoder(r.Body).Decode(&annonce)
-	if err != nil {
-		http.Error(w, "données invalides", http.StatusBadRequest)
+	if err := r.ParseMultipartForm(30 << 20); err != nil {
+		http.Error(w, "Formulaire invalide", http.StatusBadRequest)
 		return
 	}
-	err = bdd.CreateAnnonce(annonce)
+
+	var ann models.Annonce
+	ann.Titre = r.FormValue("titre")
+	ann.Description = r.FormValue("description")
+	ann.Type = r.FormValue("type")
+	ann.Prix, _ = strconv.ParseFloat(r.FormValue("prix"), 64)
+	ann.IdCategorie, _ = strconv.Atoi(r.FormValue("id_categorie"))
+	ann.IdUser, _ = strconv.Atoi(r.FormValue("id_user"))
+	ann.Ville = r.FormValue("ville")
+	ann.CodePostal = r.FormValue("code_postal")
+	ann.Etat = r.FormValue("etat")
+	ann.PoidsKg, _ = strconv.ParseFloat(r.FormValue("poids_kg"), 64)
+	ann.Quantite, _ = strconv.Atoi(r.FormValue("quantite"))
+
+	file, header, err := r.FormFile("image")
+	if err == nil {
+		defer file.Close()
+
+		filePath := "./uploads/" + header.Filename
+
+		dst, err := os.Create(filePath)
+		if err != nil {
+			http.Error(w, "Erreur stockage image", http.StatusInternalServerError)
+			return
+		}
+		defer dst.Close()
+		io.Copy(dst, file)
+
+		ann.Image = "/view-uploads/" + header.Filename
+	}
+
+	err = bdd.CreateAnnonce(ann)
 	if err != nil {
-		http.Error(w,
-			"erreur dans la création d'une annonce",
-			http.StatusInternalServerError)
+		http.Error(w, "Erreur BDD", http.StatusInternalServerError)
 		return
 	}
 
 	w.WriteHeader(http.StatusCreated)
+	fmt.Fprintln(w, "Annonce créée avec succès")
 }
 
 func DeleteAnnonce(w http.ResponseWriter, r *http.Request) {
@@ -151,25 +181,49 @@ func UpdateAnnonce(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		return
 	}
-	id, err := strconv.Atoi(r.PathValue("id"))
 
+	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
 		http.Error(w, "id invalide", http.StatusBadRequest)
 		return
 	}
-	var annonce models.Annonce
-	err = json.NewDecoder(r.Body).Decode(&annonce)
-	if err != nil {
-		http.Error(w, "données invalides", http.StatusBadRequest)
+
+	if err := r.ParseMultipartForm(30 << 20); err != nil {
+		http.Error(w, "Données invalides", http.StatusBadRequest)
 		return
 	}
+
+	var annonce models.Annonce
+	annonce.Titre = r.FormValue("titre")
+	annonce.Description = r.FormValue("description")
+	annonce.Type = r.FormValue("type")
+	annonce.Prix, _ = strconv.ParseFloat(r.FormValue("prix"), 64)
+	annonce.IdCategorie, _ = strconv.Atoi(r.FormValue("id_categorie"))
+	annonce.IdUser, _ = strconv.Atoi(r.FormValue("id_user"))
+	annonce.CodePostal = r.FormValue("code_postal")
+	annonce.Ville = r.FormValue("ville")
+	annonce.Etat = r.FormValue("etat")
+	annonce.PoidsKg, _ = strconv.ParseFloat(r.FormValue("poids_kg"), 64)
+	annonce.Quantite, _ = strconv.Atoi(r.FormValue("quantite"))
+
+	file, header, err := r.FormFile("image")
+	if err == nil {
+		defer file.Close()
+		filePath := "./uploads/" + header.Filename
+		dst, _ := os.Create(filePath)
+		defer dst.Close()
+		io.Copy(dst, file)
+		annonce.Image = "/view-uploads/" + header.Filename
+	} else {
+		annonce.Image = r.FormValue("old_image_path")
+	}
+
 	err = bdd.UpdateAnnonce(id, annonce)
 	if err != nil {
-		http.Error(w,
-			"erreur dans la mise à jour de l'annonce",
-			http.StatusInternalServerError)
+		http.Error(w, "erreur dans la mise à jour de l'annonce", http.StatusInternalServerError)
 		return
 	}
+
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, "Annonce mise à jour avec succès")
 }
