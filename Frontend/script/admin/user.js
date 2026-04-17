@@ -337,7 +337,6 @@ function FermerModaleRefus() {
   document.getElementById("modalRefus").style.display = "none";
 }
 
-// Écouteur sur le bouton "Confirmer" de la modale
 document.getElementById("btnConfirmerRefus").onclick = function () {
   const raison = document.getElementById("motifTexte").value;
 
@@ -362,6 +361,11 @@ document.getElementById("btnConfirmerRefus").onclick = function () {
     })
     .catch((err) => console.error("Erreur refus:", err));
 };
+
+function logout() {
+  localStorage.clear();
+  window.location.href = "login.html";
+}
 
 document.addEventListener("DOMContentLoaded", () => {
   GetUsers();
