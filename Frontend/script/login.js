@@ -51,7 +51,6 @@ function socialLogin(p) {
 }
 
 /* ─── SUBMIT LOGIN (API) ────────────────────────── */
-/* ─── SUBMIT LOGIN (API) ────────────────────────── */
 async function submitLogin() {
   let emailInfo = document.getElementById("loginEmail").value;
   let motDePasseInfo = document.getElementById("loginPwd").value;
@@ -77,19 +76,24 @@ async function submitLogin() {
 
     if (reponse.ok === true) {
       let donneesServeur = await reponse.json();
+      
+      localStorage.setItem('token', donneesServeur.token);
+      localStorage.setItem('userRole', donneesServeur.role);
+      localStorage.setItem('userId', donneesServeur.id);
 
-      localStorage.setItem("token", donneesServeur.token);
-      localStorage.setItem("userRole", donneesServeur.role);
-      localStorage.setItem("userId", donneesServeur.id);
-
-      if (donneesServeur.validation === "En attente") {
+      localStorage.setItem('userName', donneesServeur.prenom); 
+      localStorage.setItem('userScore', donneesServeur.score || 0);
+      localStorage.setItem('tutorielVu', donneesServeur.tutorielVu);
+      
+      if (donneesServeur.statut === "En attente") {
         window.location.href = "attente.html";
         return;
       }
 
       if (donneesServeur.role === "Utilisateur") {
-        window.location.href = "espace_particulier.html";
-      } else if (donneesServeur.role === "Prestataire") {
+        window.location.href = "espClient.html";
+      } 
+      else if (donneesServeur.role === "Prestataire") {
         window.location.href = "espace_pro.html";
       } else if (donneesServeur.role === "Salarié") {
         window.location.href = "espace_salarie.html";

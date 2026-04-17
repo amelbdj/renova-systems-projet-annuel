@@ -56,12 +56,15 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-reponse := map[string]interface{}{
-        "token":  token,
-        "role":   userBdd.Role,
-        "validation": validation,
-        "id":     userBdd.Id, 
-    }
+	reponse := map[string]interface{}{
+		"token":      token,
+		"id":         userBdd.Id,
+		"role":       userBdd.Role,
+		"prenom":     userBdd.Prenom,
+		"score":      userBdd.Score,
+		"tutorielVu": userBdd.TutorielVu,
+		"validation": validation,
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(reponse)
@@ -244,11 +247,14 @@ func GetUserById(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
 	
 	if r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
 		return
 	}
+
+
 
 	idStr := r.PathValue("id")
 
@@ -271,10 +277,12 @@ func GetUserByRole(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
 	if r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
 		return
 	}
+
 	role := r.PathValue("role")
 
 	users, err := bdd.GetUserByRole(role)
@@ -387,7 +395,7 @@ func UploadDocumentHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userID := r.FormValue("user_id")
-	typeDocument := r.FormValue("type_document") 
+	typeDocument := r.FormValue("type_document")
 
 	file, handler, err := r.FormFile("document")
 	if err != nil {
@@ -395,7 +403,7 @@ func UploadDocumentHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Impossible de lire le fichier joint", http.StatusBadRequest)
 		return
 	}
-	defer file.Close() 
+	defer file.Close()
 
 	cheminDossier := "./uploads/documents/"
 	err = os.MkdirAll(cheminDossier, os.ModePerm)
@@ -404,7 +412,6 @@ func UploadDocumentHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	
 	nomFichierFinal := fmt.Sprintf("user_%s_%s", userID, handler.Filename)
 	cheminComplet := filepath.Join(cheminDossier, nomFichierFinal)
 
@@ -415,7 +422,7 @@ func UploadDocumentHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer dst.Close()
-	io.Copy(dst, file) 
+	io.Copy(dst, file)
 
 	err = bdd.InsertDocument(userID, typeDocument, cheminComplet)
 	if err != nil {
@@ -453,4 +460,21 @@ func VerifierEmail(w http.ResponseWriter, r *http.Request) {
 	} else {
 		fmt.Fprintf(w, "false")
 	}
+}
+
+func UpdateTutorialStatus(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
+	var data struct {
+		UserID int `json:"id"`
+	}
+	json.NewDecoder(r.Body).Decode(&data)
+
+	_, err := bdd.Db.Exec("UPDATE pa2026.utilisateur SET tutoriel_vu = 1 WHERE id = ?", data.UserID)
+
+	if err != nil {
+		http.Error(w, "Erreur BDD", http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
 }

@@ -12,8 +12,16 @@ import (
 func LoginUser(email string, motDePasse string) (models.User, error) {
 	var user models.User
 
-	err := Db.QueryRow("SELECT id, mot_de_passe, role, validation FROM pa2026.utilisateur WHERE email = ?", email).Scan(&user.Id, &user.MotDePasse, &user.Role, &user.Validation)
-
+	err := Db.QueryRow("SELECT id, mot_de_passe, role, type_statut, prenom, score, tutoriel_vu, validation FROM pa2026.utilisateur WHERE email = ?", email).Scan(
+		&user.Id,
+		&user.MotDePasse,
+		&user.Role,
+		&user.TypeStatut,
+		&user.Prenom,
+		&user.Score,
+		&user.TutorielVu,
+		&user.Validation,
+	)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return user, fmt.Errorf("email ou mot de passe incorrect")
@@ -24,11 +32,9 @@ func LoginUser(email string, motDePasse string) (models.User, error) {
 	fmt.Printf("Mot de passe reçu du JSON : '%s'\n", motDePasse)
 	fmt.Printf("Hash BDD trouvé         : '%s'\n", user.MotDePasse)
 
-
-
 	err = bcrypt.CompareHashAndPassword([]byte(user.MotDePasse), []byte(motDePasse))
 	if err != nil {
-		fmt.Println("Erreur Bcrypt :", err) 
+		fmt.Println("Erreur Bcrypt :", err)
 		return user, fmt.Errorf("email ou mot de passe incorrect")
 	}
 
@@ -109,7 +115,6 @@ func CreateUser(User models.User) (int64, error) {
 	return nouvelID, nil
 }
 func DeletedUser(id int) error {
-
 
 	_, err := Db.Query("SELECT id FROM pa2026.utilisateur WHERE id = ?", id)
 	if err != nil {
