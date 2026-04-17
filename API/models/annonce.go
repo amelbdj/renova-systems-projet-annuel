@@ -22,6 +22,7 @@ type Annonce struct {
 	PhotoUrl           string    `json:"photo_url"`
 	IdUser             int       `json:"id_user"`
 	IdCategorie        int       `json:"id_categorie"`
+	Image              string    `json:"image"`
 }
 
 type Categorie struct {
