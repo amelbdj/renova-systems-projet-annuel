@@ -165,7 +165,7 @@ func UpdateUserById(user models.User) error {
 func GetUserById(id int) ([]models.User, error) {
 	var Users []models.User
 
-	rows, err := Db.Query("SELECT id, nom, prenom, email, mot_de_passe, role, type_statut, nom_entreprise, siret, score, validation FROM pa2026.utilisateur WHERE id = ?", id)
+	rows, err := Db.Query("SELECT id, nom, prenom, email, mot_de_passe, role, type_statut, nom_entreprise, siret, score, validation, stripe_account_id, stripe_verif_completed FROM pa2026.utilisateur WHERE id = ?", id)
 
 	if err != nil {
 		return nil, fmt.Errorf("get User by id : %v", err.Error())
@@ -175,7 +175,7 @@ func GetUserById(id int) ([]models.User, error) {
 	for rows.Next() {
 		var User models.User
 
-		err := rows.Scan(&User.Id, &User.Nom, &User.Prenom, &User.Email, &User.MotDePasse, &User.Role, &User.TypeStatut, &User.NomEntreprise, &User.Siret, &User.Score, &User.Validation)
+		err := rows.Scan(&User.Id, &User.Nom, &User.Prenom, &User.Email, &User.MotDePasse, &User.Role, &User.TypeStatut, &User.NomEntreprise, &User.Siret, &User.Score, &User.Validation, &User.StripeAccountId, &User.StripeVerifCompleted)
 
 		if err != nil {
 			return nil, fmt.Errorf("get User by name : %v", err.Error())
