@@ -157,34 +157,20 @@ func UpdateUserById(user models.User) error {
 	return nil
 }
 
-func GetUserById(id int) ([]models.User, error) {
-	var Users []models.User
+func GetUserById(id int) (models.User, error) { // On retire les []
+    var user models.User // Un seul user, pas un slice
 
-	rows, err := Db.Query("SELECT id, nom, prenom, email, mot_de_passe, role, type_statut, nom_entreprise, siret, score, validation FROM pa2026.utilisateur WHERE id = ?", id)
+    err := Db.QueryRow("SELECT id, nom, prenom, email, mot_de_passe, role, type_statut, nom_entreprise, siret, score, validation FROM pa2026.utilisateur WHERE id = ?", id).Scan(
+        &user.Id, &user.Nom, &user.Prenom, &user.Email, &user.MotDePasse, 
+        &user.Role, &user.TypeStatut, &user.NomEntreprise, &user.Siret, 
+        &user.Score, &user.Validation,
+    )
 
-	if err != nil {
-		return nil, fmt.Errorf("get User by id : %v", err.Error())
-	}
-	defer rows.Close()
+    if err != nil {
+        return models.User{}, fmt.Errorf("get User by id : %v", err)
+    }
 
-	for rows.Next() {
-		var User models.User
-
-		err := rows.Scan(&User.Id, &User.Nom, &User.Prenom, &User.Email, &User.MotDePasse, &User.Role, &User.TypeStatut, &User.NomEntreprise, &User.Siret, &User.Score, &User.Validation)
-
-		if err != nil {
-			return nil, fmt.Errorf("get User by name : %v", err.Error())
-		}
-
-		Users = append(Users, User)
-	}
-
-	err = rows.Err()
-
-	if err != nil {
-		return nil, fmt.Errorf("get User by id : %v", err.Error())
-	}
-	return Users, nil
+    return user, nil
 }
 
 func GetUserByRole(role string) ([]models.User, error) {
