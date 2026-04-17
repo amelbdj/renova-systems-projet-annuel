@@ -13,6 +13,9 @@ import (
 	"net/http"
 	"strconv"
 	"upcycleconnect/models"
+
+	"github.com/stripe/stripe-go/v81"
+	"github.com/stripe/stripe-go/v81/account"
 )
 
 func Login(w http.ResponseWriter, r *http.Request) {
@@ -236,24 +239,29 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetUserById(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-	idStr := r.PathValue("id")
+	idStr := r.URL.Query().Get("id")
+	if idStr == "" {
+		idStr = r.PathValue("id")
+	}
+	id, _ := strconv.Atoi(idStr)
 
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		http.Error(w, "id invalide", http.StatusBadRequest)
+	users, err := bdd.GetUserById(id)
+	if err != nil || len(users) == 0 {
+		http.Error(w, "Utilisateur introuvable", http.StatusNotFound)
 		return
 	}
+	user := &users[0]
 
-	user, err := bdd.GetUserById(id)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
+	if user.StripeAccountId != "" && !user.StripeVerifCompleted {
+		stripe.Key = StripeSecretKey
+		if acc, err := account.GetByID(user.StripeAccountId, nil); err == nil && acc.PayoutsEnabled {
+			bdd.Db.Exec("UPDATE utilisateur SET stripe_verif_completed = 1 WHERE id = ?", id)
+			user.StripeVerifCompleted = true
+		}
 	}
+
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(user)
+	json.NewEncoder(w).Encode(users)
 }
 
 func GetUserByRole(w http.ResponseWriter, r *http.Request) {

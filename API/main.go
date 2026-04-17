@@ -68,6 +68,7 @@ func main() {
 	http.HandleFunc("GET /admin/users/search", auth.VerifyTokenMiddleware(admin.GetUserByName))
 	http.HandleFunc("PUT /admin/users/validate/{id}", auth.VerifyTokenMiddleware(admin.ValidateUser))
 	http.HandleFunc("PUT /admin/users/refuse/{id}", auth.VerifyTokenMiddleware(admin.RefuseUser))
+	http.HandleFunc("GET /user/profile", auth.VerifyTokenMiddleware(admin.GetUserById))
 
 	// Auth, Tutorial & Upload
 	http.HandleFunc("/api/upload-document", auth.VerifyTokenMiddleware(admin.UploadDocumentHandler))
@@ -116,7 +117,29 @@ func main() {
 	http.HandleFunc("POST /admin/articles/add/{action}", auth.VerifyTokenMiddleware(admin.CreateArticle))        // AJOUTÉ
 	http.HandleFunc("PUT /admin/articles/modify/{id}/{action}", auth.VerifyTokenMiddleware(admin.ModifyArticle)) // AJOUTÉ
 
+	//Stripe payment
+	http.HandleFunc("POST /admin/connect-stripe", auth.VerifyTokenMiddleware(admin.ConnectToStripe))
+	http.HandleFunc("POST /api/stripe/webhook", admin.StripeWebhookHandler)
+
 	fmt.Println("test de : http://localhost:8081")
 
-	http.ListenAndServe(":8081", nil)
+	err := http.ListenAndServe(":8081", corsMiddleware(http.DefaultServeMux))
+	if err != nil {
+		panic(err)
+	}
+}
+
+func corsMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
 }
