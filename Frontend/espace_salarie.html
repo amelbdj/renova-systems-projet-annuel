@@ -230,7 +230,7 @@
       <section class="hero fu">
         <div class="hero-left">
           <div class="hero-eyebrow">Espace Salariés</div>
-          <h1 class="hero-title">Bonjour,<br /><em>Sophie</em> 👩‍🏫</h1>
+          <h1 class="hero-title">Bonjour,<br /><em></em></h1>
           <p class="hero-desc">
             Créez des événements, gérez votre planning, publiez du contenu et
             animez la communauté ReNova.
@@ -246,15 +246,15 @@
         </div>
         <div class="hero-stats">
           <div class="hstat fu fu2">
-            <div class="hstat-val">5</div>
+            <div class="hstat-val" id="stat-event">${counterEvt}</div>
             <div class="hstat-lbl">Événements créés</div>
           </div>
           <div
             class="hstat fu fu3"
             style="border-color: rgba(240, 106, 170, 0.2)"
           >
-            <div class="hstat-val" style="color: var(--pink)">2</div>
-            <div class="hstat-lbl">En attente validation</div>
+            <div class="hstat-val" id="stat-valide">${counterValide}</div>
+            <div class="hstat-lbl">Événements validés</div>
           </div>
           <div
             class="hstat fu fu4"
@@ -267,7 +267,11 @@
             class="hstat fu fu5"
             style="border-color: rgba(48, 212, 192, 0.2)"
           >
-            <div class="hstat-val" style="color: var(--teal)">12</div>
+            <div
+              class="hstat-val"
+              id="stat-article"
+              style="color: var(--teal)"
+            ></div>
             <div class="hstat-lbl">Articles publiés</div>
           </div>
         </div>

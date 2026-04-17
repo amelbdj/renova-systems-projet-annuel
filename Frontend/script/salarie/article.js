@@ -21,19 +21,18 @@ function chargerArticles() {
     .then((articles) => {
       const conteneurPublies = document.getElementById("liste-publies");
       const conteneurBrouillons = document.getElementById("liste-brouillons");
-
+      const statArticle = document.getElementById("stat-article"); // Utilise getElementById      let compteurPublies = 0;
+      let compteurPublies = 0;
       // On vide les conteneurs
       conteneurPublies.innerHTML = "";
       conteneurBrouillons.innerHTML = "";
 
-      let compteurPublies = 0;
-
       articles.forEach((art) => {
         // 1. Choix du style de badge selon le statut
         let badgeStatut = "";
-        if (art.statut === "brouillon")
+        if (art.statut === "brouillon") {
           badgeStatut = `<span class="tag t-amber">Brouillon</span>`;
-        else if (art.statut === "en attente")
+        } else if (art.statut === "en attente")
           badgeStatut = `<span class="tag t-blue">En attente</span>`;
         else if (art.statut === "refuse")
           badgeStatut = `<span class="tag t-red">Refusé</span>`;
@@ -69,8 +68,7 @@ function chargerArticles() {
         }
       });
 
-      document.getElementById("compteur-articles").textContent =
-        `${compteurPublies} en ligne`;
+      statArticle.textContent = compteurPublies;
     })
     .catch((error) => {
       console.error("Impossible de récupérer les articles", error);

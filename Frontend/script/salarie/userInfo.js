@@ -1,8 +1,18 @@
 // On s'assure de récupérer les données de session au cas où
-
 function chargerProfil() {
-  // Sécurité : on ne lance pas le fetch si les infos sont manquantes
-  if (!userId || !monToken) return;
+  if (!monToken) {
+    window.location.href = "login.html";
+    return;
+  }
+
+  const hasSeenTutorial = localStorage.getItem("tutorielVu");
+  const tutorialOverlay = document.getElementById("tut");
+
+  if (hasSeenTutorial === "true") {
+    if (tutorialOverlay) tutorialOverlay.style.display = "none";
+  } else {
+    console.log("showing the tutorial");
+  }
 
   fetch(`http://localhost:8081/admin/users/${userId}`, {
     headers: {
@@ -28,5 +38,8 @@ function chargerProfil() {
       console.error("Erreur Profil:", err);
     });
 }
-
+function logout() {
+  localStorage.clear();
+  window.location.href = "login.html";
+}
 document.addEventListener("DOMContentLoaded", chargerProfil);

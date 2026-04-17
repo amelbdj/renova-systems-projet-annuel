@@ -70,6 +70,8 @@ function resetEvtForm() {
 function GetEvenements() {
   const container = document.getElementById("event-grid");
   if (!container) return;
+  let counterEvt = 0;
+  let counterAttente = 0;
 
   fetch(`http://localhost:8081/admin/evenements`, {
     headers: {
@@ -88,12 +90,14 @@ function GetEvenements() {
         <div class="evt-add" onclick="openNewEvt()"><div class="plus">＋</div><span>Créer un événement</span></div>`;
         return;
       }
-
+      const statEvent = document.getElementById("stat-event");
+      const statAttente = document.getElementById("stat-valide");
       evenements.forEach((evt) => {
         if (evt.idSalarie == userId) {
           // Sécurité supplémentaire
           let statusBadge = "";
           let actionButtons = "";
+          counterEvt++;
 
           const statut = evt.statut_validation
             ? evt.statut_validation.toLowerCase()
@@ -108,6 +112,7 @@ function GetEvenements() {
               <button class="btn btn-danger btn-xs" onclick="DeleteEvenement(${evt.id})">Annuler</button>
             </div>`;
           } else {
+            counterAttente++;
             statusBadge = `<div class="evt-status t-amber">⏳ En attente</div>`;
             actionButtons = `
             <span class="tag t-amber">Validation en cours</span>
@@ -165,6 +170,8 @@ function GetEvenements() {
       </div>`;
 
       container.innerHTML = htmlContent;
+      statEvent.textContent = counterEvt;
+      statAttente.textContent = counterAttente;
     })
     .catch((err) => console.error(err));
 }
