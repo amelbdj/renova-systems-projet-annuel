@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le : ven. 27 mars 2026 à 23:53
+-- Généré le : mer. 15 avr. 2026 à 21:29
 -- Version du serveur : 8.0.42
 -- Version de PHP : 8.3.14
 
@@ -54,10 +54,19 @@ CREATE TABLE IF NOT EXISTS `annonce` (
   `description` text,
   `type` varchar(20) DEFAULT NULL,
   `prix` decimal(10,2) DEFAULT '0.00',
-  `statut_validation` varchar(20) DEFAULT 'En attente',
+  `statut_validation` enum('En attente','Validé','Rejeté') NOT NULL DEFAULT 'En attente',
   `code_postal` varchar(10) DEFAULT NULL,
   `ville` varchar(100) DEFAULT NULL,
   `projet_potentiel` text,
+  `etat` enum('Neuf','Bon etat','Usage','Pour pieces') NOT NULL,
+  `poids_kg` decimal(10,2) DEFAULT '0.00',
+  `quantite` int DEFAULT '1',
+  `is_sponsored` tinyint(1) DEFAULT '0',
+  `commission_prelevee` decimal(10,2) DEFAULT '0.00',
+  `id_box` int DEFAULT NULL,
+  `photo_url` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `statut_vente` enum('EN VENTE','EN ATTENTE DEPOT','RESERVEE') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT 'EN VENTE',
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_annonce` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -66,8 +75,8 @@ CREATE TABLE IF NOT EXISTS `annonce` (
 -- Déchargement des données de la table `annonce`
 --
 
-INSERT INTO `annonce` (`id`, `id_user`, `id_categorie`, `titre`, `description`, `type`, `prix`, `statut_validation`, `code_postal`, `ville`, `projet_potentiel`) VALUES
-(1, 1, 3, 'Tondeuse à gazon électrique', 'Je vends ma tondeuse en très bon état, servie 3 fois.', 'Vente', 45.50, 'valide', '93420', 'Villepinte', NULL);
+INSERT INTO `annonce` (`id`, `id_user`, `id_categorie`, `titre`, `description`, `type`, `prix`, `statut_validation`, `code_postal`, `ville`, `projet_potentiel`, `etat`, `poids_kg`, `quantite`, `is_sponsored`, `commission_prelevee`, `id_box`, `photo_url`, `created_at`, `statut_vente`) VALUES
+(1, 1, 3, 'Tondeuse à gazon électrique', 'Je vends ma tondeuse en très bon état, servie 3 fois.', 'Vente', 45.50, 'Validé', '93420', 'Villepinte', NULL, 'Neuf', 0.00, 1, 0, 0.00, 1, 'sdf', '2026-04-03 12:29:38', 'EN VENTE');
 
 -- --------------------------------------------------------
 
@@ -80,11 +89,24 @@ CREATE TABLE IF NOT EXISTS `article_news` (
   `id_article` bigint UNSIGNED NOT NULL AUTO_INCREMENT,
   `id_salarie` int DEFAULT NULL,
   `titre` varchar(150) DEFAULT NULL,
+  `slug` varchar(150) DEFAULT NULL,
   `contenu` text,
+  `image_url` varchar(255) DEFAULT NULL,
   `type` varchar(50) DEFAULT NULL,
+  `statut` enum('brouillon','valide','en attente','refuse') DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id_article`),
   UNIQUE KEY `id_article` (`id_article`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Déchargement des données de la table `article_news`
+--
+
+INSERT INTO `article_news` (`id_article`, `id_salarie`, `titre`, `slug`, `contenu`, `image_url`, `type`, `statut`, `created_at`) VALUES
+(1, 1, 'Bienvenue sur UpcycleConnect', NULL, 'tewgzdtfhzhffffffffff', NULL, 'Tutoriel', 'brouillon', '2026-04-13 17:19:04'),
+(3, 1, '1 2 3 test micro', NULL, 'hehehehehe', NULL, 'Conseil pratique', 'en attente', '2026-04-13 20:15:59'),
+(4, 1, 'why not', NULL, 'penser a bien dormir ', NULL, 'Conseil pratique', 'brouillon', '2026-04-13 20:16:18');
 
 -- --------------------------------------------------------
 
@@ -94,12 +116,41 @@ CREATE TABLE IF NOT EXISTS `article_news` (
 
 DROP TABLE IF EXISTS `box_conteneur`;
 CREATE TABLE IF NOT EXISTS `box_conteneur` (
-  `id_box` bigint UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT,
   `localisation` varchar(255) DEFAULT NULL,
-  `etat` varchar(50) DEFAULT 'Disponible',
-  PRIMARY KEY (`id_box`),
-  UNIQUE KEY `id_box` (`id_box`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `etat` enum('MAINTENANCE','LIBRE','OCCUPE','') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT 'LIBRE',
+  `type_materiau_accepte` varchar(50) DEFAULT NULL,
+  `capacite` int DEFAULT '1',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id_box` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Déchargement des données de la table `box_conteneur`
+--
+
+INSERT INTO `box_conteneur` (`id`, `localisation`, `etat`, `type_materiau_accepte`, `capacite`) VALUES
+(1, 'Paris - Entrepôt Nord', 'LIBRE', 'Bois', 1),
+(2, 'Paris - Entrepôt Nord', 'OCCUPE', 'Métal', 1),
+(3, 'Lyon - Centre', 'MAINTENANCE', 'Plastique', 1),
+(4, 'Lyon - Centre', 'LIBRE', 'Verre', 1),
+(5, 'Marseille - Port', 'OCCUPE', 'Bois', 1),
+(6, 'Paris - Entrepôt Nord', 'LIBRE', 'Bois', 1),
+(7, 'Paris - Entrepôt Nord', 'OCCUPE', 'Métal', 1),
+(8, 'Paris - Entrepôt Nord', 'LIBRE', 'Plastique', 1),
+(9, 'Paris - Entrepôt Nord', 'MAINTENANCE', 'Électronique', 1),
+(10, 'Paris - Entrepôt Nord', 'LIBRE', 'Bois', 1),
+(11, 'Lyon - Centre de Tri', 'OCCUPE', 'Carton', 1),
+(12, 'Lyon - Centre de Tri', 'LIBRE', 'Verre', 1),
+(13, 'Lyon - Centre de Tri', 'LIBRE', 'Métal', 1),
+(14, 'Lyon - Centre de Tri', 'MAINTENANCE', 'Bois', 1),
+(15, 'Lyon - Centre de Tri', 'OCCUPE', 'Textile', 1),
+(16, 'Bordeaux - Zone Eco', 'LIBRE', 'Plastique', 1),
+(17, 'Bordeaux - Zone Eco', 'OCCUPE', 'Électronique', 1),
+(18, 'Bordeaux - Zone Eco', 'LIBRE', 'Métal', 1),
+(19, 'Bordeaux - Zone Eco', 'LIBRE', 'Bois', 1),
+(20, 'Bordeaux - Zone Eco', 'MAINTENANCE', 'Papier', 1),
+(21, 'eee', 'LIBRE', 'plastique', 22);
 
 -- --------------------------------------------------------
 
@@ -172,6 +223,8 @@ CREATE TABLE IF NOT EXISTS `depot_box` (
   `id_box` int DEFAULT NULL,
   `code_ouverture` varchar(10) DEFAULT NULL,
   `code_barres_pro` varchar(50) DEFAULT NULL,
+  `date_depot` date DEFAULT NULL,
+  `date_retrait` date DEFAULT NULL,
   PRIMARY KEY (`id_depot`),
   UNIQUE KEY `id_depot` (`id_depot`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -211,6 +264,36 @@ CREATE TABLE IF NOT EXISTS `document` (
 -- --------------------------------------------------------
 
 --
+-- Structure de la table `documents_legaux`
+--
+
+DROP TABLE IF EXISTS `documents_legaux`;
+CREATE TABLE IF NOT EXISTS `documents_legaux` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` bigint UNSIGNED NOT NULL,
+  `type_document` enum('KBIS','SIREN','DIPLOME','PIECE_IDENTITE') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `chemin_fichier` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `statut_document` enum('En attente','Validé','Rejeté') COLLATE utf8mb4_unicode_ci DEFAULT 'En attente',
+  `date_soumission` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Déchargement des données de la table `documents_legaux`
+--
+
+INSERT INTO `documents_legaux` (`id`, `user_id`, `type_document`, `chemin_fichier`, `statut_document`, `date_soumission`) VALUES
+(7, 1, 'KBIS', 'uploads/kbis_entreprise_1.pdf', 'En attente', '2026-04-02 20:43:16'),
+(8, 6, 'KBIS', 'uploads/cni_recto_verso.jpg', 'En attente', '2026-04-02 20:43:16'),
+(9, 7, 'KBIS', 'uploads/justificatif_pro.png', 'En attente', '2026-04-02 20:43:16'),
+(10, 9, 'KBIS', 'uploads/justificatif_pfffro.png', 'En attente', '2026-04-02 20:43:16'),
+(11, 11, 'KBIS', 'uploads/justificatif_pffro.png', 'En attente', '2026-04-02 20:43:16'),
+(12, 11, 'KBIS', 'uploads/justificatif_fpro.png', 'En attente', '2026-04-02 20:43:16');
+
+-- --------------------------------------------------------
+
+--
 -- Structure de la table `evenement`
 --
 
@@ -225,16 +308,49 @@ CREATE TABLE IF NOT EXISTS `evenement` (
   `nb_places` int DEFAULT NULL,
   `statut_validation` varchar(20) DEFAULT NULL,
   `format` varchar(20) DEFAULT NULL,
+  `type` enum('evenement','formation') DEFAULT NULL,
+  `lieu` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_event` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Déchargement des données de la table `evenement`
 --
 
-INSERT INTO `evenement` (`id`, `id_salarie`, `titre`, `description`, `date_debut`, `date_fin`, `nb_places`, `statut_validation`, `format`) VALUES
-(1, 1, 'Atelier Couture Débutant', 'Apprenez à rapiécer vos vêtements au lieu de les jeter.', '2026-03-20 13:00:00', '2026-03-20 16:00:00', 8, 'valide', 'Présentiel');
+INSERT INTO `evenement` (`id`, `id_salarie`, `titre`, `description`, `date_debut`, `date_fin`, `nb_places`, `statut_validation`, `format`, `type`, `lieu`) VALUES
+(1, 1, 'Atelier Couture Débutant', 'Apprenez à rapiécer vos vêtements au lieu de les jeter.', '2026-03-20 13:00:00', '2026-03-20 16:00:00', 8, 'en attente', 'Présentiel', 'evenement', '0'),
+(2, 1, 'dsfgds', 'sdFsD', '2026-04-09 08:00:00', '2026-04-09 11:00:00', 0, 'en attente', 'Présentiel', 'formation', 'sdfdf'),
+(3, 1, 'sdgsd', 'sdgfsd', '2026-04-16 08:00:00', '2026-04-16 11:00:00', 0, 'en attente', 'Présentiel', 'formation', 'sdf');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `historique_conteneurs`
+--
+
+DROP TABLE IF EXISTS `historique_conteneurs`;
+CREATE TABLE IF NOT EXISTS `historique_conteneurs` (
+  `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT,
+  `conteneur_id` bigint UNSIGNED NOT NULL,
+  `annonce_id` bigint UNSIGNED NOT NULL,
+  `particulier_id` bigint UNSIGNED NOT NULL,
+  `professionnel_id` bigint UNSIGNED DEFAULT NULL,
+  `code_ouverture` varchar(10) NOT NULL,
+  `code_barre_recuperation` varchar(50) NOT NULL,
+  `date_reservation` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `date_depot_effective` timestamp NULL DEFAULT NULL,
+  `date_retrait_effective` timestamp NULL DEFAULT NULL,
+  `etat_objet_depot` varchar(50) DEFAULT NULL,
+  `etat` enum('SUPPRIME','EN COURS','RECUPERE') DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`),
+  UNIQUE KEY `code_barre_recuperation` (`code_barre_recuperation`),
+  KEY `fk_conteneur` (`conteneur_id`),
+  KEY `fk_annonce` (`annonce_id`),
+  KEY `fk_particulier` (`particulier_id`),
+  KEY `fk_professionnel` (`professionnel_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -267,7 +383,7 @@ CREATE TABLE IF NOT EXISTS `languages` (
   `is_active` tinyint(1) DEFAULT '1',
   PRIMARY KEY (`id`),
   UNIQUE KEY `code` (`code`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Déchargement des données de la table `languages`
@@ -436,7 +552,7 @@ CREATE TABLE IF NOT EXISTS `translations` (
   `msg_value` text,
   PRIMARY KEY (`id`),
   KEY `lang_code` (`lang_code`)
-) ENGINE=InnoDB AUTO_INCREMENT=283 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=314 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Déchargement des données de la table `translations`
@@ -724,7 +840,23 @@ INSERT INTO `translations` (`id`, `lang_code`, `msg_key`, `msg_value`) VALUES
 (279, 'fr', 'backoffice.users.alert_empty', 'Veuillez remplir tous les champs.'),
 (280, 'en', 'backoffice.users.alert_empty', 'Please fill in all fields.'),
 (281, 'fr', 'backoffice.users.success_update', 'Utilisateur mis à jour avec succès.'),
-(282, 'en', 'backoffice.users.success_update', 'User successfully updated.');
+(282, 'en', 'backoffice.users.success_update', 'User successfully updated.'),
+(298, 'fr', 'backoffice.users.th_document', 'Document'),
+(299, 'fr', 'backoffice.users.th_status', 'Statut'),
+(300, 'fr', 'backoffice.users.doc_view', 'Voir'),
+(301, 'fr', 'backoffice.users.doc_none', 'Aucun'),
+(302, 'fr', 'backoffice.users.status_approved', 'Validé'),
+(303, 'fr', 'backoffice.users.status_rejected', 'Rejeté'),
+(304, 'fr', 'backoffice.users.action_approve', 'Approuver'),
+(305, 'fr', 'backoffice.users.action_refuse', 'Refuser'),
+(306, 'en', 'backoffice.users.th_document', 'Document'),
+(307, 'en', 'backoffice.users.th_status', 'Status'),
+(308, 'en', 'backoffice.users.doc_view', 'View'),
+(309, 'en', 'backoffice.users.doc_none', 'None'),
+(310, 'en', 'backoffice.users.status_approved', 'Approved'),
+(311, 'en', 'backoffice.users.status_rejected', 'Rejected'),
+(312, 'en', 'backoffice.users.action_approve', 'Approve'),
+(313, 'en', 'backoffice.users.action_refuse', 'Reject');
 
 -- --------------------------------------------------------
 
@@ -761,26 +893,44 @@ CREATE TABLE IF NOT EXISTS `utilisateur` (
   `nom_entreprise` varchar(150) DEFAULT NULL,
   `siret` varchar(14) DEFAULT NULL,
   `score` int NOT NULL DEFAULT '0',
+  `validation` enum('En attente','Validé','Rejeté') DEFAULT 'En attente',
+  `motif_refus` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_user` (`id`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Déchargement des données de la table `utilisateur`
 --
 
-INSERT INTO `utilisateur` (`id`, `role`, `nom`, `prenom`, `email`, `mot_de_passe`, `tutoriel_vu`, `type_statut`, `nom_entreprise`, `siret`, `score`) VALUES
-(1, 'Administrateur', 'BOUDJENANE', 'Amel', 'amelboudjenanee@icloud.com', '$2y$10$cm5C6PeLqY5q/OTKazT/KO68drOeCYJRqgwWtfzPWkEo1quHMvlN.', 1, NULL, NULL, NULL, 0),
-(6, 'Salarié', 'Martinnnn', 'Emma', 'emma.martin@mail.com', '', 1, NULL, NULL, NULL, 0),
-(7, 'Utilisateur', 'Bernard', 'Hugo', 'hugo.bernard@mail.com', '', 0, NULL, NULL, NULL, 0),
-(9, 'Utilisateur', 'Robert', 'Nathan', 'nathan.robert@mail.com', '', 0, NULL, NULL, NULL, 0),
-(10, 'Utilisateur', 'Richard', 'Lea', 'lea.richard@mail.com', '', 1, NULL, NULL, NULL, 0),
-(11, 'Prestataire', 'Durand', 'Tom', 'tom.durand@mail.com', '', 1, NULL, NULL, NULL, 0);
+INSERT INTO `utilisateur` (`id`, `role`, `nom`, `prenom`, `email`, `mot_de_passe`, `tutoriel_vu`, `type_statut`, `nom_entreprise`, `siret`, `score`, `validation`, `motif_refus`) VALUES
+(1, 'Salarié', 'BOUDJENANE', 'Amel', 'amelboudjenanee@icloud.com', '$2a$10$TfC9LhGzA1ZMvU7X77vqb.d7bDdeIkWiTTMTp6WrinpAov2SWNYlO', 1, NULL, NULL, NULL, 0, 'Validé', NULL),
+(6, 'Salarié', 'Martinnnn', 'Emma', 'emma.martin@mail.com', '', 1, NULL, NULL, NULL, 0, 'Rejeté', 'dddd'),
+(7, 'Utilisateur', 'Bernard', 'Hugo', 'hugo.bernard@mail.com', '', 0, NULL, NULL, NULL, 0, 'Rejeté', NULL),
+(9, 'Utilisateur', 'Robert', 'Nathan', 'nathan.robert@mail.com', '', 0, NULL, NULL, NULL, 0, 'Rejeté', NULL),
+(10, 'Utilisateur', 'Richard', 'Lea', 'lea.richard@mail.com', '', 1, NULL, NULL, NULL, 0, 'Rejeté', NULL),
+(11, 'Prestataire', 'Durand', 'Tom', 'tom.durand@mail.com', '', 1, NULL, NULL, NULL, 0, 'Rejeté', NULL),
+(18, 'Utilisateur', 'ASEFAERF', 'WEDGFRF', 'thewarrow.bdj@gmail.com', '$2a$10$TfC9LhGzA1ZMvU7X77vqb.d7bDdeIkWiTTMTp6WrinpAov2SWNYlO', 0, 'Validé', NULL, NULL, 0, 'En attente', NULL);
 
 --
 -- Contraintes pour les tables déchargées
 --
+
+--
+-- Contraintes pour la table `documents_legaux`
+--
+ALTER TABLE `documents_legaux`
+  ADD CONSTRAINT `documents_legaux_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `utilisateur` (`id`) ON DELETE CASCADE;
+
+--
+-- Contraintes pour la table `historique_conteneurs`
+--
+ALTER TABLE `historique_conteneurs`
+  ADD CONSTRAINT `fk_annonce` FOREIGN KEY (`annonce_id`) REFERENCES `annonce` (`id`),
+  ADD CONSTRAINT `fk_conteneur` FOREIGN KEY (`conteneur_id`) REFERENCES `box_conteneur` (`id`),
+  ADD CONSTRAINT `fk_particulier` FOREIGN KEY (`particulier_id`) REFERENCES `utilisateur` (`id`),
+  ADD CONSTRAINT `fk_professionnel` FOREIGN KEY (`professionnel_id`) REFERENCES `utilisateur` (`id`);
 
 --
 -- Contraintes pour la table `translations`

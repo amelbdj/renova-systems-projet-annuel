@@ -11,8 +11,13 @@ import (
 
 func GetAllCategories(w http.ResponseWriter, r *http.Request) {
 
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-    w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	
+	if r.Method == "OPTIONS" {
+        w.WriteHeader(http.StatusOK)
+        return 
+    }
 	
 	fmt.Println("hello from GetAllCategories")
 
@@ -37,7 +42,7 @@ func GetAllCategories(w http.ResponseWriter, r *http.Request) {
 func CreateCategorie(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-    w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 	fmt.Println("hello from CreateCategorie")
 	
 	if r.Method == "OPTIONS" {
@@ -69,7 +74,7 @@ func CreateCategorie(w http.ResponseWriter, r *http.Request) {
 
 func DeleteCategorie(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 	fmt.Println("hello from DeleteCategorie")	
 	if r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
