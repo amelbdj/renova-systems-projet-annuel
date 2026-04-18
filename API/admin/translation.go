@@ -37,6 +37,14 @@ func RefreshCache() {
 }
 
 func GetTranslations(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+    w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+    w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
 	lang := r.URL.Query().Get("lang")
 	if lang == "" {
 		lang = "fr"
@@ -79,6 +87,16 @@ func MapToNestedJSON(flatmap map[string]string) map[string]interface{} {
 
 // Renvoie la liste des langues pour le menu de Faty
 func GetLanguages(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Content-Type", "application/json")
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
 	users, err := bdd.GetLanguages()
 
 	if err != nil {
@@ -98,14 +116,14 @@ func GetLanguages(w http.ResponseWriter, r *http.Request) {
 }
 
 func AddLanguage(w http.ResponseWriter, r *http.Request) {
- w.Header().Set("Access-Control-Allow-Origin", "*")
-    w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-    w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Content-Type", "application/json")
 
-    if r.Method == "OPTIONS" {
-        w.WriteHeader(http.StatusOK)
-        return 
-    }
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
 
 	var payload bdd.TranslationPayload
 
@@ -130,7 +148,14 @@ func AddLanguage(w http.ResponseWriter, r *http.Request) {
 
 func GetTranslationKeysHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 	w.Header().Set("Content-Type", "application/json")
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
 
 	keys, err := bdd.GetAllTranslationKeys()
 	if err != nil {
