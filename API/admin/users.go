@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"net"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"upcycleconnect/auth"
 	"upcycleconnect/bdd"
@@ -14,6 +16,19 @@ import (
 	"strconv"
 	"upcycleconnect/models"
 )
+func GetIP(r *http.Request) string {
+    forwarded := r.Header.Get("X-Forwarded-For")
+    if forwarded != "" {
+        return strings.Split(forwarded, ",")[0]
+    }
+
+   
+    ip, _, err := net.SplitHostPort(r.RemoteAddr)
+    if err != nil {
+        return r.RemoteAddr 
+    }
+    return ip
+}
 
 func Login(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -35,7 +50,9 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userBdd, err := bdd.LoginUser(user.Email, user.MotDePasse)
+	clientIP := GetIP(r)
+
+	userBdd, err := bdd.LoginUser(user.Email, user.MotDePasse, clientIP)
 	if err != nil {
 		fmt.Println("Erreur login :", err)
 		http.Error(w, "Email ou mot de passe incorrect", http.StatusUnauthorized)
