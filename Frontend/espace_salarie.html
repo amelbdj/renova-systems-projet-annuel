@@ -341,57 +341,11 @@
           <!-- Week days strip -->
           <div class="week-strip">
             <div class="week-header">
-              <button class="btn btn-g btn-xs">←</button>
+              <button id="btn-prev-month" class="btn btn-g btn-xs">←</button>
               <span class="week-month">Mars 2026</span>
-              <button class="btn btn-g btn-xs">→</button>
+              <button id="btn-next-month" class="btn btn-g btn-xs">→</button>
             </div>
-            <div class="week-days">
-              <div class="wday today">
-                <div class="wday-num">1</div>
-                <div class="wday-name">Dim</div>
-                <div class="wday-dots">
-                  <div class="wdot" style="background: var(--vi)"></div>
-                </div>
-              </div>
-              <div class="wday">
-                <div class="wday-num">2</div>
-                <div class="wday-name">Lun</div>
-                <div class="wday-dots"></div>
-              </div>
-              <div class="wday">
-                <div class="wday-num">3</div>
-                <div class="wday-name">Mar</div>
-                <div class="wday-dots">
-                  <div class="wdot" style="background: var(--pink)"></div>
-                </div>
-              </div>
-              <div class="wday">
-                <div class="wday-num">4</div>
-                <div class="wday-name">Mer</div>
-                <div class="wday-dots"></div>
-              </div>
-              <div class="wday">
-                <div class="wday-num">5</div>
-                <div class="wday-name">Jeu</div>
-                <div class="wday-dots">
-                  <div class="wdot" style="background: var(--teal)"></div>
-                  <div class="wdot" style="background: var(--amber)"></div>
-                </div>
-              </div>
-              <div class="wday">
-                <div class="wday-num">6</div>
-                <div class="wday-name">Ven</div>
-                <div class="wday-dots"></div>
-              </div>
-              <div class="wday">
-                <div class="wday-num">7</div>
-                <div class="wday-name">Sam</div>
-                <div class="wday-dots">
-                  <div class="wdot" style="background: var(--vi)"></div>
-                  <div class="wdot" style="background: var(--vi)"></div>
-                </div>
-              </div>
-            </div>
+            <div class="week-days"></div>
           </div>
 
           <!-- Timeline -->
@@ -401,20 +355,8 @@
                 <div class="cht-i" style="background: rgba(240, 106, 170, 0.1)">
                   🗓️
                 </div>
-                Dimanche 1 mars — Aujourd'hui
               </div>
-              <div style="display: flex; gap: 6px; flex-wrap: wrap">
-                <span class="tag t-vi" style="font-size: 10px"
-                  >■ Formation</span
-                >
-                <span class="tag t-pink" style="font-size: 10px"
-                  >■ Réunion</span
-                >
-                <span class="tag t-teal" style="font-size: 10px"
-                  >■ Atelier</span
-                >
-                <span class="tag t-amber" style="font-size: 10px">■ Admin</span>
-              </div>
+              <div style="display: flex; gap: 6px; flex-wrap: wrap"></div>
             </div>
             <div class="card-bd">
               <div class="timeline">
@@ -1417,5 +1359,6 @@
     <script src="script/salarie/article.js" defer></script>
     <script src="script/salarie/event.js" defer></script>
     <script src="script/salarie/userInfo.js" defer></script>
+    <script src="script/salarie/planning.js" defer></script>
   </body>
 </html>
