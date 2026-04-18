@@ -9,37 +9,39 @@ import (
 	"golang.org/x/crypto/bcrypt" //gestion hash mdp
 )
 
-func LoginUser(email string, motDePasse string) (models.User, error) {
-	var user models.User
+func LoginUser(email string, motDePasse string, ip string) (models.User, error) {
+    var user models.User
 
-	err := Db.QueryRow("SELECT id, mot_de_passe, role, type_statut, prenom, score, tutoriel_vu, validation FROM pa2026.utilisateur WHERE email = ?", email).Scan(
-		&user.Id,
-		&user.MotDePasse,
-		&user.Role,
-		&user.TypeStatut,
-		&user.Prenom,
-		&user.Score,
-		&user.TutorielVu,
-		&user.Validation,
-	)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return user, fmt.Errorf("email ou mot de passe incorrect")
-		}
-		return user, fmt.Errorf("erreur BDD : %v", err)
-	}
+    err := Db.QueryRow("SELECT id, mot_de_passe, role, type_statut, prenom, score, tutoriel_vu, validation FROM pa2026.utilisateur WHERE email = ?", email).Scan(
+        &user.Id,
+        &user.MotDePasse,
+        &user.Role,
+        &user.TypeStatut,
+        &user.Prenom,
+        &user.Score,
+        &user.TutorielVu,
+        &user.Validation,
+    )
+    if err != nil {
+        if err == sql.ErrNoRows {
+            return user, fmt.Errorf("email ou mot de passe incorrect")
+        }
+        return user, fmt.Errorf("erreur BDD : %v", err)
+    }
 
-	fmt.Printf("Mot de passe reçu du JSON : '%s'\n", motDePasse)
-	fmt.Printf("Hash BDD trouvé         : '%s'\n", user.MotDePasse)
+    err = bcrypt.CompareHashAndPassword([]byte(user.MotDePasse), []byte(motDePasse))
+    if err != nil {
+        return user, fmt.Errorf("email ou mot de passe incorrect")
+    }
 
-	err = bcrypt.CompareHashAndPassword([]byte(user.MotDePasse), []byte(motDePasse))
-	if err != nil {
-		fmt.Println("Erreur Bcrypt :", err)
-		return user, fmt.Errorf("email ou mot de passe incorrect")
-	}
+    user.Email = email
 
-	user.Email = email
-	return user, nil
+    errLog := LogConnexion(user.Id, ip)
+    if errLog != nil {
+        fmt.Println("Erreur lors de l'enregistrement du log de connexion :", errLog)
+    }
+    
+    return user, nil
 }
 func GetUsers() ([]models.User, error) {
 
@@ -326,4 +328,16 @@ func CheckEmailExists(email string) (bool, error) {
 	} else {
 		return false, nil
 	}
+}
+
+
+func LogConnexion(idUser int, ip string)  error {
+   
+	_, err := Db.Exec("INSERT INTO pa2026.log_connexion (id_user, ip, date_connexion) VALUES (?, ?, NOW())", idUser, ip)
+    
+	if err != nil {
+        return err
+    }
+    
+   return nil
 }
