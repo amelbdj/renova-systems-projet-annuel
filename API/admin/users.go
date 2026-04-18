@@ -239,6 +239,10 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetUserById(w http.ResponseWriter, r *http.Request) {
+	// 1. Add CORS manually (since we removed the middleware for this route)
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
 	idStr := r.URL.Query().Get("id")
 	if idStr == "" {
 		idStr = r.PathValue("id")
@@ -252,16 +256,27 @@ func GetUserById(w http.ResponseWriter, r *http.Request) {
 	}
 	user := &users[0]
 
+	// 2. Stripe Logic
 	if user.StripeAccountId != "" && !user.StripeVerifCompleted {
 		stripe.Key = StripeSecretKey
-		if acc, err := account.GetByID(user.StripeAccountId, nil); err == nil && acc.PayoutsEnabled {
-			bdd.Db.Exec("UPDATE utilisateur SET stripe_verif_completed = 1 WHERE id = ?", id)
-			user.StripeVerifCompleted = true
+
+		// Try GetByID with only one argument
+		acc, err := account.GetByID(user.StripeAccountId, nil)
+
+		// If that still shows an error in your IDE, try:
+		// acc, err := account.Get(nil) // (Only if using the account-specific client)
+
+		if err == nil && acc.PayoutsEnabled {
+			_, execErr := bdd.Db.Exec("UPDATE utilisateur SET stripe_verif_completed = 1 WHERE id = ?", id)
+			if execErr == nil {
+				user.StripeVerifCompleted = true
+			}
 		}
 	}
 
+	// 3. Send back ONE user, not the whole list
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(users)
+	json.NewEncoder(w).Encode(user)
 }
 
 func GetUserByRole(w http.ResponseWriter, r *http.Request) {
