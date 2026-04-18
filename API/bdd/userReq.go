@@ -9,7 +9,7 @@ import (
 	"golang.org/x/crypto/bcrypt" //gestion hash mdp
 )
 
-func LoginUser(email string, motDePasse string) (models.User, error) {
+func LoginUser(email string, motDePasse string, ip string) (models.User, error) {
 	var user models.User
 
 	err := Db.QueryRow("SELECT id, mot_de_passe, role, type_statut, prenom, score, tutoriel_vu, validation FROM pa2026.utilisateur WHERE email = ?", email).Scan(
@@ -29,16 +29,18 @@ func LoginUser(email string, motDePasse string) (models.User, error) {
 		return user, fmt.Errorf("erreur BDD : %v", err)
 	}
 
-	fmt.Printf("Mot de passe reçu du JSON : '%s'\n", motDePasse)
-	fmt.Printf("Hash BDD trouvé         : '%s'\n", user.MotDePasse)
-
 	err = bcrypt.CompareHashAndPassword([]byte(user.MotDePasse), []byte(motDePasse))
 	if err != nil {
-		fmt.Println("Erreur Bcrypt :", err)
 		return user, fmt.Errorf("email ou mot de passe incorrect")
 	}
 
 	user.Email = email
+
+	errLog := LogConnexion(user.Id, ip)
+	if errLog != nil {
+		fmt.Println("Erreur lors de l'enregistrement du log de connexion :", errLog)
+	}
+
 	return user, nil
 }
 func GetUsers() ([]models.User, error) {
@@ -101,7 +103,7 @@ func CreateUser(User models.User) (int64, error) {
 		return 0, fmt.Errorf("L'email %s est déjà utilisé", User.Email)
 	}
 
-	result, err := Db.Exec("INSERT INTO pa2026.utilisateur (nom, prenom, email, mot_de_passe, role, validation, nom_entreprise, siret) VALUES (UPPER(?), UPPER(?), ?, ?, ?, ?, ?, ?)", User.Nom, User.Prenom, User.Email, User.MotDePasse, User.Role, User.Validation, User.NomEntreprise, User.Siret)
+	result, err := Db.Exec("INSERT INTO pa2026.utilisateur (nom, prenom, email, mot_de_passe, role, validation, nom_entreprise, siret) VALUES (UPPER(?), UPPER(?), ?, ?, ?, 'En attente', ?, ?)", User.Nom, User.Prenom, User.Email, User.MotDePasse, User.Role, User.NomEntreprise, User.Siret)
 
 	if err != nil {
 		return 0, fmt.Errorf("CreateUser : %s", err.Error())
@@ -162,34 +164,25 @@ func UpdateUserById(user models.User) error {
 	return nil
 }
 
-func GetUserById(id int) ([]models.User, error) {
-	var Users []models.User
+func GetUserById(id int) (models.User, error) {
+	var user models.User
 
-	rows, err := Db.Query("SELECT id, nom, prenom, email, mot_de_passe, role, type_statut, nom_entreprise, siret, score, validation, stripe_account_id, stripe_verif_completed FROM pa2026.utilisateur WHERE id = ?", id)
+	err := Db.QueryRow("SELECT id, nom, prenom, email, mot_de_passe, role, type_statut, nom_entreprise, siret, score, validation, stripe_account_id, stripe_verif_completed FROM pa2026.utilisateur WHERE id = ?", id).Scan(
+		&user.Id, &user.Nom, &user.Prenom, &user.Email, &user.MotDePasse,
+		&user.Role, &user.TypeStatut, &user.NomEntreprise, &user.Siret,
+		&user.Score, &user.Validation,
+		&user.StripeAccountId,
+		&user.StripeVerifCompleted,
+	)
 
 	if err != nil {
-		return nil, fmt.Errorf("get User by id : %v", err.Error())
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var User models.User
-
-		err := rows.Scan(&User.Id, &User.Nom, &User.Prenom, &User.Email, &User.MotDePasse, &User.Role, &User.TypeStatut, &User.NomEntreprise, &User.Siret, &User.Score, &User.Validation, &User.StripeAccountId, &User.StripeVerifCompleted)
-
-		if err != nil {
-			return nil, fmt.Errorf("get User by name : %v", err.Error())
+		if err == sql.ErrNoRows {
+			return models.User{}, fmt.Errorf("utilisateur non trouvé")
 		}
-
-		Users = append(Users, User)
+		return models.User{}, fmt.Errorf("get User by id error: %v", err)
 	}
 
-	err = rows.Err()
-
-	if err != nil {
-		return nil, fmt.Errorf("get User by id : %v", err.Error())
-	}
-	return Users, nil
+	return user, nil
 }
 
 func GetUserByRole(role string) ([]models.User, error) {
@@ -340,4 +333,15 @@ func CheckEmailExists(email string) (bool, error) {
 	} else {
 		return false, nil
 	}
+}
+
+func LogConnexion(idUser int, ip string) error {
+
+	_, err := Db.Exec("INSERT INTO pa2026.log_connexion (id_user, ip, date_connexion) VALUES (?, ?, NOW())", idUser, ip)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

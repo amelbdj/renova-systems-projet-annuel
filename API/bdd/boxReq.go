@@ -10,6 +10,8 @@ import (
 
 func ReserveBox(annonceId int, conteneurId int, particulierId int) error {
 
+    
+
 	var etat string
 	err := Db.QueryRow("SELECT etat FROM box_conteneur WHERE id = ?", conteneurId).Scan(&etat)
 	if err != nil {

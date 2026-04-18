@@ -1,6 +1,11 @@
 let monToken = localStorage.getItem("token");
 let userId = localStorage.getItem("userId");
 
+if (!monToken || !userId) {
+  alert("Vous devez être connecté pour accéder à cette page.");
+  window.location.href = "login.html";
+}
+
 function chargerArticles() {
   fetch(`http://localhost:8081/admin/articles/salarie/${userId}`, {
     headers: {
@@ -16,19 +21,18 @@ function chargerArticles() {
     .then((articles) => {
       const conteneurPublies = document.getElementById("liste-publies");
       const conteneurBrouillons = document.getElementById("liste-brouillons");
-
+      const statArticle = document.getElementById("stat-article"); // Utilise getElementById      let compteurPublies = 0;
+      let compteurPublies = 0;
       // On vide les conteneurs
       conteneurPublies.innerHTML = "";
       conteneurBrouillons.innerHTML = "";
 
-      let compteurPublies = 0;
-
       articles.forEach((art) => {
         // 1. Choix du style de badge selon le statut
         let badgeStatut = "";
-        if (art.statut === "brouillon")
+        if (art.statut === "brouillon") {
           badgeStatut = `<span class="tag t-amber">Brouillon</span>`;
-        else if (art.statut === "en attente")
+        } else if (art.statut === "en attente")
           badgeStatut = `<span class="tag t-blue">En attente</span>`;
         else if (art.statut === "refuse")
           badgeStatut = `<span class="tag t-red">Refusé</span>`;
@@ -41,23 +45,21 @@ function chargerArticles() {
         if (art.type.toLowerCase().includes("conseil")) icone = "💡";
         if (art.type.toLowerCase().includes("news")) icone = "📰";
         if (art.type.toLowerCase().includes("tuto")) icone = "🛠️";
-
         const card = `
-            <div class="post-ico" style="background:rgba(48,212,192,.09)">${icone}</div>
-            <div class="post-body">
-              <div class="post-title">${art.titre}</div>
-              <div class="post-excerpt">${art.contenu.substring(0, 65)}...</div>
-              <div class="post-meta">
-                  <span class="tag t-vi">${art.type}</span>
-                  ${badgeStatut}
-              <button class="btn btn-v btn-sm" onclick="editerArticle(${art.id})">＋ Modifier</button>
-              <button class="mod-btn mod-ban" onclick="DeleteArticle(${art.id})">Supprimer</button>
-
-              </div>
-          </button>
-            </div>
-          </div>
-        `;
+  <div class="post-item">
+    <div class="post-ico" style="background:rgba(48,212,192,.09)">${icone}</div>
+    <div class="post-body">
+      <div class="post-title">${art.titre}</div>
+      <div class="post-excerpt">${art.contenu.substring(0, 65)}...</div>
+      <div class="post-meta">
+          <span class="tag t-vi">${art.type}</span>
+          ${badgeStatut}
+          <button class="btn btn-v btn-sm" onclick="editerArticle(${art.id})">＋ Modifier</button>
+          <button class="mod-btn mod-ban" onclick="DeleteArticle(${art.id})">Supprimer</button>
+      </div>
+    </div>
+  </div>
+`;
 
         if (art.statut === "brouillon" || art.statut === "refuse") {
           conteneurBrouillons.innerHTML += card;
@@ -66,8 +68,7 @@ function chargerArticles() {
         }
       });
 
-      document.getElementById("compteur-articles").textContent =
-        `${compteurPublies} en ligne`;
+      statArticle.textContent = compteurPublies;
     })
     .catch((error) => {
       console.error("Impossible de récupérer les articles", error);
@@ -77,7 +78,11 @@ function chargerArticles() {
 }
 
 function editerArticle(id) {
-  fetch(`http://localhost:8081/admin/articles/${id}`)
+  fetch(`http://localhost:8081/admin/articles/${id}`, {
+    headers: {
+      Authorization: "Bearer " + monToken,
+    },
+  })
     .then((res) => {
       if (!res.ok) throw new Error("Impossible de récupérer l'article");
       return res.json();
@@ -111,7 +116,7 @@ function saveArticle(action) {
   }
 
   const articleData = {
-    id_salarie: userId, // À remplacer par l'ID réel du salarié connecté apre sync avec faty
+    id_salarie: parseInt(userId), // À remplacer par l'ID réel du salarié connecté apre sync avec faty
     titre: titre,
     contenu: contenu,
     type: type,
@@ -176,6 +181,23 @@ function DeleteArticle(id) {
     });
 
   chargerArticles();
+}
+
+function openNewPost() {
+  // Vérifie bien que l'ID est postModal et pas autre chose !
+  const modal = document.getElementById("postModal");
+  if (modal) {
+    modal.classList.add("open");
+    modal.style.display = "flex";
+  }
+}
+
+function closePost() {
+  const modal = document.getElementById("postModal");
+  if (modal) {
+    modal.classList.remove("open");
+    modal.style.display = "none";
+  }
 }
 
 document.addEventListener("DOMContentLoaded", chargerArticles);

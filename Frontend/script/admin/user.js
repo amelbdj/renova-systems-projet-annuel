@@ -1,5 +1,3 @@
-let monToken = localStorage.getItem("token");
-
 function setVtab(element, type) {
   document
     .querySelectorAll(".vtab")
@@ -162,7 +160,11 @@ function AfficherTableau(users) {
 }
 
 function GetUsers() {
-  fetch("http://localhost:8081/admin/users")
+  fetch("http://localhost:8081/admin/users", {
+    headers: {
+      Authorization: "Bearer " + monToken,
+    },
+  })
     .then((res) => res.json())
     .then(AfficherTableau)
     .catch((err) => console.error("Erreur GET Users:", err));
@@ -335,7 +337,6 @@ function FermerModaleRefus() {
   document.getElementById("modalRefus").style.display = "none";
 }
 
-// Écouteur sur le bouton "Confirmer" de la modale
 document.getElementById("btnConfirmerRefus").onclick = function () {
   const raison = document.getElementById("motifTexte").value;
 
@@ -360,6 +361,11 @@ document.getElementById("btnConfirmerRefus").onclick = function () {
     })
     .catch((err) => console.error("Erreur refus:", err));
 };
+
+function logout() {
+  localStorage.clear();
+  window.location.href = "login.html";
+}
 
 document.addEventListener("DOMContentLoaded", () => {
   GetUsers();

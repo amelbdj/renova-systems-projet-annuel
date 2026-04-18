@@ -41,21 +41,29 @@ async function loadUserProfile() {
 
     try {
         const res = await fetch(`http://localhost:8081/user/profile?id=${userId}`, {
-            headers: { Authorization: `Bearer ${token}` }
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${token}` }
         });
 
-        const user = await res.json();
+        if (!res.ok) {
+            console.error("Server returned error:", res.status);
+            return;
+        }
 
-        if (user.stripe_verif_completed == 1) {
+        const user = await res.json();
+        console.log("Full User Data:", user);
+
+        // Check for 1 (integer) or true (boolean)
+        if (user.stripe_verif_completed === true || user.stripe_verif_completed === 1) {
             setStripeState('active');
         } else {
             setStripeState('none');
         }
 
-        document.getElementById('displayName').textContent = user.nom;
+        document.getElementById('displayName').textContent = `${user.prenom} ${user.nom}`;
 
     } catch (err) {
-        console.error(err);
+        console.error("Fetch Error:", err);
     }
 }
 

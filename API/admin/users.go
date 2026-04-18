@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"net"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"upcycleconnect/auth"
 	"upcycleconnect/bdd"
@@ -17,6 +19,19 @@ import (
 	"github.com/stripe/stripe-go/v81"
 	"github.com/stripe/stripe-go/v81/account"
 )
+
+func GetIP(r *http.Request) string {
+	forwarded := r.Header.Get("X-Forwarded-For")
+	if forwarded != "" {
+		return strings.Split(forwarded, ",")[0]
+	}
+
+	ip, _, err := net.SplitHostPort(r.RemoteAddr)
+	if err != nil {
+		return r.RemoteAddr
+	}
+	return ip
+}
 
 func Login(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -38,7 +53,9 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userBdd, err := bdd.LoginUser(user.Email, user.MotDePasse)
+	clientIP := GetIP(r)
+
+	userBdd, err := bdd.LoginUser(user.Email, user.MotDePasse, clientIP)
 	if err != nil {
 		fmt.Println("Erreur login :", err)
 		http.Error(w, "Email ou mot de passe incorrect", http.StatusUnauthorized)
@@ -108,6 +125,13 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Content-Type", "application/json")
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
 	users, err := bdd.GetUsers()
 
 	if err != nil {
@@ -239,9 +263,13 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetUserById(w http.ResponseWriter, r *http.Request) {
-	// 1. Add CORS manually (since we removed the middleware for this route)
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
 
 	idStr := r.URL.Query().Get("id")
 	if idStr == "" {
@@ -249,22 +277,15 @@ func GetUserById(w http.ResponseWriter, r *http.Request) {
 	}
 	id, _ := strconv.Atoi(idStr)
 
-	users, err := bdd.GetUserById(id)
-	if err != nil || len(users) == 0 {
+	user, err := bdd.GetUserById(id)
+	if err != nil {
 		http.Error(w, "Utilisateur introuvable", http.StatusNotFound)
 		return
 	}
-	user := &users[0]
 
-	// 2. Stripe Logic
 	if user.StripeAccountId != "" && !user.StripeVerifCompleted {
 		stripe.Key = StripeSecretKey
-
-		// Try GetByID with only one argument
 		acc, err := account.GetByID(user.StripeAccountId, nil)
-
-		// If that still shows an error in your IDE, try:
-		// acc, err := account.Get(nil) // (Only if using the account-specific client)
 
 		if err == nil && acc.PayoutsEnabled {
 			_, execErr := bdd.Db.Exec("UPDATE utilisateur SET stripe_verif_completed = 1 WHERE id = ?", id)
@@ -274,7 +295,6 @@ func GetUserById(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// 3. Send back ONE user, not the whole list
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(user)
 }
@@ -283,6 +303,12 @@ func GetUserByRole(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
 	role := r.PathValue("role")
 
 	users, err := bdd.GetUserByRole(role)
@@ -298,6 +324,10 @@ func GetUserByName(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
 	nameQuery := r.URL.Query().Get("name") // recup les valeurs de la query string(diff de path variable)
 	roleQuery := r.URL.Query().Get("role")
 
@@ -314,6 +344,10 @@ func ValidateUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
 	idStr := r.PathValue("id")
 
 	id, err := strconv.Atoi(idStr)
@@ -339,7 +373,7 @@ func RefuseUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
-	if r.Method == http.MethodOptions {
+	if r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
 		return
 	}
@@ -371,6 +405,7 @@ func UploadDocumentHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
 	if r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
 		return

@@ -15,7 +15,8 @@ func GetAllArticles(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Access-Control-Allow-Origin", "*")
     w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
     w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-if r.Method == "OPTIONS" {
+	
+	if r.Method == "OPTIONS" {
         w.WriteHeader(http.StatusOK)
         return
     }
@@ -88,8 +89,9 @@ func DeleteArticle(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Access-Control-Allow-Origin", "*")
     w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-   if r.Method == "OPTIONS" {
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+   
+	if r.Method == "OPTIONS" {
         w.WriteHeader(http.StatusOK)
         return 
     }
@@ -260,6 +262,15 @@ w.Header().Set("Content-Type", "application/json")
 }
 
 func GetArticleById(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Content-Type", "application/json")
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
 	articleId, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
 		http.Error(w, "ID d'article invalide", http.StatusBadRequest)

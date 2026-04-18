@@ -216,8 +216,8 @@
         <div class="profile-btn">
           <div class="profile-ava">👩‍🏫</div>
           <div>
-            <div class="profile-name">Sophie Laurent</div>
-            <div class="profile-role">Animatrice · Temps partiel</div>
+            <div class="profile-name"></div>
+            <div class="profile-role"></div>
           </div>
         </div>
       </div>
@@ -230,7 +230,7 @@
       <section class="hero fu">
         <div class="hero-left">
           <div class="hero-eyebrow">Espace Salariés</div>
-          <h1 class="hero-title">Bonjour,<br /><em>Sophie</em> 👩‍🏫</h1>
+          <h1 class="hero-title">Bonjour,<br /><em></em></h1>
           <p class="hero-desc">
             Créez des événements, gérez votre planning, publiez du contenu et
             animez la communauté ReNova.
@@ -246,15 +246,15 @@
         </div>
         <div class="hero-stats">
           <div class="hstat fu fu2">
-            <div class="hstat-val">5</div>
+            <div class="hstat-val" id="stat-event">${counterEvt}</div>
             <div class="hstat-lbl">Événements créés</div>
           </div>
           <div
             class="hstat fu fu3"
             style="border-color: rgba(240, 106, 170, 0.2)"
           >
-            <div class="hstat-val" style="color: var(--pink)">2</div>
-            <div class="hstat-lbl">En attente validation</div>
+            <div class="hstat-val" id="stat-valide">${counterValide}</div>
+            <div class="hstat-lbl">Événements validés</div>
           </div>
           <div
             class="hstat fu fu4"
@@ -267,7 +267,11 @@
             class="hstat fu fu5"
             style="border-color: rgba(48, 212, 192, 0.2)"
           >
-            <div class="hstat-val" style="color: var(--teal)">12</div>
+            <div
+              class="hstat-val"
+              id="stat-article"
+              style="color: var(--teal)"
+            ></div>
             <div class="hstat-lbl">Articles publiés</div>
           </div>
         </div>
@@ -307,193 +311,6 @@
         </div>
 
         <div class="evt-grid fu fu1" id="event-grid">
-          <!-- Published -->
-          <div class="evt-card">
-            <div
-              class="evt-banner"
-              style="background: linear-gradient(135deg, #100820, #1c1040)"
-            >
-              🎨
-              <div class="evt-type-badge etb-formation">Formation</div>
-              <div class="evt-status t-green">✓ En ligne</div>
-            </div>
-            <div class="evt-body">
-              <div class="evt-name">Atelier Upcycling Bois</div>
-              <div class="evt-desc">
-                Transformez des palettes en mobilier design. Niveau débutant,
-                matériel fourni.
-              </div>
-              <div class="evt-meta">
-                <span class="tag t-vi">Sam 7 mars</span>
-                <span class="tag t-blue">10h – 13h</span>
-                <span
-                  class="tag"
-                  style="
-                    color: var(--txt-m);
-                    background: var(--bg3);
-                    border: 1px solid var(--b0);
-                  "
-                  >👥 12/15</span
-                >
-              </div>
-              <div class="evt-foot">
-                <span class="tag t-green">Publiée</span>
-                <div style="display: flex; gap: 5px">
-                  <button class="btn btn-g btn-xs">Modifier</button>
-                  <button class="btn btn-danger btn-xs">Annuler</button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Published 2 -->
-          <div class="evt-card">
-            <div
-              class="evt-banner"
-              style="background: linear-gradient(135deg, #040e0c, #081c18)"
-            >
-              🧵
-              <div class="evt-type-badge etb-atelier">Atelier</div>
-              <div class="evt-status t-green">✓ En ligne</div>
-            </div>
-            <div class="evt-body">
-              <div class="evt-name">Couture zéro déchet</div>
-              <div class="evt-desc">
-                Apprenez à coudre en réutilisant des chutes de tissu. Aiguille
-                et fil fournis.
-              </div>
-              <div class="evt-meta">
-                <span class="tag t-teal">Dim 8 mars</span>
-                <span class="tag t-blue">14h30 – 16h30</span>
-                <span
-                  class="tag"
-                  style="
-                    color: var(--txt-m);
-                    background: var(--bg3);
-                    border: 1px solid var(--b0);
-                  "
-                  >👥 8/10</span
-                >
-              </div>
-              <div class="evt-foot">
-                <span class="tag t-green">Publiée</span>
-                <div style="display: flex; gap: 5px">
-                  <button class="btn btn-g btn-xs">Modifier</button>
-                  <button class="btn btn-danger btn-xs">Annuler</button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Pending validation -->
-          <div class="evt-card">
-            <div
-              class="evt-banner"
-              style="background: linear-gradient(135deg, #110a04, #1e1208)"
-            >
-              🪴
-              <div class="evt-type-badge etb-event">Événement</div>
-              <div class="evt-status t-amber">⏳ En attente</div>
-            </div>
-            <div class="evt-body">
-              <div class="evt-name">Jardinage urbain collectif</div>
-              <div class="evt-desc">
-                Créez un potager en balcon avec des matériaux de récupération.
-              </div>
-              <div class="evt-meta">
-                <span class="tag t-amber">22 mars</span>
-                <span class="tag t-blue">9h – 12h</span>
-                <span
-                  class="tag"
-                  style="
-                    color: var(--txt-m);
-                    background: var(--bg3);
-                    border: 1px solid var(--b0);
-                  "
-                  >Max 20</span
-                >
-              </div>
-              <div class="evt-foot">
-                <span class="tag t-amber">Validation en cours</span>
-                <button class="btn btn-g btn-xs">Modifier</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Pending validation 2 -->
-          <div class="evt-card">
-            <div
-              class="evt-banner"
-              style="background: linear-gradient(135deg, #100510, #1e0a1e)"
-            >
-              🎭
-              <div class="evt-type-badge etb-formation">Formation</div>
-              <div class="evt-status t-amber">⏳ En attente</div>
-            </div>
-            <div class="evt-body">
-              <div class="evt-name">Peinture sur objets récupérés</div>
-              <div class="evt-desc">
-                Techniques créatives pour redonner vie à vos objets du
-                quotidien.
-              </div>
-              <div class="evt-meta">
-                <span class="tag t-vi">29 mars</span>
-                <span class="tag t-blue">14h – 17h</span>
-                <span
-                  class="tag"
-                  style="
-                    color: var(--txt-m);
-                    background: var(--bg3);
-                    border: 1px solid var(--b0);
-                  "
-                  >Max 12</span
-                >
-              </div>
-              <div class="evt-foot">
-                <span class="tag t-amber">Validation en cours</span>
-                <button class="btn btn-g btn-xs">Modifier</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Published 3 -->
-          <div class="evt-card">
-            <div
-              class="evt-banner"
-              style="background: linear-gradient(135deg, #040a14, #081428)"
-            >
-              ♻️
-              <div class="evt-type-badge etb-event">Événement</div>
-              <div class="evt-status t-green">✓ En ligne</div>
-            </div>
-            <div class="evt-body">
-              <div class="evt-name">Marché de la réutilisation</div>
-              <div class="evt-desc">
-                Grand marché communautaire ouvert à tous — échangez et vendez.
-              </div>
-              <div class="evt-meta">
-                <span class="tag t-pink">15 mars</span>
-                <span class="tag t-blue">10h – 17h</span>
-                <span
-                  class="tag"
-                  style="
-                    color: var(--txt-m);
-                    background: var(--bg3);
-                    border: 1px solid var(--b0);
-                  "
-                  >👥 64 inscrits</span
-                >
-              </div>
-              <div class="evt-foot">
-                <span class="tag t-green">Publiée</span>
-                <div style="display: flex; gap: 5px">
-                  <button class="btn btn-g btn-xs">Modifier</button>
-                  <button class="btn btn-danger btn-xs">Annuler</button>
-                </div>
-              </div>
-            </div>
-          </div>
-
           <div class="evt-add" onclick="openNewEvt()">
             <div class="plus">＋</div>
             <span>Créer un événement ou une formation</span>
@@ -524,57 +341,11 @@
           <!-- Week days strip -->
           <div class="week-strip">
             <div class="week-header">
-              <button class="btn btn-g btn-xs">←</button>
+              <button id="btn-prev-month" class="btn btn-g btn-xs">←</button>
               <span class="week-month">Mars 2026</span>
-              <button class="btn btn-g btn-xs">→</button>
+              <button id="btn-next-month" class="btn btn-g btn-xs">→</button>
             </div>
-            <div class="week-days">
-              <div class="wday today">
-                <div class="wday-num">1</div>
-                <div class="wday-name">Dim</div>
-                <div class="wday-dots">
-                  <div class="wdot" style="background: var(--vi)"></div>
-                </div>
-              </div>
-              <div class="wday">
-                <div class="wday-num">2</div>
-                <div class="wday-name">Lun</div>
-                <div class="wday-dots"></div>
-              </div>
-              <div class="wday">
-                <div class="wday-num">3</div>
-                <div class="wday-name">Mar</div>
-                <div class="wday-dots">
-                  <div class="wdot" style="background: var(--pink)"></div>
-                </div>
-              </div>
-              <div class="wday">
-                <div class="wday-num">4</div>
-                <div class="wday-name">Mer</div>
-                <div class="wday-dots"></div>
-              </div>
-              <div class="wday">
-                <div class="wday-num">5</div>
-                <div class="wday-name">Jeu</div>
-                <div class="wday-dots">
-                  <div class="wdot" style="background: var(--teal)"></div>
-                  <div class="wdot" style="background: var(--amber)"></div>
-                </div>
-              </div>
-              <div class="wday">
-                <div class="wday-num">6</div>
-                <div class="wday-name">Ven</div>
-                <div class="wday-dots"></div>
-              </div>
-              <div class="wday">
-                <div class="wday-num">7</div>
-                <div class="wday-name">Sam</div>
-                <div class="wday-dots">
-                  <div class="wdot" style="background: var(--vi)"></div>
-                  <div class="wdot" style="background: var(--vi)"></div>
-                </div>
-              </div>
-            </div>
+            <div class="week-days"></div>
           </div>
 
           <!-- Timeline -->
@@ -584,20 +355,8 @@
                 <div class="cht-i" style="background: rgba(240, 106, 170, 0.1)">
                   🗓️
                 </div>
-                Dimanche 1 mars — Aujourd'hui
               </div>
-              <div style="display: flex; gap: 6px; flex-wrap: wrap">
-                <span class="tag t-vi" style="font-size: 10px"
-                  >■ Formation</span
-                >
-                <span class="tag t-pink" style="font-size: 10px"
-                  >■ Réunion</span
-                >
-                <span class="tag t-teal" style="font-size: 10px"
-                  >■ Atelier</span
-                >
-                <span class="tag t-amber" style="font-size: 10px">■ Admin</span>
-              </div>
+              <div style="display: flex; gap: 6px; flex-wrap: wrap"></div>
             </div>
             <div class="card-bd">
               <div class="timeline">
@@ -705,13 +464,7 @@
           <span class="tag t-teal" style="flex-shrink: 0" id="compteur-articles"
             >0 article</span
           >
-          <button
-            class="btn btn-v btn-sm"
-            style="flex-shrink: 0"
-            onclick="openNewPost()"
-          >
-            ＋ Rédiger
-          </button>
+          <button class="btn" onclick="openNewPost()">+ Rédiger</button>
         </div>
 
         <div class="content-layout fu fu1">
@@ -1284,68 +1037,101 @@
     <!-- ════════════════════════════════════════
    MODAL: NOUVEL ÉVÉNEMENT
 ════════════════════════════════════════ -->
-<div class="modal-bg" id="evtModal">
-  <div class="modal">
-    <div class="modal-x" onclick="closeEvt()">✕</div>
-    <div class="modal-h">📅 Créer un événement / formation</div>
-    <div class="modal-sub">Votre création sera soumise à validation d'un responsable avant publication.</div>
-    <div style="background:rgba(245,166,35,.07);border:1px solid rgba(245,166,35,.22);border-radius:9px;padding:11px 14px;margin-bottom:16px;font-size:12.5px;color:rgba(245,166,35,.9)">
-      ⚠️ <strong>Validation obligatoire</strong> — Un responsable devra approuver cet événement avant qu'il soit visible dans le catalogue (24–48h).
+    <div class="modal-bg" id="evtModal">
+      <div class="modal">
+        <div class="modal-x" onclick="closeEvt()">✕</div>
+        <div class="modal-h">📅 Créer un événement / formation</div>
+        <div class="modal-sub">
+          Votre création sera soumise à validation d'un responsable avant
+          publication.
+        </div>
+
+        <div
+          style="
+            background: rgba(245, 166, 35, 0.07);
+            border: 1px solid rgba(245, 166, 35, 0.22);
+            border-radius: 9px;
+            padding: 11px 14px;
+            margin-bottom: 16px;
+            font-size: 12.5px;
+            color: rgba(245, 166, 35, 0.9);
+          "
+        >
+          ⚠️ <strong>Validation obligatoire</strong> — Un responsable devra
+          approuver cet événement avant qu'il soit visible dans le catalogue
+          (24–48h).
+        </div>
+
+        <div class="frow">
+          <div>
+            <label>Titre <span class="req">*</span></label>
+            <input
+              type="text"
+              id="evt-titre"
+              placeholder="Nom de l'événement"
+            />
+          </div>
+          <div>
+            <label>Type <span class="req">*</span></label>
+            <select id="evt-type">
+              <option value="formation">Formation</option>
+              <option value="atelier">Atelier</option>
+              <option value="evenement">Événement</option>
+              <option value="reunion">Réunion</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="fgroup">
+          <label>Description <span class="req">*</span></label>
+          <textarea
+            id="evt-desc"
+            placeholder="Objectif, public cible, matériel nécessaire…"
+          ></textarea>
+        </div>
+
+        <div class="frow">
+          <div>
+            <label>Date <span class="req">*</span></label>
+            <input type="date" id="evt-date" />
+          </div>
+          <div>
+            <label>Lieu</label>
+            <input type="text" id="evt-lieu" placeholder="ex : Atelier Nord" />
+          </div>
+        </div>
+
+        <div class="frow">
+          <div>
+            <label>Heure début</label>
+            <input type="time" id="evt-heure-debut" value="10:00" />
+          </div>
+          <div>
+            <label>Heure fin</label>
+            <input type="time" id="evt-heure-fin" value="13:00" />
+          </div>
+        </div>
+
+        <div class="frow">
+          <div>
+            <label>Capacité max</label>
+            <input type="number" id="evt-capacite" placeholder="ex : 15" />
+          </div>
+          <div>
+            <label>Tarif (€)</label>
+            <input type="number" id="evt-tarif" placeholder="0 = gratuit" />
+          </div>
+        </div>
+        <button
+          class="btn btn-v btn-full"
+          style="margin-top: 10px"
+          onclick="CreateEvent()"
+        >
+          Soumettre pour validation ✓
+        </button>
+      </div>
     </div>
-    <div class="frow" >
-      <div>
-        <label>Titre <span class="req">*</span></label>
-        <input type="text" id="evt-titre" placeholder="Nom de l'événement" />
-      </div>
-      <div>
-        <label>Type <span class="req">*</span></label>
-        <select id="evt-type">
-          <option value="formation">Formation</option>
-          <option value="atelier">Atelier</option>
-          <option value="evenement">Événement</option>
-          <option value="reunion">Réunion</option>
-        </select>
-      </div>
-    </div>
-    <div class="fgroup">
-      <label>Description <span class="req">*</span></label>
-      <textarea
-        id="evt-desc"
-        placeholder="Objectif, public cible, matériel nécessaire…"
-      ></textarea>
-    </div>
-    <div class="frow">
-      <div>
-        <label>Date <span class="req">*</span></label>
-        <input type="date" id="evt-date" />
-      </div>
-      <div>
-        <label>Lieu</label>
-        <input type="text" id="evt-lieu" placeholder="ex : Atelier Nord" />
-      </div>
-    </div>
-    <div class="frow">
-      <div>
-        <label>Heure début</label
-        ><input type="time" id="evt-heure-debut" value="10:00" />
-      </div>
-      <div>
-        <label>Heure fin</label
-        ><input type="time" id="evt-heure-fin" value="13:00" />
-      </div>
-    </div>
-    <div class="frow">
-      <div>
-        <label>Capacité max</label>
-        <input type="number" id="evt-capacite" placeholder="ex : 15" />
-      </div>
-      <div>
-        <label>Tarif (€)</label>
-        <input type="number" id="evt-tarif" placeholder="0 = gratuit" />
-      </div>
-      <button class="btn btn-v btn-full" onclick="CreateEvent()">Soumettre pour validation ✓</button>
-    </div>
-  </div>
+
     <!-- MODAL: NOUVEAU CRÉNEAU -->
     <div class="modal-bg" id="slotModal">
       <div class="modal">
@@ -1532,44 +1318,11 @@
           ?.scrollIntoView({ behavior: "smooth", block: "start" });
       }
 
-      /* ── MODALS ───────────────────────────────── */
-      function openNewEvt() {
-        document.getElementById("evtModal").classList.add("open");
-      }
-      function closeEvt() {
-        document.getElementById("evtModal").classList.remove("open");
-      }
-      function submitEvt() {
-        closeEvt();
-        alert("✅ Événement soumis ! Un responsable le validera sous 24–48h.");
-      }
-
       function openNewSlot() {
         document.getElementById("slotModal").classList.add("open");
       }
       function closeSlot() {
         document.getElementById("slotModal").classList.remove("open");
-      }
-
-      function openNewPost() {
-        document.getElementById("edit-article-id").value = "";
-
-        document.getElementById("post-title").value = "";
-        document.getElementById("post-content").value = "";
-
-        document.getElementById("post-type").selectedIndex = 0;
-
-        const modalTitle = document.getElementById("modal-titre");
-        if (modalTitle) {
-          modalTitle.textContent = "✍️ Rédiger un article";
-        }
-
-        console.log("Ouvrir modal de création d'article");
-        document.getElementById("postModal").classList.add("open");
-      }
-      
-      function closePost() {
-        document.getElementById("postModal").classList.remove("open");
       }
 
       /* ── MOD ACTIONS ──────────────────────────── */
@@ -1601,14 +1354,11 @@
         });
       }
 
-      /* ── CLOSE ON BG ──────────────────────────── */
-      ["evtModal", "slotModal", "postModal"].forEach((id) => {
-        document.getElementById(id).addEventListener("click", function (e) {
-          if (e.target === this) this.classList.remove("open");
-        });
-      });
+      /* ── CLOSE ON BG (Corrigé) ──────────────────────────── */
     </script>
     <script src="script/salarie/article.js" defer></script>
     <script src="script/salarie/event.js" defer></script>
+    <script src="script/salarie/userInfo.js" defer></script>
+    <script src="script/salarie/planning.js" defer></script>
   </body>
 </html>

@@ -70,6 +70,8 @@ function resetEvtForm() {
 function GetEvenements() {
   const container = document.getElementById("event-grid");
   if (!container) return;
+  let counterEvt = 0;
+  let counterAttente = 0;
 
   fetch(`http://localhost:8081/admin/evenements`, {
     headers: {
@@ -88,12 +90,14 @@ function GetEvenements() {
         <div class="evt-add" onclick="openNewEvt()"><div class="plus">＋</div><span>Créer un événement</span></div>`;
         return;
       }
-
+      const statEvent = document.getElementById("stat-event");
+      const statAttente = document.getElementById("stat-valide");
       evenements.forEach((evt) => {
         if (evt.idSalarie == userId) {
           // Sécurité supplémentaire
           let statusBadge = "";
           let actionButtons = "";
+          counterEvt++;
 
           const statut = evt.statut_validation
             ? evt.statut_validation.toLowerCase()
@@ -104,14 +108,16 @@ function GetEvenements() {
             actionButtons = `
             <span class="tag t-green">Publiée</span>
             <div style="display:flex;gap:5px">
-              <button class="btn btn-g btn-xs">Modifier</button>
+              <button class="btn btn-g btn-xs" onclick="editerEvenement(${evt.id})">Modifier</button>
               <button class="btn btn-danger btn-xs" onclick="DeleteEvenement(${evt.id})">Annuler</button>
             </div>`;
           } else {
+            counterAttente++;
             statusBadge = `<div class="evt-status t-amber">⏳ En attente</div>`;
             actionButtons = `
             <span class="tag t-amber">Validation en cours</span>
-            <button class="btn btn-g btn-xs">Modifier</button>`;
+            <button class="btn btn-g btn-xs" onclick="editerEvenement(${evt.id})">Modifier</button>
+            <button class="btn btn-danger btn-xs" onclick="DeleteEvenement(${evt.id})">Annuler</button>`;
           }
 
           let dateFormatee = "Date inconnue";
@@ -164,10 +170,40 @@ function GetEvenements() {
       </div>`;
 
       container.innerHTML = htmlContent;
+      statEvent.textContent = counterEvt;
+      statAttente.textContent = counterAttente;
     })
     .catch((err) => console.error(err));
 }
 
+function openNewEvt() {
+  document.getElementById("evtModal").classList.add("open");
+}
+
+function editerEvenement(id) {
+  // Rediriger vers la page de modification avec l'ID de l'événement
+}
+
+function DeleteEvenement(id) {
+  fetch(`http://localhost:8081/admin/evenements/delete/${id}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: "Bearer " + monToken,
+    },
+  })
+    .then((res) => {
+      if (!res.ok) throw new Error("Erreur lors de la suppression");
+      return res.text();
+    })
+    .then(() => {
+      alert("Événement annulé avec succès.");
+      GetEvenements();
+    })
+    .catch((err) => {
+      console.error(err);
+      alert("Une erreur est survenue lors de l'annulation.");
+    });
+}
 document.addEventListener("DOMContentLoaded", () => {
   GetEvenements();
 });

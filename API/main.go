@@ -30,11 +30,17 @@ func main() {
 	http.HandleFunc("OPTIONS /admin/users/modify/{id}", admin.UpdateUser)
 	http.HandleFunc("OPTIONS /admin/users/validate/{id}", admin.ValidateUser)
 	http.HandleFunc("OPTIONS /admin/users/refuse/{id}", admin.RefuseUser)
+	http.HandleFunc("OPTIONS /admin/users", admin.GetAllUsers)
+	http.HandleFunc("OPTIONS /admin/users/role/{role}", admin.GetUserByRole)
+	http.HandleFunc("OPTIONS /admin/users/search", admin.GetUserByName)
+	http.HandleFunc("OPTIONS /admin/users/{id}", admin.GetUserById)
 
 	http.HandleFunc("OPTIONS /admin/categories/add", admin.CreateCategorie)
 	http.HandleFunc("OPTIONS /admin/categories/delete/{id}", admin.DeleteCategorie)
+	http.HandleFunc("OPTIONS /admin/categories", admin.GetAllCategories)
 
 	http.HandleFunc("OPTIONS /admin/annonces/validate/{id}", admin.ValidateAnnonce)
+	http.HandleFunc("OPTIONS /admin/annonces", admin.GetAllAnnonces)
 	http.HandleFunc("OPTIONS /admin/annonces/refuse/{id}", admin.RefuseAnnonce)
 	http.HandleFunc("OPTIONS /admin/annonces/add", admin.CreateAnnonce)
 	http.HandleFunc("OPTIONS /admin/annonces/delete/{id}", admin.DeleteAnnonce)
@@ -51,6 +57,7 @@ func main() {
 	http.HandleFunc("OPTIONS /admin/box/collect-object", admin.CollectObject)
 	http.HandleFunc("OPTIONS /admin/order/create", admin.CreateOrder)
 	http.HandleFunc("OPTIONS /admin/box/create", admin.CreateBox)
+	http.HandleFunc("OPTIONS /admin/boxs", admin.GetAllBoxs)
 
 	http.HandleFunc("OPTIONS /admin/articles/validate/{id}", admin.ValidateArticle)
 	http.HandleFunc("OPTIONS /admin/articles/refuse/{id}", admin.RefuseArticle)
@@ -58,6 +65,13 @@ func main() {
 	http.HandleFunc("OPTIONS /admin/articles/add/{action}", admin.CreateArticle)
 	http.HandleFunc("OPTIONS /admin/articles/modify/{id}/{action}", admin.ModifyArticle)
 	http.HandleFunc("OPTIONS /admin/articles/salarie/{id}", admin.GetArticlesBySalarie)
+	http.HandleFunc("OPTIONS /admin/articles/{id}", admin.GetArticleById)
+
+	// --- TRANSLATIONS OPTIONS ---
+	http.HandleFunc("OPTIONS /api/translations", admin.GetTranslations)
+	http.HandleFunc("OPTIONS /api/languages", admin.GetLanguages)
+	http.HandleFunc("OPTIONS /admin/translations/add", admin.AddLanguage)
+	http.HandleFunc("OPTIONS /admin/translations/keys", admin.GetTranslationKeysHandler)
 
 	// --- USERS ---
 	http.HandleFunc("GET /admin/users", auth.VerifyTokenMiddleware(admin.GetAllUsers))
@@ -68,7 +82,10 @@ func main() {
 	http.HandleFunc("GET /admin/users/search", auth.VerifyTokenMiddleware(admin.GetUserByName))
 	http.HandleFunc("PUT /admin/users/validate/{id}", auth.VerifyTokenMiddleware(admin.ValidateUser))
 	http.HandleFunc("PUT /admin/users/refuse/{id}", auth.VerifyTokenMiddleware(admin.RefuseUser))
+
 	http.HandleFunc("GET /user/profile", admin.GetUserById)
+
+	http.HandleFunc("GET /admin/users/{id}", auth.VerifyTokenMiddleware(admin.GetUserById))
 
 	// Auth, Tutorial & Upload
 	http.HandleFunc("/api/upload-document", auth.VerifyTokenMiddleware(admin.UploadDocumentHandler))
@@ -82,6 +99,7 @@ func main() {
 	http.HandleFunc("POST /admin/categories/add", auth.VerifyTokenMiddleware(admin.CreateCategorie))
 	http.HandleFunc("DELETE /admin/categories/delete/{id}", auth.VerifyTokenMiddleware(admin.DeleteCategorie))
 	http.HandleFunc("GET /admin/categories", auth.VerifyTokenMiddleware(admin.GetAllCategories))
+
 	// --- ANNONCES ---
 	http.HandleFunc("GET /admin/annonces", admin.GetAllAnnonces)
 	http.HandleFunc("PUT /admin/annonces/validate/{id}", auth.VerifyTokenMiddleware(admin.ValidateAnnonce))
@@ -104,8 +122,8 @@ func main() {
 	http.HandleFunc("POST /admin/orders/create", auth.VerifyTokenMiddleware(admin.CreateOrder))
 	http.HandleFunc("POST /admin/box/confirm-deposit", auth.VerifyTokenMiddleware(admin.ConfirmDeposit))
 	http.HandleFunc("POST /admin/box/collect-object", auth.VerifyTokenMiddleware(admin.CollectObject))
-	http.HandleFunc("GET /admin/boxs", auth.VerifyTokenMiddleware(admin.GetAllBoxs))       // AJOUTÉ
-	http.HandleFunc("POST /admin/box/create", auth.VerifyTokenMiddleware(admin.CreateBox)) // AJOUTÉ
+	http.HandleFunc("GET /admin/boxs", auth.VerifyTokenMiddleware(admin.GetAllBoxs))
+	http.HandleFunc("POST /admin/box/create", auth.VerifyTokenMiddleware(admin.CreateBox))
 
 	// --- ARTICLES / NEWS ---
 	http.HandleFunc("GET /admin/articles", admin.GetAllArticles)
@@ -120,6 +138,12 @@ func main() {
 	//Stripe payment
 	http.HandleFunc("POST /admin/connect-stripe", auth.VerifyTokenMiddleware(admin.ConnectToStripe))
 	http.HandleFunc("POST /api/stripe/webhook", admin.StripeWebhookHandler)
+
+	// --- TRADUCTIONS ---
+	http.HandleFunc("GET /api/translations", admin.GetTranslations)
+	http.HandleFunc("GET /api/languages", admin.GetLanguages)
+	http.HandleFunc("POST /admin/translations/add", admin.AddLanguage)
+	http.HandleFunc("GET /admin/translations/keys", admin.GetTranslationKeysHandler)
 
 	fmt.Println("test de : http://localhost:8081")
 

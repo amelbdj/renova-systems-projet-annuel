@@ -1,4 +1,3 @@
-let monToken = localStorage.getItem("token");
 let userId = localStorage.getItem("userId");
 function GetArticle() {
   const container = document.getElementById("result");
