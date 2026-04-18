@@ -29,7 +29,6 @@ textarea {
 
 /* ─── TOKENS ──────────────────────────────────────── */
 :root {
-  --bg: #09060000;
   --bg: #090600;
   --bg2: #0f0a00;
   --bg3: #160e00;
@@ -908,10 +907,13 @@ select option {
   border-radius: 0 0 var(--r) var(--r);
   overflow: hidden;
 }
+
+/* NOUVELLE GRILLE À 8 COLONNES */
 .u-thead {
   display: grid;
-  grid-template-columns: 32px 1fr 120px 100px 80px 100px;
-  gap: 0;
+  /* Chk | Utilisateur | Rôle | Document | Statut | Score | ID | Actions */
+  grid-template-columns: 32px 2.5fr 120px 100px 140px 70px 60px 90px;
+  gap: 10px;
   background: var(--bg3);
   padding: 8px 14px;
   border-bottom: 1px solid var(--b0);
@@ -921,10 +923,12 @@ select option {
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
+
 .u-row {
   display: grid;
-  grid-template-columns: 32px 1fr 120px 100px 80px 100px;
-  gap: 0;
+  /* La même grille que thead */
+  grid-template-columns: 32px 2.5fr 120px 100px 140px 70px 60px 90px;
+  gap: 10px;
   padding: 10px 14px;
   border-bottom: 1px solid var(--b0);
   align-items: center;
@@ -1542,6 +1546,26 @@ footer strong {
 .category .btn-red:hover .material-symbols-outlined {
   color: #ff4d4d;
 }
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.modal-content {
+  background: white;
+  padding: 25px;
+  border-radius: 15px;
+  width: 400px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
 /* ─── RESPONSIVE ──────────────────────────────────── */
 @media (max-width: 1024px) {
   .kpi-grid {
@@ -1554,10 +1578,13 @@ footer strong {
   }
   .u-thead,
   .u-row {
-    grid-template-columns: 32px 1fr 110px 90px 100px;
+    grid-template-columns: 32px 1.5fr 100px 80px 120px 80px;
   }
-  .u-thead :last-child,
-  .u-row :last-child {
+  /* On cache l'ID et le Score sur petits écrans pour faire de la place */
+  .u-thead :nth-last-child(2),
+  .u-row :nth-last-child(2),
+  .u-thead :nth-last-child(3),
+  .u-row :nth-last-child(3) {
     display: none;
   }
   .nav-links {

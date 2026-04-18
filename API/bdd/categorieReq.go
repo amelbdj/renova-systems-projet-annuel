@@ -80,3 +80,4 @@ func DeleteCategorie(id int) error {
 
 	return nil
 }
+
