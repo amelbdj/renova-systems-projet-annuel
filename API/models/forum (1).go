@@ -1,89 +1,22 @@
-package admin
+package models
 
-import (
-	"encoding/json"
-	"fmt"
-	"net/http"
-	"strconv"
-	"upcycleconnect/bdd"
-)
+type MessageForum struct {
+	IdMessage    int    `json:"id_message"`
+	IdTopic      int    `json:"id_topic"`
+	IdUser       int    `json:"id_user"`
+	Contenu      string `json:"contenu"`
+	EstModere    bool   `json:"est_modere"`
+	EstSignale   bool   `json:"est_signale"`
+	DateCreation string `json:"date_creation"` // Formaté en string pour le JSON
 
-func GetForumMessages(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-
-	if r.Method == "OPTIONS" {
-		w.WriteHeader(http.StatusOK)
-		return
-	}
-
-	filtre := r.URL.Query().Get("filter")
-
-	messages, err := bdd.GetForumMessages(filtre)
-	if err != nil {
-		http.Error(w, "Erreur serveur lors de la récupération des messages", http.StatusInternalServerError)
-		fmt.Println("Erreur BDD GetForumMessages :", err)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(messages)
+	TitreTopic   string `json:"titre_topic"`
+	NomAuteur    string `json:"nom_auteur"`
+	PrenomAuteur string `json:"prenom_auteur"`
 }
 
-func ModerateForumMessage(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "PUT, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-
-	if r.Method == "OPTIONS" {
-		w.WriteHeader(http.StatusOK)
-		return
-	}
-
-	idMessageStr := r.PathValue("id")
-	idMessage, err := strconv.Atoi(idMessageStr)
-	if err != nil {
-		http.Error(w, "ID de message invalide", http.StatusBadRequest)
-		return
-	}
-
-	var payload struct {
-		Action string `json:"action"`
-	}
-	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
-		http.Error(w, "Format de requête invalide", http.StatusBadRequest)
-		return
-	}
-
-	err = bdd.ModerateForumMessage(idMessage, payload.Action)
-	if err != nil {
-		http.Error(w, "Erreur lors de la modération", http.StatusInternalServerError)
-		fmt.Println("Erreur BDD ModerateForumMessage :", err)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, `{"message": "Action de modération enregistrée avec succès"}`)
-}
-
-func GetForumStats(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-
-	if r.Method == "OPTIONS" {
-		w.WriteHeader(http.StatusOK)
-		return
-	}
-
-	stats, err := bdd.GetForumStats()
-	if err != nil {
-		http.Error(w, "Erreur lors de la récupération des statistiques", http.StatusInternalServerError)
-		fmt.Println("Erreur BDD GetForumStats :", err)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(stats)
+type StatistiqueForum struct {
+	MessagesSemaine int `json:"messages_semaine"`
+	MembresActifs   int `json:"membres_actifs"`
+	Signalements    int `json:"signalements_en_attente"`
+	ModerationsMois int `json:"moderations_mois"`
 }
