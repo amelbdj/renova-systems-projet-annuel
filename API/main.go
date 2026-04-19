@@ -73,6 +73,10 @@ func main() {
 	http.HandleFunc("OPTIONS /admin/translations/add", admin.AddLanguage)
 	http.HandleFunc("OPTIONS /admin/translations/keys", admin.GetTranslationKeysHandler)
 
+	http.HandleFunc("OPTIONS /admin/forum/messages", admin.GetForumMessages)
+	http.HandleFunc("OPTIONS /admin/forum/messages/moderate/{id}", admin.ModerateForumMessage)
+	http.HandleFunc("OPTIONS /admin/forum/stats", admin.GetForumStats)
+
 	// --- USERS ---
 	http.HandleFunc("GET /admin/users", auth.VerifyTokenMiddleware(admin.GetAllUsers))
 	http.HandleFunc("POST /admin/users/add", auth.VerifyTokenMiddleware(admin.CreateUser))
@@ -144,6 +148,12 @@ func main() {
 	http.HandleFunc("GET /api/languages", admin.GetLanguages)
 	http.HandleFunc("POST /admin/translations/add", admin.AddLanguage)
 	http.HandleFunc("GET /admin/translations/keys", admin.GetTranslationKeysHandler)
+
+	// --- FORUM ---
+	http.HandleFunc("GET /admin/forum/messages", auth.VerifyTokenMiddleware(admin.GetForumMessages))
+	http.HandleFunc("PUT /admin/forum/messages/moderate/{id}", auth.VerifyTokenMiddleware(admin.ModerateForumMessage))
+	http.HandleFunc("GET /admin/forum/stats", auth.VerifyTokenMiddleware(admin.GetForumStats))
+
 
 	fmt.Println("test de : http://localhost:8081")
 
