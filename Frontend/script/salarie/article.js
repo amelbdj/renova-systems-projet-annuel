@@ -42,9 +42,12 @@ function chargerArticles() {
         }
 
         let icone = "📝";
-        if (art.type.toLowerCase().includes("conseil")) icone = "💡";
-        if (art.type.toLowerCase().includes("news")) icone = "📰";
-        if (art.type.toLowerCase().includes("tuto")) icone = "🛠️";
+        if (art.type.toLowerCase().includes("conseil"))
+          icone = `<span class="material-symbols-outlined">lightbulb</span>`;
+        if (art.type.toLowerCase().includes("news"))
+          icone = `<span class="material-symbols-outlined">newspaper</span>`;
+        if (art.type.toLowerCase().includes("tuto"))
+          icone = `<span class="material-symbols-outlined">build</span>`;
         const card = `
   <div class="post-item">
     <div class="post-ico" style="background:rgba(48,212,192,.09)">${icone}</div>
