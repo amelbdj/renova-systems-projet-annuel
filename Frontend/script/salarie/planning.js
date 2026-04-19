@@ -59,7 +59,7 @@ function genererJoursAvecEvenements() {
     "Novembre",
     "Décembre",
   ];
-  const joursNoms = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"];
+  const joursNoms = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
 
   const annee = dateAffichee.getFullYear();
   const moisIndex = dateAffichee.getMonth();
@@ -147,7 +147,6 @@ function genererJoursAvecEvenements() {
     conteneurJours.appendChild(jourDiv);
   });
 
-  // Clic automatique sur le premier jour généré
   const premierJourCree = document.querySelector(".wday.today");
   if (premierJourCree) {
     premierJourCree.click();
