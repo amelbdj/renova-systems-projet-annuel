@@ -73,6 +73,8 @@ func main() {
 	http.HandleFunc("OPTIONS /admin/translations/keys", admin.GetTranslationKeysHandler)
 
 
+
+
 	// --- USERS ---
     http.HandleFunc("GET /admin/users", auth.VerifyTokenMiddleware(admin.GetAllUsers)) 
     http.HandleFunc("POST /admin/users/add", auth.VerifyTokenMiddleware(admin.CreateUser))
@@ -133,6 +135,8 @@ func main() {
 	http.HandleFunc("GET /api/languages", admin.GetLanguages)
 	http.HandleFunc("POST /admin/translations/add", admin.AddLanguage)
 	http.HandleFunc("GET /admin/translations/keys", admin.GetTranslationKeysHandler)
+
+
 
     fmt.Println("test de : http://localhost:8081")
  
