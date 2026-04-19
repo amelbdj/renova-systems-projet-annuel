@@ -1,10 +1,12 @@
+
+let currentEditingImagePath = "";
 document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem('token');
     if (!token) {
         window.location.href = "login.html";
         return;
     }
-
+    
     const firstName = localStorage.getItem('userName');
     const score = localStorage.getItem('userScore') || 0;
     const hasSeenTutorial = localStorage.getItem('tutorielVu');
@@ -58,12 +60,16 @@ async function loadMyAnnonces() {
             annGrid.innerHTML = '<p style="color:var(--txt-m); padding:20px;">Vous n\'avez pas encore d\'annonces.</p>';
         } else {
             annonces.forEach(ann => {
+                console.log("Données de l'annonce:", ann);
+                const imgSrc = ann.image ? `http://localhost:8081${ann.image}` : null;
                 const card = document.createElement('div');
                 card.className = 'ann-card fu';
                 const statusClass = ann.statut_validation === 'Validée' ? 't-green' : 't-amber';
 
                 card.innerHTML = `
-                    <div class="ann-thumb" style="background:linear-gradient(135deg,#0a0f1e,#101828)">📦</div>
+                    <div class="ann-thumb" style="${imgSrc ? `background: url('${imgSrc}') center/cover no-repeat;` : `background: linear-gradient(135deg,#0a0f1e,#101828);`}">
+            ${imgSrc ? '' : '📦'}
+        </div>
                     <div class="ann-body">
                         <div class="ann-name">${ann.titre}</div>
                         <div class="ann-meta">${ann.prix > 0 ? ann.prix + ' €' : 'Don gratuit'}</div>
@@ -112,17 +118,33 @@ async function deleteAnnonce(id) {
 }
 
 function openEditForm(ann) {
-    document.querySelector('#annForm input[type="text"]').value = ann.titre;
-    document.querySelector('#annForm textarea').value = ann.description;
-    document.querySelector('#annForm input[type="number"]').value = ann.prix;
-    document.querySelector('#annForm select').value = ann.type;
-    
+
     document.getElementById('editAnnId').value = ann.id;
-    
     document.getElementById('formTitle').textContent = "Modifier l'annonce";
-    document.querySelector('#annForm .btn-p').textContent = "Enregistrer les modifications ✓";
     
-    const f = document.getElementById('annForm');
-    f.style.display = 'block';
-    f.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document.querySelector('#annForm input[type="text"]').value = ann.titre;
+    document.querySelector('#annForm select').value = ann.type;
+    document.getElementById('annCategorie').value = ann.id_categorie;
+    document.querySelector('#annForm input[type="number"]').value = ann.prix;
+    document.querySelector('#annForm textarea').value = ann.description;
+
+    if (ann.image) {
+        currentEditingImagePath = ann.image;
+    } else {
+        currentEditingImagePath = "";
+    }
+
+    toggleAnnForm();
+}
+
+function goToProfile() {
+    const userId = localStorage.getItem('userId');
+    const role = localStorage.getItem('role'); 
+
+    if (!userId) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    window.location.href = `profil.html?id=${userId}`;
 }

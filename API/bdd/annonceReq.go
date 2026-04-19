@@ -81,8 +81,8 @@ func RefuseAnnonce(annonceId int) error {
 
 func CreateAnnonce(annonce models.Annonce) error {
 	query := `INSERT INTO pa2026.annonce 
-              (titre, description, type, prix, code_postal, ville, etat, poids_kg, quantite, id_user, id_categorie) 
-              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+              (titre, description, type, prix, code_postal, ville, etat, poids_kg, quantite, id_user, id_categorie, image) 
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
 	_, err := Db.Exec(query,
 		annonce.Titre,
@@ -96,6 +96,7 @@ func CreateAnnonce(annonce models.Annonce) error {
 		annonce.Quantite,
 		annonce.IdUser,
 		annonce.IdCategorie,
+		annonce.Image,
 	)
 
 	if err != nil {
@@ -143,7 +144,7 @@ func UpdateAnnonce(annonceId int, annonce models.Annonce) error {
 
 	if StatutVente != "EN ATTENTE DEPOT" {
 		_, err = Db.Exec(
-			"UPDATE pa2026.annonce SET titre = ?, description = ?, type = ?, prix = ?, code_postal = ?, ville = ?, etat = ?, poids_kg = ?, quantite = ?, id_user = ?, id_categorie = ? WHERE id = ?",
+			"UPDATE pa2026.annonce SET titre = ?, description = ?, type = ?, prix = ?, code_postal = ?, ville = ?, etat = ?, poids_kg = ?, quantite = ?, id_user = ?, id_categorie = ?, image = ? WHERE id = ?",
 			annonce.Titre,
 			annonce.Description,
 			annonce.Type,
@@ -155,6 +156,7 @@ func UpdateAnnonce(annonceId int, annonce models.Annonce) error {
 			annonce.Quantite,
 			annonce.IdUser,
 			annonce.IdCategorie,
+			annonce.Image,
 			annonceId,
 		)
 
@@ -243,18 +245,18 @@ func GetAnnonceById(id int) (models.Annonce, error) {
 func GetAnnoncesByUser(userID int) ([]models.Annonce, error) {
 	var list []models.Annonce
 
-	rows, err := Db.Query("SELECT id, titre, prix, id_categorie, statut_validation FROM pa2026.annonce WHERE id_user = ?", userID)
+	rows, err := Db.Query("SELECT id, titre, prix, id_categorie, statut_validation, COALESCE(image, '') FROM pa2026.annonce WHERE id_user = ?", userID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
 	for rows.Next() {
-		var a models.Annonce
-		if err := rows.Scan(&a.Id, &a.Titre, &a.Prix, &a.IdCategorie, &a.StatutValidation); err != nil {
+		var Annonce models.Annonce
+		if err := rows.Scan(&Annonce.Id, &Annonce.Titre, &Annonce.Prix, &Annonce.IdCategorie, &Annonce.StatutValidation, &Annonce.Image); err != nil {
 			return nil, err
 		}
-		list = append(list, a)
+		list = append(list, Annonce)
 	}
 	return list, nil
 }

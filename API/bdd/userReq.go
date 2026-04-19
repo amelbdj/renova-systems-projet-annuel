@@ -10,38 +10,38 @@ import (
 )
 
 func LoginUser(email string, motDePasse string, ip string) (models.User, error) {
-    var user models.User
+	var user models.User
 
-    err := Db.QueryRow("SELECT id, mot_de_passe, role, type_statut, prenom, score, tutoriel_vu, validation FROM pa2026.utilisateur WHERE email = ?", email).Scan(
-        &user.Id,
-        &user.MotDePasse,
-        &user.Role,
-        &user.TypeStatut,
-        &user.Prenom,
-        &user.Score,
-        &user.TutorielVu,
-        &user.Validation,
-    )
-    if err != nil {
-        if err == sql.ErrNoRows {
-            return user, fmt.Errorf("email ou mot de passe incorrect")
-        }
-        return user, fmt.Errorf("erreur BDD : %v", err)
-    }
+	err := Db.QueryRow("SELECT id, mot_de_passe, role, type_statut, prenom, score, tutoriel_vu, validation FROM pa2026.utilisateur WHERE email = ?", email).Scan(
+		&user.Id,
+		&user.MotDePasse,
+		&user.Role,
+		&user.TypeStatut,
+		&user.Prenom,
+		&user.Score,
+		&user.TutorielVu,
+		&user.Validation,
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return user, fmt.Errorf("email ou mot de passe incorrect")
+		}
+		return user, fmt.Errorf("erreur BDD : %v", err)
+	}
 
-    err = bcrypt.CompareHashAndPassword([]byte(user.MotDePasse), []byte(motDePasse))
-    if err != nil {
-        return user, fmt.Errorf("email ou mot de passe incorrect")
-    }
+	err = bcrypt.CompareHashAndPassword([]byte(user.MotDePasse), []byte(motDePasse))
+	if err != nil {
+		return user, fmt.Errorf("email ou mot de passe incorrect")
+	}
 
-    user.Email = email
+	user.Email = email
 
-    errLog := LogConnexion(user.Id, ip)
-    if errLog != nil {
-        fmt.Println("Erreur lors de l'enregistrement du log de connexion :", errLog)
-    }
-    
-    return user, nil
+	errLog := LogConnexion(user.Id, ip)
+	if errLog != nil {
+		fmt.Println("Erreur lors de l'enregistrement du log de connexion :", errLog)
+	}
+
+	return user, nil
 }
 func GetUsers() ([]models.User, error) {
 
@@ -164,20 +164,25 @@ func UpdateUserById(user models.User) error {
 	return nil
 }
 
-func GetUserById(id int) (models.User, error) { // On retire les []
-    var user models.User // Un seul user, pas un slice
+func GetUserById(id int) (models.User, error) {
+	var user models.User
 
-    err := Db.QueryRow("SELECT id, nom, prenom, email, mot_de_passe, role, type_statut, nom_entreprise, siret, score, validation FROM pa2026.utilisateur WHERE id = ?", id).Scan(
-        &user.Id, &user.Nom, &user.Prenom, &user.Email, &user.MotDePasse, 
-        &user.Role, &user.TypeStatut, &user.NomEntreprise, &user.Siret, 
-        &user.Score, &user.Validation,
-    )
+	err := Db.QueryRow("SELECT id, nom, prenom, email, mot_de_passe, role, type_statut, nom_entreprise, siret, score, validation, stripe_account_id, stripe_verif_completed FROM pa2026.utilisateur WHERE id = ?", id).Scan(
+		&user.Id, &user.Nom, &user.Prenom, &user.Email, &user.MotDePasse,
+		&user.Role, &user.TypeStatut, &user.NomEntreprise, &user.Siret,
+		&user.Score, &user.Validation,
+		&user.StripeAccountId,
+		&user.StripeVerifCompleted,
+	)
 
-    if err != nil {
-        return models.User{}, fmt.Errorf("get User by id : %v", err)
-    }
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return models.User{}, fmt.Errorf("utilisateur non trouvé")
+		}
+		return models.User{}, fmt.Errorf("get User by id error: %v", err)
+	}
 
-    return user, nil
+	return user, nil
 }
 
 func GetUserByRole(role string) ([]models.User, error) {
@@ -330,14 +335,19 @@ func CheckEmailExists(email string) (bool, error) {
 	}
 }
 
+<<<<<<< HEAD
 
 func LogConnexion(idUser int, ip string)  error {
    
+=======
+func LogConnexion(idUser int, ip string) error {
+
+>>>>>>> origin/ndoya
 	_, err := Db.Exec("INSERT INTO pa2026.log_connexion (id_user, ip, date_connexion) VALUES (?, ?, NOW())", idUser, ip)
-    
+
 	if err != nil {
-        return err
-    }
-    
-   return nil
+		return err
+	}
+
+	return nil
 }

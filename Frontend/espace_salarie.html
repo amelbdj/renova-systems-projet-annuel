@@ -555,18 +555,14 @@
           </div>
         </div>
       </section>
-      <!-- ════════════════════════════════════
-     ④ MODÉRATION FORUM
-  ════════════════════════════════════ -->
-      <section id="forum" style="padding: 0 0 60px">
+ <section id="forum" style="padding: 0 0 60px">
         <div class="sec-label fu">
           <div class="sec-num blue">4</div>
           <div class="sec-title-text">Modération Forum</div>
           <div class="sec-divider"></div>
-          <span class="tag t-red" style="flex-shrink: 0">⚠ 3 signalements</span>
+          <span class="tag t-red" style="flex-shrink: 0">⚠ Action requise</span>
         </div>
         <div class="forum-layout fu fu1">
-          <!-- Threads -->
           <div>
             <div
               class="card-hd"
@@ -598,7 +594,7 @@
                   "
                   onclick="setFilter('flag', this)"
                 >
-                  🚩 Signalés (3)
+                  🚩 Signalés
                 </button>
               </div>
             </div>
@@ -611,217 +607,14 @@
                 padding: 14px;
               "
             >
-              <div class="thread-list">
-                <!-- Flagged -->
-                <div class="thread-item flagged" data-flag="true">
-                  <div class="thread-ava">😡</div>
-                  <div class="thread-body">
-                    <div class="thread-top">
-                      <span class="thread-user">User_4421</span>
-                      <span class="thread-time">Il y a 23 min</span>
-                      <span class="tag t-red" style="font-size: 10px"
-                        >🚩 Signalé</span
-                      >
-                    </div>
-                    <div class="thread-text">
-                      Ce site est nul, personne répond jamais... les conteneurs
-                      sont toujours pleins c'est de l'arnaque !!!
-                    </div>
-                    <div class="thread-actions">
-                      <button
-                        class="mod-btn mod-approve"
-                        onclick="modAction(this, 'approuvé')"
-                      >
-                        ✓ Approuver
-                      </button>
-                      <button
-                        class="mod-btn mod-hide"
-                        onclick="modAction(this, 'masqué')"
-                      >
-                        ⊘ Masquer
-                      </button>
-                      <button
-                        class="mod-btn mod-ban"
-                        onclick="modAction(this, 'banni')"
-                      >
-                        🚫 Bannir l'utilisateur
-                      </button>
-                      <button
-                        class="mod-btn mod-reply"
-                        onclick="modAction(this, 'répondu')"
-                      >
-                        ↩ Répondre
-                      </button>
-                    </div>
-                  </div>
-                  <div class="flag-icon">🚩</div>
-                </div>
-
-                <!-- Normal -->
-                <div class="thread-item" data-flag="false">
-                  <div class="thread-ava">😊</div>
-                  <div class="thread-body">
-                    <div class="thread-top">
-                      <span class="thread-user">Marie Dupont</span>
-                      <span class="thread-time">Il y a 1h</span>
-                    </div>
-                    <div class="thread-text">
-                      Super atelier aujourd'hui ! Sophie était super pédagogue
-                      🙌 J'ai appris à faire une étagère avec des palettes
-                      récupérées.
-                    </div>
-                    <div class="thread-actions">
-                      <button
-                        class="mod-btn mod-approve"
-                        onclick="modAction(this, 'approuvé')"
-                      >
-                        ✓ Garder
-                      </button>
-                      <button
-                        class="mod-btn mod-reply"
-                        onclick="modAction(this, 'répondu')"
-                      >
-                        ↩ Répondre
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Flagged 2 -->
-                <div class="thread-item flagged" data-flag="true">
-                  <div class="thread-ava">🤔</div>
-                  <div class="thread-body">
-                    <div class="thread-top">
-                      <span class="thread-user">Anon_882</span>
-                      <span class="thread-time">Il y a 2h</span>
-                      <span class="tag t-red" style="font-size: 10px"
-                        >🚩 Signalé</span
-                      >
-                    </div>
-                    <div class="thread-text">
-                      Quelqu'un a le code pour ouvrir BOX-042 ? Je veux
-                      récupérer l'objet sans passer par l'appli.
-                    </div>
-                    <div class="thread-actions">
-                      <button
-                        class="mod-btn mod-hide"
-                        onclick="modAction(this, 'masqué')"
-                      >
-                        ⊘ Masquer
-                      </button>
-                      <button
-                        class="mod-btn mod-ban"
-                        onclick="modAction(this, 'banni')"
-                      >
-                        🚫 Bannir
-                      </button>
-                      <button
-                        class="mod-btn mod-reply"
-                        onclick="modAction(this, 'répondu')"
-                      >
-                        ↩ Répondre
-                      </button>
-                    </div>
-                  </div>
-                  <div class="flag-icon">🚩</div>
-                </div>
-
-                <!-- Normal 2 -->
-                <div class="thread-item" data-flag="false">
-                  <div class="thread-ava">🙂</div>
-                  <div class="thread-body">
-                    <div class="thread-top">
-                      <span class="thread-user">Atelier Morin</span>
-                      <span class="thread-time">Il y a 3h</span>
-                    </div>
-                    <div class="thread-text">
-                      Je cherche des chutes de tissu pour un projet de sacs.
-                      Quelqu'un en a disponibles à Paris 11e ?
-                    </div>
-                    <div class="thread-actions">
-                      <button
-                        class="mod-btn mod-approve"
-                        onclick="modAction(this, 'approuvé')"
-                      >
-                        ✓ Garder
-                      </button>
-                      <button
-                        class="mod-btn mod-reply"
-                        onclick="modAction(this, 'répondu')"
-                      >
-                        ↩ Répondre
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Flagged 3 -->
-                <div class="thread-item flagged" data-flag="true">
-                  <div class="thread-ava">😤</div>
-                  <div class="thread-body">
-                    <div class="thread-top">
-                      <span class="thread-user">User_1109</span>
-                      <span class="thread-time">Il y a 5h</span>
-                      <span class="tag t-red" style="font-size: 10px"
-                        >🚩 Signalé</span
-                      >
-                    </div>
-                    <div class="thread-text">
-                      Spam publicitaire — Achetez nos produits bio pas chers sur
-                      [lien suspect]...
-                    </div>
-                    <div class="thread-actions">
-                      <button
-                        class="mod-btn mod-hide"
-                        onclick="modAction(this, 'masqué')"
-                      >
-                        ⊘ Masquer
-                      </button>
-                      <button
-                        class="mod-btn mod-ban"
-                        onclick="modAction(this, 'banni')"
-                      >
-                        🚫 Bannir
-                      </button>
-                    </div>
-                  </div>
-                  <div class="flag-icon">🚩</div>
-                </div>
-
-                <!-- Normal 3 -->
-                <div class="thread-item" data-flag="false">
-                  <div class="thread-ava">😄</div>
-                  <div class="thread-body">
-                    <div class="thread-top">
-                      <span class="thread-user">Lucas Petit</span>
-                      <span class="thread-time">Il y a 6h</span>
-                    </div>
-                    <div class="thread-text">
-                      Est-ce qu'il y a un atelier prévu sur la réparation
-                      électronique ? Je répare des téléphones et aimerais
-                      partager mes techniques.
-                    </div>
-                    <div class="thread-actions">
-                      <button
-                        class="mod-btn mod-approve"
-                        onclick="modAction(this, 'approuvé')"
-                      >
-                        ✓ Garder
-                      </button>
-                      <button
-                        class="mod-btn mod-reply"
-                        onclick="modAction(this, 'répondu')"
-                      >
-                        ↩ Répondre
-                      </button>
-                    </div>
-                  </div>
+              <div class="thread-list" id="forum-thread-list">
+                <div style="padding: 14px; color: var(--txt-m);">
+                  Chargement des messages...
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Forum stats -->
           <div style="display: flex; flex-direction: column; gap: 14px">
             <div class="card">
               <div class="card-hd">
@@ -840,17 +633,17 @@
                   <div class="fstat">
                     <div class="fstat-top">
                       <span class="fstat-ico">💬</span
-                      ><span class="tag t-blue">+12 auj.</span>
+                      ><span class="tag t-blue">Dynamique</span>
                     </div>
-                    <div class="fstat-val">247</div>
+                    <div class="fstat-val" id="stat-messages">0</div>
                     <div class="fstat-lbl">Messages cette semaine</div>
                   </div>
                   <div class="fstat">
                     <div class="fstat-top">
                       <span class="fstat-ico">👥</span
-                      ><span class="tag t-green">+5</span>
+                      ><span class="tag t-green">Actifs</span>
                     </div>
-                    <div class="fstat-val">89</div>
+                    <div class="fstat-val" id="stat-membres">0</div>
                     <div class="fstat-lbl">Membres actifs</div>
                   </div>
                   <div
@@ -864,7 +657,7 @@
                       <span class="fstat-ico">🚩</span
                       ><span class="tag t-red">À traiter</span>
                     </div>
-                    <div class="fstat-val" style="color: var(--red)">3</div>
+                    <div class="fstat-val" style="color: var(--red)" id="stat-signalements">0</div>
                     <div class="fstat-lbl">Signalements en attente</div>
                   </div>
                   <div class="fstat">
@@ -1018,13 +811,13 @@
             <button
               class="btn btn-danger btn-full"
               style="justify-content: center"
+              onclick="alert('Fonction de nettoyage en base à venir')"
             >
               🧹 Nettoyer les contenus masqués
             </button>
           </div>
         </div>
       </section>
-    </div>
     <!-- /wrapper -->
 
     <footer>
@@ -1360,5 +1153,6 @@
     <script src="script/salarie/event.js" defer></script>
     <script src="script/salarie/userInfo.js" defer></script>
     <script src="script/salarie/planning.js" defer></script>
+    <script src="script/salarie/forum.js" defer></script>
   </body>
 </html>
