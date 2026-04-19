@@ -335,18 +335,27 @@ func CheckEmailExists(email string) (bool, error) {
 	}
 }
 
-<<<<<<< HEAD
 
 func LogConnexion(idUser int, ip string)  error {
    
-=======
-func LogConnexion(idUser int, ip string) error {
-
->>>>>>> origin/ndoya
 	_, err := Db.Exec("INSERT INTO pa2026.log_connexion (id_user, ip, date_connexion) VALUES (?, ?, NOW())", idUser, ip)
 
 	if err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func BanUser(userId int) error {
+	_, err := Db.Exec("UPDATE pa2026.utilisateur SET validation = 'Banni' WHERE id = ?", userId)
+	if err != nil {
+		return fmt.Errorf("erreur lors du bannissement de l'utilisateur : %v", err)
+	}
+
+	_, err = Db.Exec("DELETE FROM pa2026.message_forum WHERE id_user = ?", userId)
+	if err != nil {
+		return fmt.Errorf("erreur lors de la suppression des messages : %v", err)
 	}
 
 	return nil

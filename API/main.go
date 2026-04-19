@@ -34,6 +34,7 @@ func main() {
 	http.HandleFunc("OPTIONS /admin/users/role/{role}", admin.GetUserByRole)
 	http.HandleFunc("OPTIONS /admin/users/search", admin.GetUserByName)
 	http.HandleFunc("OPTIONS /admin/users/{id}", admin.GetUserById)
+	http.HandleFunc("OPTIONS /admin/users/ban/{id}", admin.BanUserHandler)
 
 	http.HandleFunc("OPTIONS /admin/categories/add", admin.CreateCategorie)
 	http.HandleFunc("OPTIONS /admin/categories/delete/{id}", admin.DeleteCategorie)
@@ -88,10 +89,9 @@ func main() {
 	http.HandleFunc("GET /admin/users/search", auth.VerifyTokenMiddleware(admin.GetUserByName))
 	http.HandleFunc("PUT /admin/users/validate/{id}", auth.VerifyTokenMiddleware(admin.ValidateUser))
 	http.HandleFunc("PUT /admin/users/refuse/{id}", auth.VerifyTokenMiddleware(admin.RefuseUser))
-
 	http.HandleFunc("GET /user/profile", admin.GetUserById)
-
 	http.HandleFunc("GET /admin/users/{id}", auth.VerifyTokenMiddleware(admin.GetUserById))
+	http.HandleFunc("PUT /admin/users/ban/{id}", auth.VerifyTokenMiddleware(admin.BanUserHandler))
 
 	// Auth, Tutorial & Upload
 	http.HandleFunc("/api/upload-document", auth.VerifyTokenMiddleware(admin.UploadDocumentHandler))

@@ -21,7 +21,7 @@ function GetForumMessages(filtreType) {
       return res.json();
     })
     .then((messages) => {
-      container.innerHTML = ""; // On vide le conteneur
+      container.innerHTML = "";
 
       if (!messages || messages.length === 0) {
         container.innerHTML =
@@ -40,8 +40,10 @@ function GetForumMessages(filtreType) {
           : "";
 
         const authorName = `${msg.prenom_auteur} ${msg.nom_auteur}`;
-
         const timeAgo = formatTimeAgo(msg.date_creation);
+
+        const idMsg = msg.id_message;
+        const idUsr = msg.id_user;
 
         htmlContent += `
             <div class="thread-item ${isFlagged}" data-flag="${msg.est_signale}">
@@ -56,9 +58,9 @@ function GetForumMessages(filtreType) {
                         ${msg.contenu}
                     </div>
                     <div class="thread-actions">
-                        <button class="mod-btn mod-approve" onclick="ModerateMessage(${msg.id_message}, 'approuver')">✓ Approuver</button>
-                        <button class="mod-btn mod-hide" onclick="ModerateMessage(${msg.id_message}, 'masquer')">⊘ Masquer</button>
-                        <button class="mod-btn mod-ban" onclick="alert('Fonction de bannissement à lier au module User')">🚫 Bannir</button>
+                        <button type="button" class="mod-btn mod-approve" onclick="event.preventDefault(); window.ModerateMessage('${idMsg}', 'approuver')">✓ Approuver</button>
+                        <button type="button" class="mod-btn mod-hide" onclick="event.preventDefault(); window.ModerateMessage('${idMsg}', 'masquer')">⊘ Masquer</button>
+                        <button type="button" class="mod-btn mod-ban" onclick="event.preventDefault(); window.BanUser('${idUsr}')">🚫 Bannir</button>
                     </div>
                 </div>
                 ${flagIcon}
@@ -74,7 +76,12 @@ function GetForumMessages(filtreType) {
     });
 }
 
-function ModerateMessage(idMessage, action) {
+window.ModerateMessage = function (idMessage, action) {
+  if (!idMessage || idMessage === "undefined") {
+    alert("Erreur système : ID du message manquant.");
+    return;
+  }
+
   fetch(`http://localhost:8081/admin/forum/messages/moderate/${idMessage}`, {
     method: "PUT",
     headers: {
@@ -84,15 +91,50 @@ function ModerateMessage(idMessage, action) {
     body: JSON.stringify({ action: action }),
   })
     .then((res) => {
-      if (!res.ok) throw new Error("Erreur modération");
+      if (!res.ok) throw new Error("Erreur modération du serveur");
+
       const currentFilter = document.querySelector(".btn-g.btn-xs")
         ? "all"
         : "flag";
       GetForumMessages(currentFilter);
       GetForumStats();
     })
-    .catch((err) => console.error("Erreur :", err));
-}
+    .catch((err) => {
+      console.error("Erreur Fetch Modération :", err);
+      alert("Le serveur a refusé la modification.");
+    });
+};
+
+window.BanUser = function (idUser) {
+  if (!idUser || idUser === "undefined") {
+    alert("Erreur : l'ID utilisateur est introuvable.");
+    return;
+  }
+
+  if (
+    !confirm(
+      "Attention, voulez-vous vraiment bannir définitivement cet utilisateur ?",
+    )
+  ) {
+    return;
+  }
+
+  fetch(`http://localhost:8081/admin/users/ban/${idUser}`, {
+    method: "PUT",
+    headers: {
+      Authorization: "Bearer " + monToken,
+    },
+  })
+    .then((res) => {
+      if (!res.ok) throw new Error("Erreur bannissement serveur");
+      alert("L'utilisateur a été banni avec succès.");
+      const currentFilter = document.querySelector(".btn-g.btn-xs")
+        ? "all"
+        : "flag";
+      GetForumMessages(currentFilter);
+    })
+    .catch((err) => console.error("Erreur Bannissement :", err));
+};
 
 function GetForumStats() {
   fetch("http://localhost:8081/admin/forum/stats", {
@@ -107,9 +149,15 @@ function GetForumStats() {
       const statMembres = document.getElementById("stat-membres");
       const statSign = document.getElementById("stat-signalements");
 
-      if (statMsg) statMsg.textContent = stats.messages_semaine || 0;
-      if (statMembres) statMembres.textContent = stats.membres_actifs || 0;
-      if (statSign) statSign.textContent = stats.signalements_en_attente || 0;
+      if (statMsg)
+        statMsg.textContent =
+          stats.MessagesSemaine || stats.messages_semaine || 0;
+      if (statMembres)
+        statMembres.textContent =
+          stats.MembresActifs || stats.membres_actifs || 0;
+      if (statSign)
+        statSign.textContent =
+          stats.Signalements || stats.signalements_en_attente || 0;
     })
     .catch((err) => console.error("Erreur stats forum :", err));
 }
