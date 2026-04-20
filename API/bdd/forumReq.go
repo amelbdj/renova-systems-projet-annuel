@@ -8,19 +8,24 @@ import (
 func GetForumMessages(filtre string) ([]models.MessageForum, error) {
 	var messages []models.MessageForum
 
+	// Utilisation de LEFT JOIN et COALESCE pour garantir que le message s'affiche TOUJOURS,
+	// même si l'utilisateur ou le topic a été supprimé de la base de données.
 	requete := `
 		SELECT m.id_message, m.id_topic, m.id_user, m.contenu, m.est_modere, m.est_signale, m.date_creation, 
-		       u.nom, u.prenom, t.titre 
+			   COALESCE(u.nom, 'Anonyme'), COALESCE(u.prenom, 'Utilisateur'), COALESCE(t.titre, 'Topic inconnu')
 		FROM pa2026.message_forum m
-		INNER JOIN pa2026.utilisateur u ON m.id_user = u.id
-		INNER JOIN pa2026.topic_forum t ON m.id_topic = t.id_topic
+		LEFT JOIN pa2026.utilisateur u ON m.id_user = u.id
+		LEFT JOIN pa2026.topic_forum t ON m.id_topic = t.id_topic
+		WHERE m.est_modere = 0
 	`
 
+	// Si le salarié clique sur le bouton "Signalés", on filtre pour ne garder que ceux-là
 	if filtre == "signales" {
-		requete += " WHERE m.est_signale = 1 AND m.est_modere = 0"
-	} else {
-		requete += " ORDER BY m.date_creation DESC"
+		requete += " AND m.est_signale = 1"
 	}
+
+	// On trie toujours du plus récent au plus ancien
+	requete += " ORDER BY m.date_creation DESC"
 
 	rows, err := Db.Query(requete)
 	if err != nil {
@@ -30,6 +35,7 @@ func GetForumMessages(filtre string) ([]models.MessageForum, error) {
 
 	for rows.Next() {
 		var msg models.MessageForum
+		// Le Scan lira 'Utilisateur Anonyme' si la personne n'existe plus en base
 		err := rows.Scan(
 			&msg.IdMessage, &msg.IdTopic, &msg.IdUser, &msg.Contenu, 
 			&msg.EstModere, &msg.EstSignale, &msg.DateCreation, 
@@ -43,15 +49,15 @@ func GetForumMessages(filtre string) ([]models.MessageForum, error) {
 
 	return messages, nil
 }
-
 func ModerateForumMessage(idMessage int, action string) error {
 	var requete string
 
-	if action == "approuver" {
+	switch action {
+	case "approuver":
 		requete = "UPDATE pa2026.message_forum SET est_modere = 1, est_signale = 0 WHERE id_message = ?"
-	} else if action == "masquer" {
+	case "masquer":
 		requete = "UPDATE pa2026.message_forum SET est_modere = 1 WHERE id_message = ?"
-	} else {
+	default:
 		return fmt.Errorf("action de modération inconnue")
 	}
 
