@@ -34,6 +34,7 @@ func main() {
 	http.HandleFunc("OPTIONS /admin/users/role/{role}", admin.GetUserByRole)
 	http.HandleFunc("OPTIONS /admin/users/search", admin.GetUserByName)
 	http.HandleFunc("OPTIONS /admin/users/{id}", admin.GetUserById)
+	http.HandleFunc("OPTIONS /admin/users/ban/{id}", admin.BanUserHandler)
 
 	http.HandleFunc("OPTIONS /admin/categories/add", admin.CreateCategorie)
 	http.HandleFunc("OPTIONS /admin/categories/delete/{id}", admin.DeleteCategorie)
@@ -77,6 +78,8 @@ func main() {
 	http.HandleFunc("OPTIONS /admin/forum/messages/moderate/{id}", admin.ModerateForumMessage)
 	http.HandleFunc("OPTIONS /admin/forum/stats", admin.GetForumStats)
 
+
+
 	// --- USERS ---
 	http.HandleFunc("GET /admin/users", auth.VerifyTokenMiddleware(admin.GetAllUsers))
 	http.HandleFunc("POST /admin/users/add", auth.VerifyTokenMiddleware(admin.CreateUser))
@@ -86,10 +89,9 @@ func main() {
 	http.HandleFunc("GET /admin/users/search", auth.VerifyTokenMiddleware(admin.GetUserByName))
 	http.HandleFunc("PUT /admin/users/validate/{id}", auth.VerifyTokenMiddleware(admin.ValidateUser))
 	http.HandleFunc("PUT /admin/users/refuse/{id}", auth.VerifyTokenMiddleware(admin.RefuseUser))
-
 	http.HandleFunc("GET /user/profile", admin.GetUserById)
-
 	http.HandleFunc("GET /admin/users/{id}", auth.VerifyTokenMiddleware(admin.GetUserById))
+	http.HandleFunc("PUT /admin/users/ban/{id}", auth.VerifyTokenMiddleware(admin.BanUserHandler))
 
 	// Auth, Tutorial & Upload
 	http.HandleFunc("/api/upload-document", auth.VerifyTokenMiddleware(admin.UploadDocumentHandler))
@@ -149,31 +151,11 @@ func main() {
 	http.HandleFunc("POST /admin/translations/add", admin.AddLanguage)
 	http.HandleFunc("GET /admin/translations/keys", admin.GetTranslationKeysHandler)
 
-	// --- FORUM ---
 	http.HandleFunc("GET /admin/forum/messages", auth.VerifyTokenMiddleware(admin.GetForumMessages))
 	http.HandleFunc("PUT /admin/forum/messages/moderate/{id}", auth.VerifyTokenMiddleware(admin.ModerateForumMessage))
 	http.HandleFunc("GET /admin/forum/stats", auth.VerifyTokenMiddleware(admin.GetForumStats))
 
-
-	fmt.Println("test de : http://localhost:8081")
-
-	err := http.ListenAndServe(":8081", corsMiddleware(http.DefaultServeMux))
-	if err != nil {
-		panic(err)
-	}
-}
-
-func corsMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-
-		if r.Method == "OPTIONS" {
-			w.WriteHeader(http.StatusOK)
-			return
-		}
-
-		next.ServeHTTP(w, r)
-	})
+    fmt.Println("test de : http://localhost:8081")
+ 
+    http.ListenAndServe(":8081", nil)
 }

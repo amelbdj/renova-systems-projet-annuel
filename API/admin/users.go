@@ -263,40 +263,43 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetUserById(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+    w.Header().Set("Access-Control-Allow-Origin", "*")
+    w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
-	if r.Method == "OPTIONS" {
-		w.WriteHeader(http.StatusOK)
-		return
-	}
+    if r.Method == "OPTIONS" {
+        w.WriteHeader(http.StatusOK)
+        return
+    }
 
-	idStr := r.URL.Query().Get("id")
-	if idStr == "" {
-		idStr = r.PathValue("id")
-	}
-	id, _ := strconv.Atoi(idStr)
+    idStr := r.URL.Query().Get("id")
+    if idStr == "" {
+        idStr = r.PathValue("id")
+    }
+    id, _ := strconv.Atoi(idStr)
 
-	user, err := bdd.GetUserById(id)
-	if err != nil {
-		http.Error(w, "Utilisateur introuvable", http.StatusNotFound)
-		return
-	}
+    user, err := bdd.GetUserById(id)
+    if err != nil {
+        http.Error(w, "Utilisateur introuvable", http.StatusNotFound)
+        return
+    }
 
-	if user.StripeAccountId != "" && !user.StripeVerifCompleted {
-		stripe.Key = StripeSecretKey
-		acc, err := account.GetByID(user.StripeAccountId, nil)
+    if user.StripeAccountId != nil && *user.StripeAccountId != "0" && *user.StripeAccountId != "" && !user.StripeVerifCompleted {
+        stripe.Key = StripeSecretKey
+        
+        acc, err := account.GetByID(*user.StripeAccountId, nil)
 
-		if err == nil && acc.PayoutsEnabled {
-			_, execErr := bdd.Db.Exec("UPDATE utilisateur SET stripe_verif_completed = 1 WHERE id = ?", id)
-			if execErr == nil {
-				user.StripeVerifCompleted = true
-			}
-		}
-	}
+        if err == nil && acc.PayoutsEnabled {
+            _, execErr := bdd.Db.Exec("UPDATE utilisateur SET stripe_verif_completed = 1 WHERE id = ?", id)
+            if execErr == nil {
+                user.StripeVerifCompleted = true
+            }
+        } else if err != nil {
+            fmt.Println("Erreur Stripe :", err)
+        }
+    }
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(user)
+    w.Header().Set("Content-Type", "application/json")
+    json.NewEncoder(w).Encode(user)
 }
 
 func GetUserByRole(w http.ResponseWriter, r *http.Request) {
@@ -503,4 +506,31 @@ func UpdateTutorialStatus(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusOK)
+}
+
+func BanUserHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "PUT, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	idStr := r.PathValue("id")
+	userId, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "ID utilisateur invalide", http.StatusBadRequest)
+		return
+	}
+
+	err = bdd.BanUser(userId)
+	if err != nil {
+		http.Error(w, "Erreur serveur lors du bannissement", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, `{"message": "Utilisateur banni avec succès"}`)
 }
