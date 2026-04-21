@@ -21,3 +21,7 @@ type User struct {
 type RefuseRequest struct {
 	Motif string `json:"motif"`
 }
+type InscriptionRequest struct {
+	IdUser  int `json:"id_user"`
+	IdEvent int `json:"id_event"`
+}
