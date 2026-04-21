@@ -852,19 +852,36 @@
                   width: 100%;
                 "
               >
-                <button class="btn btn-g btn-xs">← Fév</button>
+                <button
+                  class="btn btn-g btn-xs"
+                  onclick="changerMois(-1)"
+                  style="cursor: pointer"
+                >
+                  ← Préc
+                </button>
+
                 <span
+                  id="labelCurrentMonth"
                   style="
                     font-family: &quot;Syne&quot;, sans-serif;
                     font-size: 14px;
                     font-weight: 700;
                     color: #fff;
                   "
-                  >Mars 2026</span
                 >
-                <button class="btn btn-g btn-xs">Avr →</button>
+                  Mars 2026
+                </span>
+
+                <button
+                  class="btn btn-g btn-xs"
+                  onclick="changerMois(1)"
+                  style="cursor: pointer"
+                >
+                  Suiv →
+                </button>
               </div>
             </div>
+
             <div class="card-bd">
               <div class="cal-grid">
                 <div class="cal-dow">Lun</div>
@@ -874,86 +891,9 @@
                 <div class="cal-dow">Ven</div>
                 <div class="cal-dow">Sam</div>
                 <div class="cal-dow">Dim</div>
-                <div class="cal-d empty"></div>
-                <div class="cal-d empty"></div>
-                <div class="cal-d empty"></div>
-                <div class="cal-d empty"></div>
-                <div class="cal-d empty"></div>
-                <div class="cal-d empty"></div>
-                <div class="cal-d today has">1</div>
-                <div class="cal-d">2</div>
-                <div class="cal-d">3</div>
-                <div class="cal-d">4</div>
-                <div class="cal-d">5</div>
-                <div class="cal-d">6</div>
-                <div class="cal-d has">7</div>
-                <div class="cal-d has">8</div>
-                <div class="cal-d">9</div>
-                <div class="cal-d">10</div>
-                <div class="cal-d">11</div>
-                <div class="cal-d">12</div>
-                <div class="cal-d">13</div>
-                <div class="cal-d">14</div>
-                <div class="cal-d has">15</div>
-                <div class="cal-d">16</div>
-                <div class="cal-d">17</div>
-                <div class="cal-d">18</div>
-                <div class="cal-d">19</div>
-                <div class="cal-d">20</div>
-                <div class="cal-d">21</div>
-                <div class="cal-d has">22</div>
-                <div class="cal-d">23</div>
-                <div class="cal-d">24</div>
-                <div class="cal-d">25</div>
-                <div class="cal-d">26</div>
-                <div class="cal-d">27</div>
-                <div class="cal-d">28</div>
-                <div class="cal-d has">29</div>
-                <div class="cal-d">30</div>
-                <div class="cal-d">31</div>
               </div>
-              <div class="ev-list">
-                <div class="ev bl">
-                  <div class="ev-time">Sam 7<br />10:00</div>
-                  <div>
-                    <div class="ev-title">Atelier Upcycling Bois</div>
-                    <div class="ev-meta">
-                      📍 Atelier Nord ·
-                      <strong style="color: var(--blue-l)">35€ payé</strong>
-                    </div>
-                  </div>
-                </div>
-                <div class="ev gr">
-                  <div class="ev-time">Dim 8<br />14:30</div>
-                  <div>
-                    <div class="ev-title">Couture zéro déchet</div>
-                    <div class="ev-meta">
-                      📍 Studio Sud ·
-                      <strong style="color: var(--blue-l)">25€ payé</strong>
-                    </div>
-                  </div>
-                </div>
-                <div class="ev am">
-                  <div class="ev-time">15/03<br />10:00</div>
-                  <div>
-                    <div class="ev-title">Marché de la réutilisation</div>
-                    <div class="ev-meta">
-                      📍 Place Centrale ·
-                      <strong style="color: var(--green)">Gratuit</strong>
-                    </div>
-                  </div>
-                </div>
-                <div class="ev pu">
-                  <div class="ev-time">22/03<br />09:00</div>
-                  <div>
-                    <div class="ev-title">Jardinage urbain</div>
-                    <div class="ev-meta">
-                      📍 Jardin collectif ·
-                      <strong style="color: var(--blue-l)">18€ payé</strong>
-                    </div>
-                  </div>
-                </div>
-              </div>
+
+              <div class="ev-list"></div>
             </div>
           </div>
         </section>
@@ -1330,5 +1270,6 @@
       });
     </script>
     <script src="./script/dashClient.js"></script>
+    <script src="./script/planning.js"></script>
   </body>
 </html>
