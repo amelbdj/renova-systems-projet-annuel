@@ -159,6 +159,10 @@ http.HandleFunc("POST /admin/evenements/inscription", admin.InscrireClient)
 	http.HandleFunc("PUT /admin/forum/messages/moderate/{id}", auth.VerifyTokenMiddleware(admin.ModerateForumMessage))
 	http.HandleFunc("GET /admin/forum/stats", auth.VerifyTokenMiddleware(admin.GetForumStats))
 
+	// Dans ton main.go
+http.HandleFunc("OPTIONS /user/planning", admin.GetUserPlanningHandler) // Pour laisser passer le navigateur (Preflight)
+http.HandleFunc("GET /user/planning",admin.GetUserPlanningHandler) // La vraie route protégée
+
     fmt.Println("test de : http://localhost:8081")
  
     http.ListenAndServe(":8081", nil)
