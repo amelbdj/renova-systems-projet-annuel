@@ -42,11 +42,17 @@
           <span class="material-symbols-outlined"> notifications </span>
           <div class="notif-dot"></div>
         </div>
-        <div class="profile-btn">
-          <div class="profile-ava"></div>
+         <div
+          class="profile-btn"
+          onclick="goToProfile()"
+          style="cursor: pointer"
+        >
+          <div class="profile-ava">👤</div>
           <div>
-            <div class="profile-name"></div>
-            <div class="profile-role"></div>
+            <div class="profile-name" id="navName">Your Name</div>
+            <div class="profile-role">Particulier</div>
+          </div>
+        </div>
           </div>
         </div>
       </div>
@@ -95,7 +101,7 @@
     </div>
   </body>
 
-  <script src="../Frontend/script/profil.js"></script>
-  <script src="../Frontend/script/affichageEvt.js"></script>
-  <script src="../Frontend/script/affichageArt.js"></script>
+  <script src="../Frontend/script/profil.js" defer></script>
+  <script src="../Frontend/script/affichageEvt.js" defer></script>
+  <script src="../Frontend/script/affichageArt.js" defer></script>
 </html>

@@ -31,7 +31,7 @@
         <a class="nav-link" href="../Frontend/espClient.html">Planning</a>
         <a class="nav-link" href="../Frontend/espClient.html">Mon score</a>
         <a class="nav-link" href="../Frontend/espClient.html">Article</a>
-        <a class="nav-link" href="../Frontend/espClient.html">Evenement</a>
+        <a class="nav-link" href="../Frontend/evenement.html">Evenement</a>
       </div>
       <div class="nav-right">
         <div class="lang-btn">
@@ -42,11 +42,17 @@
           <span class="material-symbols-outlined"> notifications </span>
           <div class="notif-dot"></div>
         </div>
-        <div class="profile-btn">
-          <div class="profile-ava"></div>
+  <div
+          class="profile-btn"
+          onclick="goToProfile()"
+          style="cursor: pointer"
+        >
+          <div class="profile-ava">👤</div>
           <div>
-            <div class="profile-name"></div>
-            <div class="profile-role"></div>
+            <div class="profile-name" id="navName">Your Name</div>
+            <div class="profile-role">Particulier</div>
+          </div>
+        </div>
           </div>
         </div>
       </div>
@@ -94,7 +100,7 @@
       </div>
     </div>
   </body>
-  <script src="affichageArt.js"></script>
-  <script src="../Frontend/script/profil.js"></script>
-  <script src="affichageEvt.js"></script>
+  <script src="../Frontend/script/affichageArt.js" defer></script>
+  <script src="../Frontend/script/profil.js" defer></script>
+  <script src="../Frontend/script/affichageEvt.js" defer></script>
 </html>
