@@ -53,6 +53,8 @@ func main() {
 	http.HandleFunc("OPTIONS /admin/evenements/refuse/{id}", admin.RefuseEvenement)
 	http.HandleFunc("OPTIONS /admin/evenements/add", admin.CreateEvenement)
 	http.HandleFunc("OPTIONS /admin/evenements", admin.GetAllEvenements)
+	http.HandleFunc("OPTIONS /admin/evenements/inscription", admin.InscrireClient)
+
 
 	http.HandleFunc("OPTIONS /admin/box/confirm-deposit", admin.ConfirmDeposit)
 	http.HandleFunc("OPTIONS /admin/box/collect-object", admin.CollectObject)
@@ -67,6 +69,7 @@ func main() {
 	http.HandleFunc("OPTIONS /admin/articles/modify/{id}/{action}", admin.ModifyArticle)
 	http.HandleFunc("OPTIONS /admin/articles/salarie/{id}", admin.GetArticlesBySalarie)
 	http.HandleFunc("OPTIONS /admin/articles/{id}", admin.GetArticleById)
+	http.HandleFunc("OPTIONS /admin/articles", admin.GetAllArticles)
 
 	// --- TRANSLATIONS OPTIONS ---
 	http.HandleFunc("OPTIONS /api/translations", admin.GetTranslations)
@@ -123,7 +126,7 @@ func main() {
 	http.HandleFunc("DELETE /admin/evenements/{id}", auth.VerifyTokenMiddleware(admin.DeleteEvenement))
 	http.HandleFunc("PUT /admin/evenements/validate/{id}", auth.VerifyTokenMiddleware(admin.ValidateEvenement))
 	http.HandleFunc("PUT /admin/evenements/refuse/{id}", auth.VerifyTokenMiddleware(admin.RefuseEvenement))
-
+http.HandleFunc("POST /admin/evenements/inscription", admin.InscrireClient)
 	// --- LOGISTIQUE ---
 	http.HandleFunc("POST /admin/orders/create", auth.VerifyTokenMiddleware(admin.CreateOrder))
 	http.HandleFunc("POST /admin/box/confirm-deposit", auth.VerifyTokenMiddleware(admin.ConfirmDeposit))
