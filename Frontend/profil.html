@@ -1,259 +1,377 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Mon Profil — ReNova Systems</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./style/profil.css">
-</head>
-<body>
-
-<nav class="topnav">
-    <div class="nav-links" style="margin-left:28px">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Outfit:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./style/profil.css" />
+  </head>
+  <body>
+    <nav class="topnav">
+      <div class="nav-links" style="margin-left: 28px">
         <button class="nav-link" onclick="history.back()">← Retour</button>
         <button class="nav-link active">Mon Profil</button>
         <button class="nav-link">Tableau de bord</button>
-    </div>
-    <div class="nav-right">
+      </div>
+      <div class="nav-right">
         <div class="nav-icon">🔔</div>
         <div class="profile-pill">
-            <div class="pill-ava">👤</div>
-            <span class="pill-name" id="navName">Marie Dupont</span>
+          <div class="pill-ava">👤</div>
+          <span class="pill-name" id="navName">Marie Dupont</span>
         </div>
-    </div>
-</nav>
+      </div>
+    </nav>
 
-<div class="wrapper">
-
-    <div class="profile-header fu">
+    <div class="wrapper">
+      <div class="profile-header fu">
         <div class="ava-wrap">
-            <div class="ava">👤</div>
-            <div class="ava-edit" onclick="document.getElementById('avatarInput').click()" title="Changer la photo">✏️</div>
-            <input type="file" id="avatarInput" accept="image/*" style="display:none" onchange="changeAvatar(this)">
+          <div class="ava">👤</div>
+          <div
+            class="ava-edit"
+            onclick="document.getElementById('avatarInput').click()"
+            title="Changer la photo"
+          >
+            ✏️
+          </div>
+          <input
+            type="file"
+            id="avatarInput"
+            accept="image/*"
+            style="display: none"
+            onchange="changeAvatar(this)"
+          />
         </div>
         <div class="ph-info">
-            <div class="ph-name" id="displayName">Marie Dupont</div>
-            <div class="ph-meta" id="displayEmail">marie.dupont@email.com</div>
-            <div class="ph-tags">
-                <span class="tag t-vi" id="displayRole">Particulier</span>
-                <span class="tag t-vi" id="stripeHeaderBadge" style="display:none">💳 Paiements actifs</span>
-            </div>
+          <div class="ph-name" id="displayName">Marie Dupont</div>
+          <div class="ph-meta" id="displayEmail">marie.dupont@email.com</div>
+          <div class="ph-tags">
+            <span class="tag t-vi" id="displayRole">Particulier</span>
+            <span class="tag t-vi" id="stripeHeaderBadge" style="display: none"
+              >💳 Paiements actifs</span
+            >
+          </div>
         </div>
         <div class="ph-actions">
-            <button class="btn btn-g btn-sm" onclick="showSaveBar()">✏️ Modifier</button>
+          <button class="btn btn-g btn-sm" onclick="showSaveBar()">
+            ✏️ Modifier
+          </button>
         </div>
-    </div>
+      </div>
 
-    <div class="profile-tabs fu fu1">
-        <button class="ptab active" onclick="showTab('general')">Général</button>
+      <div class="profile-tabs fu fu1">
+        <button class="ptab active" onclick="showTab('general')">
+          Général
+        </button>
         <button class="ptab" onclick="showTab('paiements')">Paiements</button>
         <button class="ptab" onclick="showTab('securite')">Sécurité</button>
-    </div>
+      </div>
 
-    <div class="tab-panel active" id="tab-general">
-        <div class="sec-label fu"><div class="sec-dot">1</div><div class="sec-title">Informations personnelles</div><div class="sec-divider"></div></div>
-        <div class="card fu fu1">
-            <div class="card-hd">
-                <div class="card-ht"><div class="cht-i" style="background:rgba(124,95,255,.1)">👤</div>Coordonnées</div>
-            </div>
-            <div class="card-bd">
-                <div class="frow">
-                    <div class="fgroup"><label>Prénom</label><input type="text" id="editPrenom" value="" oninput="showSaveBar()"></div>
-                    <div class="fgroup"><label>Nom</label><input type="text" id="editNom" value="" oninput="showSaveBar()"></div>
-                </div>
-                <div class="frow">
-                    <div class="fgroup"><label>Adresse e-mail</label><input type="email" id="editEmail" value="" oninput="showSaveBar()"></div>
-                </div>
-                <div class="frow">
-                    <div class="fgroup"><label>Langue préférée</label>
-                        <select onchange="showSaveBar()"><option selected>🇫🇷 Français</option><option>🇬🇧 English</option></select>
-                    </div>
-                </div>
-            </div>
+      <div class="tab-panel active" id="tab-general">
+        <div class="sec-label fu">
+          <div class="sec-dot">1</div>
+          <div class="sec-title">Informations personnelles</div>
+          <div class="sec-divider"></div>
         </div>
-    </div>
+        <div class="card fu fu1">
+          <div class="card-hd">
+            <div class="card-ht">
+              <div class="cht-i" style="background: rgba(124, 95, 255, 0.1)">
+                👤
+              </div>
+              Coordonnées
+            </div>
+          </div>
+          <div class="card-bd">
+            <div class="frow">
+              <div class="fgroup">
+                <label>Prénom</label
+                ><input
+                  type="text"
+                  id="editPrenom"
+                  value=""
+                  oninput="showSaveBar()"
+                />
+              </div>
+              <div class="fgroup">
+                <label>Nom</label
+                ><input
+                  type="text"
+                  id="editNom"
+                  value=""
+                  oninput="showSaveBar()"
+                />
+              </div>
+            </div>
+            <div class="frow">
+              <div class="fgroup">
+                <label>Adresse e-mail</label
+                ><input
+                  type="email"
+                  id="editEmail"
+                  value=""
+                  oninput="showSaveBar()"
+                />
+              </div>
+            </div>
+            <div class="frow">
+              <div class="fgroup">
+                <label>Langue préférée</label>
+                <select onchange="showSaveBar()">
+                  <option selected>🇫🇷 Français</option>
+                  <option>🇬🇧 English</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-    <div class="tab-panel" id="tab-paiements">
-    <div class="sec-label fu">
-        <div class="sec-dot stripe-dot">💳</div>
-        <div class="sec-title">Paiements & Virements</div>
-        <div class="sec-divider"></div>
-    </div>
+      <div class="tab-panel" id="tab-paiements">
+        <div class="sec-label fu">
+          <div class="sec-dot stripe-dot">💳</div>
+          <div class="sec-title">Paiements & Virements</div>
+          <div class="sec-divider"></div>
+        </div>
 
-    <div class="stripe-section fu fu1">
-        <div class="stripe-hd">
-            <div class="stripe-ht"><span class="stripe-logo">stripe</span> Recevoir des virements</div>
+        <div class="stripe-section fu fu1">
+          <div class="stripe-hd">
+            <div class="stripe-ht">
+              <span class="stripe-logo">stripe</span> Recevoir des virements
+            </div>
             <span class="tag t-red" id="stripeStatusTag">Non configuré</span>
-        </div>
+          </div>
 
-        <div class="stripe-bd">
+          <div class="stripe-bd">
             <div class="stripe-state" id="state-none">
-                <div class="payout-none">
-                    <div class="payout-none-icon">🏦</div>
-                    <div class="payout-none-text">
-                        <h3>Configurez vos virements</h3>
-                        <p>Pour recevoir l'argent de vos ventes, vous devez connecter un compte bancaire via Stripe (sécurisé).</p>
-                        <button class="btn-stripe-connect" onclick="stripeConnect()">
-                            <span class="stripe-btn-logo">stripe</span>
-                            Activer les paiements
-                        </button>
-                    </div>
+              <div class="payout-none">
+                <div class="payout-none-icon">🏦</div>
+                <div class="payout-none-text">
+                  <h3>Configurez vos virements</h3>
+                  <p>
+                    Pour recevoir l'argent de vos ventes, vous devez connecter
+                    un compte bancaire via Stripe (sécurisé).
+                  </p>
+                  <button class="btn-stripe-connect" onclick="stripeConnect()">
+                    <span class="stripe-btn-logo">stripe</span>
+                    Activer les paiements
+                  </button>
                 </div>
+              </div>
             </div>
 
-            <div class="stripe-state" id="state-active" style="display:none">
-                <div class="payout-active">
-                    <div class="active-check">✅</div>
-                    <div class="active-info">
-                        <div class="active-badge">Actif</div>
-                        <h3>✅ Virements actifs</h3>
-                        <p>Votre compte Stripe est opérationnel. Vous recevrez vos paiements automatiquement.</p>
-                        <button class="btn-stripe-manage" onclick="alert('Redirection vers le dashboard Stripe...')">Gérer dans Stripe</button>
-                    </div>
+            <div class="stripe-state" id="state-active" style="display: none">
+              <div class="payout-active">
+                <div class="active-check">✅</div>
+                <div class="active-info">
+                  <div class="active-badge">Actif</div>
+                  <h3>✅ Virements actifs</h3>
+                  <p>
+                    Votre compte Stripe est opérationnel. Vous recevrez vos
+                    paiements automatiquement.
+                  </p>
+                  <button
+                    class="btn-stripe-manage"
+                    onclick="alert('Redirection vers le dashboard Stripe...')"
+                  >
+                    Gérer dans Stripe
+                  </button>
                 </div>
+              </div>
             </div>
+          </div>
         </div>
-    </div>
 
-    <div class="sec-label fu fu2">
-        <div class="sec-dot teal-dot">2</div>
-        <div class="sec-title">Historique des transactions</div>
-        <div class="sec-divider"></div>
-    </div>
-    <div class="card fu fu2">
-        <div class="card-bd" style="padding:0">
-            <div style="display:flex;align-items:center;gap:12px;padding:13px 20px;border-bottom:1px solid var(--b0)">
-                <div style="flex:1"><div style="color:#fff">Vente — Chaise en bois</div></div>
-                <div style="color:var(--green)">+25 €</div>
+        <div class="sec-label fu fu2">
+          <div class="sec-dot teal-dot">2</div>
+          <div class="sec-title">Historique des transactions</div>
+          <div class="sec-divider"></div>
+        </div>
+        <div class="card fu fu2">
+          <div class="card-bd" style="padding: 0">
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 13px 20px;
+                border-bottom: 1px solid var(--b0);
+              "
+            >
+              <div style="flex: 1">
+                <div style="color: #fff">Vente — Chaise en bois</div>
+              </div>
+              <div style="color: var(--green)">+25 €</div>
             </div>
+          </div>
         </div>
-    </div>
-</div>
+      </div>
 
-    <div class="tab-panel" id="tab-securite">
-        <div class="sec-label fu"><div class="sec-dot">3</div><div class="sec-title">Sécurité</div><div class="sec-divider"></div></div>
+      <div class="tab-panel" id="tab-securite">
+        <div class="sec-label fu">
+          <div class="sec-dot">3</div>
+          <div class="sec-title">Sécurité</div>
+          <div class="sec-divider"></div>
+        </div>
         <div class="card fu fu1">
-            <div class="card-bd">
-                <div class="fgroup"><label>Mot de passe actuel</label><input type="password" placeholder="••••••••"></div>
-                <button class="btn btn-v btn-sm">Mettre à jour</button>
+          <div class="card-bd">
+            <div class="fgroup">
+              <label>Mot de passe actuel</label
+              ><input type="password" placeholder="••••••••" />
             </div>
+            <button class="btn btn-v btn-sm">Mettre à jour</button>
+          </div>
         </div>
+      </div>
     </div>
 
-</div>
-
-<div class="save-bar" id="saveBar">
-    <span class="save-hint">⚠ Modifications non sauvegardées</span>
-    <div style="display:flex;gap:8px">
-        <button class="btn btn-g btn-sm" onclick="hideSaveBar()">Annuler</button>
-        <button class="btn btn-v btn-sm" onclick="saveProfile()">💾 Enregistrer</button>
+    <div class="save-bar" id="saveBar">
+      <span class="save-hint">⚠ Modifications non sauvegardées</span>
+      <div style="display: flex; gap: 8px">
+        <button class="btn btn-g btn-sm" onclick="hideSaveBar()">
+          Annuler
+        </button>
+        <button class="btn btn-v btn-sm" onclick="saveProfile()">
+          💾 Enregistrer
+        </button>
+      </div>
     </div>
-</div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', async () => {
+    <script>
+      document.addEventListener("DOMContentLoaded", async () => {
         await loadUserProfile();
 
         const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('stripe') === 'success') {
-            alert("compte stripe configured");
-            setStripeState('active');
-            window.history.replaceState({}, document.title, window.location.pathname);
+        if (urlParams.get("stripe") === "success") {
+          alert("compte stripe configured");
+          setStripeState("active");
+          window.history.replaceState(
+            {},
+            document.title,
+            window.location.pathname,
+          );
         }
-    });
+      });
 
-    function setStripeState(state) {
-        const stateNone = document.getElementById('state-none');
-        const stateActive = document.getElementById('state-active');
-        const tag = document.getElementById('stripeStatusTag');
+      function setStripeState(state) {
+        const stateNone = document.getElementById("state-none");
+        const stateActive = document.getElementById("state-active");
+        const tag = document.getElementById("stripeStatusTag");
 
-        if (state === 'active') {
-            if (stateNone) stateNone.style.display = 'none';
-            if (stateActive) stateActive.style.display = 'block';
-            if (tag) {
-                tag.textContent = "Paiements Actifs";
-                tag.style.color = "#00c97a";
-            }
+        if (state === "active") {
+          if (stateNone) stateNone.style.display = "none";
+          if (stateActive) stateActive.style.display = "block";
+          if (tag) {
+            tag.textContent = "Paiements Actifs";
+            tag.style.color = "#00c97a";
+          }
         } else {
-            if (stateNone) stateNone.style.display = 'block';
-            if (stateActive) stateActive.style.display = 'none';
-            if (tag) tag.textContent = "Non configuré";
+          if (stateNone) stateNone.style.display = "block";
+          if (stateActive) stateActive.style.display = "none";
+          if (tag) tag.textContent = "Non configuré";
         }
-    }
+      }
 
-    async function loadUserProfile() {
-        const userId = localStorage.getItem('userId');
-        const token = localStorage.getItem('token');
+      async function loadUserProfile() {
+        const userId = localStorage.getItem("userId");
+        const token = localStorage.getItem("token");
         if (!userId) return;
 
         try {
-            const response = await fetch(`http://localhost:8081/user/profile?id=${userId}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            
-            if (!response.ok) throw new Error("Profil non trouvé");
+          const response = await fetch(
+            `http://localhost:8081/user/profile?id=${userId}`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            },
+          );
 
-            const data = await response.json();
-            const user = Array.isArray(data) ? data[0] : data;
+          if (!response.ok) throw new Error("Profil non trouvé");
 
-            // Personalisation starts here
-            const full_name = `${user.prenom} ${user.nom}`;
-            if (document.getElementById('displayName')) document.getElementById('displayName').textContent = full_name;
-            if (document.getElementById('navName')) document.getElementById('navName').textContent = user.prenom;
-            
-            if (document.getElementById('displayEmail')) document.getElementById('displayEmail').textContent = user.email;
-            if (document.getElementById('displayRole')) document.getElementById('displayRole').textContent = user.role;
+          const data = await response.json();
+          const user = Array.isArray(data) ? data[0] : data;
 
-            if (document.getElementById('editPrenom')) document.getElementById('editPrenom').value = user.prenom;
-            if (document.getElementById('editNom')) document.getElementById('editNom').value = user.nom;
-            if (document.getElementById('editEmail')) document.getElementById('editEmail').value = user.email;
+          // Personalisation starts here
+          const full_name = `${user.prenom} ${user.nom}`;
+          if (document.getElementById("displayName"))
+            document.getElementById("displayName").textContent = full_name;
+          if (document.getElementById("navName"))
+            document.getElementById("navName").textContent = user.prenom;
 
-            if (user.stripe_verif_completed === true || user.stripe_verif_completed === 1) {
-                setStripeState('active');
-            } else {
-                setStripeState('none');
-            }
-            
+          if (document.getElementById("displayEmail"))
+            document.getElementById("displayEmail").textContent = user.email;
+          if (document.getElementById("displayRole"))
+            document.getElementById("displayRole").textContent = user.role;
+
+          if (document.getElementById("editPrenom"))
+            document.getElementById("editPrenom").value = user.prenom;
+          if (document.getElementById("editNom"))
+            document.getElementById("editNom").value = user.nom;
+          if (document.getElementById("editEmail"))
+            document.getElementById("editEmail").value = user.email;
+
+          if (
+            user.stripe_verif_completed === true ||
+            user.stripe_verif_completed === 1
+          ) {
+            setStripeState("active");
+          } else {
+            setStripeState("none");
+          }
         } catch (err) {
-            console.error("Erreur personnalisation profil:", err);
+          console.error("Erreur personnalisation profil:", err);
         }
-    }
+      }
 
-    async function stripeConnect() {
-        const userId = localStorage.getItem('userId');
-        const token = localStorage.getItem('token');
+      async function stripeConnect() {
+        const userId = localStorage.getItem("userId");
+        const token = localStorage.getItem("token");
         if (!userId) return;
 
         try {
-            const response = await fetch(`http://localhost:8081/admin/connect-stripe?id=${userId}`, {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const data = await response.json();
-            if (response.ok && data.url) {
-                window.location.href = data.url;
-            } else {
-                alert("Erreur Stripe: " + (data.error || "Inconnu"));
-            }
+          const response = await fetch(
+            `http://localhost:8081/admin/connect-stripe?id=${userId}`,
+            {
+              method: "POST",
+              headers: { Authorization: `Bearer ${token}` },
+            },
+          );
+          const data = await response.json();
+          if (response.ok && data.url) {
+            window.location.href = data.url;
+          } else {
+            alert("Erreur Stripe: " + (data.error || "Inconnu"));
+          }
         } catch (err) {
-            console.error("Fetch Error:", err);
-            alert("Impossible de contacter le serveur Go.");
+          console.error("Fetch Error:", err);
+          alert("Impossible de contacter le serveur Go.");
         }
-    }
+      }
 
-    function showTab(name) {
-        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.ptab').forEach(t => t.classList.remove('active'));
-        const panel = document.getElementById('tab-' + name);
-        if (panel) panel.classList.add('active');
-        const currentTab = Array.from(document.querySelectorAll('.ptab')).find(t => t.innerText.toLowerCase().includes(name));
-        if (currentTab) currentTab.classList.add('active');
-    }
+      function showTab(name) {
+        document
+          .querySelectorAll(".tab-panel")
+          .forEach((p) => p.classList.remove("active"));
+        document
+          .querySelectorAll(".ptab")
+          .forEach((t) => t.classList.remove("active"));
+        const panel = document.getElementById("tab-" + name);
+        if (panel) panel.classList.add("active");
+        const currentTab = Array.from(document.querySelectorAll(".ptab")).find(
+          (t) => t.innerText.toLowerCase().includes(name),
+        );
+        if (currentTab) currentTab.classList.add("active");
+      }
 
-    function showSaveBar() { document.getElementById('saveBar').classList.add('active'); }
-    function hideSaveBar() { document.getElementById('saveBar').classList.remove('active'); }
-</script>
-</body>
+      function showSaveBar() {
+        document.getElementById("saveBar").classList.add("active");
+      }
+      function hideSaveBar() {
+        document.getElementById("saveBar").classList.remove("active");
+      }
+    </script>
+  </body>
 </html>

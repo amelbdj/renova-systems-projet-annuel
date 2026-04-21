@@ -35,6 +35,7 @@ func main() {
 	http.HandleFunc("OPTIONS /admin/users/search", admin.GetUserByName)
 	http.HandleFunc("OPTIONS /admin/users/{id}", admin.GetUserById)
 	http.HandleFunc("OPTIONS /admin/users/ban/{id}", admin.BanUserHandler)
+	http.HandleFunc("OPTIONS /user/profile", admin.GetUserById)
 
 	http.HandleFunc("OPTIONS /admin/categories/add", admin.CreateCategorie)
 	http.HandleFunc("OPTIONS /admin/categories/delete/{id}", admin.DeleteCategorie)
