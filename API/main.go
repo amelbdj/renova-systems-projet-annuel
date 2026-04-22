@@ -155,6 +155,9 @@ func main() {
 	http.HandleFunc("OPTIONS /api/payment-annonce", admin.PaymentAnnonce)
 	http.HandleFunc("POST /api/payment-annonce", admin.PaymentAnnonce)
 
+	// boxes
+	http.HandleFunc("GET /api/user/boxes", admin.GetMyBoxes)
+
 	// --- TRADUCTIONS ---
 	http.HandleFunc("GET /api/translations", admin.GetTranslations)
 	http.HandleFunc("GET /api/languages", admin.GetLanguages)
