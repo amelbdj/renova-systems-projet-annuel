@@ -56,7 +56,6 @@ func main() {
 	http.HandleFunc("OPTIONS /admin/evenements", admin.GetAllEvenements)
 	http.HandleFunc("OPTIONS /admin/evenements/inscription", admin.InscrireClient)
 
-
 	http.HandleFunc("OPTIONS /admin/box/confirm-deposit", admin.ConfirmDeposit)
 	http.HandleFunc("OPTIONS /admin/box/collect-object", admin.CollectObject)
 	http.HandleFunc("OPTIONS /admin/order/create", admin.CreateOrder)
@@ -127,7 +126,7 @@ func main() {
 	http.HandleFunc("DELETE /admin/evenements/{id}", auth.VerifyTokenMiddleware(admin.DeleteEvenement))
 	http.HandleFunc("PUT /admin/evenements/validate/{id}", auth.VerifyTokenMiddleware(admin.ValidateEvenement))
 	http.HandleFunc("PUT /admin/evenements/refuse/{id}", auth.VerifyTokenMiddleware(admin.RefuseEvenement))
-http.HandleFunc("POST /admin/evenements/inscription", admin.InscrireClient)
+	http.HandleFunc("POST /admin/evenements/inscription", admin.InscrireClient)
 	// --- LOGISTIQUE ---
 	http.HandleFunc("POST /admin/orders/create", auth.VerifyTokenMiddleware(admin.CreateOrder))
 	http.HandleFunc("POST /admin/box/confirm-deposit", auth.VerifyTokenMiddleware(admin.ConfirmDeposit))
@@ -148,6 +147,7 @@ http.HandleFunc("POST /admin/evenements/inscription", admin.InscrireClient)
 	//Stripe payment
 	http.HandleFunc("POST /admin/connect-stripe", auth.VerifyTokenMiddleware(admin.ConnectToStripe))
 	http.HandleFunc("POST /api/stripe/webhook", admin.StripeWebhookHandler)
+	http.HandleFunc("OPTIONS /admin/connect-stripe", admin.ConnectToStripe)
 
 	// --- TRADUCTIONS ---
 	http.HandleFunc("GET /api/translations", admin.GetTranslations)
@@ -159,9 +159,9 @@ http.HandleFunc("POST /admin/evenements/inscription", admin.InscrireClient)
 	http.HandleFunc("PUT /admin/forum/messages/moderate/{id}", auth.VerifyTokenMiddleware(admin.ModerateForumMessage))
 	http.HandleFunc("GET /admin/forum/stats", auth.VerifyTokenMiddleware(admin.GetForumStats))
 
-http.HandleFunc("OPTIONS /user/planning", admin.GetUserPlanningHandler)
-http.HandleFunc("GET /user/planning",admin.GetUserPlanningHandler) 
-    fmt.Println("test de : http://localhost:8081")
- 
-    http.ListenAndServe(":8081", nil)
+	http.HandleFunc("OPTIONS /user/planning", admin.GetUserPlanningHandler)
+	http.HandleFunc("GET /user/planning", admin.GetUserPlanningHandler)
+	fmt.Println("test de : http://localhost:8081")
+
+	http.ListenAndServe(":8081", nil)
 }

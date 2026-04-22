@@ -3,7 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mon Profil — ReNova Systems</title>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' http://localhost:8081 http://127.0.0.1:8081 https://connect.stripe.com; script-src 'self' 'unsafe-inline' https://js.stripe.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com;">
+    <title>Mon Profil</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
       href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Outfit:wght@300;400;500;600&display=swap"
@@ -16,7 +17,7 @@
       <div class="nav-links" style="margin-left: 28px">
         <button class="nav-link" onclick="history.back()">← Retour</button>
         <button class="nav-link active">Mon Profil</button>
-        <button class="nav-link">Tableau de bord</button>
+        <a class="nav-link" href="./espClient.html">Tableau de bord</a>
       </div>
       <div class="nav-right">
         <div class="nav-icon">🔔</div>

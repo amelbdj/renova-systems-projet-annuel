@@ -18,6 +18,11 @@ func ConnectToStripe(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
 	stripe.Key = StripeSecretKey
 
 	userIDStr := r.URL.Query().Get("id")
@@ -48,8 +53,8 @@ func ConnectToStripe(w http.ResponseWriter, r *http.Request) {
 
 	linkParams := &stripe.AccountLinkParams{
 		Account:    stripe.String(stripeID),
-		RefreshURL: stripe.String("http://localhost:5500/Frontend/profil.html"),
-		ReturnURL:  stripe.String("http://localhost:5500/Frontend/profil.html?stripe=success"),
+		RefreshURL: stripe.String("http://127.0.0.1:5500/renova-systems-projet-annuel/Frontend/profil.html"),
+		ReturnURL:  stripe.String("http://127.0.0.1:5500/renova-systems-projet-annuel/Frontend/profil.html?stripe=success"),
 		Type:       stripe.String("account_onboarding"),
 	}
 
