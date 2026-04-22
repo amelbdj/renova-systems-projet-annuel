@@ -35,6 +35,7 @@ function setStripeState(state) {
 async function loadUserProfile() {
   const userId = localStorage.getItem("userId");
   const token = localStorage.getItem("token");
+  const avatar = document.querySelector(".profile-ava");
 
   if (!userId) return;
 
@@ -67,6 +68,7 @@ async function loadUserProfile() {
 
     document.getElementById("navName").textContent =
       `${user.prenom} ${user.nom}`;
+    avatar.textContent = user.prenom.charAt(0);
   } catch (err) {
     console.error("Fetch Error:", err);
   }

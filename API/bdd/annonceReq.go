@@ -293,7 +293,7 @@ func GetValidatedAnnonces() ([]models.Annonce, error) {
     FROM pa2026.annonce a
     LEFT JOIN pa2026.utilisateur ON a.id_user = pa2026.utilisateur.id
     LEFT JOIN pa2026.categorie ON a.id_categorie = pa2026.categorie.id
-    WHERE a.statut_validation = 'valide'`
+    WHERE a.statut_validation = 'Validé'`
 
 	rows, err := Db.Query(query)
 	if err != nil {
