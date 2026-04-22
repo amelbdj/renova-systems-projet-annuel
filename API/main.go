@@ -93,6 +93,8 @@ func main() {
 	http.HandleFunc("GET /user/profile", admin.GetUserById)
 	http.HandleFunc("GET /admin/users/{id}", auth.VerifyTokenMiddleware(admin.GetUserById))
 	http.HandleFunc("PUT /admin/users/ban/{id}", auth.VerifyTokenMiddleware(admin.BanUserHandler))
+	http.HandleFunc("GET /api/user/payment-history", admin.PaymentHistoryHandler)
+	http.HandleFunc("OPTIONS /api/user/payment-history", admin.PaymentHistoryHandler)
 
 	// Auth, Tutorial & Upload
 	http.HandleFunc("/api/upload-document", auth.VerifyTokenMiddleware(admin.UploadDocumentHandler))

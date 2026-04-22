@@ -34,3 +34,36 @@ func CreateOrder(annonce models.Annonce, acheteurId int) (int, error) {
 
 	return int(orderId), nil
 }
+
+func PaymentHistory(userID int) ([]map[string]interface{}, error) {
+	query := `
+        SELECT 
+            o.montant, 
+            o.date, 
+            a.titre 
+        FROM pa2026.order o
+        JOIN annonce a ON o.annonce_id = a.id
+        WHERE a.id_user = ?
+        ORDER BY o.date DESC`
+
+	rows, err := Db.Query(query, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var history []map[string]interface{}
+	for rows.Next() {
+		var montant float64
+		var date, titre string
+		rows.Scan(&montant, &date, &titre)
+
+		item := map[string]interface{}{
+			"titre":   titre,
+			"montant": montant,
+			"date":    date,
+		}
+		history = append(history, item)
+	}
+	return history, nil
+}
