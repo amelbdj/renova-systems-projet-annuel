@@ -193,24 +193,10 @@
           <div class="sec-divider"></div>
         </div>
         <div class="card fu fu2">
-          <div class="card-bd" style="padding: 0">
-            <div
-              style="
-                display: flex;
-                align-items: center;
-                gap: 12px;
-                padding: 13px 20px;
-                border-bottom: 1px solid var(--b0);
-              "
-            >
-              <div style="flex: 1">
-                <div style="color: #fff">Vente — Chaise en bois</div>
-              </div>
-              <div style="color: var(--green)">+25 €</div>
-            </div>
-          </div>
-        </div>
-      </div>
+  <div class="card-bd" id="salesHistoryList" style="padding: 0">
+      <div style="padding: 20px; color: var(--txt-m)">Chargement de l'historique...</div>
+  </div>
+</div>
 
       <div class="tab-panel" id="tab-securite">
         <div class="sec-label fu">
@@ -231,7 +217,7 @@
     </div>
 
     <div class="save-bar" id="saveBar">
-      <span class="save-hint">⚠ Modifications non sauvegardées</span>
+      <span class="save-hint"> Modifications non sauvegardées</span>
       <div style="display: flex; gap: 8px">
         <button class="btn btn-g btn-sm" onclick="hideSaveBar()">
           Annuler
@@ -373,6 +359,49 @@
       function hideSaveBar() {
         document.getElementById("saveBar").classList.remove("active");
       }
+
+      async function loadSalesHistory() {
+    const userId = localStorage.getItem("userId");
+    const token = localStorage.getItem("token");
+    const historyList = document.getElementById("salesHistoryList");
+
+    if (!userId || !historyList) return;
+
+    try {
+        const response = await fetch(`http://localhost:8081/api/user/payment-history?id=${userId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (!response.ok) throw new Error("Erreur historique");
+
+        const data = await response.json();
+
+        if (!data || data.length === 0) {
+            historyList.innerHTML = `<div style="padding: 20px; color: var(--txt-m)">Aucune vente effectuée pour le moment.</div>`;
+            return;
+        }
+
+        historyList.innerHTML = data.map(item => `
+            <div style="display: flex; align-items: center; gap: 12px; padding: 13px 20px; border-bottom: 1px solid var(--b0);">
+                <div style="flex: 1">
+                    <div style="color: #fff">Vente — ${item.titre}</div>
+                    <div style="font-size: 11px; color: var(--txt-m)">${new Date(item.date).toLocaleDateString('fr-FR')}</div>
+                </div>
+                <div style="color: var(--green); font-weight: bold;">+${item.montant} €</div>
+            </div>
+        `).join('');
+
+    } catch (err) {
+        console.error("Erreur historique:", err);
+        historyList.innerHTML = `<div style="padding: 20px; color: var(--red)">Impossible de charger l'historique.</div>`;
+    }
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+    await loadUserProfile();
+    await loadSalesHistory(); 
+    
+});
     </script>
   </body>
 </html>
