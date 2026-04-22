@@ -283,9 +283,12 @@ func GetValidatedAnnonces(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
-	annonces, err := bdd.GetValidatedAnnonces()
-	if err != nil {
+	idStr := r.URL.Query().Get("id")
+	currentUserID, _ := strconv.Atoi(idStr)
 
+	annonces, err := bdd.GetValidatedAnnonces(currentUserID)
+
+	if err != nil {
 		fmt.Println("Erreur lors de la recup des annonces validées : ", err)
 		http.Error(w, "Erreur recup des annonces", http.StatusInternalServerError)
 		return
@@ -319,4 +322,29 @@ func GetOneAnnonce(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(annonce)
+}
+
+func AnnVendu(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "PUT, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	id := r.URL.Query().Get("id")
+
+	query := "UPDATE pa2026.annonce SET statut_vente = 'VENDU' WHERE id = ?"
+	_, err := bdd.Db.Exec(query, id)
+
+	if err != nil {
+		fmt.Println("Erreur SQL:", err)
+		http.Error(w, "Erreur BDD", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	fmt.Fprintln(w, `{"status": "success"}`)
 }

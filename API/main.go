@@ -118,6 +118,8 @@ func main() {
 	http.HandleFunc("GET /mes-annonces", admin.GetMyAnnonces)
 	http.HandleFunc("GET /api/annonces/all", admin.GetValidatedAnnonces)
 	http.HandleFunc("GET /api/annonces", admin.GetOneAnnonce)
+	http.HandleFunc("OPTIONS /api/annonces/vendre", admin.AnnVendu)
+	http.HandleFunc("PUT /api/annonces/vendre", admin.AnnVendu)
 
 	// --- EVENEMENTS ---
 	http.HandleFunc("GET /admin/evenements", admin.GetAllEvenements)
@@ -148,6 +150,8 @@ func main() {
 	http.HandleFunc("POST /admin/connect-stripe", auth.VerifyTokenMiddleware(admin.ConnectToStripe))
 	http.HandleFunc("POST /api/stripe/webhook", admin.StripeWebhookHandler)
 	http.HandleFunc("OPTIONS /admin/connect-stripe", admin.ConnectToStripe)
+	http.HandleFunc("OPTIONS /api/payment-annonce", admin.PaymentAnnonce)
+	http.HandleFunc("POST /api/payment-annonce", admin.PaymentAnnonce)
 
 	// --- TRADUCTIONS ---
 	http.HandleFunc("GET /api/translations", admin.GetTranslations)

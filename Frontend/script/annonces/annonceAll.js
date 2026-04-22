@@ -5,8 +5,10 @@ async function loadAllAnnonces() {
     const grid = document.getElementById('listingsGrid');
     if (!grid) return;
 
+    const userId = localStorage.getItem('userId') || 0;
+
     try {
-        const response = await fetch(`http://localhost:8081/api/annonces/all`);
+        const response = await fetch(`http://localhost:8081/api/annonces/all?id=${userId}`);
         allAnnonces = await response.json();
         
         displayAnnonces(allAnnonces);
