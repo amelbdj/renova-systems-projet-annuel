@@ -60,7 +60,7 @@ function genererGrilleMois() {
     "Novembre",
     "Décembre",
   ];
-  const joursShort = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"];
+  const joursShort = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
 
   const moisIndex = dateAffichee.getMonth();
   const annee = dateAffichee.getFullYear();
@@ -110,12 +110,12 @@ function genererGrilleMois() {
           cssColor = "bl";
           metaTxt = "Inscrit";
         } else if (ev.type === "box_depot") {
-          cssColor = "am"; // Orange
+          cssColor = "am";
           displayTitle = "📦 À Déposer : " + ev.titre;
           metaTxt = ev.meta ? "Code : " + ev.meta : "Code à venir";
         } else if (ev.type === "box_retrait") {
           cssColor = "gr"; // Vert
-          displayTitle = "✅ À Récupérer : " + ev.titre;
+          displayTitle = "À Récupérer : " + ev.titre;
           metaTxt = ev.meta ? "Code : " + ev.meta : "Code à venir";
         }
 
