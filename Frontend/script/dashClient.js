@@ -68,7 +68,7 @@ async function loadMyAnnonces() {
 
                 card.innerHTML = `
                     <div class="ann-thumb" style="${imgSrc ? `background: url('${imgSrc}') center/cover no-repeat;` : `background: linear-gradient(135deg,#0a0f1e,#101828);`}">
-            ${imgSrc ? '' : '📦'}
+            ${imgSrc ? '' : '<i class="fa-solid fa-box-archive"></i>'}
         </div>
                     <div class="ann-body">
                         <div class="ann-name">${ann.titre}</div>
