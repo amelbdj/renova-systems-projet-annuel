@@ -337,36 +337,46 @@ func ConfirmPaymentAndOrder(w http.ResponseWriter, r *http.Request) {
 	annonceID, _ := strconv.Atoi(r.URL.Query().Get("id"))
 	buyerID, _ := strconv.Atoi(r.URL.Query().Get("buyer_id"))
 
+	// 1. Récupérer l'annonce
 	annonce, err := bdd.GetAnnonceById(annonceID)
 	if err != nil {
 		http.Error(w, "Annonce introuvable", http.StatusNotFound)
 		return
 	}
 
+	// 2. Créer la commande
 	orderID, err := bdd.CreateOrder(annonce, buyerID)
 	if err != nil {
 		http.Error(w, "Erreur création commande: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
+	// 3. Trouver une Box libre
 	var boxID int
-	err = bdd.Db.QueryRow("SELECT id FROM box_conteneur WHERE etat = 'LIBRE' AND localisation = ? LIMIT 1", annonce.Ville).Scan(&boxID)
+	err = bdd.Db.QueryRow("SELECT id_box FROM box_conteneur WHERE etat = 'LIBRE' AND localisation = ? LIMIT 1", annonce.Ville).Scan(&boxID)
 
 	if err != nil {
-		bdd.Db.QueryRow("SELECT id FROM box_conteneur WHERE etat = 'LIBRE' LIMIT 1").Scan(&boxID)
+		// Plan B : On prend la première box libre si aucune dans la ville
+		err = bdd.Db.QueryRow("SELECT id_box FROM box_conteneur WHERE etat = 'LIBRE' LIMIT 1").Scan(&boxID)
+		if err != nil {
+			http.Error(w, "Aucune box libre disponible", http.StatusInternalServerError)
+			return
+		}
 	}
 
+	// 4. Réserver la Box (Génère le PIN et le Barcode)
 	err = bdd.ReserveBox(annonceID, boxID, buyerID)
 	if err != nil {
 		http.Error(w, "Erreur logistique box: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
+	// 5. Tout s'est bien passé, on prévient le Frontend
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"status":   "success",
 		"order_id": orderID,
 		"box_id":   boxID,
-		"message":  "Paiement valid et Box reserved",
+		"message":  "Paiement validé, annonce passée en VENDU, et Box réservée",
 	})
 }
