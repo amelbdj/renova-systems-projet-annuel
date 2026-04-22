@@ -324,9 +324,9 @@ func GetOneAnnonce(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(annonce)
 }
 
-func AnnVendu(w http.ResponseWriter, r *http.Request) {
+func ConfirmPaymentAndOrder(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "PUT, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 	if r.Method == "OPTIONS" {
@@ -334,17 +334,39 @@ func AnnVendu(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id := r.URL.Query().Get("id")
+	annonceID, _ := strconv.Atoi(r.URL.Query().Get("id"))
+	buyerID, _ := strconv.Atoi(r.URL.Query().Get("buyer_id"))
 
-	query := "UPDATE pa2026.annonce SET statut_vente = 'VENDU' WHERE id = ?"
-	_, err := bdd.Db.Exec(query, id)
+	annonce, err := bdd.GetAnnonceById(annonceID)
+	if err != nil {
+		http.Error(w, "Annonce introuvable", http.StatusNotFound)
+		return
+	}
+
+	orderID, err := bdd.CreateOrder(annonce, buyerID)
+	if err != nil {
+		http.Error(w, "Erreur création commande: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	var boxID int
+	err = bdd.Db.QueryRow("SELECT id FROM box_conteneur WHERE etat = 'LIBRE' AND localisation = ? LIMIT 1", annonce.Ville).Scan(&boxID)
 
 	if err != nil {
-		fmt.Println("Erreur SQL:", err)
-		http.Error(w, "Erreur BDD", http.StatusInternalServerError)
+		bdd.Db.QueryRow("SELECT id FROM box_conteneur WHERE etat = 'LIBRE' LIMIT 1").Scan(&boxID)
+	}
+
+	err = bdd.ReserveBox(annonceID, boxID, buyerID)
+	if err != nil {
+		http.Error(w, "Erreur logistique box: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	fmt.Fprintln(w, `{"status": "success"}`)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"status":   "success",
+		"order_id": orderID,
+		"box_id":   boxID,
+		"message":  "Paiement valid et Box reserved",
+	})
 }
