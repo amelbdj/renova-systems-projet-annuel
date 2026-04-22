@@ -5,11 +5,12 @@ import (
 	"upcycleconnect/models"
 )
 
-func GetEvenements() ([]models.Evenement, error) {
+func GetEvenements(searchWord string) ([]models.Evenement, error) {
 
 	var Evenements []models.Evenement
 
-	rows, err := Db.Query("SELECT evenement.id, evenement.titre, evenement.description, evenement.date_debut, evenement.date_fin, evenement.nb_places, evenement.statut_validation, evenement.format, evenement.lieu, evenement.type, evenement.id_salarie, utilisateur.nom, utilisateur.prenom FROM pa2026.Evenement INNER JOIN utilisateur ON utilisateur.id = Evenement.id_salarie")
+	if searchWord != "" {
+rows, err := Db.Query("SELECT evenement.id, evenement.titre, evenement.description, DATE_FORMAT(evenement.date_debut, '%d/%m/%Y a %H:%i') as date_debut, DATE_FORMAT(evenement.date_fin, '%d/%m/%Y a %H:%i') as date_fin, evenement.nb_places, evenement.statut_validation, evenement.format, evenement.lieu, evenement.type, evenement.id_salarie, utilisateur.nom, utilisateur.prenom FROM pa2026.Evenement INNER JOIN utilisateur ON utilisateur.id = Evenement.id_salarie WHERE evenement.titre LIKE ?", "%"+searchWord+"%")
 
 	if err != nil {
 		return nil, fmt.Errorf("get Evenements : %v", err.Error())
@@ -33,6 +34,33 @@ func GetEvenements() ([]models.Evenement, error) {
 	}
 
 	return Evenements, nil
+	}else {
+
+	rows, err := Db.Query("SELECT evenement.id, evenement.titre, evenement.description, DATE_FORMAT(evenement.date_debut, '%d/%m/%Y a %H:%i') as date_debut, DATE_FORMAT(evenement.date_fin, '%d/%m/%Y a %H:%i') as date_fin, evenement.nb_places, evenement.statut_validation, evenement.format, evenement.lieu, evenement.type, evenement.id_salarie, utilisateur.nom, utilisateur.prenom FROM pa2026.Evenement INNER JOIN utilisateur ON utilisateur.id = Evenement.id_salarie")
+
+	if err != nil {
+		return nil, fmt.Errorf("get Evenements : %v", err.Error())
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+
+		var Evenement models.Evenement
+	
+		err := rows.Scan(&Evenement.Id, &Evenement.Titre, &Evenement.Description,&Evenement.DateDebut, &Evenement.DateFin, &Evenement.NbPlaces, &Evenement.StatutValidation, &Evenement.Format, &Evenement.Lieu, &Evenement.Type, &Evenement.IdSalarie, &Evenement.NomSalarie, &Evenement.PrenomSalarie)
+
+		if err != nil {
+			return nil, fmt.Errorf("get Evenements : %v", err.Error())
+		}
+		Evenements = append(Evenements, Evenement)
+	}
+	err = rows.Err()
+	if err != nil {
+		return nil, fmt.Errorf("get Evenements : %v", err.Error())
+	}
+
+	return Evenements, nil
+}
 }
 
 func ValidateEvenement(EvenementId int) error {
@@ -116,4 +144,38 @@ func UpdateEvenement(EvenementId int, Evenement models.Evenement) error {
 		return fmt.Errorf("aucune Evenement trouvée avec l'id %d", EvenementId)
 	}
 	return nil
+}
+
+
+func InscrireClient(idUser int, idEvent int) error {
+    var nbPlaces int
+    var inscrits int
+    
+    err := Db.QueryRow("SELECT evenement.nb_places, (SELECT COUNT(*) FROM inscription WHERE id_event = ?) FROM evenement WHERE evenement.id = ?", idEvent, idEvent).Scan(&nbPlaces, &inscrits)
+    if err != nil {
+        fmt.Println("Erreur SQL (Select):", err)
+        return err
+    }
+
+    if inscrits >= nbPlaces {
+        return fmt.Errorf("plus de place (max: %d)", nbPlaces)
+    }
+
+    var check int
+    err = Db.QueryRow("SELECT COUNT(*) FROM inscription WHERE id_user = ? AND id_event = ?", idUser, idEvent).Scan(&check)
+    if err != nil {
+        return err
+    }
+    
+    if check > 0 {
+        return fmt.Errorf("vous êtes déjà inscrit à cet événement")
+    }
+
+    _, err = Db.Exec("INSERT INTO inscription (id_user, id_event) VALUES (?, ?)", idUser, idEvent)
+    if err != nil {
+        fmt.Println("Erreur SQL (Insert):", err)
+        return err
+    }
+
+    return nil
 }

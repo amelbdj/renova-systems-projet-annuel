@@ -14,10 +14,14 @@ type User struct {
 	NomEntreprise        *string `json:"nom_entreprise,omitempty"`
 	Siret                *string `json:"siret,omitempty"`
 	CheminFichier        string  `json:"chemin_fichier"`
-	StripeAccountId      string  `json:"stripe_account_id"`
+	StripeAccountId      *string `json:"stripe_account_id"`
 	StripeVerifCompleted bool    `json:"stripe_verif_completed"`
 }
 
 type RefuseRequest struct {
 	Motif string `json:"motif"`
+}
+type InscriptionRequest struct {
+	IdUser  int `json:"id_user"`
+	IdEvent int `json:"id_event"`
 }

@@ -22,9 +22,11 @@ func GetAllEvenements(w http.ResponseWriter, r *http.Request) {
         return 
     }
 
+	searchWord := r.URL.Query().Get("search")
+	
 	fmt.Println("hello from GetAllEvenements")
 
-	Evenements, err := bdd.GetEvenements()
+	Evenements, err := bdd.GetEvenements(searchWord)
 
 	if err != nil {
 		http.Error(w, "erreur de récupération des Evenements", http.StatusInternalServerError)
@@ -190,4 +192,36 @@ func UpdateEvenement(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, "Evenement mise à jour avec succès")
+}
+
+func InscrireClient(w http.ResponseWriter, r *http.Request) {
+
+ 	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return 
+	}
+
+	var insc models.InscriptionRequest
+
+	err := json.NewDecoder(r.Body).Decode(&insc)
+	if err != nil {
+		http.Error(w, "données invalides", http.StatusBadRequest)
+		return
+	}
+
+	err = bdd.InscrireClient(insc.IdUser, insc.IdEvent)
+
+	if err != nil {
+	w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(http.StatusInternalServerError)
+    json.NewEncoder(w).Encode(map[string]string{"erreur": err.Error()})
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+json.NewEncoder(w).Encode(map[string]string{
+    "message": "Client inscrit avec succès !",})
 }

@@ -118,6 +118,15 @@ func CreateAnnonce(w http.ResponseWriter, r *http.Request) {
 	ann.PoidsKg, _ = strconv.ParseFloat(r.FormValue("poids_kg"), 64)
 	ann.Quantite, _ = strconv.Atoi(r.FormValue("quantite"))
 
+	var stripeID string
+	err := bdd.Db.QueryRow("SELECT stripe_account_id FROM utilisateur WHERE id = ?", ann.IdUser).Scan(&stripeID)
+
+	if err != nil || stripeID == "" {
+		w.WriteHeader(http.StatusForbidden)
+		fmt.Fprintln(w, "STRIPE_NOT_CONFIGURED")
+		return
+	}
+
 	file, header, err := r.FormFile("image")
 	if err == nil {
 		defer file.Close()
@@ -268,4 +277,74 @@ func GetMyAnnonces(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(annonces)
+}
+
+func GetValidatedAnnonces(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
+	idStr := r.URL.Query().Get("id")
+	currentUserID, _ := strconv.Atoi(idStr)
+
+	annonces, err := bdd.GetValidatedAnnonces(currentUserID)
+
+	if err != nil {
+		fmt.Println("Erreur lors de la recup des annonces validées : ", err)
+		http.Error(w, "Erreur recup des annonces", http.StatusInternalServerError)
+		return
+	}
+	json.NewEncoder(w).Encode(annonces)
+}
+
+func GetOneAnnonce(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "http://127.0.0.1:5500")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+	w.Header().Set("Content-Type", "application/json")
+
+	idStr := r.URL.Query().Get("id")
+
+	if idStr == "" {
+		http.Error(w, "ID manquant", http.StatusBadRequest)
+		return
+	}
+
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "ID invalide", http.StatusBadRequest)
+		return
+	}
+
+	annonce, err := bdd.GetAnnonceById(id)
+	if err != nil {
+		fmt.Printf("LOG_DÉTAIL: Impossible de trouver l'annonce %d : %v\n", id, err)
+		http.Error(w, "Annonce introuvable", http.StatusNotFound)
+		return
+	}
+
+	json.NewEncoder(w).Encode(annonce)
+}
+
+func AnnVendu(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "PUT, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	id := r.URL.Query().Get("id")
+
+	query := "UPDATE pa2026.annonce SET statut_vente = 'VENDU' WHERE id = ?"
+	_, err := bdd.Db.Exec(query, id)
+
+	if err != nil {
+		fmt.Println("Erreur SQL:", err)
+		http.Error(w, "Erreur BDD", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	fmt.Fprintln(w, `{"status": "success"}`)
 }

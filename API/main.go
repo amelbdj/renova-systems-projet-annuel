@@ -34,6 +34,8 @@ func main() {
 	http.HandleFunc("OPTIONS /admin/users/role/{role}", admin.GetUserByRole)
 	http.HandleFunc("OPTIONS /admin/users/search", admin.GetUserByName)
 	http.HandleFunc("OPTIONS /admin/users/{id}", admin.GetUserById)
+	http.HandleFunc("OPTIONS /admin/users/ban/{id}", admin.BanUserHandler)
+	http.HandleFunc("OPTIONS /user/profile", admin.GetUserById)
 
 	http.HandleFunc("OPTIONS /admin/categories/add", admin.CreateCategorie)
 	http.HandleFunc("OPTIONS /admin/categories/delete/{id}", admin.DeleteCategorie)
@@ -52,6 +54,7 @@ func main() {
 	http.HandleFunc("OPTIONS /admin/evenements/refuse/{id}", admin.RefuseEvenement)
 	http.HandleFunc("OPTIONS /admin/evenements/add", admin.CreateEvenement)
 	http.HandleFunc("OPTIONS /admin/evenements", admin.GetAllEvenements)
+	http.HandleFunc("OPTIONS /admin/evenements/inscription", admin.InscrireClient)
 
 	http.HandleFunc("OPTIONS /admin/box/confirm-deposit", admin.ConfirmDeposit)
 	http.HandleFunc("OPTIONS /admin/box/collect-object", admin.CollectObject)
@@ -66,12 +69,17 @@ func main() {
 	http.HandleFunc("OPTIONS /admin/articles/modify/{id}/{action}", admin.ModifyArticle)
 	http.HandleFunc("OPTIONS /admin/articles/salarie/{id}", admin.GetArticlesBySalarie)
 	http.HandleFunc("OPTIONS /admin/articles/{id}", admin.GetArticleById)
+	http.HandleFunc("OPTIONS /admin/articles", admin.GetAllArticles)
 
 	// --- TRANSLATIONS OPTIONS ---
 	http.HandleFunc("OPTIONS /api/translations", admin.GetTranslations)
 	http.HandleFunc("OPTIONS /api/languages", admin.GetLanguages)
 	http.HandleFunc("OPTIONS /admin/translations/add", admin.AddLanguage)
 	http.HandleFunc("OPTIONS /admin/translations/keys", admin.GetTranslationKeysHandler)
+
+	http.HandleFunc("OPTIONS /admin/forum/messages", admin.GetForumMessages)
+	http.HandleFunc("OPTIONS /admin/forum/messages/moderate/{id}", admin.ModerateForumMessage)
+	http.HandleFunc("OPTIONS /admin/forum/stats", admin.GetForumStats)
 
 	// --- USERS ---
 	http.HandleFunc("GET /admin/users", auth.VerifyTokenMiddleware(admin.GetAllUsers))
@@ -82,10 +90,9 @@ func main() {
 	http.HandleFunc("GET /admin/users/search", auth.VerifyTokenMiddleware(admin.GetUserByName))
 	http.HandleFunc("PUT /admin/users/validate/{id}", auth.VerifyTokenMiddleware(admin.ValidateUser))
 	http.HandleFunc("PUT /admin/users/refuse/{id}", auth.VerifyTokenMiddleware(admin.RefuseUser))
-
 	http.HandleFunc("GET /user/profile", admin.GetUserById)
-
 	http.HandleFunc("GET /admin/users/{id}", auth.VerifyTokenMiddleware(admin.GetUserById))
+	http.HandleFunc("PUT /admin/users/ban/{id}", auth.VerifyTokenMiddleware(admin.BanUserHandler))
 
 	// Auth, Tutorial & Upload
 	http.HandleFunc("/api/upload-document", auth.VerifyTokenMiddleware(admin.UploadDocumentHandler))
@@ -109,6 +116,10 @@ func main() {
 	http.HandleFunc("PUT /admin/annonces/modify/{id}", auth.VerifyTokenMiddleware(admin.UpdateAnnonce))
 	http.HandleFunc("GET /admin/annonces/search", auth.VerifyTokenMiddleware(admin.GetAnnonceByTitle))
 	http.HandleFunc("GET /mes-annonces", admin.GetMyAnnonces)
+	http.HandleFunc("GET /api/annonces/all", admin.GetValidatedAnnonces)
+	http.HandleFunc("GET /api/annonces", admin.GetOneAnnonce)
+	http.HandleFunc("OPTIONS /api/annonces/vendre", admin.AnnVendu)
+	http.HandleFunc("PUT /api/annonces/vendre", admin.AnnVendu)
 
 	// --- EVENEMENTS ---
 	http.HandleFunc("GET /admin/evenements", admin.GetAllEvenements)
@@ -117,7 +128,7 @@ func main() {
 	http.HandleFunc("DELETE /admin/evenements/{id}", auth.VerifyTokenMiddleware(admin.DeleteEvenement))
 	http.HandleFunc("PUT /admin/evenements/validate/{id}", auth.VerifyTokenMiddleware(admin.ValidateEvenement))
 	http.HandleFunc("PUT /admin/evenements/refuse/{id}", auth.VerifyTokenMiddleware(admin.RefuseEvenement))
-
+	http.HandleFunc("POST /admin/evenements/inscription", admin.InscrireClient)
 	// --- LOGISTIQUE ---
 	http.HandleFunc("POST /admin/orders/create", auth.VerifyTokenMiddleware(admin.CreateOrder))
 	http.HandleFunc("POST /admin/box/confirm-deposit", auth.VerifyTokenMiddleware(admin.ConfirmDeposit))
@@ -138,6 +149,9 @@ func main() {
 	//Stripe payment
 	http.HandleFunc("POST /admin/connect-stripe", auth.VerifyTokenMiddleware(admin.ConnectToStripe))
 	http.HandleFunc("POST /api/stripe/webhook", admin.StripeWebhookHandler)
+	http.HandleFunc("OPTIONS /admin/connect-stripe", admin.ConnectToStripe)
+	http.HandleFunc("OPTIONS /api/payment-annonce", admin.PaymentAnnonce)
+	http.HandleFunc("POST /api/payment-annonce", admin.PaymentAnnonce)
 
 	// --- TRADUCTIONS ---
 	http.HandleFunc("GET /api/translations", admin.GetTranslations)
@@ -145,25 +159,13 @@ func main() {
 	http.HandleFunc("POST /admin/translations/add", admin.AddLanguage)
 	http.HandleFunc("GET /admin/translations/keys", admin.GetTranslationKeysHandler)
 
+	http.HandleFunc("GET /admin/forum/messages", auth.VerifyTokenMiddleware(admin.GetForumMessages))
+	http.HandleFunc("PUT /admin/forum/messages/moderate/{id}", auth.VerifyTokenMiddleware(admin.ModerateForumMessage))
+	http.HandleFunc("GET /admin/forum/stats", auth.VerifyTokenMiddleware(admin.GetForumStats))
+
+	http.HandleFunc("OPTIONS /user/planning", admin.GetUserPlanningHandler)
+	http.HandleFunc("GET /user/planning", admin.GetUserPlanningHandler)
 	fmt.Println("test de : http://localhost:8081")
 
-	err := http.ListenAndServe(":8081", corsMiddleware(http.DefaultServeMux))
-	if err != nil {
-		panic(err)
-	}
-}
-
-func corsMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-
-		if r.Method == "OPTIONS" {
-			w.WriteHeader(http.StatusOK)
-			return
-		}
-
-		next.ServeHTTP(w, r)
-	})
+	http.ListenAndServe(":8081", nil)
 }

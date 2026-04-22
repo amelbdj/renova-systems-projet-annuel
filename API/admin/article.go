@@ -23,8 +23,10 @@ func GetAllArticles(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println("hello from get articles")
 
+	searchWord := r.URL.Query().Get("search")
+
 	
-	articles, err := bdd.GetArticles()
+	articles, err := bdd.GetArticles(searchWord)
 	if err != nil {
 		http.Error(w, "Erreur lors de la récupération des articles", http.StatusInternalServerError)
 		fmt.Println(err)
@@ -290,3 +292,4 @@ func GetArticleById(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Write(response)
 }
+
