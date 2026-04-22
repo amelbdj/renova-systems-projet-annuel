@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Annonces </title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./style/annonceAll.css">
+</head>
+<body>
+
+<nav class="topnav">
+  <!-- <img class="nav-logo" src="./assets/logo renova.png" alt="Renova Systems logo"> -->
+  <div class="nav-links">
+    <button class="nav-link">Accueil</button>
+    <button class="nav-link active">Annonces</button>
+    <button class="nav-link">Conteneurs</button>
+    <button class="nav-link">Catalogue</button>
+  </div>
+  <div class="nav-right">
+    <div class="nav-ava">👤</div>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-text fu">
+      <div class="hero-eyebrow">Annonces</div>
+      
+      <div class="search-bar">
+        <span style="font-size:15px">🔍</span>
+        <input type="text" id="searchInput" placeholder="Rechercher un objet, une catégorie…" oninput="filterListings()">
+        <button class="btn-search">Rechercher</button>
+      </div>
+    </div>
+    
+  </div>
+</div>
+
+<div class="page-body">
+  <aside class="sidebar fu">
+    <div class="filter-card">
+      <div class="filter-title">Catégorie</div>
+      <div class="filter-opts">
+        <div class="f-opt on" onclick="toggleFilter(this,'cat','all')"><div class="f-opt-left"><span>🌐</span>Toutes</div><div class="f-count">18</div></div>
+        <div class="f-opt" onclick="toggleFilter(this,'cat','mobilier')"><div class="f-opt-left"><div class="check-box"></div><span>🪑</span>Mobilier</div><div class="f-count">5</div></div>
+        <div class="f-opt" onclick="toggleFilter(this,'cat','outillage')"><div class="f-opt-left"><div class="check-box"></div><span>🔧</span>Outillage</div><div class="f-count">4</div></div>
+        <div class="f-opt" onclick="toggleFilter(this,'cat','textile')"><div class="f-opt-left"><div class="check-box"></div><span>🧵</span>Textile</div><div class="f-count">3</div></div>
+        <div class="f-opt" onclick="toggleFilter(this,'cat','electronique')"><div class="f-opt-left"><div class="check-box"></div><span>📱</span>Électronique</div><div class="f-count">3</div></div>
+        <div class="f-opt" onclick="toggleFilter(this,'cat','deco')"><div class="f-opt-left"><div class="check-box"></div><span>🎨</span>Déco</div><div class="f-count">3</div></div>
+        <div class="f-opt" onclick="toggleFilter(this,'cat','livres')"><div class="f-opt-left"><div class="check-box"></div><span>📚</span>Livres</div><div class="f-count">1</div></div>
+      </div>
+    </div>
+    <div class="filter-card">
+      <div class="filter-title">Type</div>
+      <div class="filter-opts">
+        <div class="f-opt on"  onclick="toggleFilter(this,'type','all')"><div class="f-opt-left"><span>🌐</span>Tous</div></div>
+        <div class="f-opt" onclick="toggleFilter(this,'type','vente')"><div class="f-opt-left"><div class="check-box"></div><span>💰</span>Vente</div><div class="f-count">12</div></div>
+        <div class="f-opt" onclick="toggleFilter(this,'type','don')"><div class="f-opt-left"><div class="check-box"></div><span>🎁</span>Don gratuit</div><div class="f-count">6</div></div>
+      </div>
+    </div>
+    
+    <div class="filter-card">
+      <div class="filter-title">Localisation</div>
+      <div class="filter-opts">
+        <div class="f-opt on"  onclick="toggleFilter(this,'loc','all')"><div class="f-opt-left"><span>📍</span>Partout</div></div>
+        <div class="f-opt" onclick="toggleFilter(this,'loc','paris11')"><div class="f-opt-left"><div class="check-box"></div>Paris 11e</div><div class="f-count">7</div></div>
+        <div class="f-opt" onclick="toggleFilter(this,'loc','paris20')"><div class="f-opt-left"><div class="check-box"></div>Paris 20e</div><div class="f-count">4</div></div>
+        <div class="f-opt" onclick="toggleFilter(this,'loc','paris3')"><div class="f-opt-left"><div class="check-box"></div>Paris 3e</div><div class="f-count">3</div></div>
+        <div class="f-opt" onclick="toggleFilter(this,'loc','vincennes')"><div class="f-opt-left"><div class="check-box"></div>Vincennes</div><div class="f-count">4</div></div>
+      </div>
+    </div>
+  </aside>
+
+  <main>
+    <div class="sort-bar fu">
+      <div class="results-count"><strong id="resultCount">18</strong> annonces trouvées</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <select class="sort-select" onchange="sortListings(this.value)">
+          <option value="recent">Plus récentes</option>
+          <option value="price-asc">Prix croissant</option>
+          <option value="price-desc">Prix décroissant</option>
+          <option value="alpha">A → Z</option>
+        </select>
+        <div class="view-btns">
+          <div class="view-btn on" id="vGrid" onclick="setView('grid')" title="Grille">▦</div>
+          <div class="view-btn"   id="vList" onclick="setView('list')" title="Liste">☰</div>
+        </div>
+      </div>
+    </div>
+    <div class="active-filters" id="activeFilters"></div>
+    <div class="listings-grid" id="listingsGrid"></div>
+  </main>
+</div>
+
+<script src="./script/annonces/annonceAll.js"></script>
+</body>
+</html>
