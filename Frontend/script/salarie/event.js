@@ -103,7 +103,7 @@ function GetEvenements() {
             ? evt.statut_validation.toLowerCase()
             : "en attente";
 
-          if (statut === "validé" || statut === "en ligne") {
+          if (statut === "valide" || statut === "en ligne") {
             statusBadge = `<div class="evt-status t-green">✓ En ligne</div>`;
             actionButtons = `
             <span class="tag t-green">Publiée</span>

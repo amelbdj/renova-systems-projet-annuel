@@ -5,43 +5,69 @@ import (
 	"upcycleconnect/models"
 )
 
-func GetArticles() ([]models.Article, error) {
+func GetArticles(searchWord string) ([]models.Article, error) {
 
 	var Articles []models.Article
 
-	
-
-	rows, err := Db.Query("SELECT id_article, id_salarie, titre, contenu, type, statut, utilisateur.nom, utilisateur.prenom FROM article_news INNER JOIN utilisateur ON article_news.id_salarie = utilisateur.id ORDER BY id_article DESC")
-
-	if err != nil {
-				fmt.Println("Erreur lors de l'exécution de la requête : ", err)
-
-		return nil, fmt.Errorf("get Articles : %v", err.Error())
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-
-		var Article models.Article
-
-		err := rows.Scan(&Article.Id, 
-            &Article.IdSalarie, 
-            &Article.Titre, 
-            &Article.Contenu, 
-            &Article.Type, 
-            &Article.Statut,
-            &Article.NomAuteur,
-            &Article.PrenomAuteur,
-)
-
+	if searchWord != "" {
+		rows, err := Db.Query("SELECT id_article, id_salarie, titre, contenu, type, statut, DATE_FORMAT(created_at, '%d/%m/%Y') as created_at, utilisateur.nom, utilisateur.prenom FROM article_news INNER JOIN utilisateur ON article_news.id_salarie = utilisateur.id WHERE titre LIKE ? OR contenu LIKE ? ORDER BY id_article DESC", "%"+searchWord+"%", "%"+searchWord+"%")
 		if err != nil {
+			fmt.Println("Erreur lors de l'exécution de la requête : ", err)
 			return nil, fmt.Errorf("get Articles : %v", err.Error())
 		}
+		defer rows.Close()
 
-		
-		Articles = append(Articles, Article)
+		for rows.Next() {
+			var Article models.Article
+
+			err := rows.Scan(&Article.Id, 
+				&Article.IdSalarie, 
+				&Article.Titre, 
+				&Article.Contenu, 
+				&Article.Type, 
+				&Article.Statut,
+				&Article.CreatedAt,
+				&Article.NomAuteur,
+				&Article.PrenomAuteur,
+			)
+
+			if err != nil {
+				return nil, fmt.Errorf("get Articles : %v", err.Error())
+			}
+
+			
+			Articles = append(Articles, Article)
+		}
+	} else {
+		rows, err := Db.Query("SELECT id_article, id_salarie, titre, contenu, type, statut, DATE_FORMAT(created_at, '%d/%m/%Y') as created_at, utilisateur.nom, utilisateur.prenom FROM article_news INNER JOIN utilisateur ON article_news.id_salarie = utilisateur.id ORDER BY id_article DESC")
+		if err != nil {
+			fmt.Println("Erreur lors de l'exécution de la requête : ", err)
+			return nil, fmt.Errorf("get Articles : %v", err.Error())
+		}
+		defer rows.Close()
+
+		for rows.Next() {
+			var Article models.Article
+
+			err := rows.Scan(&Article.Id, 
+				&Article.IdSalarie, 
+				&Article.Titre, 
+				&Article.Contenu, 
+				&Article.Type, 
+				&Article.Statut,
+				&Article.CreatedAt,
+				&Article.NomAuteur,
+				&Article.PrenomAuteur,
+			)
+
+			if err != nil {
+				return nil, fmt.Errorf("get Articles : %v", err.Error())
+			}
+
+			
+			Articles = append(Articles, Article)
+		}
 	}
-
 
 	return Articles, nil
 }
@@ -127,3 +153,4 @@ func GetArticleById(id int) (models.Article, error) {
     }
     return article, nil
 }
+

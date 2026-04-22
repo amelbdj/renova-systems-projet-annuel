@@ -1,4 +1,3 @@
-// On s'assure de récupérer les données de session au cas où
 function chargerProfil() {
   if (!monToken) {
     window.location.href = "login.html";
@@ -38,8 +37,10 @@ function chargerProfil() {
       console.error("Erreur Profil:", err);
     });
 }
+
 function logout() {
   localStorage.clear();
   window.location.href = "login.html";
 }
+
 document.addEventListener("DOMContentLoaded", chargerProfil);

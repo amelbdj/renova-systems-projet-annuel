@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Annonce — ReNova Systems</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./style/oneAnnonce.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="nav-links">
+    <a class="nav-link" href="annonceAll.html">← Retour aux annonces</a>
+  </div>
+  <div class="nav-right">
+    <div class="nav-ava"><i class="fas fa-user"></i></div>
+  </div>
+</nav>
+
+<div class="breadcrumb">
+  <a href="annonceAll.html">Annonce</a>
+  <span>›</span>
+  <span id="bcCat">—</span>
+  <span>›</span>
+  <span class="bc-current" id="bcTitle">—</span>
+</div>
+
+<div id="pageContent"></div>
+
+<div class="not-found" id="notFound" style="display:none; text-align:center; padding:80px;">
+  <div style="font-size:4rem"><i class="fas fa-search"></i></div>
+  <h2>Annonce introuvable</h2>
+  <p>Cette annonce n'existe pas ou le serveur est inaccessible.</p>
+  <br>
+  <a href="annonceAll.html" style="color:var(--vi-l)"><i class="fas fa-arrow-left"></i> Retour à la liste</a>
+</div>
+
+<script src="./script/annonces/oneAnnonce.js"></script>
+</body>
+</html>
