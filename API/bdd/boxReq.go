@@ -239,3 +239,44 @@ func CreateBox(localisation string, boxType string, capacite int) error {
 	}
 	return nil
 }
+
+func GetUserReservations(userID int) ([]map[string]interface{}, error) {
+	query := `
+        SELECT 
+            h.code_ouverture, 
+            h.code_barre_recuperation, 
+            h.date_reservation,
+            a.titre,
+            b.id_box,
+            b.localisation,
+            b.etat
+        FROM historique_conteneurs h
+        JOIN annonce a ON h.annonce_id = a.id
+        JOIN box_conteneur b ON h.conteneur_id = b.id_box
+        WHERE h.particulier_id = ? AND h.date_retrait_effective IS NULL`
+
+	rows, err := Db.Query(query, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var reservations []map[string]interface{}
+	for rows.Next() {
+		var code, barcode, date, titre, loc, etat string
+		var idBox int
+		rows.Scan(&code, &barcode, &date, &titre, &idBox, &loc, &etat)
+
+		res := map[string]interface{}{
+			"id_box":       fmt.Sprintf("BOX-%03d", idBox),
+			"code_pin":     code,
+			"barcode":      barcode,
+			"objet":        titre,
+			"date":         date,
+			"localisation": loc,
+			"etat":         etat,
+		}
+		reservations = append(reservations, res)
+	}
+	return reservations, nil
+}
