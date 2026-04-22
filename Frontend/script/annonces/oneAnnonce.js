@@ -59,7 +59,7 @@ async function openCheckout(type) {
             });
 
             if (response.status === 403) {
-                alert("🚨 Configurez d'abord votre Stripe ID dans votre profil !");
+                alert(" Configurez d'abord votre Stripe ID dans votre profil !");
                 window.location.href = `profil.html?id=${buyerId}`;
                 return;
             }
@@ -85,7 +85,7 @@ function renderPage(item) {
     <div class="page ${isSold ? 'is-sold' : ''}">
       <div>
         <div class="img-hero fu" style="background: ${imgSrc ? `url('${imgSrc}') center/cover` : 'var(--bg4)'}">
-          ${imgSrc ? '' : '📦'}
+          ${imgSrc ? '' : '<div style="font-size:3rem"><i class="fa-solid fa-box-archive"></i></div>'}
           ${isSold ? '<div class="sold-tag">VENDU</div>' : ''}
         </div>
 
@@ -96,15 +96,15 @@ function renderPage(item) {
 
         <div class="detail-section fu">
           <div class="ds-title">Informations</div>
-          <p> Lieu : ${item.ville} (${item.code_postal})</p>
-          <p> État : ${item.etat || 'Non spécifié'}</p>
-          <p> Poids : ${item.poids_kg} kg</p>
+          <p><i class="fas fa-map-marker-alt"></i> Lieu : ${item.ville} (${item.code_postal})</p>
+          <p><i class="fas fa-info-circle"></i> État : ${item.etat || 'Non spécifié'}</p>
+          <p><i class="fas fa-weight-hanging"></i> Poids : ${item.poids_kg} kg</p>
         </div>
 
         <div class="detail-section fu">
           <div class="ds-title">Vendeur</div>
           <div class="seller-card">
-            <div class="seller-ava">👤</div>
+            <div class="seller-ava"><i class="fas fa-user"></i></div>
             <div>
               <div style="font-weight:700; color:#fff">${item.prenom} ${item.nom}</div>
             </div>
@@ -127,8 +127,8 @@ function renderPage(item) {
                  Cet objet a été vendu
                </button>`
             : (isFree 
-                ? `<button class="btn-main btn-reserve" onclick="openCheckout('reserve')">🎁 Réserver l'objet</button>`
-                : `<button class="btn-main btn-buy-now" onclick="openCheckout('buy')">💳 Acheter maintenant</button>`)
+                ? `<button class="btn-main btn-reserve" onclick="openCheckout('reserve')"> Réserver l'objet</button>`
+                : `<button class="btn-main btn-buy-now" onclick="openCheckout('buy')"> <i class="fas fa-shopping-cart"></i> Acheter maintenant</button>`)
           }
           
           

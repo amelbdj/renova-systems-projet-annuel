@@ -284,17 +284,19 @@ func GetValidatedAnnonces(currentUserID int) ([]models.Annonce, error) {
 
 	query := `
         SELECT 
-            a.id, a.titre, a.description, a.type, a.prix, a.statut_validation, 
-            a.code_postal, a.ville, a.etat, a.poids_kg, a.quantite, 
-            COALESCE(u.nom, ''), 
-            COALESCE(u.prenom, ''), 
-            COALESCE(c.libelle, ''), 
-            COALESCE(a.image, '')
-        FROM pa2026.annonce a
-        LEFT JOIN pa2026.utilisateur u ON a.id_user = u.id
-        LEFT JOIN pa2026.categorie c ON a.id_categorie = c.id
-        WHERE a.statut_validation = 'valide' 
-        AND a.id_user != ?`
+        a.id, a.titre, a.description, a.type, a.prix, a.statut_validation, 
+        a.code_postal, a.ville, a.etat, a.poids_kg, a.quantite, 
+        COALESCE(u.nom, ''), 
+        COALESCE(u.prenom, ''), 
+        COALESCE(c.libelle, ''), 
+        COALESCE(a.image, ''),
+		a.statut_vente
+    FROM pa2026.annonce a
+    LEFT JOIN pa2026.utilisateur u ON a.id_user = u.id
+    LEFT JOIN pa2026.categorie c ON a.id_categorie = c.id
+    WHERE a.statut_validation = 'valide' 
+    AND a.id_user != ?
+    AND a.statut_vente != 'VENDU'`
 
 	rows, err := Db.Query(query, currentUserID)
 	if err != nil {
@@ -307,7 +309,7 @@ func GetValidatedAnnonces(currentUserID int) ([]models.Annonce, error) {
 		err := rows.Scan(
 			&a.Id, &a.Titre, &a.Description, &a.Type, &a.Prix, &a.StatutValidation,
 			&a.CodePostal, &a.Ville, &a.Etat, &a.PoidsKg, &a.Quantite,
-			&a.Nom, &a.Prenom, &a.Categorie, &a.Image,
+			&a.Nom, &a.Prenom, &a.Categorie, &a.Image, &a.StatutVente,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("Erreur Scan: %v", err)
