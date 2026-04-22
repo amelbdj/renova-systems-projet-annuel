@@ -82,8 +82,6 @@ func main() {
 	http.HandleFunc("OPTIONS /admin/forum/messages/moderate/{id}", admin.ModerateForumMessage)
 	http.HandleFunc("OPTIONS /admin/forum/stats", admin.GetForumStats)
 
-
-
 	// --- USERS ---
 	http.HandleFunc("GET /admin/users", auth.VerifyTokenMiddleware(admin.GetAllUsers))
 	http.HandleFunc("POST /admin/users/add", auth.VerifyTokenMiddleware(admin.CreateUser))
@@ -119,6 +117,8 @@ func main() {
 	http.HandleFunc("PUT /admin/annonces/modify/{id}", auth.VerifyTokenMiddleware(admin.UpdateAnnonce))
 	http.HandleFunc("GET /admin/annonces/search", auth.VerifyTokenMiddleware(admin.GetAnnonceByTitle))
 	http.HandleFunc("GET /mes-annonces", admin.GetMyAnnonces)
+	http.HandleFunc("GET /api/annonces/all", admin.GetValidatedAnnonces)
+	http.HandleFunc("GET /api/annonces", admin.GetOneAnnonce)
 
 	// --- EVENEMENTS ---
 	http.HandleFunc("GET /admin/evenements", admin.GetAllEvenements)
