@@ -118,8 +118,10 @@ func main() {
 	http.HandleFunc("GET /mes-annonces", admin.GetMyAnnonces)
 	http.HandleFunc("GET /api/annonces/all", admin.GetValidatedAnnonces)
 	http.HandleFunc("GET /api/annonces", admin.GetOneAnnonce)
-	http.HandleFunc("OPTIONS /api/annonces/vendre", admin.AnnVendu)
-	http.HandleFunc("PUT /api/annonces/vendre", admin.AnnVendu)
+	// http.HandleFunc("OPTIONS /api/annonces/vendre", admin.AnnVendu)
+	// http.HandleFunc("PUT /api/annonces/vendre", admin.AnnVendu)
+	http.HandleFunc("POST /api/annonces/vendre", admin.ConfirmPaymentAndOrder)
+	http.HandleFunc("OPTIONS /api/annonces/vendre", admin.ConfirmPaymentAndOrder)
 
 	// --- EVENEMENTS ---
 	http.HandleFunc("GET /admin/evenements", admin.GetAllEvenements)
