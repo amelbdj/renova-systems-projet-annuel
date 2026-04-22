@@ -20,3 +20,11 @@ type StatistiqueForum struct {
 	Signalements    int `json:"signalements_en_attente"`
 	ModerationsMois int `json:"moderations_mois"`
 }
+
+type ForumTopic struct {
+	Id         int    `json:"id_topic"`
+	Titre      string `json:"titre"`
+	Auteur     string `json:"auteur"`
+	Date       string `json:"date_creation"`
+	NbReponses int    `json:"nb_reponses"`
+}
