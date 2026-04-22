@@ -118,6 +118,15 @@ func CreateAnnonce(w http.ResponseWriter, r *http.Request) {
 	ann.PoidsKg, _ = strconv.ParseFloat(r.FormValue("poids_kg"), 64)
 	ann.Quantite, _ = strconv.Atoi(r.FormValue("quantite"))
 
+	var stripeID string
+	err := bdd.Db.QueryRow("SELECT stripe_account_id FROM utilisateur WHERE id = ?", ann.IdUser).Scan(&stripeID)
+
+	if err != nil || stripeID == "" {
+		w.WriteHeader(http.StatusForbidden)
+		fmt.Fprintln(w, "STRIPE_NOT_CONFIGURED")
+		return
+	}
+
 	file, header, err := r.FormFile("image")
 	if err == nil {
 		defer file.Close()
