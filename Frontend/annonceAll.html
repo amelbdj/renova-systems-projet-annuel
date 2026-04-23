@@ -6,6 +6,7 @@
 <title>Annonces </title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <link rel="stylesheet" href="./style/annonceAll.css">
 </head>
 <body>
@@ -13,13 +14,14 @@
 <nav class="topnav">
   <!-- <img class="nav-logo" src="./assets/logo renova.png" alt="Renova Systems logo"> -->
   <div class="nav-links">
+    <button class="nav-link" onclick="history.back()">← Retour</button>
     <button class="nav-link">Accueil</button>
     <button class="nav-link active">Annonces</button>
     <button class="nav-link">Conteneurs</button>
     <button class="nav-link">Catalogue</button>
   </div>
   <div class="nav-right">
-    <div class="nav-ava">👤</div>
+    <a href="./profil.html"><div class="nav-ava"><i class="fas fa-user"></i></div></a>
   </div>
 </nav>
 
@@ -29,7 +31,7 @@
       <div class="hero-eyebrow">Annonces</div>
       
       <div class="search-bar">
-        <span style="font-size:15px">🔍</span>
+        <span style="font-size:15px"><i class="fas fa-search"></i></span>
         <input type="text" id="searchInput" placeholder="Rechercher un objet, une catégorie…" oninput="filterListings()">
         <button class="btn-search">Rechercher</button>
       </div>
@@ -43,34 +45,34 @@
     <div class="filter-card">
       <div class="filter-title">Catégorie</div>
       <div class="filter-opts">
-        <div class="f-opt on" onclick="toggleFilter(this,'cat','all')"><div class="f-opt-left"><span>🌐</span>Toutes</div><div class="f-count">18</div></div>
-        <div class="f-opt" onclick="toggleFilter(this,'cat','mobilier')"><div class="f-opt-left"><div class="check-box"></div><span>🪑</span>Mobilier</div><div class="f-count">5</div></div>
-        <div class="f-opt" onclick="toggleFilter(this,'cat','outillage')"><div class="f-opt-left"><div class="check-box"></div><span>🔧</span>Outillage</div><div class="f-count">4</div></div>
-        <div class="f-opt" onclick="toggleFilter(this,'cat','textile')"><div class="f-opt-left"><div class="check-box"></div><span>🧵</span>Textile</div><div class="f-count">3</div></div>
-        <div class="f-opt" onclick="toggleFilter(this,'cat','electronique')"><div class="f-opt-left"><div class="check-box"></div><span>📱</span>Électronique</div><div class="f-count">3</div></div>
-        <div class="f-opt" onclick="toggleFilter(this,'cat','deco')"><div class="f-opt-left"><div class="check-box"></div><span>🎨</span>Déco</div><div class="f-count">3</div></div>
-        <div class="f-opt" onclick="toggleFilter(this,'cat','livres')"><div class="f-opt-left"><div class="check-box"></div><span>📚</span>Livres</div><div class="f-count">1</div></div>
+        <div class="f-opt on" onclick="toggleFilter(this,'cat','all')"><div class="f-opt-left"><span><i class="fa-solid fa-earth-africa"></i></span>Toutes</div><div class="f-count">18</div></div>
+        <div class="f-opt" onclick="toggleFilter(this,'cat','mobilier')"><div class="f-opt-left"><div class="check-box"></div><span><i class="fa-solid fa-couch"></i></span>Mobilier</div><div class="f-count">5</div></div>
+        <div class="f-opt" onclick="toggleFilter(this,'cat','outillage')"><div class="f-opt-left"><div class="check-box"></div><span><i class="fa-solid fa-wrench"></i></span>Outillage</div><div class="f-count">4</div></div>
+        <div class="f-opt" onclick="toggleFilter(this,'cat','textile')"><div class="f-opt-left"><div class="check-box"></div><span><i class="fa-solid fa-tshirt"></i></span>Textile</div><div class="f-count">3</div></div>
+        <div class="f-opt" onclick="toggleFilter(this,'cat','electronique')"><div class="f-opt-left"><div class="check-box"></div><span><i class="fa-solid fa-mobile"></i></span>Électronique</div><div class="f-count">3</div></div>
+        <div class="f-opt" onclick="toggleFilter(this,'cat','deco')"><div class="f-opt-left"><div class="check-box"></div><span><i class="fa-solid fa-paint-roller"></i></span>Déco</div><div class="f-count">3</div></div>
+        <div class="f-opt" onclick="toggleFilter(this,'cat','livres')"><div class="f-opt-left"><div class="check-box"></div><span><i class="fa-solid fa-book"></i></span>Livres</div><div class="f-count">1</div></div>
       </div>
     </div>
     <div class="filter-card">
       <div class="filter-title">Type</div>
       <div class="filter-opts">
-        <div class="f-opt on"  onclick="toggleFilter(this,'type','all')"><div class="f-opt-left"><span>🌐</span>Tous</div></div>
-        <div class="f-opt" onclick="toggleFilter(this,'type','vente')"><div class="f-opt-left"><div class="check-box"></div><span>💰</span>Vente</div><div class="f-count">12</div></div>
-        <div class="f-opt" onclick="toggleFilter(this,'type','don')"><div class="f-opt-left"><div class="check-box"></div><span>🎁</span>Don gratuit</div><div class="f-count">6</div></div>
+        <div class="f-opt on"  onclick="toggleFilter(this,'type','all')"><div class="f-opt-left"><span><i class="fa-solid fa-earth-africa"></i></span>Tous</div></div>
+        <div class="f-opt" onclick="toggleFilter(this,'type','vente')"><div class="f-opt-left"><div class="check-box"></div><span><i class="fa-solid fa-money-bill"></i></span>Vente</div><div class="f-count">12</div></div>
+        <div class="f-opt" onclick="toggleFilter(this,'type','don')"><div class="f-opt-left"><div class="check-box"></div><span><i class="fa-solid fa-gift"></i></span>Don gratuit</div><div class="f-count">6</div></div>
       </div>
     </div>
     
-    <div class="filter-card">
+    <!-- <div class="filter-card">
       <div class="filter-title">Localisation</div>
       <div class="filter-opts">
-        <div class="f-opt on"  onclick="toggleFilter(this,'loc','all')"><div class="f-opt-left"><span>📍</span>Partout</div></div>
-        <div class="f-opt" onclick="toggleFilter(this,'loc','paris11')"><div class="f-opt-left"><div class="check-box"></div>Paris 11e</div><div class="f-count">7</div></div>
-        <div class="f-opt" onclick="toggleFilter(this,'loc','paris20')"><div class="f-opt-left"><div class="check-box"></div>Paris 20e</div><div class="f-count">4</div></div>
-        <div class="f-opt" onclick="toggleFilter(this,'loc','paris3')"><div class="f-opt-left"><div class="check-box"></div>Paris 3e</div><div class="f-count">3</div></div>
-        <div class="f-opt" onclick="toggleFilter(this,'loc','vincennes')"><div class="f-opt-left"><div class="check-box"></div>Vincennes</div><div class="f-count">4</div></div>
+        <div class="f-opt on"  onclick="toggleFilter(this,'loc','all')"><div class="f-opt-left"><span><i class="fa-solid fa-map-marker-alt"></i></span>Partout</div></div>
+        <div class="f-opt" onclick="toggleFilter(this,'loc','paris11')"><div class="f-opt-left"><div class="check-box"></div><span><i class="fa-solid fa-city"></i></span>Paris 11e</div><div class="f-count">7</div></div>
+        <div class="f-opt" onclick="toggleFilter(this,'loc','paris20')"><div class="f-opt-left"><div class="check-box"></div><span><i class="fa-solid fa-city"></i></span>Paris 20e</div><div class="f-count">4</div></div>
+        <div class="f-opt" onclick="toggleFilter(this,'loc','paris3')"><div class="f-opt-left"><div class="check-box"></div><span><i class="fa-solid fa-city"></i></span>Paris 3e</div><div class="f-count">3</div></div>
+        <div class="f-opt" onclick="toggleFilter(this,'loc','vincennes')"><div class="f-opt-left"><div class="check-box"></div><span><i class="fa-solid fa-city"></i></span>Vincennes</div><div class="f-count">4</div></div>
       </div>
-    </div>
+    </div> -->
   </aside>
 
   <main>

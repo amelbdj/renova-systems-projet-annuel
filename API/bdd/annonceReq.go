@@ -236,7 +236,7 @@ func GetAnnonceById(id int) (models.Annonce, error) {
 
 	query := `
        SELECT 
-        a.id, a.titre, a.description, a.type, a.prix, a.statut_validation, 
+        a.id, a.titre, a.description, a.type, a.prix, a.statut_vente, a.statut_validation, 
         a.code_postal, a.ville, a.etat, a.poids_kg, a.quantite, 
         COALESCE(pa2026.utilisateur.nom, ''), 
         COALESCE(pa2026.utilisateur.prenom, ''), 
@@ -248,7 +248,7 @@ func GetAnnonceById(id int) (models.Annonce, error) {
     WHERE a.id = ?`
 
 	err := Db.QueryRow(query, id).Scan(
-		&a.Id, &a.Titre, &a.Description, &a.Type, &a.Prix, &a.StatutValidation,
+		&a.Id, &a.Titre, &a.Description, &a.Type, &a.Prix, &a.StatutVente, &a.StatutValidation,
 		&a.CodePostal, &a.Ville, &a.Etat, &a.PoidsKg, &a.Quantite,
 		&a.Nom, &a.Prenom, &a.Categorie, &a.Image,
 	)
@@ -263,7 +263,7 @@ func GetAnnonceById(id int) (models.Annonce, error) {
 func GetAnnoncesByUser(userID int) ([]models.Annonce, error) {
 	var list []models.Annonce
 
-	rows, err := Db.Query("SELECT id, titre, prix, id_categorie, statut_validation, COALESCE(image, '') FROM pa2026.annonce WHERE id_user = ?", userID)
+	rows, err := Db.Query("SELECT id, titre, prix, id_categorie, statut_vente, statut_validation, COALESCE(image, '') FROM pa2026.annonce WHERE id_user = ?", userID)
 	if err != nil {
 		return nil, err
 	}
@@ -271,7 +271,7 @@ func GetAnnoncesByUser(userID int) ([]models.Annonce, error) {
 
 	for rows.Next() {
 		var Annonce models.Annonce
-		if err := rows.Scan(&Annonce.Id, &Annonce.Titre, &Annonce.Prix, &Annonce.IdCategorie, &Annonce.StatutValidation, &Annonce.Image); err != nil {
+		if err := rows.Scan(&Annonce.Id, &Annonce.Titre, &Annonce.Prix, &Annonce.IdCategorie, &Annonce.StatutVente, &Annonce.StatutValidation, &Annonce.Image); err != nil {
 			return nil, err
 		}
 		list = append(list, Annonce)
@@ -279,23 +279,26 @@ func GetAnnoncesByUser(userID int) ([]models.Annonce, error) {
 	return list, nil
 }
 
-func GetValidatedAnnonces() ([]models.Annonce, error) {
+func GetValidatedAnnonces(currentUserID int) ([]models.Annonce, error) {
 	var Annonces []models.Annonce
 
 	query := `
-		SELECT 
+        SELECT 
         a.id, a.titre, a.description, a.type, a.prix, a.statut_validation, 
         a.code_postal, a.ville, a.etat, a.poids_kg, a.quantite, 
-        COALESCE(pa2026.utilisateur.nom, ''), 
-        COALESCE(pa2026.utilisateur.prenom, ''), 
-        COALESCE(pa2026.categorie.libelle, ''), 
-        COALESCE(a.image, '')
+        COALESCE(u.nom, ''), 
+        COALESCE(u.prenom, ''), 
+        COALESCE(c.libelle, ''), 
+        COALESCE(a.image, ''),
+		a.statut_vente
     FROM pa2026.annonce a
-    LEFT JOIN pa2026.utilisateur ON a.id_user = pa2026.utilisateur.id
-    LEFT JOIN pa2026.categorie ON a.id_categorie = pa2026.categorie.id
-    WHERE a.statut_validation = 'Validé'`
+    LEFT JOIN pa2026.utilisateur u ON a.id_user = u.id
+    LEFT JOIN pa2026.categorie c ON a.id_categorie = c.id
+    WHERE a.statut_validation = 'Validé' 
+    AND a.id_user != ?
+    AND a.statut_vente != 'VENDU'`
 
-	rows, err := Db.Query(query)
+	rows, err := Db.Query(query, currentUserID)
 	if err != nil {
 		return nil, fmt.Errorf("Erreur Query: %v", err)
 	}
@@ -306,18 +309,12 @@ func GetValidatedAnnonces() ([]models.Annonce, error) {
 		err := rows.Scan(
 			&a.Id, &a.Titre, &a.Description, &a.Type, &a.Prix, &a.StatutValidation,
 			&a.CodePostal, &a.Ville, &a.Etat, &a.PoidsKg, &a.Quantite,
-			&a.Nom, &a.Prenom, &a.Categorie, &a.Image,
+			&a.Nom, &a.Prenom, &a.Categorie, &a.Image, &a.StatutVente,
 		)
-
 		if err != nil {
 			return nil, fmt.Errorf("Erreur Scan: %v", err)
 		}
 		Annonces = append(Annonces, a)
 	}
-
-	if err = rows.Err(); err != nil {
-		return nil, err
-	}
-
 	return Annonces, nil
 }

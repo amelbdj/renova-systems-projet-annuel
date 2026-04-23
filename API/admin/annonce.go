@@ -118,6 +118,15 @@ func CreateAnnonce(w http.ResponseWriter, r *http.Request) {
 	ann.PoidsKg, _ = strconv.ParseFloat(r.FormValue("poids_kg"), 64)
 	ann.Quantite, _ = strconv.Atoi(r.FormValue("quantite"))
 
+	var stripeID string
+	err := bdd.Db.QueryRow("SELECT stripe_account_id FROM utilisateur WHERE id = ?", ann.IdUser).Scan(&stripeID)
+
+	if err != nil || stripeID == "" {
+		w.WriteHeader(http.StatusForbidden)
+		fmt.Fprintln(w, "STRIPE_NOT_CONFIGURED")
+		return
+	}
+
 	file, header, err := r.FormFile("image")
 	if err == nil {
 		defer file.Close()
@@ -274,9 +283,12 @@ func GetValidatedAnnonces(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
-	annonces, err := bdd.GetValidatedAnnonces()
-	if err != nil {
+	idStr := r.URL.Query().Get("id")
+	currentUserID, _ := strconv.Atoi(idStr)
 
+	annonces, err := bdd.GetValidatedAnnonces(currentUserID)
+
+	if err != nil {
 		fmt.Println("Erreur lors de la recup des annonces validées : ", err)
 		http.Error(w, "Erreur recup des annonces", http.StatusInternalServerError)
 		return
@@ -310,4 +322,70 @@ func GetOneAnnonce(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(annonce)
+}
+
+func ConfirmPaymentAndOrder(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	annonceID, _ := strconv.Atoi(r.URL.Query().Get("id"))
+	buyerID, _ := strconv.Atoi(r.URL.Query().Get("buyer_id"))
+
+	annonce, err := bdd.GetAnnonceById(annonceID)
+	if err != nil {
+		http.Error(w, "Annonce introuvable", http.StatusNotFound)
+		return
+	}
+
+	orderID, err := bdd.CreateOrder(annonce, buyerID)
+	if err != nil {
+		http.Error(w, "Erreur création commande: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	var boxID int
+	err = bdd.Db.QueryRow("SELECT id_box FROM box_conteneur WHERE etat = 'LIBRE' AND localisation = ? LIMIT 1", annonce.Ville).Scan(&boxID)
+
+	if err != nil {
+		err = bdd.Db.QueryRow("SELECT id_box FROM box_conteneur WHERE etat = 'LIBRE' LIMIT 1").Scan(&boxID)
+		if err != nil {
+			http.Error(w, "Aucune box libre disponible", http.StatusInternalServerError)
+			return
+		}
+	}
+
+	err = bdd.ReserveBox(annonceID, boxID, buyerID)
+	if err != nil {
+		http.Error(w, "Erreur logistique box: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"status":   "success",
+		"order_id": orderID,
+		"box_id":   boxID,
+		"message":  "Paiement validé, annonce passée en VENDU, et Box réservée",
+	})
+}
+
+func GetMyBoxes(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
+	userID, _ := strconv.Atoi(r.URL.Query().Get("user_id"))
+
+	data, err := bdd.GetUserReservations(userID)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	json.NewEncoder(w).Encode(data)
 }

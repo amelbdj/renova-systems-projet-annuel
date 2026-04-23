@@ -12,13 +12,16 @@
     />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+      integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
     />
   </head>
   <body>
-    <!-- ══════════════════════════════════════════
+    <!--
    TUTORIAL OVERLAY
-══════════════════════════════════════════ -->
+ -->
     <div id="tut">
       <div class="tut-card">
         <div class="tut-head">
@@ -28,7 +31,6 @@
             <div class="ttrack" id="td2"></div>
             <div class="ttrack" id="td3"></div>
           </div>
-          <span class="tut-ico" id="tico">👋</span>
           <div class="tut-h" id="th">Bienvenue sur ReNova !</div>
           <div class="tut-sub" id="tsub">
             Votre espace particulier pour donner, vendre et se former.
@@ -42,7 +44,7 @@
             </p>
             <div class="tut-feats">
               <div class="tfeat">
-                <span class="ti">📦</span>
+                <span class="ti"><i class="fa-solid fa-box-archive"></i></span>
                 <div>
                   <b>Mes Annonces</b
                   ><span
@@ -52,14 +54,18 @@
                 </div>
               </div>
               <div class="tfeat">
-                <span class="ti">🗄️</span>
+                <span class="ti"
+                  ><i class="fa-solid fa-boxes-packing"></i
+                ></span>
                 <div>
                   <b>Conteneurs</b
                   ><span>5 box sur cette page, disposées en 2 lignes.</span>
                 </div>
               </div>
               <div class="tfeat">
-                <span class="ti">🛒</span>
+                <span class="ti"
+                  ><i class="fa-solid fa-shopping-cart"></i
+                ></span>
                 <div>
                   <b>Catalogue</b
                   ><span
@@ -68,7 +74,7 @@
                 </div>
               </div>
               <div class="tfeat">
-                <span class="ti">🌱</span>
+                <span class="ti"><i class="fa-solid fa-leaf"></i></span>
                 <div>
                   <b>Score écologique</b
                   ><span>Votre impact en temps réel.</span>
@@ -148,19 +154,13 @@
                 </div>
               </div>
               <div class="tfeat">
-                <span class="ti">
-                  <span class="material-symbols-outlined">
-                    notifications
-                  </span></span
-                >
+                <span class="ti">🔔</span>
                 <div>
                   <b>OneSignal</b><span>Notifications push en temps réel.</span>
                 </div>
               </div>
               <div class="tfeat">
-                <span class="ti"
-                  ><span class="material-symbols-outlined"> public </span></span
-                >
+                <span class="ti">🌍</span>
                 <div>
                   <b>Multilingue</b
                   ><span>Changez la langue en haut à droite.</span>
@@ -235,25 +235,23 @@
     </nav>
 
     <!-- ══════════════════════════════════════════
-   HERO
+   WRAPPER
 ══════════════════════════════════════════ -->
     <div class="wrapper">
+      <!-- HERO -->
       <section class="hero fu">
         <div class="hero-left">
           <div class="hero-eyebrow">Espace Particuliers</div>
           <h1 class="hero-title">
-            Bonjour, <em id="heroName">Name</em> 👋<br />Bienvenue sur ReNova
+            Bonjour, <em id="heroName">Name</em> <br />Bienvenue sur ReNova
           </h1>
-          <p class="hero-desc">
-            Donnez, vendez, apprenez et contribuez à l'économie circulaire —
-            tout est ici sur une seule page.
-          </p>
+
           <div class="hero-actions">
             <button class="btn btn-p" onclick="scroll2('ann')">
-              ＋ Nouvelle annonce
+              <i class="fa-solid fa-plus"></i> Nouvelle annonce
             </button>
             <button class="btn btn-g" onclick="scroll2('cat')">
-              Voir le catalogue →
+              Voir le catalogue <i class="fa-solid fa-arrow-right"></i>
             </button>
           </div>
         </div>
@@ -284,8 +282,8 @@
           <div class="sec-num">1</div>
           <div class="sec-title-text">Mes Annonces</div>
           <div class="sec-divider"></div>
-          <span class="tag t-amber" style="flex-shrink: 0"
-            >⚠ Validées par l'admin</span
+          <span class="tag t-amber" style="flex-shrink: 0">
+            Validées par l'admin</span
           >
           <button
             class="btn btn-p btn-sm"
@@ -300,10 +298,9 @@
           <div class="card">
             <div class="card-hd">
               <input type="hidden" id="editAnnId" value="" />
-
               <div class="card-ht">
                 <div class="cht-i" style="background: rgba(49, 115, 255, 0.1)">
-                  ✏️
+                  <i class="fa-solid fa-pen"></i>
                 </div>
                 <span id="formTitle">Créer une annonce</span>
               </div>
@@ -332,12 +329,24 @@
                 <div>
                   <label>Catégorie</label>
                   <select id="annCategorie">
-                    <option value="1">🪑 Mobilier</option>
-                    <option value="2">🔧 Outillage</option>
-                    <option value="3">🧵 Textile</option>
-                    <option value="4">📱 Électronique</option>
-                    <option value="5">🎨 Déco</option>
-                    <option value="6">📚 Livres</option>
+                    <option value="1">
+                      <i class="fa-solid fa-chair"></i> Mobilier
+                    </option>
+                    <option value="2">
+                      <i class="fa-solid fa-wrench"></i> Outillage
+                    </option>
+                    <option value="3">
+                      <i class="fa-solid fa-scarf"></i> Textile
+                    </option>
+                    <option value="4">
+                      <i class="fa-solid fa-mobile"></i> Électronique
+                    </option>
+                    <option value="5">
+                      <i class="fa-solid fa-paint-roller"></i> Déco
+                    </option>
+                    <option value="6">
+                      <i class="fa-solid fa-book"></i> Livres
+                    </option>
                   </select>
                 </div>
                 <div>
@@ -366,107 +375,18 @@
                   color: rgba(255, 171, 48, 0.9);
                 "
               >
-                ⚠️ Votre annonce sera soumise à validation avant d'être publiée
-                (délai : 24h max).
+                Votre annonce sera soumise à validation avant d'être publiée
+                (délai : 24h max)
               </div>
               <button class="btn btn-p" onclick="submitAnn()">
-                Soumettre l'annonce ✓
+                Soumettre l'annonce <i class="fa-solid fa-paper-plane"></i>
               </button>
             </div>
           </div>
         </div>
 
-        <div class="ann-grid fu fu1">
-          <div class="ann-card">
-            <div
-              class="ann-thumb"
-              style="background: linear-gradient(135deg, #1a1405, #2a2008)"
-            >
-              🪑
-              <div class="ann-stat t-green">✓ Publiée</div>
-            </div>
-            <div class="ann-body">
-              <div class="ann-name">Chaise en bois vintage</div>
-              <div class="ann-meta">Don gratuit · Mobilier · Paris 11e</div>
-              <div class="ann-foot">
-                <span class="tag t-green">Publiée</span>
-                <div style="display: flex; gap: 5px">
-                  <button class="btn btn-g btn-xs">Modifier</button>
-                  <button
-                    class="btn btn-xs"
-                    style="
-                      background: rgba(255, 92, 92, 0.08);
-                      color: var(--red);
-                      border: 1px solid rgba(255, 92, 92, 0.2);
-                    "
-                  >
-                    Retirer
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="ann-card">
-            <div
-              class="ann-thumb"
-              style="background: linear-gradient(135deg, #0a0f1e, #101828)"
-            >
-              🔧
-            </div>
-            <div class="ann-body">
-              <div class="ann-name">Lot d'outils de jardinage</div>
-              <div class="ann-meta">Vente · 25 € · Outillage · Paris 11e</div>
-              <div class="ann-foot">
-                <span class="tag t-amber">En attente</span>
-                <div style="display: flex; gap: 5px">
-                  <button class="btn btn-g btn-xs">Modifier</button>
-                  <button
-                    class="btn btn-xs"
-                    style="
-                      background: rgba(255, 92, 92, 0.08);
-                      color: var(--red);
-                      border: 1px solid rgba(255, 92, 92, 0.2);
-                    "
-                  >
-                    Annuler
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="ann-card">
-            <div
-              class="ann-thumb"
-              style="background: linear-gradient(135deg, #041208, #081e10)"
-            >
-              🧵
-            </div>
-            <div class="ann-body">
-              <div class="ann-name">Tissus récupérés (5 m²)</div>
-              <div class="ann-meta">Don gratuit · Textile · Paris 11e</div>
-              <div class="ann-foot">
-                <span class="tag t-amber">En attente</span>
-                <div style="display: flex; gap: 5px">
-                  <button class="btn btn-g btn-xs">Modifier</button>
-                  <button
-                    class="btn btn-xs"
-                    style="
-                      background: rgba(255, 92, 92, 0.08);
-                      color: var(--red);
-                      border: 1px solid rgba(255, 92, 92, 0.2);
-                    "
-                  >
-                    Annuler
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="ann-add" onclick="toggleAnnForm()">
-            <div class="plus">＋</div>
-            <span>Ajouter une annonce</span>
-          </div>
-        </div>
+        <!-- Dynamic grid filled by dashClient.js / loadMyAnnonces() -->
+        <div class="ann-grid fu fu1"></div>
       </section>
 
       <!-- ══ ② CONTENEURS ════════════════════════ -->
@@ -475,123 +395,12 @@
           <div class="sec-num cyan">2</div>
           <div class="sec-title-text">Système de Conteneurs</div>
           <div class="sec-divider"></div>
-          <span class="tag t-green" style="flex-shrink: 0">4 libres</span>
-          <span class="tag t-blue" style="flex-shrink: 0">2 actifs</span>
+          <div id="cont-stats"></div>
         </div>
 
-        <!-- TOP ROW: 2 cards -->
-        <div class="cont-layout fu fu1">
-          <div class="cont-card active">
-            <div class="cont-top">
-              <div>
-                <div class="cont-id">BOX-042</div>
-                <div
-                  style="font-size: 11px; color: var(--blue-l); margin-top: 2px"
-                >
-                  Votre dépôt actif
-                </div>
-              </div>
-              <div class="cont-led led-b"></div>
-            </div>
-            <div class="cont-body">
-              <strong>Chaise en bois vintage</strong>
-              Déposé le 27 fév. 2026 · Secteur A
-            </div>
-            <div class="cont-codes">
-              <span class="ccode blue">Code : 7X3K</span>
-              <span class="ccode purple">CB : 4829301-042</span>
-            </div>
-            <div class="mini-barcode" id="bc1" style="margin-top: 12px"></div>
-            <button
-              class="btn btn-g btn-sm"
-              style="margin-top: 12px; font-size: 11.5px"
-            >
-              📥 Télécharger code-barres
-            </button>
-          </div>
+        <!-- Dynamic grid filled by dashClient.js / loadUserBoxes() -->
+        <div id="systeme-conteneurs" class="cont-layout fu"></div>
 
-          <div class="cont-card avail" onclick="openDepot('BOX-017')">
-            <div class="cont-top">
-              <div>
-                <div class="cont-id">BOX-017</div>
-                <div
-                  style="font-size: 11px; color: var(--green); margin-top: 2px"
-                >
-                  Disponible · Secteur A
-                </div>
-              </div>
-              <div class="cont-led led-g"></div>
-            </div>
-            <div class="cont-body">
-              Ce conteneur est libre. Cliquez pour demander un dépôt.
-            </div>
-            <span class="tag t-green">Libre</span>
-            <div style="margin-top: 14px">
-              <button
-                class="btn btn-p btn-sm btn-full"
-                onclick="
-                  openDepot('BOX-017');
-                  event.stopPropagation();
-                "
-              >
-                Déposer un objet →
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- BOTTOM ROW: 3 cards -->
-        <div class="cont-row3 fu fu2">
-          <div class="cont-card avail" onclick="openDepot('BOX-031')">
-            <div class="cont-top">
-              <div>
-                <div class="cont-id">BOX-031</div>
-                <div
-                  style="font-size: 11px; color: var(--green); margin-top: 2px"
-                >
-                  Secteur B
-                </div>
-              </div>
-              <div class="cont-led led-g"></div>
-            </div>
-            <div class="cont-body">Disponible — capacité standard.</div>
-            <span class="tag t-green">Libre</span>
-          </div>
-
-          <div class="cont-card check">
-            <div class="cont-top">
-              <div>
-                <div class="cont-id">BOX-055</div>
-                <div
-                  style="font-size: 11px; color: var(--amber); margin-top: 2px"
-                >
-                  Secteur C
-                </div>
-              </div>
-              <div class="cont-led led-a"></div>
-            </div>
-            <div class="cont-body">Vérification du système en cours…</div>
-            <span class="tag t-amber">En vérification</span>
-          </div>
-
-          <div class="cont-card avail" onclick="openDepot('BOX-064')">
-            <div class="cont-top">
-              <div>
-                <div class="cont-id">BOX-064</div>
-                <div
-                  style="font-size: 11px; color: var(--green); margin-top: 2px"
-                >
-                  Secteur D
-                </div>
-              </div>
-              <div class="cont-led led-g"></div>
-            </div>
-            <div class="cont-body">Disponible — grand format.</div>
-            <span class="tag t-green">Libre</span>
-          </div>
-        </div>
-
-        <!-- Légende -->
         <div
           style="
             display: flex;
@@ -667,10 +476,18 @@
         </div>
         <div class="cat-filters fu">
           <div class="fchip on" onclick="selF(this)">Tout</div>
-          <div class="fchip" onclick="selF(this)">🎓 Formations</div>
-          <div class="fchip" onclick="selF(this)">🔨 Ateliers</div>
-          <div class="fchip" onclick="selF(this)">🎉 Événements</div>
-          <div class="fchip" onclick="selF(this)">🛠️ Services</div>
+          <div class="fchip" onclick="selF(this)">
+            <i class="fa-solid fa-graduation-cap"></i> Formations
+          </div>
+          <div class="fchip" onclick="selF(this)">
+            <i class="fa-solid fa-hammer"></i> Ateliers
+          </div>
+          <div class="fchip" onclick="selF(this)">
+            <i class="fa-solid fa-calendar-days"></i> Événements
+          </div>
+          <div class="fchip" onclick="selF(this)">
+            <i class="fa-solid fa-tools"></i> Services
+          </div>
         </div>
         <div class="cat-grid fu fu1">
           <div class="cat-card">
@@ -678,7 +495,7 @@
               class="cat-banner"
               style="background: linear-gradient(135deg, #160f2a, #251840)"
             >
-              🎨
+              <i class="fa-solid fa-paintbrush"></i>
               <div class="cat-type-badge ctb-form">Formation</div>
             </div>
             <div class="cat-body">
@@ -707,7 +524,7 @@
               class="cat-banner"
               style="background: linear-gradient(135deg, #051612, #0a2318)"
             >
-              🧵
+              <i class="fa-brands fa-yarn"></i>
               <div class="cat-type-badge ctb-form">Formation</div>
             </div>
             <div class="cat-body">
@@ -726,7 +543,7 @@
                   class="btn btn-p btn-sm"
                   onclick="openPay('Couture zéro déchet', '25')"
                 >
-                  Réserver →
+                  Réserver <i class="fa-solid fa-calendar-plus"></i>
                 </button>
               </div>
             </div>
@@ -736,7 +553,7 @@
               class="cat-banner"
               style="background: linear-gradient(135deg, #0e1604, #182408)"
             >
-              ♻️
+              <i class="fa-solid fa-calendar-days"></i>
               <div class="cat-type-badge ctb-event">Événement</div>
             </div>
             <div class="cat-body">
@@ -765,7 +582,7 @@
               class="cat-banner"
               style="background: linear-gradient(135deg, #060d1e, #0c1530)"
             >
-              🖨️
+              <i class="fa-solid fa-print"></i>
               <div class="cat-type-badge ctb-svc">Service</div>
             </div>
             <div class="cat-body">
@@ -792,7 +609,7 @@
               class="cat-banner"
               style="background: linear-gradient(135deg, #191003, #281806)"
             >
-              🪴
+              <i class="fa-solid fa-seedling"></i>
               <div class="cat-type-badge ctb-event">Événement</div>
             </div>
             <div class="cat-body">
@@ -821,7 +638,7 @@
               class="cat-banner"
               style="background: linear-gradient(135deg, #130520, #200834)"
             >
-              🎭
+              <i class="fa-solid fa-graduation-cap"></i>
               <div class="cat-type-badge ctb-form">Formation</div>
             </div>
             <div class="cat-body">
@@ -850,7 +667,7 @@
 
       <!-- ══ ④ PLANNING + SCORE ═══════════════════ -->
       <div class="bottom-row" id="plan">
-        <!-- PLANNING -->
+        <!-- PLANNING — your friend's dynamic version with changerMois() -->
         <section>
           <div class="sec-label fu">
             <div class="sec-num amber">4</div>
@@ -872,9 +689,8 @@
                   onclick="changerMois(-1)"
                   style="cursor: pointer"
                 >
-                  ← Préc
+                  <i class="fa-solid fa-chevron-left"></i> Préc
                 </button>
-
                 <span
                   id="labelCurrentMonth"
                   style="
@@ -883,10 +699,8 @@
                     font-weight: 700;
                     color: #fff;
                   "
+                  >Mars 2026</span
                 >
-                  Mars 2026
-                </span>
-
                 <button
                   class="btn btn-g btn-xs"
                   onclick="changerMois(1)"
@@ -896,7 +710,6 @@
                 </button>
               </div>
             </div>
-
             <div class="card-bd">
               <div class="cal-grid">
                 <div class="cal-dow">Lun</div>
@@ -907,7 +720,6 @@
                 <div class="cal-dow">Sam</div>
                 <div class="cal-dow">Dim</div>
               </div>
-
               <div class="ev-list"></div>
             </div>
           </div>
@@ -920,7 +732,7 @@
             <div class="sec-title-text">Mon Upcycling Score</div>
             <div class="sec-divider"></div>
             <span class="tag t-green" style="flex-shrink: 0"
-              >🥉 Niveau Bronze</span
+              ><i class="fa-solid fa-medal"></i> Niveau Bronze</span
             >
           </div>
           <div class="score-card fu fu1">
@@ -936,7 +748,9 @@
                 </div>
               </div>
               <div class="score-info">
-                <div class="score-ttl">Éco-Actif — Bronze 🥉</div>
+                <div class="score-ttl">
+                  Éco-Actif — Bronze <i class="fa-solid fa-medal"></i>
+                </div>
                 <div class="score-lbar"><div class="score-lfill"></div></div>
                 <div class="score-lvls user-score">
                   <span>0</span><span style="color: var(--green)">724 pts</span
@@ -947,27 +761,39 @@
             <div class="score-stats">
               <div class="sstat">
                 <div class="sstat-v">12</div>
-                <div class="sstat-l">♻️ Objets donnés</div>
+                <div class="sstat-l">
+                  <i class="fa-solid fa-gift"></i> Objets donnés
+                </div>
               </div>
               <div class="sstat">
                 <div class="sstat-v">34 kg</div>
-                <div class="sstat-l">⚖️ Déchets évités</div>
+                <div class="sstat-l">
+                  <i class="fa-solid fa-trash-can"></i> Déchets évités
+                </div>
               </div>
               <div class="sstat">
                 <div class="sstat-v">120 L</div>
-                <div class="sstat-l">💧 Eau économisée</div>
+                <div class="sstat-l">
+                  <i class="fa-solid fa-tint"></i> Eau économisée
+                </div>
               </div>
               <div class="sstat">
                 <div class="sstat-v">8.4 kg</div>
-                <div class="sstat-l">🌳 CO₂ évité</div>
+                <div class="sstat-l">
+                  <i class="fa-solid fa-wind"></i> CO₂ évité
+                </div>
               </div>
             </div>
             <div class="badges-row">
-              <div class="bdg">🥉 Éco-Actif</div>
-              <div class="bdg">📦 Donateur</div>
-              <div class="bdg">🔥 Streak 7j</div>
-              <div class="bdg locked">🥈 Argent</div>
-              <div class="bdg locked">🏆 Expert</div>
+              <div class="bdg"><i class="fa-solid fa-leaf"></i> Éco-Actif</div>
+              <div class="bdg"><i class="fa-solid fa-gift"></i> Donateur</div>
+              <div class="bdg"><i class="fa-solid fa-fire"></i> Streak 7j</div>
+              <div class="bdg locked">
+                <i class="fa-solid fa-money-bill"></i> Argent
+              </div>
+              <div class="bdg locked">
+                <i class="fa-solid fa-trophy"></i> Expert
+              </div>
             </div>
           </div>
         </section>
@@ -1064,13 +890,6 @@
           el.appendChild(d);
         }
       }
-      /* mini barcode in active container */
-      const bc1 = document.getElementById("bc1");
-      if (bc1) {
-        bc1.style.cssText =
-          "display:flex;gap:1.5px;align-items:flex-end;height:28px;";
-        mkBarcode(bc1, 28);
-      }
 
       /* ── TUTORIAL ────────────────────────────── */
       const ts = [
@@ -1117,22 +936,17 @@
           ci++;
           return updTut();
         }
-
         const t = document.getElementById("tut");
         t.style.opacity = 0;
         setTimeout(() => (t.style.display = "none"), 300);
-
         localStorage.setItem("tutorielVu", "true");
-
         const userId = localStorage.getItem("userId");
-
         try {
           await fetch("http://localhost:8080/update-tutorial", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ id: parseInt(userId) }),
           });
-          console.log("Database updated: Tutorial seen.");
         } catch (error) {
           console.error("Failed to update tutorial in DB:", error);
         }
@@ -1156,9 +970,7 @@
         const userId = localStorage.getItem("userId");
         const token = localStorage.getItem("token");
         const editId = document.getElementById("editAnnId").value;
-
         const formData = new FormData();
-
         formData.append(
           "titre",
           document.querySelector('#annForm input[type="text"]').value,
@@ -1171,71 +983,51 @@
           "id_categorie",
           document.getElementById("annCategorie").value,
         );
-
         let prixValue = document.querySelector(
           '#annForm input[type="number"]',
         ).value;
-        if (!prixValue) {
-          prixValue = "0";
-        }
+        if (!prixValue) prixValue = "0";
         formData.append("prix", prixValue);
-
         formData.append(
           "description",
           document.querySelector("#annForm textarea").value,
         );
         formData.append("id_user", userId);
-
         formData.append("code_postal", "75000");
         formData.append("ville", "Paris");
         formData.append("etat", "Bon état");
         formData.append("poids_kg", "1.0");
         formData.append("quantite", "1");
-
         const photoInput = document.getElementById("annPhoto");
         if (photoInput.files[0]) {
           formData.append("image", photoInput.files[0]);
         } else if (editId) {
           formData.append("old_image_path", currentEditingImagePath);
         }
-
-        let url = "";
-        let method = "";
-        if (editId) {
-          url = `http://localhost:8081/admin/annonces/modify/${editId}`;
-          method = "PUT";
-        } else {
-          url = "http://localhost:8081/admin/annonces/add";
-          method = "POST";
-        }
-
+        const url = editId
+          ? `http://localhost:8081/admin/annonces/modify/${editId}`
+          : "http://localhost:8081/admin/annonces/add";
+        const method = editId ? "PUT" : "POST";
         try {
           const response = await fetch(url, {
-            method: method,
+            method,
             headers: { Authorization: `Bearer ${token}` },
             body: formData,
           });
-
           if (response.ok) {
-            if (editId) {
-              alert("Annonce modifiée");
-            } else {
-              alert("Annonce validée");
-            }
-
+            alert(editId ? "Annonce modifiée" : "Annonce validée");
             document.getElementById("editAnnId").value = "";
             currentEditingImagePath = "";
-
             toggleAnnForm();
             loadMyAnnonces();
           } else {
-            const errorText = await response.text();
-            alert("Erreur: " + errorText);
+            alert("Erreur: " + (await response.text()));
           }
         } catch (err) {
           console.error("Submit error:", err);
         }
       }
+
       /* ── FILTER CHIPS ────────────────────────── */
       function selF(el) {
         el.closest(".cat-filters")
@@ -1257,7 +1049,7 @@
       }
       function confirmPay() {
         closePay();
-        alert("🎉 Réservation confirmée ! Vous recevrez un email Stripe.");
+        alert(" Réservation confirme ! Vous recevrez un email Stripe.");
       }
 
       /* ── DEPOT MODAL ─────────────────────────── */
@@ -1269,15 +1061,13 @@
           Math.floor(Math.random() * 9000000 + 1000000) +
           "-" +
           boxId.replace("BOX-", "");
-        const wrap = document.getElementById("bcWrap");
-        mkBarcode(wrap, 36);
+        mkBarcode(document.getElementById("bcWrap"), 36);
         document.getElementById("depotModal").classList.add("open");
       }
       function closeDepot() {
         document.getElementById("depotModal").classList.remove("open");
       }
 
-      /* close modals on background click */
       ["payModal", "depotModal"].forEach((id) => {
         document.getElementById(id).addEventListener("click", function (e) {
           if (e.target === this) this.classList.remove("open");
@@ -1285,6 +1075,5 @@
       });
     </script>
     <script src="./script/dashClient.js"></script>
-    <script src="./script/planning.js"></script>
   </body>
 </html>
