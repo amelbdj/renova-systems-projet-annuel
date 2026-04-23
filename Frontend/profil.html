@@ -3,25 +3,27 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mon Profil — ReNova Systems</title>
+    <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self' http://localhost:8081 http://127.0.0.1:8081 https://connect.stripe.com; script-src 'self' 'unsafe-inline' https://js.stripe.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com;"> -->
+    <title>Mon Profil</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
       href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Outfit:wght@300;400;500;600&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="./style/profil.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   </head>
   <body>
     <nav class="topnav">
       <div class="nav-links" style="margin-left: 28px">
         <button class="nav-link" onclick="history.back()">← Retour</button>
         <button class="nav-link active">Mon Profil</button>
-        <button class="nav-link">Tableau de bord</button>
+        <a class="nav-link" href="./espClient.html">Tableau de bord</a>
       </div>
       <div class="nav-right">
-        <div class="nav-icon">🔔</div>
+        <div class="nav-icon"><i class="fa-solid fa-bell"></i></div>
         <div class="profile-pill">
-          <div class="pill-ava">👤</div>
+          <div class="pill-ava"><i class="fa-solid fa-user"></i></div>
           <span class="pill-name" id="navName">Marie Dupont</span>
         </div>
       </div>
@@ -30,13 +32,13 @@
     <div class="wrapper">
       <div class="profile-header fu">
         <div class="ava-wrap">
-          <div class="ava">👤</div>
+          <div class="ava"><i class="fa-solid fa-user"></i></div>
           <div
             class="ava-edit"
             onclick="document.getElementById('avatarInput').click()"
             title="Changer la photo"
           >
-            ✏️
+            <i class="fa-solid fa-pen"></i>
           </div>
           <input
             type="file"
@@ -52,13 +54,13 @@
           <div class="ph-tags">
             <span class="tag t-vi" id="displayRole">Particulier</span>
             <span class="tag t-vi" id="stripeHeaderBadge" style="display: none"
-              >💳 Paiements actifs</span
+              > <i class="fa-solid fa-credit-card"></i> Paiements actifs</span
             >
           </div>
         </div>
         <div class="ph-actions">
           <button class="btn btn-g btn-sm" onclick="showSaveBar()">
-            ✏️ Modifier
+            <i class="fa-solid fa-pen"></i> Modifier
           </button>
         </div>
       </div>
@@ -81,7 +83,7 @@
           <div class="card-hd">
             <div class="card-ht">
               <div class="cht-i" style="background: rgba(124, 95, 255, 0.1)">
-                👤
+                
               </div>
               Coordonnées
             </div>
@@ -133,7 +135,7 @@
 
       <div class="tab-panel" id="tab-paiements">
         <div class="sec-label fu">
-          <div class="sec-dot stripe-dot">💳</div>
+          <div class="sec-dot stripe-dot"><i class="fa-solid fa-credit-card"></i></div>
           <div class="sec-title">Paiements & Virements</div>
           <div class="sec-divider"></div>
         </div>
@@ -141,7 +143,7 @@
         <div class="stripe-section fu fu1">
           <div class="stripe-hd">
             <div class="stripe-ht">
-              <span class="stripe-logo">stripe</span> Recevoir des virements
+              <i class="fa-brands fa-cc-stripe"></i> Recevoir des virements
             </div>
             <span class="tag t-red" id="stripeStatusTag">Non configuré</span>
           </div>
@@ -149,15 +151,15 @@
           <div class="stripe-bd">
             <div class="stripe-state" id="state-none">
               <div class="payout-none">
-                <div class="payout-none-icon">🏦</div>
+                <div class="payout-none-icon"><i class="fa-solid fa-building-columns"></i></div>
                 <div class="payout-none-text">
                   <h3>Configurez vos virements</h3>
                   <p>
                     Pour recevoir l'argent de vos ventes, vous devez connecter
-                    un compte bancaire via Stripe (sécurisé).
+                    un compte bancaire via Stripe.
                   </p>
                   <button class="btn-stripe-connect" onclick="stripeConnect()">
-                    <span class="stripe-btn-logo">stripe</span>
+                    <i class="fa-brands fa-cc-stripe"></i>
                     Activer les paiements
                   </button>
                 </div>
@@ -166,10 +168,10 @@
 
             <div class="stripe-state" id="state-active" style="display: none">
               <div class="payout-active">
-                <div class="active-check">✅</div>
+                <div class="active-check"><i class="fa-solid fa-check"></i></div>
                 <div class="active-info">
                   <div class="active-badge">Actif</div>
-                  <h3>✅ Virements actifs</h3>
+                  <h3> Virements actifs</h3>
                   <p>
                     Votre compte Stripe est opérationnel. Vous recevrez vos
                     paiements automatiquement.
@@ -192,24 +194,10 @@
           <div class="sec-divider"></div>
         </div>
         <div class="card fu fu2">
-          <div class="card-bd" style="padding: 0">
-            <div
-              style="
-                display: flex;
-                align-items: center;
-                gap: 12px;
-                padding: 13px 20px;
-                border-bottom: 1px solid var(--b0);
-              "
-            >
-              <div style="flex: 1">
-                <div style="color: #fff">Vente — Chaise en bois</div>
-              </div>
-              <div style="color: var(--green)">+25 €</div>
-            </div>
-          </div>
-        </div>
-      </div>
+  <div class="card-bd" id="salesHistoryList" style="padding: 0">
+      <div style="padding: 20px; color: var(--txt-m)">Chargement de l'historique...</div>
+  </div>
+</div>
 
       <div class="tab-panel" id="tab-securite">
         <div class="sec-label fu">
@@ -230,13 +218,13 @@
     </div>
 
     <div class="save-bar" id="saveBar">
-      <span class="save-hint">⚠ Modifications non sauvegardées</span>
+      <span class="save-hint"> Modifications non sauvegardées</span>
       <div style="display: flex; gap: 8px">
         <button class="btn btn-g btn-sm" onclick="hideSaveBar()">
           Annuler
         </button>
         <button class="btn btn-v btn-sm" onclick="saveProfile()">
-          💾 Enregistrer
+          <i class="fa-solid fa-save"></i> Enregistrer
         </button>
       </div>
     </div>
@@ -372,6 +360,49 @@
       function hideSaveBar() {
         document.getElementById("saveBar").classList.remove("active");
       }
+
+      async function loadSalesHistory() {
+    const userId = localStorage.getItem("userId");
+    const token = localStorage.getItem("token");
+    const historyList = document.getElementById("salesHistoryList");
+
+    if (!userId || !historyList) return;
+
+    try {
+        const response = await fetch(`http://localhost:8081/api/user/payment-history?id=${userId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (!response.ok) throw new Error("Erreur historique");
+
+        const data = await response.json();
+
+        if (!data || data.length === 0) {
+            historyList.innerHTML = `<div style="padding: 20px; color: var(--txt-m)">Aucune vente effectuée pour le moment.</div>`;
+            return;
+        }
+
+        historyList.innerHTML = data.map(item => `
+            <div style="display: flex; align-items: center; gap: 12px; padding: 13px 20px; border-bottom: 1px solid var(--b0);">
+                <div style="flex: 1">
+                    <div style="color: #fff">Vente — ${item.titre}</div>
+                    <div style="font-size: 11px; color: var(--txt-m)">${new Date(item.date).toLocaleDateString('fr-FR')}</div>
+                </div>
+                <div style="color: var(--green); font-weight: bold;">+${item.montant} €</div>
+            </div>
+        `).join('');
+
+    } catch (err) {
+        console.error("Erreur historique:", err);
+        historyList.innerHTML = `<div style="padding: 20px; color: var(--red)">Impossible de charger l'historique.</div>`;
+    }
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+    await loadUserProfile();
+    await loadSalesHistory(); 
+    
+});
     </script>
   </body>
 </html>
