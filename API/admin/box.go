@@ -5,144 +5,173 @@ import (
 	"fmt"
 	"net/http"
 	"upcycleconnect/bdd"
-	"upcycleconnect/models"
 )
+
+
 
 func ReserveBox(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS") // ⚠️ Ne pas oublier les méthodes
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-	
+
 	if r.Method == "OPTIONS" {
-        w.WriteHeader(http.StatusOK)
-        return 
-    }
-	    var req struct {
-        AnnonceId     int `json:"annonce_id"`
-        ConteneurId   int `json:"conteneur_id"`
-        ParticulierId int `json:"particulier_id"`
-    }
+		w.WriteHeader(http.StatusOK)
+		return
+	}
 
-    if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-        http.Error(w, "Données invalides", http.StatusBadRequest)
-        return
-    }
+	if r.Method == "POST" {
+		var req struct {
+			AnnonceId     int `json:"annonce_id"`
+			ConteneurId   int `json:"conteneur_id"` // L'ID du meuble !
+			ParticulierId int `json:"particulier_id"`
+		}
 
-    err := bdd.ReserveBox(req.AnnonceId, req.ConteneurId, req.ParticulierId)
-    if err != nil {
-        http.Error(w, err.Error(), http.StatusInternalServerError)
-        return
-    }
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			http.Error(w, "Données invalides", http.StatusBadRequest)
+			return
+		}
 
-    w.WriteHeader(http.StatusOK)
-    fmt.Fprint(w, "Box réservé avec succès")
+		err := bdd.ReserveBox(req.AnnonceId, req.ConteneurId, req.ParticulierId)
+		if err != nil {
+			fmt.Println("Erreur ReserveBox :", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, `{"message": "Box réservée avec succès"}`)
+		return
+	}
 }
 
 func ConfirmDeposit(w http.ResponseWriter, r *http.Request) {
-
-    	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-	
+
 	if r.Method == "OPTIONS" {
-        w.WriteHeader(http.StatusOK)
-        return 
-    }
-	
-    var req struct {
-        PinCode string `json:"pin_code"`
-    }
+		w.WriteHeader(http.StatusOK)
+		return
+	}
 
-    if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-        http.Error(w, "Code PIN manquant", http.StatusBadRequest)
-        return
-    }
+	if r.Method == "POST" {
+		var req struct {
+			PinCode string `json:"pin_code"`
+		}
 
-    err := bdd.ConfirmDeposit(req.PinCode)
-    if err != nil {
-        http.Error(w, "Code PIN incorrect ou expiré", http.StatusUnauthorized)
-        return
-    }
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			http.Error(w, "Code PIN manquant", http.StatusBadRequest)
+			return
+		}
 
-    fmt.Fprint(w, "Dépôt validé, le box est verrouillé")
+		err := bdd.ConfirmDeposit(req.PinCode)
+		if err != nil {
+			fmt.Println("Erreur ConfirmDeposit :", err)
+			http.Error(w, "Code PIN incorrect ou expiré", http.StatusUnauthorized)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, `{"message": "Dépôt validé, la box est verrouillée"}`)
+		return
+	}
 }
 
 func CollectObject(w http.ResponseWriter, r *http.Request) {
-
-    	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS") // Souvent en POST pour envoyer des données JSON
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-	
+
 	if r.Method == "OPTIONS" {
-        w.WriteHeader(http.StatusOK)
-        return 
-    }
-	
-    var req struct {
-        Barcode        string `json:"barcode"`
-        ProfessionnelId int  `json:"professionnel_id"`
-    }
-
-    if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-        http.Error(w, "Données de collecte invalides", http.StatusBadRequest)
-        return
-    }
-
-    err := bdd.CollectObject(req.Barcode, req.ProfessionnelId)
-    if err != nil {
-        http.Error(w, "Erreur lors de la collecte : "+err.Error(), http.StatusInternalServerError)
-        return
-    }
-
-    fmt.Fprint(w, "Objet récupéré, box libéré et score mis à jour !")
-}
-
-func GetAllBoxs(w http.ResponseWriter, r *http.Request) {
-
-    fmt.Println("hello from GetAllBoxs")
-    w.Header().Set("Access-Control-Allow-Origin", "*")
-    w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-    
-    if r.Method == "OPTIONS" {
-        w.WriteHeader(http.StatusOK)
-        return 
-    }
-
-    Boxs, err := bdd.GetBox()
-    if err != nil {
-        http.Error(w, "Erreur lors de la récupération des boxs : "+err.Error(), http.StatusInternalServerError)
-        return
-    }
-   response, err := json.Marshal(Boxs)
-
-	if err != nil {
-		http.Error(w, "erreur de conversion", 500)
+		w.WriteHeader(http.StatusOK)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	fmt.Fprintf(w, "%s", response)
+
+	if r.Method == "POST" {
+		var req struct {
+			Barcode         string `json:"barcode"`
+			ProfessionnelId int    `json:"professionnel_id"`
+		}
+
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			http.Error(w, "Données de collecte invalides", http.StatusBadRequest)
+			return
+		}
+
+		err := bdd.CollectObject(req.Barcode, req.ProfessionnelId)
+		if err != nil {
+			fmt.Println("Erreur CollectObject :", err)
+			http.Error(w, "Erreur lors de la collecte : "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, `{"message": "Objet récupéré, box libérée et score mis à jour !"}`)
+		return
+	}
 }
 
-func CreateBox(w http.ResponseWriter, r *http.Request) {
 
-    w.Header().Set("Access-Control-Allow-Origin", "*")
-    w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-    w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
-    if r.Method == "OPTIONS" {
-        w.WriteHeader(http.StatusOK)
-        return 
-    }
 
-    fmt.Println("hello from create box")
+// Remplace  "GetAllBoxs"
+func GetConteneursAdmin(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("👉 Appel de GetConteneursAdmin")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
-    var Box models.Box
-    if err := json.NewDecoder(r.Body).Decode(&Box); err != nil {
-        http.Error(w, "Données invalides", http.StatusBadRequest)
-        return
-    }
-    err := bdd.CreateBox(Box.Localisation, Box.Type, Box.Capacite)
-    if err != nil {
-        http.Error(w, "Erreur lors de la création du box : "+err.Error(), http.StatusInternalServerError)
-        return
-    }
-    w.WriteHeader(http.StatusCreated)
-    fmt.Fprint(w, "Box créé avec succès")
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	if r.Method == "GET" {
+		conteneurs, err := bdd.GetConteneursAdmin()
+		if err != nil {
+			fmt.Println("Erreur BDD GetConteneursAdmin :", err)
+			http.Error(w, "Erreur lors de la récupération des conteneurs", http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(conteneurs)
+		return
+	}
+}
+
+// Remplace  "CreateBox"
+func CreateConteneur(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	if r.Method == "POST" {
+		var req struct {
+			Nom          string `json:"nom"`
+			Adresse      string `json:"adresse"`
+			NombreDeBoxs int    `json:"nombre_de_boxs"` // L'admin choisit combien de portes il y a dans ce meuble
+		}
+
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			http.Error(w, "Données invalides", http.StatusBadRequest)
+			return
+		}
+
+		err := bdd.CreateConteneurAvecBox(req.Nom, req.Adresse, req.NombreDeBoxs)
+		if err != nil {
+			fmt.Println("Erreur création conteneur :", err)
+			http.Error(w, "Erreur serveur lors de la création", http.StatusInternalServerError)
+			return
+		}
+
+		w.WriteHeader(http.StatusCreated)
+		fmt.Fprint(w, `{"message": "Conteneur et boxes créés avec succès"}`)
+		return
+	}
 }
