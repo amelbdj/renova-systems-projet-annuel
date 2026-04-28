@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const urlParams = new URLSearchParams(window.location.search);
   if (urlParams.get("stripe") === "success") {
-    alert("✅ Stripe configuré !");
+    alert(" Stripe configuré !");
     setStripeState("active");
     window.history.replaceState({}, document.title, window.location.pathname);
   }

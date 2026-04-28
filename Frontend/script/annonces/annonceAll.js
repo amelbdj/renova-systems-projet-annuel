@@ -5,8 +5,10 @@ async function loadAllAnnonces() {
     const grid = document.getElementById('listingsGrid');
     if (!grid) return;
 
+    const userId = localStorage.getItem('userId') || 0;
+
     try {
-        const response = await fetch(`http://localhost:8081/api/annonces/all`);
+        const response = await fetch(`http://localhost:8081/api/annonces/all?id=${userId}`);
         allAnnonces = await response.json();
         
         displayAnnonces(allAnnonces);
@@ -40,7 +42,7 @@ function displayAnnonces(items) {
 
         card.innerHTML = `
             <div class="card-thumb" style="${imgSrc ? `background: url('${imgSrc}') center/cover no-repeat;` : `background: var(--bg4);`}">
-                ${imgSrc ? '' : '<div style="font-size:3rem">📦</div>'}
+                ${imgSrc ? '' : '<div style="font-size:3rem"><i class="fas fa-box"></i></div>'}
                 <div class="card-badges">
                     ${isFree ? '<span class="badge b-don">Don gratuit</span>' : '<span class="badge b-ven">Vente</span>'}
                 </div>
@@ -50,9 +52,9 @@ function displayAnnonces(items) {
                 <div class="card-title">${ann.titre}</div>
                 <div class="card-desc">${ann.description}</div>
                 <div class="card-meta">
-                    <div class="card-seller"><div class="seller-ava">👤</div>${ann.prenom} ${ann.nom}</div>
+                    <div class="card-seller"><div class="seller-ava"><i class="fas fa-user"></i></div>${ann.prenom} ${ann.nom}</div>
                     <span style="color:var(--txt-d)">·</span>
-                    <span class="card-loc">📍 ${ann.ville}</span>
+                    <span class="card-loc"><i class="fas fa-map-marker-alt"></i> ${ann.ville}</span>
                 </div>
                 <div class="card-foot">
                     <div>
