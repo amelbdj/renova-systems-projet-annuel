@@ -145,23 +145,17 @@ window.envoyerMessage = function () {
       console.error(err);
     });
 };
-/**
- * 6. CRÉATION D'UN NOUVEAU SUJET
- */
 
-// Ouvrir la fenêtre modale
 window.ouvrirNouveauSujet = function () {
   document.getElementById("modal-nouveau-sujet").style.display = "flex";
 };
 
-// Fermer et vider la fenêtre modale
 window.fermerModalSujet = function () {
   document.getElementById("modal-nouveau-sujet").style.display = "none";
   document.getElementById("nouveau-sujet-titre").value = "";
   document.getElementById("nouveau-sujet-message").value = "";
 };
 
-// Valider et envoyer au serveur Go
 window.validerNouveauSujet = function () {
   const titre = document.getElementById("nouveau-sujet-titre").value.trim();
   const message = document.getElementById("nouveau-sujet-message").value.trim();
@@ -199,4 +193,17 @@ window.validerNouveauSujet = function () {
       alert("Impossible de créer le sujet.");
     });
 };
+
+function goToProfile() {
+  const userId = localStorage.getItem("userId");
+  const role = localStorage.getItem("role");
+
+  if (!userId) {
+    window.location.href = "login.html";
+    return;
+  }
+
+  window.location.href = `profil.html?id=${userId}`;
+}
+
 document.addEventListener("DOMContentLoaded", initForum);
