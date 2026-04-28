@@ -71,7 +71,11 @@ async function loadMyAnnonces() {
 
         card.innerHTML = `
                     <div class="ann-thumb" style="${imgSrc ? `background: url('${imgSrc}') center/cover no-repeat;` : `background: linear-gradient(135deg,#0a0f1e,#101828);`}">
+<<<<<<< HEAD
             ${imgSrc ? "" : "📦"}
+=======
+            ${imgSrc ? '' : '<i class="fa-solid fa-box-archive"></i>'}
+>>>>>>> 3c26bf037f3e589ffffd9bc1137441a85474897b
         </div>
                     <div class="ann-body">
                         <div class="ann-name">${ann.titre}</div>
@@ -151,5 +155,77 @@ function goToProfile() {
     return;
   }
 
+<<<<<<< HEAD
   window.location.href = `profil.html?id=${userId}`;
 }
+=======
+    window.location.href = `profil.html?id=${userId}`;
+}
+
+async function loadUserBoxes() {
+    const userId = localStorage.getItem('userId'); 
+    const grid = document.getElementById('systeme-conteneurs');
+
+    if (!grid) return;
+
+    try {
+        const response = await fetch(`http://localhost:8081/api/user/boxes?user_id=${userId}`);
+        const boxes = await response.json();
+
+        if (!boxes || boxes.length === 0) {
+            grid.innerHTML = `
+                <div class="cont-card avail">
+                    <div class="cont-body">Vous n'avez aucun dépôt actif pour le moment.</div>
+                    <span class="tag t-green">Prêt pour un nouvel achat</span>
+                </div>`;
+            return;
+        }
+
+        grid.innerHTML = boxes.map(box => `
+            <div class="cont-card active">
+                <div class="cont-top">
+                    <div>
+                        <div class="cont-id">${box.id_box}</div>
+                        <div style="font-size: 11px; color: var(--blue-l); margin-top: 2px">Votre dépôt actif</div>
+                    </div>
+                    <div class="cont-led led-b"></div>
+                </div>
+                <div class="cont-body">
+                    <strong>${box.objet}</strong><br>
+                    ${box.localisation} • Réservé le ${new Date(box.date).toLocaleDateString()}
+                </div>
+                <div class="cont-codes">
+                    <span class="ccode blue">PIN : ${box.code_pin}</span>
+                    <span class="ccode purple">REF : ${box.barcode}</span>
+                </div>
+                
+                <div style="background:white; padding:8px; border-radius:4px; margin-top:12px; text-align:center;">
+                    <svg class="barcode-img" 
+                         jsbarcode-value="${box.barcode}"
+                         jsbarcode-width="1.2"
+                         jsbarcode-height="30"
+                         jsbarcode-fontsize="10">
+                    </svg>
+                </div>
+
+                <button class="btn btn-g btn-sm" style="margin-top: 12px; width:100%" onclick="alert('Téléchargement du code ${box.barcode}')">
+                    <i class="fas fa-download"></i> Télécharger code-barres
+                </button>
+            </div>
+        `).join('');
+
+        if (window.JsBarcode) {
+            JsBarcode(".barcode-img").init();
+        }
+
+    } catch (error) {
+        console.error("Erreur lors du chargement des boxes:", error);
+        grid.innerHTML = "<p>Erreur de connexion au système de conteneurs.</p>";
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadMyAnnonces();
+    loadUserBoxes(); 
+});
+>>>>>>> 3c26bf037f3e589ffffd9bc1137441a85474897b

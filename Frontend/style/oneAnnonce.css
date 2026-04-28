@@ -43,3 +43,37 @@ body::before{ content:'';position:fixed;inset:0;z-index:0;pointer-events:none; b
 .fu{animation:fadeUp .5s ease both}
 @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
 @media(max-width:900px){ .page{grid-template-columns:1fr} .buy-box{position:static} }
+
+/* Style pour le bouton désactivé (Vendu) */
+.btn-sold {
+    background: #2a2a2a !important; /* Gris foncé */
+    color: #666 !important;        /* Texte gris clair */
+    border: 1px solid #333 !important;
+    cursor: not-allowed !important;
+    box-shadow: none !important;
+    opacity: 0.8;
+}
+
+/* Overlay sur l'image quand c'est vendu */
+.sold-tag {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-15deg);
+    background: rgba(240, 80, 80, 0.9); /* Rouge ReNova */
+    color: white;
+    padding: 10px 30px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 2rem;
+    border: 4px solid white;
+    border-radius: 8px;
+    pointer-events: none;
+    z-index: 10;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+/* Optionnel : flouter l'image si vendu */
+.is-sold .img-hero {
+    filter: grayscale(0.5);
+}
