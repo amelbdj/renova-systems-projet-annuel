@@ -64,6 +64,11 @@ func main() {
 	http.HandleFunc("OPTIONS /admin/articles/salarie/{id}", admin.GetArticlesBySalarie)
 	http.HandleFunc("OPTIONS /admin/articles/{id}", admin.GetArticleById)
 	http.HandleFunc("OPTIONS /admin/articles", admin.GetAllArticles)
+	http.HandleFunc("OPTIONS /api/user/boxes", admin.GetMyBoxes)
+	http.HandleFunc("OPTIONS /api/admin/conteneur/{id}/boxes", admin.GetBoxesForConteneurHandler)
+	http.HandleFunc("OPTIONS /api/admin/box/add", admin.AddSingleBoxHandler)
+			http.HandleFunc("OPTIONS /api/admin/box/update", admin.UpdateBoxStatusHandler)
+
 
 	// --- TRANSLATIONS OPTIONS ---
 	http.HandleFunc("OPTIONS /api/translations", admin.GetTranslations)
@@ -74,6 +79,12 @@ func main() {
 	http.HandleFunc("OPTIONS /admin/forum/messages", admin.GetForumMessages)
 	http.HandleFunc("OPTIONS /admin/forum/messages/moderate/{id}", admin.ModerateForumMessage)
 	http.HandleFunc("OPTIONS /admin/forum/stats", admin.GetForumStats)
+
+	http.HandleFunc("OPTIONS /api/box/reserve", admin.ReserveBox)
+	http.HandleFunc("OPTIONS /api/box/deposit", admin.ConfirmDeposit)
+	http.HandleFunc("OPTIONS /api/box/collect", admin.CollectObject)
+	http.HandleFunc("OPTIONS /api/admin/conteneurs", admin.GetConteneursAdmin)
+	http.HandleFunc("OPTIONS /api/admin/conteneur/create", admin.CreateConteneur)
 
 	// --- USERS ---
 	http.HandleFunc("GET /admin/users", auth.VerifyTokenMiddleware(admin.GetAllUsers))
@@ -133,6 +144,9 @@ func main() {
 	http.HandleFunc("POST /api/box/collect", admin.CollectObject)
 	http.HandleFunc("GET /api/admin/conteneurs", admin.GetConteneursAdmin)
 	http.HandleFunc("POST /api/admin/conteneur/create", admin.CreateConteneur)
+		http.HandleFunc("POST /api/admin/box/add", admin.AddSingleBoxHandler)
+		http.HandleFunc("PUT /api/admin/box/update", admin.UpdateBoxStatusHandler)
+
 
 	// --- ARTICLES / NEWS ---
 	http.HandleFunc("GET /admin/articles", admin.GetAllArticles)
@@ -153,6 +167,8 @@ func main() {
 
 	// boxes
 	http.HandleFunc("GET /api/user/boxes", admin.GetMyBoxes)
+	// Le {id} entre accolades indique à Go que cette partie de l'URL est une variable dynamique !
+http.HandleFunc("GET /api/admin/conteneur/{id}/boxes", admin.GetBoxesForConteneurHandler)
 
 	// --- TRADUCTIONS ---
 	http.HandleFunc("GET /api/translations", admin.GetTranslations)

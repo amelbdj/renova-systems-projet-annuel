@@ -15,7 +15,7 @@ type Conteneur struct {
 // Structure pour la petite porte (le casier)
 type Box struct {
 	Id          int    `json:"id"`
-	IDConteneur int    `json:"id_conteneur"`
+	IdConteneur int    `json:"id_conteneur"`
 	Numero      int    `json:"numero"`
 	Taille      string `json:"taille"`
 	Statut      string `json:"statut"`
@@ -25,7 +25,7 @@ type Box struct {
 }
 
 type ConteneurAvecStats struct {
-	ID         int    `json:"id"`
+	Id         int    `json:"id"`
 	Nom        string `json:"nom"`
 	Adresse    string `json:"adresse"`
 	TotalBoxes int    `json:"total_boxes"` // Ce champ n'existe pas en table, il vient du COUNT(b.id) !

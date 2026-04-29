@@ -116,7 +116,7 @@ func CollectObject(w http.ResponseWriter, r *http.Request) {
 
 // Remplace  "GetAllBoxs"
 func GetConteneursAdmin(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("👉 Appel de GetConteneursAdmin")
+	fmt.Println("hello from GetConteneursAdmin")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
@@ -172,6 +172,112 @@ func CreateConteneur(w http.ResponseWriter, r *http.Request) {
 
 		w.WriteHeader(http.StatusCreated)
 		fmt.Fprint(w, `{"message": "Conteneur et boxes créés avec succès"}`)
+		return
+	}
+}
+
+func GetBoxesForConteneurHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	if r.Method == "GET" {
+		conteneurID := r.PathValue("id")
+		
+		if conteneurID == "" {
+			http.Error(w, "ID du conteneur manquant", http.StatusBadRequest)
+			return
+		}
+
+		// On appelle la fonction BDD qu'on vient de créer
+		boxes, err := bdd.GetBoxesByConteneurID(conteneurID)
+		if err != nil {
+			fmt.Println("Erreur BDD GetBoxesForConteneurHandler :", err)
+			http.Error(w, "Erreur serveur", http.StatusInternalServerError)
+			return
+		}
+
+		// On envoie le tableau au JavaScript
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(boxes)
+		return
+	}
+}
+
+func AddSingleBoxHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	if r.Method == "POST" {
+		var req struct {
+			IDConteneur int    `json:"id_conteneur"`
+			Taille      string `json:"taille"` // "S", "M", ou "L"
+		}
+
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			http.Error(w, "Données invalides", http.StatusBadRequest)
+			return
+		}
+
+		if req.Taille == "" {
+			req.Taille = "M"
+		}
+
+		err := bdd.AddSingleBoxToConteneur(req.IDConteneur, req.Taille)
+		if err != nil {
+			fmt.Println("Erreur AddSingleBox :", err)
+			http.Error(w, "Erreur serveur", http.StatusInternalServerError)
+			return
+		}
+
+		w.WriteHeader(http.StatusCreated)
+		fmt.Fprint(w, `{"message": "Nouvelle porte ajoutée avec succès"}`)
+		return
+	}
+}
+
+func UpdateBoxStatusHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "PUT, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	if r.Method == "PUT" {
+		var req struct {
+			BoxID  int    `json:"box_id"`
+			Statut string `json:"statut"`
+		}
+
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			http.Error(w, "Données invalides", http.StatusBadRequest)
+			fmt.Println("Erreur décodage UpdateBoxStatusHandler :", err)
+			return
+		}
+		err := bdd.UpdateBoxStatus(req.BoxID, req.Statut)
+		if err != nil {
+			fmt.Println("Erreur UpdateBoxStatus :", err)
+			http.Error(w, "Erreur serveur", http.StatusInternalServerError)
+			fmt.Println("Erreur UpdateBoxStatusHandler :", err)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, `{"message": "Statut mis à jour"}`)
 		return
 	}
 }

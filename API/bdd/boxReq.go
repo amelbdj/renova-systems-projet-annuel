@@ -166,7 +166,7 @@ func GetConteneursAdmin() ([]models.ConteneurAvecStats, error) {
 
 	for rows.Next() {
 		var c models.ConteneurAvecStats
-		err := rows.Scan(&c.ID, &c.Nom, &c.Adresse, &c.TotalBoxes)
+		err := rows.Scan(&c.Id, &c.Nom, &c.Adresse, &c.TotalBoxes)
 		if err != nil {
 			return nil, fmt.Errorf("erreur scan : %v", err)
 		}
@@ -266,4 +266,72 @@ func CreateConteneurAvecBox(nom string, adresse string, nombreDeBoxs int) error 
 	}
 
 	return nil
+}
+
+func GetBoxesByConteneurID(conteneurID string) ([]models.Box, error) {
+	var boxes []models.Box
+
+	rows, err := Db.Query(`SELECT id, id_conteneur, numero, taille, statut, code_secret 
+	          FROM box 
+	          WHERE id_conteneur = ? 
+	          ORDER BY numero ASC`, conteneurID)
+	if err != nil {
+		return nil, fmt.Errorf("erreur requête GetBoxes: %v", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var b models.Box
+
+		err := rows.Scan(
+			&b.Id,
+			&b.IdConteneur, 
+			&b.Numero,
+			&b.Taille,
+			&b.Statut,
+			&b.CodeSecret,
+		)
+
+		if err != nil {
+			return nil, fmt.Errorf("erreur scan box: %v", err)
+		}
+
+		boxes = append(boxes, b)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("erreur itération boxes: %v", err)
+	}
+
+	if boxes == nil {
+		boxes = []models.Box{}
+	}
+
+	return boxes, nil
+}
+
+func AddSingleBoxToConteneur(conteneurID int, taille string) error {
+	var maxNumero *int
+	err := Db.QueryRow("SELECT MAX(numero) FROM box WHERE id_conteneur = ?", conteneurID).Scan(&maxNumero)
+	
+	if err != nil {
+		return fmt.Errorf("erreur recherche max numero: %v", err)
+	}
+
+	nouveauNumero := 1
+	if maxNumero != nil {
+		nouveauNumero = *maxNumero + 1
+	}
+
+	_, err = Db.Exec(
+		"INSERT INTO box (id_conteneur, numero, taille, statut) VALUES (?, ?, ?, 'libre')",
+		conteneurID, nouveauNumero, taille,
+	)
+
+	return err
+}
+
+func UpdateBoxStatus(boxID int, statut string) error {
+	_, err := Db.Exec("UPDATE box SET statut = ? WHERE id = ?", statut, boxID)
+	return err
 }
