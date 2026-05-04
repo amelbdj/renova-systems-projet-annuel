@@ -19,6 +19,18 @@ function CreateEvent() {
     return;
   }
 
+  // 🔒 NOUVEAU : On vérifie que la date n'est pas dans le passé avant d'envoyer au serveur
+  if (date) {
+    const selectedDate = new Date(date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // On remet l'heure à zéro pour ne comparer que le jour
+
+    if (selectedDate < today) {
+      alert("Erreur : La date de l'événement ne peut pas être dans le passé.");
+      return; // On bloque l'envoi de la requête
+    }
+  }
+
   const eventData = {
     idSalarie: parseInt(userId),
     titre: titre,
@@ -135,7 +147,7 @@ function GetEvenements() {
               })
               .replace(":", "h"); // "10h00"
           }
-          // mettre une img specail event et formation par def
+
           htmlContent += `
         <div class="evt-card">
           <div class="evt-banner" style="background:linear-gradient(135deg,#100820,#1c1040)">
@@ -204,6 +216,13 @@ function DeleteEvenement(id) {
       alert("Une erreur est survenue lors de l'annulation.");
     });
 }
+
 document.addEventListener("DOMContentLoaded", () => {
   GetEvenements();
+
+  const dateInput = document.getElementById("evt-date");
+  if (dateInput) {
+    const today = new Date().toISOString().split("T")[0];
+    dateInput.setAttribute("min", today);
+  }
 });

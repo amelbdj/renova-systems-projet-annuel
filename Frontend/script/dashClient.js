@@ -71,11 +71,7 @@ async function loadMyAnnonces() {
 
         card.innerHTML = `
                     <div class="ann-thumb" style="${imgSrc ? `background: url('${imgSrc}') center/cover no-repeat;` : `background: linear-gradient(135deg,#0a0f1e,#101828);`}">
-<<<<<<< HEAD
-            ${imgSrc ? "" : "📦"}
-=======
-            ${imgSrc ? '' : '<i class="fa-solid fa-box-archive"></i>'}
->>>>>>> 3c26bf037f3e589ffffd9bc1137441a85474897b
+            ${imgSrc ? "" : '<i class="fa-solid fa-box-archive"></i>'}
         </div>
                     <div class="ann-body">
                         <div class="ann-name">${ann.titre}</div>
@@ -155,33 +151,33 @@ function goToProfile() {
     return;
   }
 
-<<<<<<< HEAD
   window.location.href = `profil.html?id=${userId}`;
-}
-=======
-    window.location.href = `profil.html?id=${userId}`;
 }
 
 async function loadUserBoxes() {
-    const userId = localStorage.getItem('userId'); 
-    const grid = document.getElementById('systeme-conteneurs');
+  const userId = localStorage.getItem("userId");
+  const grid = document.getElementById("systeme-conteneurs");
 
-    if (!grid) return;
+  if (!grid) return;
 
-    try {
-        const response = await fetch(`http://localhost:8081/api/user/boxes?user_id=${userId}`);
-        const boxes = await response.json();
+  try {
+    const response = await fetch(
+      `http://localhost:8081/api/user/boxes?user_id=${userId}`,
+    );
+    const boxes = await response.json();
 
-        if (!boxes || boxes.length === 0) {
-            grid.innerHTML = `
+    if (!boxes || boxes.length === 0) {
+      grid.innerHTML = `
                 <div class="cont-card avail">
                     <div class="cont-body">Vous n'avez aucun dépôt actif pour le moment.</div>
                     <span class="tag t-green">Prêt pour un nouvel achat</span>
                 </div>`;
-            return;
-        }
+      return;
+    }
 
-        grid.innerHTML = boxes.map(box => `
+    grid.innerHTML = boxes
+      .map(
+        (box) => `
             <div class="cont-card active">
                 <div class="cont-top">
                     <div>
@@ -212,20 +208,20 @@ async function loadUserBoxes() {
                     <i class="fas fa-download"></i> Télécharger code-barres
                 </button>
             </div>
-        `).join('');
+        `,
+      )
+      .join("");
 
-        if (window.JsBarcode) {
-            JsBarcode(".barcode-img").init();
-        }
-
-    } catch (error) {
-        console.error("Erreur lors du chargement des boxes:", error);
-        grid.innerHTML = "<p>Erreur de connexion au système de conteneurs.</p>";
+    if (window.JsBarcode) {
+      JsBarcode(".barcode-img").init();
     }
+  } catch (error) {
+    console.error("Erreur lors du chargement des boxes:", error);
+    grid.innerHTML = "<p>Erreur de connexion au système de conteneurs.</p>";
+  }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    loadMyAnnonces();
-    loadUserBoxes(); 
+document.addEventListener("DOMContentLoaded", () => {
+  loadMyAnnonces();
+  loadUserBoxes();
 });
->>>>>>> 3c26bf037f3e589ffffd9bc1137441a85474897b
