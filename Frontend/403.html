@@ -1,94 +1,94 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>403 - Accès interdit</title>
     <style>
-        :root {
-            --bg-dark: #121212;
-            --bg-light: #1e1e1e;
-            --text-primary: #e0e0e0;
-            --text-secondary: #a0a0a0;
-            --accent: #bb86fc;
-            --error: #cf6679;
-        }
+      :root {
+        --bg-dark: #121212;
+        --bg-light: #1e1e1e;
+        --text-primary: #e0e0e0;
+        --text-secondary: #a0a0a0;
+        --accent: #bb86fc;
+        --error: #cf6679;
+      }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-primary);
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--bg-dark);
+        color: var(--text-primary);
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
 
-        .container {
-            background-color: var(--bg-light);
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            padding: 40px;
-            text-align: center;
-            max-width: 500px;
-            width: 90%;
-        }
+      .container {
+        background-color: var(--bg-light);
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        padding: 40px;
+        text-align: center;
+        max-width: 500px;
+        width: 90%;
+      }
 
-        .error-code {
-            font-size: 72px;
-            font-weight: 800;
-            color: var(--error);
-            margin-bottom: 10px;
-        }
+      .error-code {
+        font-size: 72px;
+        font-weight: 800;
+        color: var(--error);
+        margin-bottom: 10px;
+      }
 
-        h1 {
-            color: var(--text-primary);
-            margin-bottom: 20px;
-            font-weight: 600;
-        }
+      h1 {
+        color: var(--text-primary);
+        margin-bottom: 20px;
+        font-weight: 600;
+      }
 
-        p {
-            color: var(--text-secondary);
-            line-height: 1.6;
-            margin-bottom: 30px;
-        }
+      p {
+        color: var(--text-secondary);
+        line-height: 1.6;
+        margin-bottom: 30px;
+      }
 
-        .btn {
-            background-color: var(--accent);
-            color: var(--bg-dark);
-            border: none;
-            padding: 12px 24px;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
+      .btn {
+        background-color: var(--accent);
+        color: var(--bg-dark);
+        border: none;
+        padding: 12px 24px;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
 
-        .btn:hover {
-            background-color: #9a67ea;
-        }
+      .btn:hover {
+        background-color: #9a67ea;
+      }
 
-        .icon {
-            font-size: 60px;
-            color: var(--error);
-            margin-bottom: 20px;
-        }
+      .icon {
+        font-size: 60px;
+        color: var(--error);
+        margin-bottom: 20px;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <div class="icon">🚫</div>
-        <div class="error-code">403</div>
-        <h1>Accès interdit</h1>
-        <p>
-            Désolé, vous n'avez pas la permission d'accéder à cette page.
-            Si vous pensez qu'il s'agit d'une erreur, veuillez contacter l'administrateur.
-        </p>
-        <button class="btn" onclick="window.location.href='/'">
-            Retour à l'accueil
-        </button>
+      <div class="icon">🚫</div>
+      <div class="error-code">403</div>
+      <h1>Accès interdit</h1>
+      <p>
+        Désolé, vous n'avez pas la permission d'accéder à cette page. Si vous
+        pensez qu'il s'agit d'une erreur, veuillez contacter l'administrateur.
+      </p>
+      <button class="btn" onclick="window.location.href = 'login.html'">
+        Retour à l'accueil
+      </button>
     </div>
-</body>
+  </body>
 </html>
