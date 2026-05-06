@@ -60,6 +60,10 @@ function LoadFormulaireTraduction() {
     })
     .then((keys) => {
       const container = document.getElementById("dynamic-fields-container");
+
+      // 🛡️ SÉCURITÉ ICI : Si le conteneur n'existe pas sur la page actuelle, on arrête la fonction !
+      if (!container) return;
+
       container.innerHTML = ""; // On vide avant de remplir
 
       keys.forEach((key) => {
@@ -80,9 +84,11 @@ function LoadFormulaireTraduction() {
 LoadFormulaireTraduction();
 
 // Gestion de la soumission du formulaire d'ajout de langue
-document
-  .getElementById("form-add-language")
-  .addEventListener("submit", function (event) {
+const formAddLanguage = document.getElementById("form-add-language");
+
+// 🛡️ SÉCURITÉ ICI : On vérifie si l'élément form-add-language existe
+if (formAddLanguage) {
+  formAddLanguage.addEventListener("submit", function (event) {
     event.preventDefault();
 
     const codeLangue = document
@@ -120,10 +126,13 @@ document
         alert("❌ Erreur lors de l'enregistrement.");
       });
   });
+}
 
-document
-  .getElementById("btn-toggle-form")
-  .addEventListener("click", function () {
+const btnToggleForm = document.getElementById("btn-toggle-form");
+
+// 🛡️ SÉCURITÉ ICI : On vérifie si l'élément btn-toggle-form existe
+if (btnToggleForm) {
+  btnToggleForm.addEventListener("click", function () {
     const formContainer = document.getElementById("form-container");
 
     if (formContainer.style.display === "none") {
@@ -134,6 +143,7 @@ document
       this.innerHTML = "➕ Ajouter une nouvelle langue";
     }
   });
+}
 
 // Affichage dynamique des boutons de langue
 function GetLanguages() {
@@ -149,7 +159,10 @@ function GetLanguages() {
     .then((languages) => {
       const container = document.getElementById("wrapper");
 
-      // 🌟 CORRECTION : On vide le conteneur pour éviter de dupliquer les boutons
+      // 🛡️ SÉCURITÉ ICI : On vérifie si le conteneur des boutons de langue existe
+      if (!container) return;
+
+      container.innerHTML = ""; // 🌟 CORRECTION : On vide le conteneur pour éviter de dupliquer les boutons
 
       languages.forEach((lang) => {
         container.innerHTML += `

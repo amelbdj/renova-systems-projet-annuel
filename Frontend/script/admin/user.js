@@ -1,3 +1,4 @@
+monToken = localStorage.getItem("token");
 function setVtab(element, type) {
   document
     .querySelectorAll(".vtab")
@@ -398,9 +399,9 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
-  const role = localStorage.getItem("role");
+  // const role = localStorage.getItem("role");
 
-  if (role != "Administrateur") {
-    window.location.href = "403.html";
-  }
+  // if (role != "Administrateur") {
+  //   window.location.href = "403.html";
+  // }
 });
