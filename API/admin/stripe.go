@@ -55,8 +55,8 @@ func ConnectToStripe(w http.ResponseWriter, r *http.Request) {
 
 	linkParams := &stripe.AccountLinkParams{
 		Account:    stripe.String(stripeID),
-		RefreshURL: stripe.String("http://127.0.0.1:5500/renova-systems-projet-annuel/Frontend/profil.html"),
-		ReturnURL:  stripe.String("http://127.0.0.1:5500/renova-systems-projet-annuel/Frontend/profil.html?stripe=success"),
+		RefreshURL: stripe.String("http://127.0.0.1:5500/Frontend/profil.html"),
+		ReturnURL:  stripe.String("http://127.0.0.1:5500/Frontend/profil.html?stripe=success"),
 		Type:       stripe.String("account_onboarding"),
 	}
 
@@ -135,8 +135,8 @@ func PaymentAnnonce(w http.ResponseWriter, r *http.Request) {
 				Destination: stripe.String(stripeAccountIDSeller),
 			},
 		},
-		SuccessURL: stripe.String("http://127.0.0.1:5500/renova-systems-projet-annuel/Frontend/oneAnnonce.html?id=" + strconv.Itoa(annonceID) + "&payment=success"),
-		CancelURL:  stripe.String("http://127.0.0.1:5500/renova-systems-projet-annuel/Frontend/oneAnnonce.html?id=" + strconv.Itoa(annonceID)),
+		SuccessURL: stripe.String("http://127.0.0.1:5500/Frontend/oneAnnonce.html?id=" + strconv.Itoa(annonceID) + "&payment=success"),
+		CancelURL:  stripe.String("http://127.0.0.1:5500/Frontend/oneAnnonce.html?id=" + strconv.Itoa(annonceID)),
 	}
 
 	s, err := session.New(params)
