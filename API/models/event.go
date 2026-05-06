@@ -14,4 +14,5 @@ type Evenement struct {
 	Lieu             string `json:"lieu"`
 	Type             string `json:"type"`
 	IdSalarie        int    `json:"idSalarie"` // ID du salarié qui a créé l'événement
+
 }
