@@ -398,4 +398,9 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+  const role = localStorage.getItem("role");
+
+  if (role != "Administrateur") {
+    window.location.href = "403.html";
+  }
 });

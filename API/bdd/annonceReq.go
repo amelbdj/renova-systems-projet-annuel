@@ -10,7 +10,7 @@ func GetAnnonces() ([]models.Annonce, error) {
 
 	var Annonces []models.Annonce
 
-	rows, err := Db.Query("SELECT a.id, a.titre, a.description, a.type, a.prix, a.statut_validation, a.code_postal, a.ville, a.etat, a.poids_kg, a.quantite, u.nom, u.prenom, c.libelle FROM pa2026.annonce a INNER JOIN pa2026.utilisateur u ON u.id = a.id_user INNER JOIN pa2026.categorie c ON c.id = a.id_categorie")
+	rows, err := Db.Query("SELECT a.id, a.titre, a.description, a.type, a.prix, a.statut_validation, a.code_postal, a.ville, a.etat, a.poids_kg, a.quantite, a.image, u.nom, u.prenom, c.libelle FROM pa2026.annonce a INNER JOIN pa2026.utilisateur u ON u.id = a.id_user INNER JOIN pa2026.categorie c ON c.id = a.id_categorie")
 
 	if err != nil {
 		return nil, fmt.Errorf("get Annonces : %v", err.Error())
@@ -22,7 +22,7 @@ func GetAnnonces() ([]models.Annonce, error) {
 		var Annonce models.Annonce
 
 		err := rows.Scan(&Annonce.Id, &Annonce.Titre, &Annonce.Description, &Annonce.Type, &Annonce.Prix, &Annonce.StatutValidation,
-			&Annonce.CodePostal, &Annonce.Ville, &Annonce.Etat, &Annonce.PoidsKg, &Annonce.Quantite,
+			&Annonce.CodePostal, &Annonce.Ville, &Annonce.Etat, &Annonce.PoidsKg, &Annonce.Quantite, &Annonce.Image,
 			&Annonce.Nom, &Annonce.Prenom,
 			&Annonce.Categorie)
 
@@ -294,7 +294,7 @@ func GetValidatedAnnonces(currentUserID int) ([]models.Annonce, error) {
     FROM pa2026.annonce a
     LEFT JOIN pa2026.utilisateur u ON a.id_user = u.id
     LEFT JOIN pa2026.categorie c ON a.id_categorie = c.id
-    WHERE a.statut_validation = 'valide' 
+    WHERE a.statut_validation = 'Validé' 
     AND a.id_user != ?
     AND a.statut_vente != 'VENDU'`
 

@@ -41,14 +41,21 @@ function chargerEvenementsClient(motCle = "") {
       let htmlContent = "";
       let evenementsAffiches = 0;
 
+      // 🕒 On récupère la date/heure actuelle
+      const maintenant = new Date();
+
       evenements.forEach((evt) => {
-        if (evt.statut_validation === "valide") {
+        // 🕒 On transforme la date de l'événement en objet Date JS
+        const dateEvenement = new Date(evt.date_debut);
+
+        // 🔒 LA CONDITION JS : On vérifie que c'est valide ET que la date est dans le futur
+        if (evt.statut_validation === "valide" && dateEvenement >= maintenant) {
           evenementsAffiches++;
 
           const idEvt = evt.id;
           const imageCover =
             evt.image_url ||
-            "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=500"; // Image d'event par défaut
+            "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=500";
 
           const textContent =
             evt.description || evt.contenu || "Pas de description.";
@@ -80,7 +87,7 @@ function chargerEvenementsClient(motCle = "") {
         if (motCle !== "") {
           container.innerHTML = `<p style="color: var(--txt-m); text-align: center; grid-column: 1 / -1;">Aucun événement valide trouvé pour "<b>${motCle}</b>".</p>`;
         } else {
-          container.innerHTML = `<p style="color: var(--txt-m); text-align: center; grid-column: 1 / -1;">Aucun événement valide pour le moment.</p>`;
+          container.innerHTML = `<p style="color: var(--txt-m); text-align: center; grid-column: 1 / -1;">Aucun événement à venir pour le moment.</p>`;
         }
       } else {
         container.innerHTML = htmlContent;

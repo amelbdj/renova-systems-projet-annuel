@@ -44,3 +44,20 @@ function logout() {
 }
 
 document.addEventListener("DOMContentLoaded", chargerProfil);
+const role = localStorage.getItem("role");
+
+if (role != "Salarié") {
+  window.location.href = "403.html";
+}
+
+function goToProfile() {
+  const userId = localStorage.getItem("userId");
+  const role = localStorage.getItem("role");
+
+  if (!userId) {
+    window.location.href = "login.html";
+    return;
+  }
+
+  window.location.href = `profil.html?id=${userId}`;
+}

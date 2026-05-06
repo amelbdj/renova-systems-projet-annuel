@@ -2,6 +2,7 @@ package bdd
 
 import (
 	"fmt"
+	"time"
 	"upcycleconnect/models"
 )
 
@@ -148,34 +149,50 @@ func UpdateEvenement(EvenementId int, Evenement models.Evenement) error {
 
 
 func InscrireClient(idUser int, idEvent int) error {
-    var nbPlaces int
-    var inscrits int
-    
-    err := Db.QueryRow("SELECT evenement.nb_places, (SELECT COUNT(*) FROM inscription WHERE id_event = ?) FROM evenement WHERE evenement.id = ?", idEvent, idEvent).Scan(&nbPlaces, &inscrits)
-    if err != nil {
-        fmt.Println("Erreur SQL (Select):", err)
-        return err
-    }
+	var nbPlaces int
+	var inscrits int
+	var dateDebut string 
 
-    if inscrits >= nbPlaces {
-        return fmt.Errorf("plus de place (max: %d)", nbPlaces)
-    }
 
-    var check int
-    err = Db.QueryRow("SELECT COUNT(*) FROM inscription WHERE id_user = ? AND id_event = ?", idUser, idEvent).Scan(&check)
-    if err != nil {
-        return err
-    }
-    
-    if check > 0 {
-        return fmt.Errorf("vous êtes déjà inscrit à cet événement")
-    }
 
-    _, err = Db.Exec("INSERT INTO inscription (id_user, id_event) VALUES (?, ?)", idUser, idEvent)
-    if err != nil {
-        fmt.Println("Erreur SQL (Insert):", err)
-        return err
-    }
+	err := Db.QueryRow(`SELECT evenement.nb_places, evenement.date_debut, 
+	          (SELECT COUNT(*) FROM inscription WHERE id_event = ?) 
+	          FROM evenement WHERE evenement.id = ?`, idEvent, idEvent).Scan(&nbPlaces, &dateDebut, &inscrits)
+	if err != nil {
+		fmt.Println("Erreur SQL (Select):", err)
+		return err
+	}
 
-    return nil
+
+	eventDate, err := time.Parse("2006-01-02 15:04:05", dateDebut)
+	if err != nil {
+		eventDate, _ = time.Parse("2006-01-02", dateDebut)
+	}
+
+	if eventDate.Before(time.Now()) {
+		return fmt.Errorf("les inscriptions sont fermées, cet événement est déjà terminé")
+	}
+
+
+	if inscrits >= nbPlaces {
+		return fmt.Errorf("plus de place (max: %d)", nbPlaces)
+	}
+
+	var check int
+	err = Db.QueryRow("SELECT COUNT(*) FROM inscription WHERE id_user = ? AND id_event = ?", idUser, idEvent).Scan(&check)
+	if err != nil {
+		return err
+	}
+
+	if check > 0 {
+		return fmt.Errorf("vous êtes déjà inscrit à cet événement")
+	}
+
+	_, err = Db.Exec("INSERT INTO inscription (id_user, id_event) VALUES (?, ?)", idUser, idEvent)
+	if err != nil {
+		fmt.Println("Erreur SQL (Insert):", err)
+		return err
+	}
+
+	return nil
 }

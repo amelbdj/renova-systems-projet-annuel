@@ -3,6 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../Frontend/style/forum.css" />
+    <link rel="stylesheet" href="../Frontend/style/client.css" />
     <link
       href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Outfit:wght@300;400;500;600&display=swap"
       rel="stylesheet"
@@ -12,10 +14,9 @@
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
     />
 
-    <title>Articles</title>
+    <title>Document</title>
   </head>
   <body>
-    <!-- NAVBAR -->
     <nav class="topnav">
       <div class="nav-logo">
         <img
@@ -24,20 +25,32 @@
         />
       </div>
       <div class="nav-links">
-        <a class="nav-link active">Accueil</a>
-        <a class="nav-link" href="../Frontend/espClient.html">Annonces</a>
-        <a class="nav-link" href="../Frontend/espClient.html">Conteneurs</a>
-        <a class="nav-link" href="../Frontend/espClient.html">Catalogue</a>
-        <a class="nav-link" href="../Frontend/espClient.html">Planning</a>
-        <a class="nav-link" href="../Frontend/espClient.html">Mon score</a>
-        <a class="nav-link" href="../Frontend/espClient.html">Article</a>
+        <button class="nav-link active">Accueil</button>
+        <button class="nav-link" href="../Frontend/espClient.html">
+          Annonces
+        </button>
+        <button class="nav-link" href="../Frontend/espClient.html">
+          Conteneurs
+        </button>
+        <button class="nav-link" href="../Frontend/espClient.html">
+          Catalogue
+        </button>
+        <button class="nav-link" href="../Frontend/espClient.html">
+          Planning
+        </button>
+        <button class="nav-link" href="../Frontend/espClient.html">
+          Mon score
+        </button>
+        <a class="nav-link" href="../Frontend/article.html">Article</a>
         <a class="nav-link" href="../Frontend/evenement.html">Evenement</a>
         <a class="nav-link" href="../Frontend/forum.html">Forum</a>
-
       </div>
       <div class="nav-right">
         <div class="lang-btn">
-          <span class="material-symbols-outlined"> public </span>Lang
+          <span class="material-symbols-outlined">public </span>Lang
+        </div>
+        <div class="nav-icon">
+          <span class="material-symbols-outlined"> search </span>
         </div>
         <div class="nav-icon">
           <span class="material-symbols-outlined" onclick="logout()">
@@ -48,7 +61,7 @@
           <span class="material-symbols-outlined"> notifications </span>
           <div class="notif-dot"></div>
         </div>
-  <div
+        <div
           class="profile-btn"
           onclick="goToProfile()"
           style="cursor: pointer"
@@ -59,54 +72,145 @@
             <div class="profile-role">Particulier</div>
           </div>
         </div>
+      </div>
+    </nav>
+
+    <div class="wrapper" style="margin-top: 40px; margin-bottom: 60px">
+      <div
+        class="card"
+        style="
+          padding: 30px;
+          min-height: 600px;
+          display: flex;
+          flex-direction: column;
+        "
+      >
+        <div id="vue-liste-forums">
+          <div class="forum-main-header">
+            <h3>Forum d'Entraide</h3>
+            <button class="btn btn-p" onclick="ouvrirNouveauSujet()">
+              + Nouveau Sujet
+            </button>
+          </div>
+
+          <div id="liste-sujets-forum" class="forum-container"></div>
+        </div>
+
+        <div
+          id="vue-sujet-actif"
+          style="display: none; flex-direction: column; height: 100%"
+        >
+          <div class="sujet-actif-header">
+            <button class="btn btn-g" onclick="retourListeForums()">
+              ← Retour
+            </button>
+            <h3 id="titre-sujet-actif">Chargement...</h3>
+          </div>
+
+          <div
+            id="zone-messages"
+            style="
+              flex: 1;
+              min-height: 350px;
+              max-height: 450px;
+              overflow-y: auto;
+            "
+          ></div>
+
+          <div class="chat-input-wrapper">
+            <input
+              type="text"
+              id="input-nouveau-message"
+              placeholder="Écrire une réponse..."
+            />
+            <button class="btn btn-p" onclick="envoyerMessage()">
+              Envoyer
+            </button>
           </div>
         </div>
       </div>
-    </nav>
-    <div class="search-section">
-      <input
-        type="text"
-        id="searchInput"
-        placeholder="Rechercher un article, un événement..."
-      />
-      <button type="button" class="btn" onclick="LancerRecherche()">
-        <span class="material-symbols-outlined"> search </span>
-      </button>
     </div>
 
-    <h2>Nos Actualités & Astuces</h2>
-    <div id="liste-articles" class="articles-grid"></div>
+    <!-- MODAL NOUVEAU SUJET -->
 
-    <div id="articleModal" class="modal-overlay" style="display: none">
-      <div class="modal-content">
-        <span class="close-btn" onclick="FermerArticle()">&times;</span>
-        <img
-          id="modalImage"
-          src=""
-          alt="Couverture"
+    <div
+      id="modal-nouveau-sujet"
+      style="
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(5, 8, 15, 0.85);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+        backdrop-filter: blur(4px);
+      "
+    >
+      <div
+        class="card"
+        style="
+          width: 100%;
+          max-width: 550px;
+          padding: 30px;
+          border: 1px solid var(--b1);
+          box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+        "
+      >
+        <h3
+          style="
+            color: #fff;
+            margin-bottom: 20px;
+            font-family: &quot;Syne&quot;, sans-serif;
+          "
+        >
+          Créer un nouveau sujet
+        </h3>
+
+        <input
+          type="text"
+          id="nouveau-sujet-titre"
+          placeholder="Titre de votre sujet (ex: Aide pour ma peinture)"
           style="
             width: 100%;
-            height: 250px;
-            object-fit: cover;
-            border-radius: 8px 8px 0 0;
+            padding: 14px;
+            margin-bottom: 15px;
+            background: var(--bg3);
+            border: 1px solid var(--b1);
+            border-radius: 8px;
+            color: var(--txt);
+            outline: none;
           "
         />
 
-        <div style="padding: 20px">
-          <h2 id="modalTitre" style="margin-top: 0; color: var(--blue)"></h2>
-          <p
-            id="modalMeta"
-            style="color: var(--txt-m); font-size: 13px; margin-bottom: 20px"
-          ></p>
-          <div
-            id="modalContenu"
-            style="line-height: 1.6; color: var(--txt)"
-          ></div>
+        <textarea
+          id="nouveau-sujet-message"
+          placeholder="Détaillez votre question ou votre problème ici..."
+          style="
+            width: 100%;
+            padding: 14px;
+            height: 150px;
+            margin-bottom: 25px;
+            background: var(--bg3);
+            border: 1px solid var(--b1);
+            border-radius: 8px;
+            color: var(--txt);
+            outline: none;
+            resize: none;
+            font-family: &quot;Outfit&quot;, sans-serif;
+          "
+        ></textarea>
+
+        <div style="display: flex; justify-content: flex-end; gap: 12px">
+          <button class="btn btn-g" onclick="fermerModalSujet()">
+            Annuler
+          </button>
+          <button class="btn btn-p" onclick="validerNouveauSujet()">
+            Publier le sujet
+          </button>
         </div>
       </div>
     </div>
   </body>
-  <script src="../Frontend/script/affichageArt.js" defer></script>
-  <script src="../Frontend/script/profil.js" defer></script>
-  <script src="../Frontend/script/affichageEvt.js" defer></script>
+  <script src="../Frontend/script/forum.js" defer></script>
+  <script src="../Frontend/script/profil.js"></script>
 </html>
