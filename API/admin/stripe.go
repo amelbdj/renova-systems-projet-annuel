@@ -113,7 +113,6 @@ func PaymentAnnonce(w http.ResponseWriter, r *http.Request) {
 	commission := (unitAmount * 5) / 100
 
 	commissionAppli := commission
-
 	stripe.Key = StripeSecretKey
 	params := &stripe.CheckoutSessionParams{
 		Mode: stripe.String(string(stripe.CheckoutSessionModePayment)),
@@ -135,14 +134,8 @@ func PaymentAnnonce(w http.ResponseWriter, r *http.Request) {
 				Destination: stripe.String(stripeAccountIDSeller),
 			},
 		},
-<<<<<<< HEAD
-		SuccessURL: stripe.String("http://127.0.0.1:5500/Frontend/oneAnnonce.html?id=" + strconv.Itoa(annonceID) + "&payment=success"),
+		SuccessURL: stripe.String("http://127.0.0.1:5500/Frontend/oneAnnonce.html?id=" + strconv.Itoa(annonceID) + "&buyer_id=" + strconv.Itoa(buyerID) + "&payment=success"),
 		CancelURL:  stripe.String("http://127.0.0.1:5500/Frontend/oneAnnonce.html?id=" + strconv.Itoa(annonceID)),
-=======
-		SuccessURL: stripe.String("http://127.0.0.1:5500/Frontend/oneAnnonce.html?id=" + strconv.Itoa(annonceID) + "&buyer_id=" + strconv.Itoa(buyerID) +
-			"&payment=success"),
-		CancelURL: stripe.String("http://127.0.0.1:5500/Frontend/oneAnnonce.html?id=" + strconv.Itoa(annonceID)),
->>>>>>> d54eb383ae770913754d4fbc9825879a1c1eacd2
 	}
 
 	s, err := session.New(params)
