@@ -93,6 +93,8 @@ func main() {
 	http.HandleFunc("GET /user/profile", admin.GetUserById)
 	http.HandleFunc("GET /admin/users/{id}", auth.VerifyTokenMiddleware(admin.GetUserById))
 	http.HandleFunc("PUT /admin/users/ban/{id}", auth.VerifyTokenMiddleware(admin.BanUserHandler))
+	http.HandleFunc("GET /api/user/payment-history", admin.PaymentHistoryHandler)
+	http.HandleFunc("OPTIONS /api/user/payment-history", admin.PaymentHistoryHandler)
 
 	// Auth, Tutorial & Upload
 	http.HandleFunc("/api/upload-document", auth.VerifyTokenMiddleware(admin.UploadDocumentHandler))
@@ -118,8 +120,10 @@ func main() {
 	http.HandleFunc("GET /mes-annonces", admin.GetMyAnnonces)
 	http.HandleFunc("GET /api/annonces/all", admin.GetValidatedAnnonces)
 	http.HandleFunc("GET /api/annonces", admin.GetOneAnnonce)
-	http.HandleFunc("OPTIONS /api/annonces/vendre", admin.AnnVendu)
-	http.HandleFunc("PUT /api/annonces/vendre", admin.AnnVendu)
+	// http.HandleFunc("OPTIONS /api/annonces/vendre", admin.AnnVendu)
+	// http.HandleFunc("PUT /api/annonces/vendre", admin.AnnVendu)
+	http.HandleFunc("POST /api/annonces/vendre", admin.ConfirmPaymentAndOrder)
+	http.HandleFunc("OPTIONS /api/annonces/vendre", admin.ConfirmPaymentAndOrder)
 
 	// --- EVENEMENTS ---
 	http.HandleFunc("GET /admin/evenements", admin.GetAllEvenements)
@@ -152,6 +156,9 @@ func main() {
 	http.HandleFunc("OPTIONS /admin/connect-stripe", admin.ConnectToStripe)
 	http.HandleFunc("OPTIONS /api/payment-annonce", admin.PaymentAnnonce)
 	http.HandleFunc("POST /api/payment-annonce", admin.PaymentAnnonce)
+
+	// boxes
+	http.HandleFunc("GET /api/user/boxes", admin.GetMyBoxes)
 
 	// --- TRADUCTIONS ---
 	http.HandleFunc("GET /api/translations", admin.GetTranslations)
