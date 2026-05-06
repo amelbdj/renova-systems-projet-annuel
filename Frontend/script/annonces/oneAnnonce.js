@@ -14,10 +14,12 @@ async function loadOneAnnonce() {
     if (paymentStatus === 'success') {
       console.log("Paiement détecté, mise à jour du statut...");
 
+      const buyerId = urlParams.get('buyer_id');
+
        
         try {
-            const res = await fetch(`http://localhost:8081/api/annonces/vendre?id=${id}`, { 
-                method: 'PUT' 
+            const res = await fetch(`http://localhost:8081/api/annonces/vendre?id=${id}&buyer_id=${buyerId}`, { 
+                method: 'POST' 
             });
            if (res.ok) {
             alert("🎉 Paiement réussi ! L'objet est maintenant à vous.");
@@ -73,7 +75,7 @@ async function openCheckout(type) {
 }
 
 function renderPage(item) {
-    const isSold = item.statut_vente === 'VENDU';
+    const isSold = (item.statut_vente === 'VENDU' || item.statut_vente === 'EN ATTENTE DEPOT' || item.statut_vente === 'EN BOX');
     const isFree = item.prix <= 0 || item.type.toLowerCase() === 'don';
     const imgSrc = item.image ? `http://localhost:8081${item.image}` : null;
 
