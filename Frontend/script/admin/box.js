@@ -1,3 +1,4 @@
+monToken = localStorage.getItem("token");
 function GetConteneurs() {
   const container = document.getElementById("box-container");
   const statContainer = document.getElementById("box-stats");
