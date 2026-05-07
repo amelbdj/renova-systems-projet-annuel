@@ -1,4 +1,12 @@
-monToken = localStorage.getItem("token");
+let monToken = localStorage.getItem("token");
+
+// VARIABLES GLOBALES POUR LA NAVIGATION
+let currentBoxId = null;
+let currentConteneurId = null;
+let currentConteneurNom = "";
+
+// GESTION CONTENEUR
+
 function GetConteneurs() {
   const container = document.getElementById("box-container");
   const statContainer = document.getElementById("box-stats");
@@ -36,30 +44,83 @@ function GetConteneurs() {
 
       statContainer.innerHTML = `
         <div class="log-stat">
-          <div class="log-stat-ico" style="background: rgba(46, 204, 113, 0.1)">🗺️</div>
+          <div class="log-stat-ico" style="background: rgba(46, 204, 113, 0.1)"><span class="material-symbols-outlined">
+warehouse
+</span></div>
           <div>
             <div class="log-stat-val">${conteneurs ? conteneurs.length : 0}</div>
             <div class="log-stat-lbl">Conteneurs déployés</div>
           </div>
         </div>
         <div class="log-stat">
-          <div class="log-stat-ico" style="background: rgba(74, 144, 240, 0.1)">📦</div>
+          <div class="log-stat-ico" style="background: rgba(74, 144, 240, 0.1)"><span class="material-symbols-outlined"> inventory_2 </span></div>
           <div>
             <div class="log-stat-val">${totalBoxes}</div>
             <div class="log-stat-lbl">Casiers au total</div>
           </div>
         </div>
         <div style="margin-top:8px;display:flex;flex-direction:column;gap:7px">
-          <button class="btn btn-g btn-sm btn-full" onclick="openNewBox()">＋ Ajouter un conteneur</button>
+          <button class="btn btn-g btn-sm btn-full" onclick="openNewConteneur()">＋ Ajouter un conteneur</button>
           <button class="btn btn-o btn-sm btn-full" onclick="alert('Rapport logistique PDF généré.')">📄 Rapport logistique</button>
         </div>`;
     })
     .catch((error) => console.error("Erreur de récupération :", error));
 }
 
+function openNewConteneur() {
+  const modal = document.getElementById("NewConteneurModal");
+  if (modal) modal.style.display = "flex";
+}
+
+function CreateConteneur() {
+  const nom = document.getElementById("add-c-nom").value.trim();
+  const adresse = document.getElementById("add-c-adresse").value.trim();
+  const cp = document.getElementById("add-c-cp").value.trim();
+  const ville = document.getElementById("add-c-ville").value.trim();
+
+  if (!nom || !adresse || !cp || !ville) {
+    alert("Veuillez remplir tous les champs !");
+    return;
+  }
+
+  // On fusionne l'adresse pour l'API
+  const adresseComplete = `${adresse}, ${cp} ${ville}`;
+
+  const newConteneurData = {
+    nom: nom,
+    adresse: adresseComplete,
+    nombre_de_boxs: 0, // Nouveau conteneur = 0 casier au début
+  };
+
+  fetch("http://localhost:8081/api/admin/conteneur/create", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + monToken,
+    },
+    body: JSON.stringify(newConteneurData),
+  })
+    .then((response) => {
+      if (response.ok) {
+        alert("Nouveau Conteneur déployé avec succès !");
+        closeModal("NewConteneurModal");
+        GetConteneurs(); // Rafraîchit la page
+      } else {
+        alert("Erreur lors du déploiement.");
+      }
+    })
+    .catch((error) => console.error("Erreur de création:", error));
+}
+
+// GESTION CASIER (BOX)
+
 function GetBoxesForConteneur(conteneurId, nomConteneur, adresseConteneur) {
   const container = document.getElementById("box-container");
   const statContainer = document.getElementById("box-stats");
+
+  // On sauvegarde le conteneur actuel
+  currentConteneurId = conteneurId;
+  currentConteneurNom = nomConteneur;
 
   container.innerHTML =
     "<div style='color:var(--txt-m)'>Chargement des casiers</div>";
@@ -81,7 +142,7 @@ function GetBoxesForConteneur(conteneurId, nomConteneur, adresseConteneur) {
       let maintenanceCount = 0;
 
       if (!boxs || boxs.length === 0) {
-        container.innerHTML += `<div style="grid-column: 1/-1; color: var(--txt-m);">Ce conteneur est vide.</div>`;
+        container.innerHTML += `<div style="grid-column: 1/-1; color: var(--txt-m);">Ce conteneur est vide. Ajoutez un casier !</div>`;
       } else {
         boxs.forEach((box) => {
           let statusClass = "";
@@ -103,7 +164,7 @@ function GetBoxesForConteneur(conteneurId, nomConteneur, adresseConteneur) {
           }
 
           container.innerHTML += `
-<div class="box ${statusClass}" onclick="openBoxDetail('${box.id}', '${box.numero}', '${box.statut}', '${nomConteneur}', ${conteneurId})">
+              <div class="box ${statusClass}" onclick="openBoxDetail('${box.id}', '${box.numero}', '${box.statut}', '${nomConteneur}', ${conteneurId})">
                   <div class="box-id">PORTE-${box.numero.toString().padStart(2, "0")}</div>
                   <div class="box-led led-${ledColor}"></div>
                   <div class="box-label">${box.statut}</div>
@@ -135,10 +196,9 @@ function GetBoxesForConteneur(conteneurId, nomConteneur, adresseConteneur) {
           </div>
         </div>
         
-        <!-- C'EST ICI QU'ON RAJOUTE LE BOUTON 👇 -->
         <div style="margin-top:8px; display:flex; flex-direction:column; gap:8px;">
-          <button class="btn btn-o btn-sm btn-full" onclick="AddSingleBox(${conteneurId}, '${nomConteneur}')">
-            ＋ Ajouter une porte (Box)
+          <button class="btn btn-o btn-sm btn-full" onclick="openNewBoxModal(${conteneurId})">
+            ＋ Ajouter une porte (Casier)
           </button>
           
           <button class="btn btn-red btn-sm btn-full" onclick="alert('Maintenance demandée pour le meuble.')">
@@ -149,70 +209,17 @@ function GetBoxesForConteneur(conteneurId, nomConteneur, adresseConteneur) {
     .catch((error) => console.error("Erreur des casiers:", error));
 }
 
-let currentBoxId = null;
-let currentConteneurId = null;
-let currentConteneurNom = "";
+function openNewBoxModal(conteneurId) {
+  // On remplit le champ caché de la modale avec l'ID du conteneur
+  const hiddenInput = document.getElementById("current-conteneur-id");
+  if (hiddenInput) hiddenInput.value = conteneurId;
 
-function openBoxDetail(id, numero, status, localisation, conteneurId) {
-  currentBoxId = id;
-  currentConteneurId = conteneurId;
-  currentConteneurNom = localisation;
-
-  document.getElementById("boxModalTitle").textContent =
-    "PORTE n°" + numero + " — " + status.toUpperCase();
-  document.getElementById("boxModalStatus").textContent = status.toUpperCase();
-  document.getElementById("boxModalLocation").textContent = localisation;
-
-  document.getElementById("boxModal").classList.add("open");
+  const modal = document.getElementById("NewBoxModal");
+  if (modal) modal.style.display = "flex";
 }
 
-function openNewBox() {
-  document.getElementById("newBoxModal").classList.add("open");
-}
-
-function CreateBox() {
-  const adresseInput = document.getElementById("boxLocation").value;
-  const nomInput = document.getElementById("boxType").value;
-  const capacityInput = parseInt(document.getElementById("boxCapacity").value);
-
-  if (!adresseInput || !nomInput || isNaN(capacityInput)) {
-    alert("Veuillez remplir tous les champs !");
-    return;
-  }
-
-  const newConteneurData = {
-    nom: nomInput,
-    adresse: adresseInput,
-    nombre_de_boxs: capacityInput,
-  };
-
-  fetch("http://localhost:8081/api/admin/conteneur/create", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + monToken,
-    },
-    body: JSON.stringify(newConteneurData),
-  })
-    .then((response) => {
-      if (response.ok) {
-        alert("Nouveau Conteneur déployé avec succès !");
-        GetConteneurs();
-        document.getElementById("newBoxModal").classList.remove("open");
-      } else {
-        alert("Erreur lors du déploiement.");
-      }
-    })
-    .catch((error) => console.error("Erreur de création:", error));
-}
-
-function AddSingleBox(conteneurId, nomConteneur) {
-  const taille = prompt(
-    "Quelle taille pour cette nouvelle box ? (Tapez S, M ou L)",
-    "M",
-  );
-
-  if (!taille) return;
+function CreateBox(conteneurId) {
+  const taille = document.getElementById("add-b-taille").value;
 
   fetch("http://localhost:8081/api/admin/box/add", {
     method: "POST",
@@ -227,13 +234,36 @@ function AddSingleBox(conteneurId, nomConteneur) {
   })
     .then((response) => {
       if (response.ok) {
-        alert("Nouvelle porte ajoutée !");
-        GetBoxesForConteneur(conteneurId, nomConteneur, "");
+        alert("Nouveau casier ajouté !");
+        closeModal("NewBoxModal");
+        // On rafraîchit l'affichage des casiers pour CE conteneur
+        GetBoxesForConteneur(currentConteneurId, currentConteneurNom, "");
       } else {
-        alert("Erreur lors de l'ajout de la box.");
+        alert("Erreur lors de l'ajout du casier.");
       }
     })
     .catch((error) => console.error("Erreur:", error));
+}
+
+// ADD BOX
+
+function openBoxDetail(id, numero, status, localisation, conteneurId) {
+  currentBoxId = id;
+  currentConteneurId = conteneurId;
+  currentConteneurNom = localisation;
+
+  const modalTitle = document.getElementById("boxModalTitle");
+  if (modalTitle)
+    modalTitle.textContent = "PORTE n°" + numero + " — " + status.toUpperCase();
+
+  const modalStatus = document.getElementById("boxModalStatus");
+  if (modalStatus) modalStatus.textContent = status.toUpperCase();
+
+  const modalLocation = document.getElementById("boxModalLocation");
+  if (modalLocation) modalLocation.textContent = localisation;
+
+  const modal = document.getElementById("boxModal");
+  if (modal) modal.style.display = "flex"; // Adaptation à ton nouveau CSS
 }
 
 function UpdateBoxStatusAPI() {
@@ -265,4 +295,11 @@ function UpdateBoxStatusAPI() {
     .catch((error) => console.error("Erreur:", error));
 }
 
+// Fonction générique pour fermer n'importe quelle modale (si elle n'est pas déjà dans user.js)
+function closeModal(modalId) {
+  const modal = document.getElementById(modalId);
+  if (modal) modal.style.display = "none";
+}
+
+// Initialisation au chargement de la page
 document.addEventListener("DOMContentLoaded", GetConteneurs);

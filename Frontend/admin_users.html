@@ -17,6 +17,10 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
     />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+    />
   </head>
   <body
     style="display: flex; min-height: 100vh; margin: 0; background: var(--bg)"
@@ -67,7 +71,7 @@
       <button
         class="btn btn-o btn-full"
         style="margin-top: auto"
-        onclick="Auth.logout()"
+        onclick="logout()"
       >
         <span class="material-symbols-outlined">logout</span> Déconnexion
       </button>
@@ -107,17 +111,158 @@
       </div>
 
       <div class="card">
-        <div class="u-thead">
-          <div style="flex: 2">Utilisateur</div>
-          <div style="flex: 1.5">Rôle</div>
-          <div style="flex: 1">Statut</div>
-          <div style="flex: 1; text-align: right">Actions</div>
+        <div class="u-table">
+          <p style="padding: 20px; text-align: center; color: var(--txt-m)">
+            Chargement des utilisateurs...
+          </p>
         </div>
-        <div id="result-users" class="tx-list"></div>
       </div>
     </main>
 
-    <div id="NewuserModal" class="modal-overlay" style="display: none"></div>
+    <div class="modal-bg" id="NewuserModal" style="display: none">
+      <div class="modal">
+        <div class="modal-x" onclick="closeModal('NewuserModal')">✕</div>
+        <div class="modal-h">
+          <span class="material-symbols-outlined">person_add</span>
+          <span data-i18n="backoffice.modal.new_user.title"
+            >Créer un compte</span
+          >
+        </div>
+        <div class="modal-sub" data-i18n="backoffice.modal.new_user.desc">
+          Créez manuellement un compte sur la plateforme.
+        </div>
+
+        <div class="frow">
+          <div>
+            <label
+              ><span data-i18n="backoffice.form.firstname">Prénom</span>
+              <span class="req">*</span></label
+            >
+            <input id="add-prenom" type="text" placeholder="Jean" />
+          </div>
+          <div>
+            <label
+              ><span data-i18n="backoffice.form.lastname">Nom</span>
+              <span class="req">*</span></label
+            >
+            <input id="add-nom" type="text" placeholder="Dupont" />
+          </div>
+        </div>
+
+        <div class="fgroup">
+          <label
+            ><span data-i18n="backoffice.form.email">Email</span>
+            <span class="req">*</span></label
+          >
+          <input
+            id="add-email"
+            type="email"
+            placeholder="jean.dupont@email.com"
+            autocomplete="username"
+          />
+        </div>
+
+        <div class="fgroup">
+          <label
+            ><span data-i18n="backoffice.form.password">Mot de passe</span>
+            <span class="req">*</span></label
+          >
+          <input
+            id="add-mdp"
+            type="password"
+            placeholder="••••••••"
+            autocomplete="new-password"
+          />
+        </div>
+
+        <div class="frow">
+          <div>
+            <label data-i18n="backoffice.form.role">Rôle</label>
+            <select id="add-role">
+              <option value="Utilisateur">Particulier</option>
+              <option value="Prestataire">Professionnel</option>
+              <option value="Salarié">Salarié</option>
+              <option value="Administrateur">Administrateur</option>
+            </select>
+          </div>
+          <div>
+            <label>Statut initial</label>
+            <select id="add-status">
+              <option value="Validé">Actif</option>
+              <option value="En attente">En attente</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="btn btn-o btn-full" onclick="CreateUser()">
+          Créer le compte ✓
+        </button>
+      </div>
+    </div>
+
+    <div class="modal-bg" id="editUserModal" style="display: none">
+      <div class="modal">
+        <div class="modal-x" onclick="closeModal('editUserModal')">✕</div>
+        <div class="modal-h">
+          <span class="material-symbols-outlined">person_edit</span>
+          <span data-i18n="backoffice.modal.edit_user.title"
+            >Modifier le compte</span
+          >
+        </div>
+        <div class="modal-sub">
+          Modifiez les informations ou changez les droits de cet utilisateur.
+        </div>
+
+        <div class="frow">
+          <div>
+            <label
+              ><span data-i18n="backoffice.form.firstname">Prénom</span>
+              <span class="req">*</span></label
+            >
+            <input type="text" id="edit-prenom" />
+          </div>
+          <div>
+            <label
+              ><span data-i18n="backoffice.form.lastname">Nom</span>
+              <span class="req">*</span></label
+            >
+            <input type="text" id="edit-nom" />
+          </div>
+        </div>
+
+        <div class="fgroup">
+          <label
+            ><span data-i18n="backoffice.form.email">Email</span>
+            <span class="req">*</span></label
+          >
+          <input type="email" id="edit-email" autocomplete="username" />
+        </div>
+
+        <div class="frow">
+          <div>
+            <label data-i18n="backoffice.form.role">Rôle</label>
+            <select id="edit-role">
+              <option value="Utilisateur">Particulier</option>
+              <option value="Prestataire">Professionnel</option>
+              <option value="Salarié">Salarié</option>
+              <option value="Administrateur">Administrateur</option>
+            </select>
+          </div>
+          <div>
+            <label>Statut</label>
+            <select id="edit-status">
+              <option value="Validé">Actif</option>
+              <option value="Suspendu">Suspendu</option>
+              <option value="Refusé">Banni</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="btn btn-o btn-full" onclick="UpdateUser()">
+          Enregistrer les modifications ✓
+        </button>
+      </div>
+    </div>
 
     <div id="modalRefus" class="modal-overlay" style="display: none">
       <div class="modal-content">
@@ -150,7 +295,7 @@
       </div>
     </div>
 
-    <script src="../Frontend/script/admin/user.js" defer></script>
     <script src="../Frontend/script/admin/translate.js" defer></script>
+    <script src="../Frontend/script/admin/user.js" defer></script>
   </body>
 </html>

@@ -142,7 +142,7 @@
       <button
         class="btn btn-o btn-full"
         style="margin-top: auto"
-        onclick="Auth.logout()"
+        onclick="logout()"
       >
         <span class="material-symbols-outlined" style="font-size: 18px"
           >logout</span
@@ -170,18 +170,18 @@
         <div class="kpi" style="--kc: rgba(46, 204, 113, 0.08)">
           <div class="kpi-top">
             <div class="kpi-ico" style="background: rgba(46, 204, 113, 0.1)">
-              👥
+              <span class="material-symbols-outlined"> group </span>
             </div>
-            <div class="kpi-delta up">+12 ce mois</div>
+            <div class="kpi-delta up">En direct</div>
           </div>
-          <div class="kpi-val" id="kpi-total-users">1 284</div>
+          <div class="kpi-val" id="dash-users">...</div>
           <div class="kpi-lbl">Utilisateurs actifs</div>
         </div>
 
         <div class="kpi" style="--kc: rgba(74, 144, 240, 0.08)">
           <div class="kpi-top">
             <div class="kpi-ico" style="background: rgba(74, 144, 240, 0.1)">
-              💰
+              <span class="material-symbols-outlined"> money_bag </span>
             </div>
             <div class="kpi-delta up">+5%</div>
           </div>
@@ -192,22 +192,26 @@
         <div class="kpi" style="--kc: rgba(255, 152, 0, 0.1)">
           <div class="kpi-top">
             <div class="kpi-ico" style="background: rgba(255, 152, 0, 0.12)">
-              📦
+              <span class="material-symbols-outlined"> inventory_2 </span>
             </div>
-            <div class="kpi-delta neu">90% plein</div>
+            <div class="kpi-delta neu">Réseau</div>
           </div>
-          <div class="kpi-val" style="color: var(--or-l)">45 / 50</div>
-          <div class="kpi-lbl">Casiers occupés</div>
+          <div class="kpi-val" id="dash-boxes" style="color: var(--or-l)">
+            ...
+          </div>
+          <div class="kpi-lbl">Conteneurs / Casiers</div>
         </div>
 
         <div class="kpi" style="--kc: rgba(0, 212, 232, 0.08)">
           <div class="kpi-top">
             <div class="kpi-ico" style="background: rgba(0, 212, 232, 0.1)">
-              ♻️
+              <span class="material-symbols-outlined"> recycling </span>
             </div>
-            <div class="kpi-delta up">+200 kg</div>
+            <div class="kpi-delta up">Validés</div>
           </div>
-          <div class="kpi-val" style="color: var(--cyan)">1.2 T</div>
+          <div class="kpi-val" id="dash-waste" style="color: var(--cyan)">
+            ...
+          </div>
           <div class="kpi-lbl">Déchets sauvés (Global)</div>
         </div>
       </div>
@@ -236,13 +240,17 @@
               "
             >
               <div class="tx-ico" style="background: rgba(240, 80, 80, 0.1)">
-                ⚠️
+                <span class="material-symbols-outlined"> warning </span>
               </div>
               <div class="tx-info">
-                <div class="tx-name" style="color: var(--red)">
-                  2 Conteneurs en maintenance
+                <div
+                  class="tx-name"
+                  id="alert-maintenance"
+                  style="color: var(--red)"
+                >
+                  Analyse réseau...
                 </div>
-                <div class="tx-date">Casiers bloqués à Paris 11e</div>
+                <div class="tx-date">Casiers nécessitant une intervention</div>
               </div>
               <button
                 class="btn btn-xs btn-red"
@@ -254,13 +262,17 @@
 
             <div class="tx-row" style="border-color: rgba(255, 152, 0, 0.2)">
               <div class="tx-ico" style="background: rgba(255, 152, 0, 0.1)">
-                📝
+                <span class="material-symbols-outlined"> contract_edit </span>
               </div>
               <div class="tx-info">
-                <div class="tx-name" style="color: var(--or-l)">
-                  18 Annonces à modérer
+                <div
+                  class="tx-name"
+                  id="alert-annonces"
+                  style="color: var(--or-l)"
+                >
+                  Chargement...
                 </div>
-                <div class="tx-date">Soumises par les particuliers</div>
+                <div class="tx-date">Soumises par les utilisateurs</div>
               </div>
               <button
                 class="btn btn-xs btn-o"
@@ -272,11 +284,15 @@
 
             <div class="tx-row" style="border-color: rgba(166, 124, 255, 0.2)">
               <div class="tx-ico" style="background: rgba(166, 124, 255, 0.1)">
-                📅
+                <span class="material-symbols-outlined"> calendar_today </span>
               </div>
               <div class="tx-info">
-                <div class="tx-name" style="color: var(--purple)">
-                  3 Événements en attente
+                <div
+                  class="tx-name"
+                  id="alert-events"
+                  style="color: var(--purple)"
+                >
+                  Chargement...
                 </div>
                 <div class="tx-date">Proposés par les salariés</div>
               </div>
@@ -288,6 +304,23 @@
                 Voir
               </button>
             </div>
+            <div class="tx-row" style="border-color: rgba(46, 204, 113, 0.2)">
+              <div class="tx-ico" style="background: rgba(46, 204, 113, 0.1)">
+                <span class="material-symbols-outlined"> stylus_note </span>
+              </div>
+              <div class="tx-info">
+                <div class="tx-name" id="alert-articles" style="color: #2ecc71">
+                  Chargement...
+                </div>
+                <div class="tx-date">Articles rédigés par l'équipe</div>
+              </div>
+              <button
+                class="btn btn-xs btn-o"
+                onclick="window.location.href = 'admin_validations.html'"
+              >
+                Lire
+              </button>
+            </div>
           </div>
         </div>
 
@@ -296,7 +329,7 @@
           <div class="card-hd">
             <div class="card-ht">
               <div class="cht-i" style="background: rgba(74, 144, 240, 0.1)">
-                ⚡
+                <span class="material-symbols-outlined"> bolt </span>
               </div>
               Activité récente
             </div>
@@ -304,7 +337,7 @@
           <div class="card-bd tx-list">
             <div class="tx-row">
               <div class="tx-ico" style="background: rgba(46, 204, 113, 0.1)">
-                💳
+                <span class="material-symbols-outlined"> credit_card </span>
               </div>
               <div class="tx-info">
                 <div class="tx-name">Abonnement Premium (Pro)</div>
@@ -315,7 +348,7 @@
 
             <div class="tx-row">
               <div class="tx-ico" style="background: rgba(255, 255, 255, 0.05)">
-                👤
+                <span class="material-symbols-outlined"> person </span>
               </div>
               <div class="tx-info">
                 <div class="tx-name">Nouvelle inscription</div>
@@ -328,7 +361,7 @@
 
             <div class="tx-row">
               <div class="tx-ico" style="background: rgba(74, 144, 240, 0.1)">
-                📦
+                <span class="material-symbols-outlined"> event </span>
               </div>
               <div class="tx-info">
                 <div class="tx-name">Dépôt en conteneur réussi</div>
@@ -342,5 +375,7 @@
         </div>
       </div>
     </main>
+    <script src="script/admin/dash.js"></script>
+    <script src="script/admin/user.js"></script>
   </body>
 </html>

@@ -1,5 +1,5 @@
 let currentTranslations = {};
-
+monToken = localStorage.getItem("token");
 function changerLangue(langue) {
   fetch(`http://localhost:8081/api/translations?lang=${langue}`, {
     headers: {

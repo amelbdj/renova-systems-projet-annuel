@@ -66,7 +66,7 @@
       <button
         class="btn btn-o btn-full"
         style="margin-top: auto"
-        onclick="Auth.logout()"
+        onclick="logout()"
       >
         <span class="material-symbols-outlined">logout</span> Déconnexion
       </button>
@@ -93,7 +93,85 @@
 
       <div id="box-container" class="kpi-grid"></div>
     </main>
+    <div class="modal-bg" id="NewConteneurModal" style="display: none">
+      <div class="modal">
+        <div class="modal-x" onclick="closeModal('NewConteneurModal')">✕</div>
+        <div class="modal-h">
+          <span class="material-symbols-outlined">inventory_2</span>
+          <span>Nouveau Conteneur</span>
+        </div>
+        <div class="modal-sub">
+          Déployez un nouveau point de collecte physique sur la carte.
+        </div>
 
+        <div class="fgroup">
+          <label>Nom / Identifiant <span class="req">*</span></label>
+          <input
+            id="add-c-nom"
+            type="text"
+            placeholder="Ex: Box Gare de Lyon"
+          />
+        </div>
+
+        <div class="fgroup">
+          <label>Adresse complète <span class="req">*</span></label>
+          <input
+            id="add-c-adresse"
+            type="text"
+            placeholder="Ex: 12 rue de la Paix"
+          />
+        </div>
+
+        <div class="frow">
+          <div>
+            <label>Code Postal <span class="req">*</span></label>
+            <input id="add-c-cp" type="text" placeholder="75012" />
+          </div>
+          <div>
+            <label>Ville <span class="req">*</span></label>
+            <input id="add-c-ville" type="text" placeholder="Paris" />
+          </div>
+        </div>
+
+        <button class="btn btn-o btn-full" onclick="CreateConteneur()">
+          Déployer le conteneur ✓
+        </button>
+      </div>
+    </div>
+
+    <div class="modal-bg" id="NewBoxModal" style="display: none">
+      <div class="modal">
+        <div class="modal-x" onclick="closeModal('NewBoxModal')">✕</div>
+        <div class="modal-h">
+          <span class="material-symbols-outlined">add_box</span>
+          <span>Nouveau Casier</span>
+        </div>
+        <div class="modal-sub">
+          Ajoutez un casier de stockage à l'intérieur de ce conteneur.
+        </div>
+
+        <div class="fgroup">
+          <label>Taille du casier <span class="req">*</span></label>
+          <select id="add-b-taille">
+            <option value="S">Petit (S)</option>
+            <option value="M">Moyen (M)</option>
+            <option value="L">Grand (L)</option>
+            <option value="XL">Très grand (XL)</option>
+          </select>
+        </div>
+
+        <input type="hidden" id="current-conteneur-id" />
+
+        <button
+          class="btn btn-o btn-full"
+          onclick="
+            CreateBox(document.getElementById('current-conteneur-id').value)
+          "
+        >
+          Ajouter le casier ✓
+        </button>
+      </div>
+    </div>
     <script src="../Frontend/script/admin/box.js" defer></script>
   </body>
 </html>
