@@ -66,7 +66,7 @@
       <button
         class="btn btn-o btn-full"
         style="margin-top: auto"
-        onclick="Auth.logout()"
+        onclick="logout()"
       >
         <span class="material-symbols-outlined">logout</span> Déconnexion
       </button>
@@ -91,8 +91,62 @@
       </div>
 
       <div id="result" class="val-grid"></div>
-    </main>
+      <div class="modal-bg" id="articleModModal" style="display: none">
+        <div class="modal" style="width: 600px; max-width: 90vw">
+          <div class="modal-x" onclick="closeArticleModal()">✕</div>
 
+          <div class="modal-h">
+            <span class="material-symbols-outlined">article</span>
+            <span id="modal-art-title">Chargement du titre...</span>
+          </div>
+
+          <div
+            class="modal-sub"
+            id="modal-art-meta"
+            style="margin-bottom: 20px"
+          >
+            Détails de l'auteur...
+          </div>
+
+          <div
+            id="modal-art-content"
+            style="
+              font-size: 15px;
+              line-height: 1.7;
+              color: var(--txt-m);
+              white-space: pre-wrap;
+              max-height: 400px;
+              overflow-y: auto;
+              border: 1px solid var(--b0);
+              padding: 15px;
+              border-radius: 8px;
+              margin-bottom: 25px;
+              background: var(--bg2);
+            "
+          >
+            Chargement du contenu...
+          </div>
+
+          <div
+            style="
+              display: flex;
+              gap: 12px;
+              justify-content: flex-end;
+              border-top: 1px solid var(--b1);
+              padding-top: 20px;
+            "
+          >
+            <button id="btn-modal-refuser" class="btn btn-red">
+              ✕ Refuser
+            </button>
+            <button id="btn-modal-valider" class="btn btn-g">
+              ✓ Valider la publication
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+    <script src="../Frontend/script/admin/translate.js" defer></script>
     <script src="../Frontend/script/admin/user.js" defer></script>
     <script src="../Frontend/script/admin/annonce.js" defer></script>
     <script src="../Frontend/script/admin/event.js" defer></script>
