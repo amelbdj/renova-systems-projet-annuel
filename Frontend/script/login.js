@@ -80,7 +80,6 @@ async function submitLogin() {
       localStorage.setItem("token", donneesServeur.token);
       localStorage.setItem("userRole", donneesServeur.role);
       localStorage.setItem("userId", donneesServeur.id);
-
       localStorage.setItem("userName", donneesServeur.prenom);
       localStorage.setItem("userScore", donneesServeur.score || 0);
       localStorage.setItem("tutorielVu", donneesServeur.tutorielVu);
