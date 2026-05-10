@@ -134,7 +134,7 @@ func main() {
 	http.HandleFunc("GET /admin/evenements", admin.GetAllEvenements)
 	http.HandleFunc("POST /admin/evenements/add", auth.VerifyTokenMiddleware(admin.CreateEvenement))
 	http.HandleFunc("PUT /admin/evenements/{id}", auth.VerifyTokenMiddleware(admin.UpdateEvenement))
-	http.HandleFunc("DELETE /admin/evenements/{id}", auth.VerifyTokenMiddleware(admin.DeleteEvenement))
+	http.HandleFunc("DELETE /admin/evenements/delete/{id}", auth.VerifyTokenMiddleware(admin.DeleteEvenement))
 	http.HandleFunc("PUT /admin/evenements/validate/{id}", auth.VerifyTokenMiddleware(admin.ValidateEvenement))
 	http.HandleFunc("PUT /admin/evenements/refuse/{id}", auth.VerifyTokenMiddleware(admin.RefuseEvenement))
 	http.HandleFunc("POST /admin/evenements/inscription", admin.InscrireClient)
