@@ -232,7 +232,7 @@ function afficherTimeline(dateCible) {
         <div class="tl-col">
             <div style="font-size: 12px; color: var(--txt-d); padding: 8px 0;">Fin de journée</div>
         </div>
-    </div>
+    </div> 
   `;
 }
 

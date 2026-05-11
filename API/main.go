@@ -194,6 +194,24 @@ http.HandleFunc("GET /api/admin/conteneur/{id}/boxes", admin.GetBoxesForConteneu
 	http.HandleFunc("GET /user/forums/messages",admin.ForumClientMessagesHandler)
 	http.HandleFunc("POST /user/forums/messages", admin.ForumClientMessagesHandler)
 
+	// --- MESSAGERIE (WEBSOCKET & HISTORIQUE) ---
+    
+    // 1. L'historique des messages (Besoin du Token pour la sécurité)
+// --- MESSAGERIE (WEBSOCKET & HISTORIQUE) ---
+
+// 1. L'historique des messages (Besoin du Token pour la sécurité)
+http.HandleFunc("OPTIONS /api/chat/history", admin.GetChatHistoryHandler)
+http.HandleFunc("GET /api/chat/history", auth.VerifyTokenMiddleware(admin.GetChatHistoryHandler))
+
+// 2. Le WebSocket (ATTENTION : Un WebSocket s'initie TOUJOURS avec un GET !)
+http.HandleFunc("GET /ws/chat", admin.ChatHandler)
+
+// 3. La liste des conversations pour le Dashboard
+// On ajoute OPTIONS pour le CORS et GET avec le Middleware de sécurité
+http.HandleFunc("OPTIONS /api/chat/conversations", admin.GetConversationsHandler)
+http.HandleFunc("GET /api/chat/conversations", auth.VerifyTokenMiddleware(admin.GetConversationsHandler))
+	
+
     fmt.Println("test de : http://localhost:8081")
  
     http.ListenAndServe(":8081", nil)
