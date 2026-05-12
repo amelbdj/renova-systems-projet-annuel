@@ -248,3 +248,57 @@ function SeDesinscrire(idEvent) {
       alert("Attention : " + errorMessage);
     });
 }
+
+function SeDesinscrire(idEvent) {
+  // 1. Demander confirmation (c'est toujours mieux pour éviter les clics par erreur)
+  if (
+    !confirm("Voulez-vous vraiment annuler votre inscription à cet événement ?")
+  ) {
+    return;
+  }
+
+  // 2. Récupérer les infos de l'utilisateur (comme pour l'inscription)
+  const idUser = localStorage.getItem("userId");
+  const monToken = localStorage.getItem("token");
+
+  if (!idUser || idUser === "null") {
+    alert("Erreur : Vous devez être connecté pour faire cette action.");
+    return;
+  }
+
+  // 3. Appel à la route Go qu'on vient de configurer
+  fetch("http://localhost:8081/admin/evenements/desinscription", {
+    method: "POST", // Correspond à la méthode acceptée par ton routeur Go
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + monToken,
+    },
+    body: JSON.stringify({
+      id_user: parseInt(idUser),
+      id_event: idEvent,
+    }),
+  })
+    .then(function (res) {
+      return res.json().then(function (data) {
+        if (!res.ok) {
+          throw data.erreur || "Erreur lors de la désinscription";
+        }
+        return data; // Les données de succès
+      });
+    })
+    .then(function (data) {
+      alert("Succès : " + (data.message || "Désinscription validée"));
+
+      // Fermer la modale si elle était ouverte
+      FermerEvenement();
+
+      // Recharge la liste des événements pour mettre à jour l'affichage
+      // Le bouton vert "Déjà inscrit" redeviendra un bouton bleu "S'inscrire"
+      if (typeof chargerEvenementsClient === "function") {
+        chargerEvenementsClient();
+      }
+    })
+    .catch(function (errorMessage) {
+      alert("Attention : " + errorMessage);
+    });
+}
