@@ -196,3 +196,19 @@ func InscrireClient(idUser int, idEvent int) error {
 
 	return nil
 }
+
+func SupprimerInscription( idUser int, idEvent int) error {
+	query := "DELETE FROM inscription WHERE id_user = ? AND id_event = ?"
+	
+	result, err := Db.Exec(query, idUser, idEvent)
+	if err != nil {
+		return fmt.Errorf("erreur lors de la suppression SQL : %v", err)
+	}
+
+	rowsAffected, _ := result.RowsAffected()
+	if rowsAffected == 0 {
+		return fmt.Errorf("aucune inscription trouvée pour cet utilisateur et cet événement")
+	}
+
+	return nil
+}

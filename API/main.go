@@ -210,6 +210,9 @@ http.HandleFunc("GET /ws/chat", admin.ChatHandler)
 // On ajoute OPTIONS pour le CORS et GET avec le Middleware de sécurité
 http.HandleFunc("OPTIONS /api/chat/conversations", admin.GetConversationsHandler)
 http.HandleFunc("GET /api/chat/conversations", auth.VerifyTokenMiddleware(admin.GetConversationsHandler))
+
+http.HandleFunc("POST /admin/evenements/desinscription", admin.DesinscriptionHandler)
+http.HandleFunc("OPTIONS /admin/evenements/desinscription", admin.DesinscriptionHandler)
 	
 
     fmt.Println("test de : http://localhost:8081")
