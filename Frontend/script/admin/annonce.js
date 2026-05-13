@@ -35,6 +35,13 @@ function GetAnnonce() {
           annonce.statut_validation &&
           annonce.statut_validation.toLowerCase() === "en attente"
         ) {
+          let dateBrute = annonce.created_at;
+          let dateStr = "Date inconnue";
+
+          if (dateBrute && !dateBrute.startsWith("0001")) {
+            dateStr = dateBrute;
+          }
+
           htmlContent += `
     <div class="val-list fu fu1">
         <div class="val-item ann">
@@ -50,7 +57,8 @@ function GetAnnonce() {
                     <span class="material-symbols-outlined" style="font-size:14px; vertical-align:middle;">category</span> 
                     <b>${annonce.categorie}</b> · 
                     ${annonce.prenom} ${annonce.nom} · 
-                    <span data-i18n="backoffice.ads.published_on">${t("backoffice.ads.published_on")}</span> ${new Date(annonce.date_publication).toLocaleDateString()}
+                    
+                    <span data-i18n="backoffice.ads.published_on">Publiée le</span> ${dateStr}
                 </div>
 
                 <div class="val-desc">${annonce.description}</div>
@@ -58,21 +66,21 @@ function GetAnnonce() {
                 <div style="margin-top:10px; font-size:11px; color:var(--txt-m); display:flex; gap:15px;">
                     <span><span class="material-symbols-outlined" style="font-size:12px;">scale</span> ${annonce.poids_kg} kg</span>
                     <span><span class="material-symbols-outlined" style="font-size:12px;">location_on</span> ${annonce.ville} (${annonce.code_postal})</span>
-                    <span><span class="material-symbols-outlined" style="font-size:12px;">inventory_2</span> ${t("backoffice.ads.condition")}: ${annonce.etat}</span>
+                    <span><span class="material-symbols-outlined" style="font-size:12px;">inventory_2</span> État : ${annonce.etat}</span>
                 </div>
 
                 <div class="val-actions" style="margin-top:15px;">
                     <button class="va-btn va-ok" onclick="ValidateAnnonce(${annonce.id})">
                         <span class="material-symbols-outlined" style="font-size:18px;">check_circle</span>
-                        <span data-i18n="backoffice.btn.approve">${t("backoffice.btn.approve")}</span>
+                        <span data-i18n="backoffice.btn.approve">Approuver</span>
                     </button>
                     <button class="va-btn va-no" onclick="RefuseAnnonce(${annonce.id})">
                         <span class="material-symbols-outlined" style="font-size:18px;">cancel</span>
-                        <span data-i18n="backoffice.btn.refuse">${t("backoffice.btn.refuse")}</span>
+                        <span data-i18n="backoffice.btn.refuse">Refuser</span>
                     </button>
                 </div>
             </div>
-            <span class="tag t-or" style="flex-shrink: 0; font-size: 10px" data-i18n="backoffice.ads.ad_tag">${t("backoffice.ads.ad_tag")}</span>
+            <span class="tag t-or" style="flex-shrink: 0; font-size: 10px" data-i18n="backoffice.ads.ad_tag">Annonce</span>
         </div>
     </div>`;
         }

@@ -11,7 +11,10 @@ function GetEvent() {
       if (currentTabId !== "tout") container.innerHTML = "";
       let lieu = "";
       let htmlContent = "";
+
       events.forEach((event) => {
+        console.log("Événement:", event); // Log pour vérifier les données de l'événement
+
         if (
           event.statut_validation &&
           event.statut_validation.toLowerCase() === "en attente"
@@ -21,6 +24,10 @@ function GetEvent() {
           } else {
             lieu = "";
           }
+
+          // 🛡️ CORRECTION DE LA DATE : On prend la date envoyée par Go directement
+          let dateStr = event.date_debut ? event.date_debut : "Date inconnue";
+
           htmlContent += `
                     <div class="val-list fu fu1">
                         <div class="val-item ann">
@@ -33,7 +40,9 @@ function GetEvent() {
                                     ${lieu}
                                 </div>
                                 <div class="val-desc">${event.description}</div>
-                                <span data-i18n="backoffice.events.on_date">Le</span> ${new Date(event.date_debut).toLocaleDateString()}
+                                
+                                <span data-i18n="backoffice.events.on_date">Le</span> ${dateStr}
+                                
                                 <div class="val-actions">
                                     <button class="va-btn va-ok" onclick="ValidateEvent(${event.id})" data-i18n="backoffice.btn.approve">✓ Approuver</button>
                                     <button class="va-btn va-no" onclick="RefuseEvent(${event.id})" data-i18n="backoffice.btn.refuse">✕ Refuser</button>
