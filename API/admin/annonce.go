@@ -349,18 +349,28 @@ func ConfirmPaymentAndOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var boxID int
-	err = bdd.Db.QueryRow("SELECT id_box FROM box_conteneur WHERE etat = 'LIBRE' AND localisation = ? LIMIT 1", annonce.Ville).Scan(&boxID)
-
+	var sellerID int
+	err = bdd.Db.QueryRow("SELECT id_user FROM annonce WHERE id = ?", annonceID).Scan(&sellerID)
 	if err != nil {
-		err = bdd.Db.QueryRow("SELECT id_box FROM box_conteneur WHERE etat = 'LIBRE' LIMIT 1").Scan(&boxID)
-		if err != nil {
-			http.Error(w, "Aucune box libre disponible", http.StatusInternalServerError)
-			return
-		}
+		http.Error(w, "Impossible de trouver le vendeur", http.StatusInternalServerError)
+		return
 	}
 
-	err = bdd.ReserveBox(annonceID, boxID, buyerID)
+	var conteneurID int
+	err = bdd.Db.QueryRow(`
+        SELECT c.id 
+        FROM conteneur c
+        JOIN box b ON c.id = b.id_conteneur
+        WHERE b.statut = 'libre' 
+        LIMIT 1
+    `).Scan(&conteneurID)
+
+	if err != nil {
+		http.Error(w, "Aucun conteneur avec des box libres n'est disponible", http.StatusInternalServerError)
+		return
+	}
+
+	err = bdd.ReserveBox(annonceID, conteneurID, sellerID)
 	if err != nil {
 		http.Error(w, "Erreur logistique box: "+err.Error(), http.StatusInternalServerError)
 		return
@@ -370,8 +380,8 @@ func ConfirmPaymentAndOrder(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"status":   "success",
 		"order_id": orderID,
-		"box_id":   boxID,
-		"message":  "Paiement validé, annonce passée en VENDU, et Box réservée",
+		"box_id":   conteneurID,
+		"message":  "Paiement validé, annonce passée en EN ATTENTE DEPOT, et Box attribuée au vendeur",
 	})
 }
 
@@ -388,4 +398,19 @@ func GetMyBoxes(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(data)
+}
+func GetEcoStatsHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
+
+	userIDStr := r.URL.Query().Get("user_id")
+	userID, _ := strconv.Atoi(userIDStr)
+
+	stats, err := bdd.GetUserEcoStats(userID)
+	if err != nil {
+		http.Error(w, "Erreur serveur", http.StatusInternalServerError)
+		return
+	}
+
+	json.NewEncoder(w).Encode(stats)
 }

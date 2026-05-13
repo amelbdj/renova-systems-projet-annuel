@@ -232,9 +232,9 @@ func GetAnnonceByTitle(query string, filtre string) ([]models.Annonce, error) {
 }
 
 func GetAnnonceById(id int) (models.Annonce, error) {
-    var a models.Annonce
+	var a models.Annonce
 
-    query := `
+	query := `
         SELECT 
          a.id, 
          a.id_user, -- <-- AJOUTÉ ICI
@@ -249,19 +249,19 @@ func GetAnnonceById(id int) (models.Annonce, error) {
     LEFT JOIN pa2026.categorie ON a.id_categorie = pa2026.categorie.id
     WHERE a.id = ?`
 
-    err := Db.QueryRow(query, id).Scan(
-        &a.Id, 
-        &a.IdUser,
-        &a.Titre, &a.Description, &a.Type, &a.Prix, &a.StatutVente, &a.StatutValidation,
-        &a.CodePostal, &a.Ville, &a.Etat, &a.PoidsKg, &a.Quantite,
-        &a.Nom, &a.Prenom, &a.Categorie, &a.Image,
-    )
+	err := Db.QueryRow(query, id).Scan(
+		&a.Id,
+		&a.IdUser,
+		&a.Titre, &a.Description, &a.Type, &a.Prix, &a.StatutVente, &a.StatutValidation,
+		&a.CodePostal, &a.Ville, &a.Etat, &a.PoidsKg, &a.Quantite,
+		&a.Nom, &a.Prenom, &a.Categorie, &a.Image,
+	)
 
-    if err != nil {
-        return a, fmt.Errorf("get Annonce by id : %v", err)
-    }
+	if err != nil {
+		return a, fmt.Errorf("get Annonce by id : %v", err)
+	}
 
-    return a, nil
+	return a, nil
 }
 
 func GetAnnoncesByUser(userID int) ([]models.Annonce, error) {
@@ -321,4 +321,33 @@ func GetValidatedAnnonces(currentUserID int) ([]models.Annonce, error) {
 		Annonces = append(Annonces, a)
 	}
 	return Annonces, nil
+}
+
+func GetUserEcoStats(userID int) (map[string]interface{}, error) {
+	var score float64
+	var objetsDonnes int
+	var dechetsEvites float64
+
+	err := Db.QueryRow("SELECT COALESCE(score, 0) FROM utilisateur WHERE id = ?", userID).Scan(&score)
+	if err != nil {
+		score = 0
+	}
+
+	query := `
+        SELECT 
+            COUNT(id), 
+            COALESCE(SUM(poids), 0) 
+        FROM annonce 
+        WHERE id_user = ? AND statut = 'RECUPERE'`
+
+	err = Db.QueryRow(query, userID).Scan(&objetsDonnes, &dechetsEvites)
+	if err != nil {
+		fmt.Println("Erreur lors du calcul des stats éco :", err)
+	}
+
+	return map[string]interface{}{
+		"score":          score,
+		"objets_donnes":  objetsDonnes,
+		"dechets_evites": dechetsEvites,
+	}, nil
 }
