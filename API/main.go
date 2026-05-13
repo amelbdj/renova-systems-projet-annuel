@@ -67,8 +67,7 @@ func main() {
 	http.HandleFunc("OPTIONS /api/user/boxes", admin.GetMyBoxes)
 	http.HandleFunc("OPTIONS /api/admin/conteneur/{id}/boxes", admin.GetBoxesForConteneurHandler)
 	http.HandleFunc("OPTIONS /api/admin/box/add", admin.AddSingleBoxHandler)
-			http.HandleFunc("OPTIONS /api/admin/box/update", admin.UpdateBoxStatusHandler)
-
+	http.HandleFunc("OPTIONS /api/admin/box/update", admin.UpdateBoxStatusHandler)
 
 	// --- TRANSLATIONS OPTIONS ---
 	http.HandleFunc("OPTIONS /api/translations", admin.GetTranslations)
@@ -129,6 +128,7 @@ func main() {
 	// http.HandleFunc("PUT /api/annonces/vendre", admin.AnnVendu)
 	http.HandleFunc("POST /api/annonces/vendre", admin.ConfirmPaymentAndOrder)
 	http.HandleFunc("OPTIONS /api/annonces/vendre", admin.ConfirmPaymentAndOrder)
+	http.HandleFunc("/api/user/stats", admin.GetEcoStatsHandler)
 
 	// --- EVENEMENTS ---
 	http.HandleFunc("GET /admin/evenements", admin.GetAllEvenements)
@@ -144,9 +144,8 @@ func main() {
 	http.HandleFunc("POST /api/box/collect", admin.CollectObject)
 	http.HandleFunc("GET /api/admin/conteneurs", admin.GetConteneursAdmin)
 	http.HandleFunc("POST /api/admin/conteneur/create", admin.CreateConteneur)
-		http.HandleFunc("POST /api/admin/box/add", admin.AddSingleBoxHandler)
-		http.HandleFunc("PUT /api/admin/box/update", admin.UpdateBoxStatusHandler)
-
+	http.HandleFunc("POST /api/admin/box/add", admin.AddSingleBoxHandler)
+	http.HandleFunc("PUT /api/admin/box/update", admin.UpdateBoxStatusHandler)
 
 	// --- ARTICLES / NEWS ---
 	http.HandleFunc("GET /admin/articles", admin.GetAllArticles)
@@ -168,7 +167,7 @@ func main() {
 	// boxes
 	http.HandleFunc("GET /api/user/boxes", admin.GetMyBoxes)
 	// Le {id} entre accolades indique à Go que cette partie de l'URL est une variable dynamique !
-http.HandleFunc("GET /api/admin/conteneur/{id}/boxes", admin.GetBoxesForConteneurHandler)
+	http.HandleFunc("GET /api/admin/conteneur/{id}/boxes", admin.GetBoxesForConteneurHandler)
 
 	// --- TRADUCTIONS ---
 	http.HandleFunc("GET /api/translations", admin.GetTranslations)
@@ -181,41 +180,37 @@ http.HandleFunc("GET /api/admin/conteneur/{id}/boxes", admin.GetBoxesForConteneu
 	http.HandleFunc("GET /admin/forum/stats", auth.VerifyTokenMiddleware(admin.GetForumStats))
 
 	http.HandleFunc("OPTIONS /user/planning", admin.GetUserPlanningHandler)
-	http.HandleFunc("GET /user/planning", admin.GetUserPlanningHandler) 
+	http.HandleFunc("GET /user/planning", admin.GetUserPlanningHandler)
 
-
-
-	http.HandleFunc("OPTIONS /user/forums", admin.GetForumsHandler) 
+	http.HandleFunc("OPTIONS /user/forums", admin.GetForumsHandler)
 	http.HandleFunc("GET /user/forums", admin.GetForumsHandler)
-	http.HandleFunc("POST /user/forums",admin.GetForumsHandler)
-
+	http.HandleFunc("POST /user/forums", admin.GetForumsHandler)
 
 	http.HandleFunc("OPTIONS /user/forums/messages", admin.ForumClientMessagesHandler)
-	http.HandleFunc("GET /user/forums/messages",admin.ForumClientMessagesHandler)
+	http.HandleFunc("GET /user/forums/messages", admin.ForumClientMessagesHandler)
 	http.HandleFunc("POST /user/forums/messages", admin.ForumClientMessagesHandler)
 
 	// --- MESSAGERIE (WEBSOCKET & HISTORIQUE) ---
-    
-    // 1. L'historique des messages (Besoin du Token pour la sécurité)
-// --- MESSAGERIE (WEBSOCKET & HISTORIQUE) ---
 
-// 1. L'historique des messages (Besoin du Token pour la sécurité)
-http.HandleFunc("OPTIONS /api/chat/history", admin.GetChatHistoryHandler)
-http.HandleFunc("GET /api/chat/history", auth.VerifyTokenMiddleware(admin.GetChatHistoryHandler))
+	// 1. L'historique des messages (Besoin du Token pour la sécurité)
+	// --- MESSAGERIE (WEBSOCKET & HISTORIQUE) ---
 
-// 2. Le WebSocket (ATTENTION : Un WebSocket s'initie TOUJOURS avec un GET !)
-http.HandleFunc("GET /ws/chat", admin.ChatHandler)
+	// 1. L'historique des messages (Besoin du Token pour la sécurité)
+	http.HandleFunc("OPTIONS /api/chat/history", admin.GetChatHistoryHandler)
+	http.HandleFunc("GET /api/chat/history", auth.VerifyTokenMiddleware(admin.GetChatHistoryHandler))
 
-// 3. La liste des conversations pour le Dashboard
-// On ajoute OPTIONS pour le CORS et GET avec le Middleware de sécurité
-http.HandleFunc("OPTIONS /api/chat/conversations", admin.GetConversationsHandler)
-http.HandleFunc("GET /api/chat/conversations", auth.VerifyTokenMiddleware(admin.GetConversationsHandler))
+	// 2. Le WebSocket (ATTENTION : Un WebSocket s'initie TOUJOURS avec un GET !)
+	http.HandleFunc("GET /ws/chat", admin.ChatHandler)
 
-http.HandleFunc("POST /admin/evenements/desinscription", admin.DesinscriptionHandler)
-http.HandleFunc("OPTIONS /admin/evenements/desinscription", admin.DesinscriptionHandler)
-	
+	// 3. La liste des conversations pour le Dashboard
+	// On ajoute OPTIONS pour le CORS et GET avec le Middleware de sécurité
+	http.HandleFunc("OPTIONS /api/chat/conversations", admin.GetConversationsHandler)
+	http.HandleFunc("GET /api/chat/conversations", auth.VerifyTokenMiddleware(admin.GetConversationsHandler))
 
-    fmt.Println("test de : http://localhost:8081")
- 
-    http.ListenAndServe(":8081", nil)
+	http.HandleFunc("POST /admin/evenements/desinscription", admin.DesinscriptionHandler)
+	http.HandleFunc("OPTIONS /admin/evenements/desinscription", admin.DesinscriptionHandler)
+
+	fmt.Println("test de : http://localhost:8081")
+
+	http.ListenAndServe(":8081", nil)
 }

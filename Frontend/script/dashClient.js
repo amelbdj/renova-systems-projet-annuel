@@ -7,7 +7,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   const firstName = localStorage.getItem("userName");
-  const score = localStorage.getItem("userScore") || 0;
   const hasSeenTutorial = localStorage.getItem("tutorielVu");
   const tutorialOverlay = document.getElementById("tut");
 
@@ -19,17 +18,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (heroNameDisplay) heroNameDisplay.textContent = firstName;
   }
 
-  const allScoreDisplays = document.querySelectorAll(".user-score");
-  allScoreDisplays.forEach((element) => {
-    element.textContent = score;
-  });
-
-  const scoreFill = document.querySelector(".score-lfill");
-  if (scoreFill) {
-    const percentage = Math.min((score / 1000) * 100, 100);
-    scoreFill.style.width = percentage + "%";
-  }
-
   if (hasSeenTutorial === "true") {
     if (tutorialOverlay) tutorialOverlay.style.display = "none";
   } else {
@@ -37,6 +25,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   loadMyAnnonces();
+  loadUserBoxes();
+  loadEcoScore();
 });
 
 function logout() {
@@ -155,40 +145,37 @@ function goToProfile() {
 }
 
 async function loadUserBoxes() {
-  const userId = localStorage.getItem("userId");
-  const grid = document.getElementById("systeme-conteneurs");
+    const userId = localStorage.getItem('userId'); 
+    const grid = document.getElementById('systeme-conteneurs');
 
-  if (!grid) return;
+    if (!grid) return;
 
-  try {
-    const response = await fetch(
-      `http://localhost:8081/api/user/boxes?user_id=${userId}`,
-    );
-    const boxes = await response.json();
+    try {
+        const response = await fetch(`http://localhost:8081/api/user/boxes?user_id=${userId}`);
+        const boxes = await response.json();
 
-    if (!boxes || boxes.length === 0) {
-      grid.innerHTML = `
+        if (!boxes || boxes.length === 0) {
+            grid.innerHTML = `
                 <div class="cont-card avail">
                     <div class="cont-body">Vous n'avez aucun dépôt actif pour le moment.</div>
                     <span class="tag t-green">Prêt pour un nouvel achat</span>
                 </div>`;
-      return;
-    }
+            return;
+        }
 
-    grid.innerHTML = boxes
-      .map(
-        (box) => `
+        grid.innerHTML = boxes.map(box => `
             <div class="cont-card active">
                 <div class="cont-top">
                     <div>
-                        <div class="cont-id">${box.id_box}</div>
-                        <div style="font-size: 11px; color: var(--blue-l); margin-top: 2px">Votre dépôt actif</div>
+                        <div class="cont-id">${box.numero_box}</div> 
+                        <div style="font-size: 11px; color: var(--blue-l); margin-top: 2px">Statut : ${box.etat}</div>
                     </div>
                     <div class="cont-led led-b"></div>
                 </div>
                 <div class="cont-body">
-                    <strong>${box.objet}</strong><br>
-                    ${box.localisation} • Réservé le ${new Date(box.date).toLocaleDateString()}
+                    <strong>Objet : ${box.objet}</strong><br>
+                    <i class="fas fa-map-marker-alt"></i> ${box.lieu}<br>
+                    <small>Réservé le ${new Date(box.date).toLocaleDateString()}</small>
                 </div>
                 <div class="cont-codes">
                     <span class="ccode blue">PIN : ${box.code_pin}</span>
@@ -204,24 +191,83 @@ async function loadUserBoxes() {
                     </svg>
                 </div>
 
-                <button class="btn btn-g btn-sm" style="margin-top: 12px; width:100%" onclick="alert('Téléchargement du code ${box.barcode}')">
-                    <i class="fas fa-download"></i> Télécharger code-barres
+                <button class="btn btn-g btn-sm" style="margin-top: 12px; width:100%" onclick="window.print()">
+                    <i class="fas fa-download"></i> Imprimer le bon de dépôt
                 </button>
             </div>
-        `,
-      )
-      .join("");
+        `).join('');
 
-    if (window.JsBarcode) {
-      JsBarcode(".barcode-img").init();
+        if (window.JsBarcode) {
+            JsBarcode(".barcode-img").init();
+        }
+
+    } catch (error) {
+        console.error("Erreur lors du chargement des boxes:", error);
+        grid.innerHTML = "<p>Erreur de connexion au système de conteneurs.</p>";
     }
-  } catch (error) {
-    console.error("Erreur lors du chargement des boxes:", error);
-    grid.innerHTML = "<p>Erreur de connexion au système de conteneurs.</p>";
+}
+
+function togglePriceField() {
+  const typeSelect = document.querySelector("#annForm select").value;
+  const priceContainer = document.getElementById("priceContainer");
+  const priceInput = document.querySelector('#annForm input[type="number"]');
+
+  if (typeSelect === "Don gratuit" || typeSelect === "don") {
+    priceContainer.style.display = "none";
+    priceInput.value = "0";
+  } else {
+    priceContainer.style.display = "block";
+    if (priceInput.value === "0") {
+      priceInput.value = "";
+    }
   }
 }
 
+async function loadEcoScore() {
+  const userId = localStorage.getItem("userId");
+
+  try {
+    const response = await fetch("http://localhost:8081/api/user/stats?user_id=" + userId);
+    const stats = await response.json();
+
+    const monScore = stats.score;
+
+    const elementsScore = document.querySelectorAll(".user-score");
+    
+    elementsScore.forEach((element) => {
+      element.textContent = monScore;
+    });
+
+    const pointsTexte = document.getElementById("dynamic-pts");
+    if (pointsTexte) {
+      pointsTexte.textContent = monScore + " pts";
+    }
+
+    const barreProgression = document.querySelector(".score-lfill");
+    if (barreProgression) {
+      let pourcentage = (monScore / 1000) * 100;
+      
+      if (pourcentage > 100) {
+        pourcentage = 100;
+      }
+      
+      barreProgression.style.setProperty("width", pourcentage + "%", "important");
+    }
+
+    const casesStats = document.querySelectorAll(".sstat-v");
+    if (casesStats.length >= 4) {
+      casesStats[0].textContent = stats.objets_donnes || 0;           
+      casesStats[1].textContent = (stats.dechets_evites || 0) + " kg";  
+      casesStats[2].textContent = "-";                                
+      casesStats[3].textContent = "-";                                  
+    }
+
+  } catch (error) {
+    console.error("Erreur lors du chargement du score :", error);
+  }
+}
 document.addEventListener("DOMContentLoaded", () => {
   loadMyAnnonces();
   loadUserBoxes();
+  loadEcoScore();
 });
