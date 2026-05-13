@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Logistique & Box — ReNova Admin</title>
+    <script src="../Frontend/script/auth_guard.js"></script>
+    <script>
+      checkSession("Administrateur");
+    </script>
+    <link rel="stylesheet" href="../Frontend/style/admin.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Outfit:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+    />
+  </head>
+  <body
+    style="display: flex; min-height: 100vh; margin: 0; background: var(--bg)"
+  >
+    <aside
+      style="
+        width: 260px;
+        background: var(--bg2);
+        border-right: 1px solid var(--b0);
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        flex-shrink: 0;
+      "
+    >
+      <div
+        style="
+          font-family: &quot;Syne&quot;, sans-serif;
+          font-size: 24px;
+          font-weight: 800;
+          color: white;
+          text-align: center;
+        "
+      >
+        ReNova <em style="color: var(--or-l); font-style: normal">Admin</em>
+      </div>
+      <nav style="display: flex; flex-direction: column; gap: 8px">
+        <a href="admin_dashboard.html" class="nav-link"
+          ><span class="material-symbols-outlined">dashboard</span> Vue
+          d'ensemble</a
+        >
+        <a href="admin_users.html" class="nav-link"
+          ><span class="material-symbols-outlined">group</span> Utilisateurs</a
+        >
+        <a href="admin_validations.html" class="nav-link"
+          ><span class="material-symbols-outlined">check_circle</span>
+          Validations</a
+        >
+        <a href="admin_conteneurs.html" class="nav-link active"
+          ><span class="material-symbols-outlined">inventory_2</span> Logistique
+          & Box</a
+        >
+      </nav>
+      <button
+        class="btn btn-o btn-full"
+        style="margin-top: auto"
+        onclick="logout()"
+      >
+        <span class="material-symbols-outlined">logout</span> Déconnexion
+      </button>
+    </aside>
+
+    <main style="flex: 1; padding: 40px">
+      <div class="hero">
+        <h1 class="hero-title">Réseau de <em>Conteneurs</em></h1>
+        <p class="hero-desc">
+          Gérez les box intelligentes et les codes d'accès.
+        </p>
+      </div>
+
+      <div
+        id="box-stats"
+        class="card"
+        style="
+          margin-bottom: 20px;
+          padding: 15px;
+          color: var(--or-l);
+          font-weight: 600;
+        "
+      ></div>
+
+      <div id="box-container" class="kpi-grid"></div>
+    </main>
+    <div class="modal-bg" id="NewConteneurModal" style="display: none">
+      <div class="modal">
+        <div class="modal-x" onclick="closeModal('NewConteneurModal')">✕</div>
+        <div class="modal-h">
+          <span class="material-symbols-outlined">inventory_2</span>
+          <span>Nouveau Conteneur</span>
+        </div>
+        <div class="modal-sub">
+          Déployez un nouveau point de collecte physique sur la carte.
+        </div>
+
+        <div class="fgroup">
+          <label>Nom / Identifiant <span class="req">*</span></label>
+          <input
+            id="add-c-nom"
+            type="text"
+            placeholder="Ex: Box Gare de Lyon"
+          />
+        </div>
+
+        <div class="fgroup">
+          <label>Adresse complète <span class="req">*</span></label>
+          <input
+            id="add-c-adresse"
+            type="text"
+            placeholder="Ex: 12 rue de la Paix"
+          />
+        </div>
+
+        <div class="frow">
+          <div>
+            <label>Code Postal <span class="req">*</span></label>
+            <input id="add-c-cp" type="text" placeholder="75012" />
+          </div>
+          <div>
+            <label>Ville <span class="req">*</span></label>
+            <input id="add-c-ville" type="text" placeholder="Paris" />
+          </div>
+        </div>
+
+        <button class="btn btn-o btn-full" onclick="CreateConteneur()">
+          Déployer le conteneur ✓
+        </button>
+      </div>
+    </div>
+
+    <div class="modal-bg" id="NewBoxModal" style="display: none">
+      <div class="modal">
+        <div class="modal-x" onclick="closeModal('NewBoxModal')">✕</div>
+        <div class="modal-h">
+          <span class="material-symbols-outlined">add_box</span>
+          <span>Nouveau Casier</span>
+        </div>
+        <div class="modal-sub">
+          Ajoutez un casier de stockage à l'intérieur de ce conteneur.
+        </div>
+
+        <div class="fgroup">
+          <label>Taille du casier <span class="req">*</span></label>
+          <select id="add-b-taille">
+            <option value="S">Petit (S)</option>
+            <option value="M">Moyen (M)</option>
+            <option value="L">Grand (L)</option>
+            <option value="XL">Très grand (XL)</option>
+          </select>
+        </div>
+
+        <input type="hidden" id="current-conteneur-id" />
+
+        <button
+          class="btn btn-o btn-full"
+          onclick="
+            CreateBox(document.getElementById('current-conteneur-id').value)
+          "
+        >
+          Ajouter le casier ✓
+        </button>
+      </div>
+    </div>
+    <script src="../Frontend/script/admin/box.js" defer></script>
+  </body>
+</html>

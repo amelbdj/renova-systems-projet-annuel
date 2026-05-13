@@ -225,3 +225,45 @@ func InscrireClient(w http.ResponseWriter, r *http.Request) {
 json.NewEncoder(w).Encode(map[string]string{
     "message": "Client inscrit avec succès !",})
 }
+
+
+type DesinscriptionReq struct {
+	IdUser  int `json:"id_user"`
+	IdEvent int `json:"id_event"`
+}
+
+func DesinscriptionHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	if r.Method != http.MethodPost {
+		http.Error(w, `{"erreur": "Méthode non autorisée"}`, http.StatusMethodNotAllowed)
+		return
+	}
+
+	var req DesinscriptionReq
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"erreur": "Données JSON invalides"})
+		return
+	}
+
+
+	err := bdd.SupprimerInscription(req.IdUser, req.IdEvent)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"erreur": err.Error()})
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{
+		"message": "Désinscription effectuée avec succès",
+	})
+}

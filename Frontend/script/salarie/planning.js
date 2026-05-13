@@ -1,6 +1,28 @@
 let tousMesEvenements = [];
-let dateAffichee = new Date(2026, 3, 1);
+let dateAffichee = new Date(2026, 2, 1); // Mars 2026 (les mois JS commencent à 0)
 let dateSelectionnee = "";
+
+function parseDateSql(dateStr) {
+  if (!dateStr) return { isoDate: "", time: "00:00" };
+
+  let datePart = dateStr;
+  let timePart = "00:00";
+
+  if (dateStr.includes(" a ")) {
+    const parts = dateStr.split(" a ");
+    datePart = parts[0]; // "20/03/2026"
+    timePart = parts[1]; // "14:00"
+  }
+
+  if (datePart.includes("/")) {
+    const d = datePart.split("/");
+    if (d.length === 3) {
+      return { isoDate: `${d[2]}-${d[1]}-${d[0]}`, time: timePart };
+    }
+  }
+
+  return { isoDate: datePart.substring(0, 10), time: timePart };
+}
 
 function initPlanning() {
   const btnPrev = document.getElementById("btn-prev-month");
@@ -32,11 +54,16 @@ function fetchEvenements() {
       return res.json();
     })
     .then((evenements) => {
+      if (!evenements) evenements = [];
+
       tousMesEvenements = evenements.filter((ev) => {
         const statutEv = ev.statut_validation
           ? ev.statut_validation.toLowerCase()
           : "";
-        return statutEv === "valide" && ev.idSalarie == userId;
+        return (
+          (statutEv === "valide" || statutEv === "en ligne") &&
+          (ev.idSalarie == userId || ev.id_salarie == userId)
+        );
       });
 
       genererJoursAvecEvenements();
@@ -59,7 +86,7 @@ function genererJoursAvecEvenements() {
     "Novembre",
     "Décembre",
   ];
-  const joursNoms = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
+  const joursNoms = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"]; // Dimanche est 0 en JS
 
   const annee = dateAffichee.getFullYear();
   const moisIndex = dateAffichee.getMonth();
@@ -71,7 +98,7 @@ function genererJoursAvecEvenements() {
   let datesDuMois = new Set();
 
   tousMesEvenements.forEach((ev) => {
-    const dateEv = ev.date_debut ? ev.date_debut.substring(0, 10) : "";
+    const dateEv = parseDateSql(ev.date_debut).isoDate;
 
     if (dateEv.startsWith(`${annee}-${moisStr}`)) {
       datesDuMois.add(dateEv);
@@ -84,7 +111,6 @@ function genererJoursAvecEvenements() {
   if (!conteneurJours) return;
   conteneurJours.innerHTML = "";
 
-  // Cas où il n'y a aucun événement validé ce mois-ci
   if (datesTriees.length === 0) {
     conteneurJours.innerHTML = `<div style="color:var(--txt-d); padding:10px 20px; font-size:14px;">Aucun événement prévu en ${moisNoms[moisIndex]}.</div>`;
 
@@ -155,14 +181,14 @@ function genererJoursAvecEvenements() {
 
 function afficherTimeline(dateCible) {
   const eventsDuJour = tousMesEvenements.filter((ev) => {
-    const dateEv = ev.date_debut ? ev.date_debut.substring(0, 10) : "";
+    const dateEv = parseDateSql(ev.date_debut).isoDate;
     return dateEv === dateCible;
   });
 
   eventsDuJour.sort((a, b) => {
-    const hA = a.date_debut || "";
-    const hB = b.date_debut || "";
-    return hA.localeCompare(hB);
+    const timeA = parseDateSql(a.date_debut).time;
+    const timeB = parseDateSql(b.date_debut).time;
+    return timeA.localeCompare(timeB);
   });
 
   const timelineContainer = document.querySelector(".timeline");
@@ -181,10 +207,8 @@ function afficherTimeline(dateCible) {
 
     const lieuTxt = ev.lieu ? ` · ${ev.lieu}` : "";
 
-    const heureDebut = ev.date_debut
-      ? ev.date_debut.substring(11, 16)
-      : "00:00";
-    const heureFin = ev.date_fin ? ev.date_fin.substring(11, 16) : "00:00";
+    const heureDebut = parseDateSql(ev.date_debut).time;
+    const heureFin = parseDateSql(ev.date_fin).time;
 
     const blocHTML = `
         <div class="tl-hour">
@@ -208,7 +232,7 @@ function afficherTimeline(dateCible) {
         <div class="tl-col">
             <div style="font-size: 12px; color: var(--txt-d); padding: 8px 0;">Fin de journée</div>
         </div>
-    </div>
+    </div> 
   `;
 }
 
