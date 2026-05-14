@@ -9,7 +9,14 @@ async function loadAllAnnonces() {
 
     try {
         const response = await fetch(`http://localhost:8081/api/annonces/all?id=${userId}`);
-        allAnnonces = await response.json();
+        const data = await response.json(); 
+
+        allAnnonces = data.filter(ann => 
+            ann.statut_vente !== 'VENDU' && 
+            ann.statut_vente !== 'Vendu' && 
+            ann.statut_vente !== 'EN ATTENTE DEPOT' && 
+            ann.statut_vente !== 'EN BOX'
+        );
         
         displayAnnonces(allAnnonces);
     } catch (err) {

@@ -71,6 +71,28 @@ async function openCheckout(type) {
       alert("Erreur lors de la création de la session de paiement.");
     }
   }
+  else if (type === "reserve") {
+    const confirmReserve = confirm("Voulez-vous reserver cet objet gratuitement ? Le vendeur sera notifie pour le deposer dans un box.");
+    
+    if (!confirmReserve) return;
+
+    try {
+      const response = await fetch(
+        `http://localhost:8081/api/annonces/vendre?id=${currentItem.id}&buyer_id=${buyerId}`,
+        { method: "POST" }
+      );
+
+      if (response.ok) {
+        alert(" Objet reserve avec succes ");
+        window.location.reload(); 
+      } else {
+        alert("Erreur lors de la réservation de l'objet.");
+      }
+    } catch (err) {
+      console.error("Erreur de réservation:", err);
+      alert("Erreur de connexion au serveur.");
+    }
+  }
 }
 
 function renderPage(item) {
