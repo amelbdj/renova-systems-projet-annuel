@@ -22,6 +22,29 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
     />
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal) {
+    
+    await OneSignal.init({
+      appId: "79a53223-420a-46c8-83d9-1ca162fcb64f",
+      safari_web_id: "web.onesignal.auto.2473987d-7114-4e84-8494-f768208d432f",
+      allowLocalhostAsSecureOrigin: true,
+      notifyButton: {
+        enable: true,
+        // Cette ligne FORCE la cloche à rester affichée, même si tu es abonnée ou bloquée
+        displayPredicate: () => true 
+      }
+    });
+
+    const userId = localStorage.getItem("userId");
+    if (userId) {
+      OneSignal.login(userId);
+    }
+  });
+</script>
+    
   </head>
   <body>
     <!--
@@ -206,7 +229,7 @@
       </div>
       <div class="nav-links">
         <button class="nav-link active">Accueil</button>
-        <button class="nav-link" onclick="scroll2('ann')">Annonces</button>
+        <a class="nav-link" href="./annonceAll.html">Annonces</a>
         <button class="nav-link" onclick="scroll2('cont')">Conteneurs</button>
         <button class="nav-link" onclick="scroll2('cat')">Catalogue</button>
         <button class="nav-link" onclick="scroll2('plan')">Planning</button>
@@ -264,9 +287,7 @@
             <button class="btn btn-p" onclick="scroll2('ann')">
               <i class="fa-solid fa-plus"></i> Nouvelle annonce
             </button>
-            <button class="btn btn-g" onclick="scroll2('cat')">
-              Voir le catalogue <i class="fa-solid fa-arrow-right"></i>
-            </button>
+            
           </div>
         </div>
         <div class="hero-stats">
@@ -333,9 +354,9 @@
                 </div>
                 <div>
                   <label>Type <span class="req">*</span></label>
-                  <select>
-                    <option>Don gratuit</option>
-                    <option>Vente</option>
+                  <select onchange="togglePriceField()">
+                    <option value="Don gratuit">Don gratuit</option>
+                    <option value="Vente">Vente</option>
                   </select>
                 </div>
               </div>
@@ -343,29 +364,17 @@
                 <div>
                   <label>Catégorie</label>
                   <select id="annCategorie">
-                    <option value="1">
-                      <i class="fa-solid fa-chair"></i> Mobilier
-                    </option>
-                    <option value="2">
-                      <i class="fa-solid fa-wrench"></i> Outillage
-                    </option>
-                    <option value="3">
-                      <i class="fa-solid fa-scarf"></i> Textile
-                    </option>
-                    <option value="4">
-                      <i class="fa-solid fa-mobile"></i> Électronique
-                    </option>
-                    <option value="5">
-                      <i class="fa-solid fa-paint-roller"></i> Déco
-                    </option>
-                    <option value="6">
-                      <i class="fa-solid fa-book"></i> Livres
-                    </option>
+                    <option value="1"><i class="fa-solid fa-chair"></i> Mobilier</option>
+                    <option value="2"><i class="fa-solid fa-wrench"></i> Outillage</option>
+                    <option value="3"><i class="fa-solid fa-scarf"></i> Textile</option>
+                    <option value="4"><i class="fa-solid fa-mobile"></i> Électronique</option>
+                    <option value="5"><i class="fa-solid fa-paint-roller"></i> Déco</option>
+                    <option value="6"><i class="fa-solid fa-book"></i> Livres</option>
                   </select>
                 </div>
-                <div>
+                <div id="priceContainer" style="display: none;">
                   <label>Prix (si vente)</label>
-                  <input type="number" placeholder="0.00 €" />
+                  <input type="number" placeholder="0.00 €" value="0" />
                 </div>
               </div>
               <div class="fgroup">
@@ -478,7 +487,7 @@
         </div>
       </section>
 
-      <!-- ══ ③ CATALOGUE ══════════════════════════ -->
+      <!-- ══ ③ CATALOGUE ══════════════════════════
       <section class="cat-section" id="cat">
         <div class="sec-label fu">
           <div class="sec-num purple">3</div>
@@ -677,7 +686,7 @@
             </div>
           </div>
         </div>
-      </section>
+      </section> -->
 
       <!-- ══ ④ PLANNING + SCORE ═══════════════════ -->
       <div class="bottom-row" id="plan">
@@ -745,70 +754,53 @@
             <div class="sec-num green">5</div>
             <div class="sec-title-text">Mon Upcycling Score</div>
             <div class="sec-divider"></div>
-            <span class="tag t-green" style="flex-shrink: 0"
-              ><i class="fa-solid fa-medal"></i> Niveau Bronze</span
-            >
+            
           </div>
           <div class="score-card fu fu1">
             <div class="score-top">
-              <div class="score-ring-wrap">
-                <svg viewBox="0 0 110 110" width="100" height="100">
-                  <circle class="sr-bg" cx="55" cy="55" r="43" />
-                  <circle class="sr-fg" cx="55" cy="55" r="43" />
-                </svg>
-                <div class="ring-num">
-                  <div class="ring-n user-score">724</div>
-                  <div class="ring-lbl">/ 1000</div>
-                </div>
-              </div>
               <div class="score-info">
-                <div class="score-ttl">
-                  Éco-Actif — Bronze <i class="fa-solid fa-medal"></i>
+                <div class="score-ttl" style="display: flex; justify-content: space-between;">
+                  <span>Éco-Actif <i class="fa-solid fa-medal"></i></span>
+                  <strong id="dynamic-pts" style="color: var(--green);">0 pts</strong>
                 </div>
-                <div class="score-lbar"><div class="score-lfill"></div></div>
-                <div class="score-lvls user-score">
-                  <span>0</span><span style="color: var(--green)">724 pts</span
-                  ><span>1000 — Argent</span>
+                
+                <div class="score-lbar">
+                  <div class="score-lfill" style="width: 0% !important;"></div>
+                </div>
+                
+                <div class="score-lvls" style="display: flex; justify-content: space-between;">
+                  <span>0</span>
+                  <span>1000 — Points</span>
                 </div>
               </div>
             </div>
             <div class="score-stats">
               <div class="sstat">
-                <div class="sstat-v">12</div>
+                <div class="sstat-v">0</div>
                 <div class="sstat-l">
                   <i class="fa-solid fa-gift"></i> Objets donnés
                 </div>
               </div>
               <div class="sstat">
-                <div class="sstat-v">34 kg</div>
+                <div class="sstat-v">0 kg</div>
                 <div class="sstat-l">
                   <i class="fa-solid fa-trash-can"></i> Déchets évités
                 </div>
               </div>
               <div class="sstat">
-                <div class="sstat-v">120 L</div>
+                <div class="sstat-v">-</div>
                 <div class="sstat-l">
                   <i class="fa-solid fa-tint"></i> Eau économisée
                 </div>
               </div>
               <div class="sstat">
-                <div class="sstat-v">8.4 kg</div>
+                <div class="sstat-v">-</div>
                 <div class="sstat-l">
                   <i class="fa-solid fa-wind"></i> CO₂ évité
                 </div>
               </div>
             </div>
-            <div class="badges-row">
-              <div class="bdg"><i class="fa-solid fa-leaf"></i> Éco-Actif</div>
-              <div class="bdg"><i class="fa-solid fa-gift"></i> Donateur</div>
-              <div class="bdg"><i class="fa-solid fa-fire"></i> Streak 7j</div>
-              <div class="bdg locked">
-                <i class="fa-solid fa-money-bill"></i> Argent
-              </div>
-              <div class="bdg locked">
-                <i class="fa-solid fa-trophy"></i> Expert
-              </div>
-            </div>
+            
           </div>
         </section>
       </div>
@@ -1023,6 +1015,7 @@
         </div>
       </div>
     </div>
+
     <script>
       /* ── BARCODE ─────────────────────────────── */
       function mkBarcode(el, n) {
@@ -1062,10 +1055,14 @@
       ];
       let ci = 0;
       function updTut() {
-        document.getElementById("tico").textContent = ts[ci].i;
-        document.getElementById("th").textContent = ts[ci].h;
-        document.getElementById("tsub").textContent = ts[ci].s;
-        document.getElementById("tct").textContent =
+        const ticoEl = document.getElementById("tico");
+        if (ticoEl) ticoEl.textContent = ts[ci].i;
+        const thEl = document.getElementById("th");
+        if (thEl) thEl.textContent = ts[ci].h;
+        const tsubEl = document.getElementById("tsub");
+        if (tsubEl) tsubEl.textContent = ts[ci].s;
+        const tctEl = document.getElementById("tct");
+        if (tctEl) tctEl.textContent =
           `Étape ${ci + 1} / ${ts.length}`;
         ts.forEach((_, i) => {
           document.getElementById("tp" + i).classList.toggle("on", i === ci);
@@ -1161,7 +1158,6 @@
             body: formData,
           });
           if (response.ok) {
-            alert(editId ? "Annonce modifiée" : "Annonce validée");
             document.getElementById("editAnnId").value = "";
             currentEditingImagePath = "";
             toggleAnnForm();
