@@ -22,6 +22,29 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
     />
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal) {
+    
+    await OneSignal.init({
+      appId: "79a53223-420a-46c8-83d9-1ca162fcb64f",
+      safari_web_id: "web.onesignal.auto.2473987d-7114-4e84-8494-f768208d432f",
+      allowLocalhostAsSecureOrigin: true,
+      notifyButton: {
+        enable: true,
+        // Cette ligne FORCE la cloche à rester affichée, même si tu es abonnée ou bloquée
+        displayPredicate: () => true 
+      }
+    });
+
+    const userId = localStorage.getItem("userId");
+    if (userId) {
+      OneSignal.login(userId);
+    }
+  });
+</script>
+    
   </head>
   <body>
     <!--
@@ -992,6 +1015,7 @@
         </div>
       </div>
     </div>
+
     <script>
       /* ── BARCODE ─────────────────────────────── */
       function mkBarcode(el, n) {
@@ -1031,10 +1055,14 @@
       ];
       let ci = 0;
       function updTut() {
-        document.getElementById("tico").textContent = ts[ci].i;
-        document.getElementById("th").textContent = ts[ci].h;
-        document.getElementById("tsub").textContent = ts[ci].s;
-        document.getElementById("tct").textContent =
+        const ticoEl = document.getElementById("tico");
+        if (ticoEl) ticoEl.textContent = ts[ci].i;
+        const thEl = document.getElementById("th");
+        if (thEl) thEl.textContent = ts[ci].h;
+        const tsubEl = document.getElementById("tsub");
+        if (tsubEl) tsubEl.textContent = ts[ci].s;
+        const tctEl = document.getElementById("tct");
+        if (tctEl) tctEl.textContent =
           `Étape ${ci + 1} / ${ts.length}`;
         ts.forEach((_, i) => {
           document.getElementById("tp" + i).classList.toggle("on", i === ci);
@@ -1130,7 +1158,6 @@
             body: formData,
           });
           if (response.ok) {
-            alert(editId ? "Annonce modifiée" : "Annonce validée");
             document.getElementById("editAnnId").value = "";
             currentEditingImagePath = "";
             toggleAnnForm();

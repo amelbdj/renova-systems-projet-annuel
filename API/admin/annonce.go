@@ -150,6 +150,11 @@ func CreateAnnonce(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	userIDStr := strconv.Itoa(ann.IdUser)
+	message := fmt.Sprintf("Felicitations ! Votre annonce '%s' a bien ete cree.", ann.Titre)
+
+	go SendPushNotification(userIDStr, message)
+
 	w.WriteHeader(http.StatusCreated)
 	fmt.Fprintln(w, "Annonce créée avec succès")
 }
@@ -164,12 +169,19 @@ func DeleteAnnonce(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		return
 	}
-	idStr := r.PathValue("id")
 
+	idStr := r.PathValue("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
 		http.Error(w, "id invalide", http.StatusBadRequest)
 		return
+	}
+
+	var userID int
+	var titre string
+	err = bdd.Db.QueryRow("SELECT id_user, titre FROM annonce WHERE id = ?", id).Scan(&userID, &titre)
+	if err != nil {
+		fmt.Println("Erreur lors de la recup des info:", err)
 	}
 
 	err = bdd.DeleteAnnonce(id)
@@ -177,6 +189,14 @@ func DeleteAnnonce(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
+
+	if userID != 0 {
+		userIDStr := strconv.Itoa(userID)
+		message := fmt.Sprintf("Votre annonce '%s' a  ete supprimee.", titre)
+
+		go SendPushNotification(userIDStr, message)
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 	fmt.Fprintln(w, "annonce suppr")
 }
@@ -233,8 +253,14 @@ func UpdateAnnonce(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if annonce.IdUser != 0 {
+		userIDStr := strconv.Itoa(annonce.IdUser)
+		message := fmt.Sprintf("Votre annonce '%s' a ete modifiee", annonce.Titre)
+
+		go SendPushNotification(userIDStr, message)
+	}
+
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "Annonce mise à jour avec succès")
 }
 
 func GetAnnonceByTitle(w http.ResponseWriter, r *http.Request) {
@@ -376,12 +402,24 @@ func ConfirmPaymentAndOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if sellerID != 0 {
+		sellerIDStr := strconv.Itoa(sellerID)
+		msgSeller := fmt.Sprintf("Vendu ! Votre objet '%s' a ete achete. Une box a ete resercee pour votre depot.", annonce.Titre)
+		go SendPushNotification(sellerIDStr, msgSeller)
+	}
+
+	if buyerID != 0 {
+		buyerIDStr := strconv.Itoa(buyerID)
+		msgBuyer := fmt.Sprintf("Paiement valide ! Le vendeur va bientot deposer '%s' dans la box.", annonce.Titre)
+		go SendPushNotification(buyerIDStr, msgBuyer)
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"status":   "success",
 		"order_id": orderID,
 		"box_id":   conteneurID,
-		"message":  "Paiement validé, annonce passée en EN ATTENTE DEPOT, et Box attribuée au vendeur",
+		"message":  "Paiement valide, annonce passee en EN ATTENTE DEPOT, et Box donnee au vendeur",
 	})
 }
 

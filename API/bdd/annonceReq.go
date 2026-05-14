@@ -338,7 +338,7 @@ func GetUserEcoStats(userID int) (map[string]interface{}, error) {
             COUNT(id), 
             COALESCE(SUM(poids), 0) 
         FROM annonce 
-        WHERE id_user = ? AND statut = 'RECUPERE'`
+        WHERE id_user = ? AND statut_vente = 'RECUPERE'`
 
 	err = Db.QueryRow(query, userID).Scan(&objetsDonnes, &dechetsEvites)
 	if err != nil {

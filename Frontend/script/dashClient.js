@@ -43,15 +43,24 @@ async function loadMyAnnonces() {
     const response = await fetch(
       `http://localhost:8081/mes-annonces?id=${userId}`,
     );
-    const annonces = await response.json();
+    const toutesAnnonces = await response.json();
 
     annGrid.innerHTML = "";
 
-    if (!annonces || annonces.length === 0) {
+    let annoncesActives = [];
+    if (toutesAnnonces && toutesAnnonces.length > 0) {
+      annoncesActives = toutesAnnonces.filter(ann => 
+        ann.statut_vente !== "VENDU" && 
+        ann.statut_vente !== "EN ATTENTE DEPOT" && 
+        ann.statut_vente !== "EN BOX"
+      );
+    }
+
+    if (!annoncesActives || annoncesActives.length === 0) {
       annGrid.innerHTML =
         "<p style=\"color:var(--txt-m); padding:20px;\">Vous n'avez pas encore d'annonces.</p>";
     } else {
-      annonces.forEach((ann) => {
+      annoncesActives.forEach((ann) => {
         console.log("Données de l'annonce:", ann);
         const imgSrc = ann.image ? `http://localhost:8081${ann.image}` : null;
         const card = document.createElement("div");
@@ -89,8 +98,7 @@ async function loadMyAnnonces() {
     annGrid.appendChild(addBox);
   } catch (err) {
     console.error("Erreur chargement annonces:", err);
-  }
-}
+  }}
 
 async function deleteAnnonce(id) {
   if (!confirm("Voulez-vous supprimez l'annonce ?")) return;
