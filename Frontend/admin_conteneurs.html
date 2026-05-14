@@ -46,30 +46,90 @@
       >
         ReNova <em style="color: var(--or-l); font-style: normal">Admin</em>
       </div>
+
+      <!-- Navigation (En utilisant tes classes .nav-link existantes) -->
       <nav style="display: flex; flex-direction: column; gap: 8px">
-        <a href="admin_dashboard.html" class="nav-link"
-          ><span class="material-symbols-outlined">dashboard</span> Vue
-          d'ensemble</a
+        <a
+          href="admin_dashboard.html"
+          class="nav-link active"
+          style="
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+          "
         >
-        <a href="admin_users.html" class="nav-link"
-          ><span class="material-symbols-outlined">group</span> Utilisateurs</a
+          <span class="material-symbols-outlined" style="font-size: 20px"
+            >dashboard</span
+          >
+          Vue d'ensemble
+        </a>
+        <a
+          href="admin_users.html"
+          class="nav-link"
+          style="
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+          "
         >
-        <a href="admin_validations.html" class="nav-link"
-          ><span class="material-symbols-outlined">check_circle</span>
-          Validations</a
+          <span class="material-symbols-outlined" style="font-size: 20px"
+            >group</span
+          >
+          Utilisateurs
+        </a>
+        <a
+          href="admin_validations.html"
+          class="nav-link"
+          style="
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+          "
         >
-        <a href="admin_conteneurs.html" class="nav-link active"
-          ><span class="material-symbols-outlined">inventory_2</span> Logistique
-          & Box</a
+          <span class="material-symbols-outlined" style="font-size: 20px"
+            >check_circle</span
+          >
+          Validations
+          <span
+            class="tag t-red"
+            style="margin-left: auto; font-size: 10px; padding: 2px 6px"
+            >18</span
+          >
+        </a>
+        <a
+          href="admin_conteneurs.html"
+          class="nav-link"
+          style="
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+          "
         >
+          <span class="material-symbols-outlined" style="font-size: 20px"
+            >inventory_2</span
+          >
+          Logistique & Box
+        </a>
+        <a
+          href="admin_finances.html"
+          class="nav-link"
+          style="
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+          "
+        >
+          <span class="material-symbols-outlined" style="font-size: 20px"
+            >account_balance</span
+          >
+          Finances
+        </a>
       </nav>
-      <button
-        class="btn btn-o btn-full"
-        style="margin-top: auto"
-        onclick="logout()"
-      >
-        <span class="material-symbols-outlined">logout</span> Déconnexion
-      </button>
     </aside>
 
     <main style="flex: 1; padding: 40px">

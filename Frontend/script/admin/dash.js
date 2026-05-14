@@ -42,13 +42,11 @@ function LoadDashboardData() {
         else elWaste.textContent = totalPoidsKg + " kg";
       }
 
-      // Mise à jour de l'alerte Annonces
       const elAlertAnn = document.getElementById("alert-annonces");
       if (elAlertAnn) elAlertAnn.textContent = `${aModerer} Annonces à modérer`;
     })
     .catch((err) => console.error("Erreur KPI Annonces:", err));
 
-  // 📅 3. EVENEMENTS (Alerte Validation)
   fetch("http://localhost:8081/admin/evenements", {
     headers: { Authorization: "Bearer " + tokenAdmin },
   })
@@ -71,7 +69,6 @@ function LoadDashboardData() {
     })
     .catch((err) => console.error("Erreur KPI Evènements:", err));
 
-  // 📦 4. CONTENEURS & CASIERS (KPI 3 + Alerte Maintenance)
   fetch("http://localhost:8081/api/admin/conteneurs", {
     headers: { Authorization: "Bearer " + tokenAdmin },
   })
@@ -84,7 +81,6 @@ function LoadDashboardData() {
         let totalCasiers = 0;
         conteneurs.forEach((c) => (totalCasiers += c.total_boxes));
 
-        // Mise à jour du KPI (ex: "3 / 12")
         if (elBoxes)
           elBoxes.textContent = `${conteneurs.length} / ${totalCasiers}`;
 
@@ -104,7 +100,6 @@ function LoadDashboardData() {
             if (boxArray && boxArray.length) {
               boxArray.forEach((box) => {
                 const etat = box.statut ? box.statut.toUpperCase() : "";
-                // Si le casier n'est ni libre, ni occupé... c'est qu'il a un problème !
                 if (
                   etat !== "LIBRE" &&
                   etat !== "OCCUPE" &&
@@ -130,8 +125,6 @@ function LoadDashboardData() {
     })
     .catch((err) => console.error("Erreur KPI Conteneurs:", err));
 
-  // ✍️ 5. ARTICLES (Alerte Modération)
-  // (On suppose que ton endpoint pour récupérer tous les articles est bien /admin/articles)
   fetch("http://localhost:8081/admin/articles", {
     headers: { Authorization: "Bearer " + tokenAdmin },
   })
@@ -161,5 +154,4 @@ function LoadDashboardData() {
     .catch((err) => console.error("Erreur KPI Articles:", err));
 }
 
-// On lance le scan complet au chargement de la page d'accueil !
 document.addEventListener("DOMContentLoaded", LoadDashboardData);
