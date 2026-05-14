@@ -1613,3 +1613,84 @@ footer strong {
     padding: 28px 0 24px;
   }
 }
+/* --- CSS BENTO POUR LA PAGE FINANCE --- */
+.finance-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.bento-box {
+  background: var(--bg2, #1e293b);
+  border: 1px solid var(--b0, rgba(255, 255, 255, 0.05));
+  border-radius: 20px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Pour que le tableau prenne toute la largeur */
+.col-span-2 {
+  grid-column: span 2;
+}
+.col-span-3 {
+  grid-column: span 3;
+}
+
+.box-title {
+  color: var(--txt, #fff);
+  font-size: 1.2rem;
+  font-weight: 700; /* Garde juste le gras */
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Style du Tableau des transactions */
+.tx-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tx-table th,
+.tx-table td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid var(--b0, rgba(255, 255, 255, 0.05));
+  color: var(--txt, #f1f5f9);
+  font-size: 14px;
+}
+
+.tx-table th {
+  color: var(--txt-m, #94a3b8);
+  font-weight: 500; /* Poids de police standard pour les en-têtes */
+  text-transform: uppercase;
+  font-size: 12px;
+}
+
+.badge-stripe {
+  background: #635bff;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.btn-stripe {
+  background: #635bff;
+  color: white;
+  text-decoration: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 600;
+  transition: 0.2s;
+  margin-top: auto;
+}
+
+.btn-stripe:hover {
+  background: #544ae5;
+}

@@ -214,6 +214,14 @@ http.HandleFunc("GET /api/chat/conversations", auth.VerifyTokenMiddleware(admin.
 http.HandleFunc("POST /admin/evenements/desinscription", admin.DesinscriptionHandler)
 http.HandleFunc("OPTIONS /admin/evenements/desinscription", admin.DesinscriptionHandler)
 	
+// 1. On autorise la vraie requête GET
+// Routes pour les revenus (Overview)
+http.HandleFunc("GET /admin/finance/overview", admin.FinanceOverviewHandler)
+http.HandleFunc("OPTIONS /admin/finance/overview", admin.FinanceOverviewHandler)
+
+// Routes pour le tableau des transactions
+http.HandleFunc("GET /admin/finance/transactions", admin.AdminTransactionsHandler)
+http.HandleFunc("OPTIONS /admin/finance/transactions", admin.AdminTransactionsHandler)
 
     fmt.Println("test de : http://localhost:8081")
  
