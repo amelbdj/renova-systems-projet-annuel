@@ -16,6 +16,34 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
     />
+    <script
+      src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js"
+      defer
+    ></script>
+    <script>
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(async function (OneSignal) {
+        // 1. Initialisation avec la nouvelle syntaxe
+        await OneSignal.init({
+          appId: "79a53223-420a-46c8-83d9-1ca162fcb64f",
+          notifyButton: {
+            enable: true,
+          },
+          // Note : on a retiré allowLocalhostAsSecureOrigin car c'est devenu inutile en v16
+        });
+
+        // 2. Connexion de l'utilisateur
+        const userId = localStorage.getItem("userId");
+        if (userId) {
+          await OneSignal.login(userId);
+          console.log("✅ SUCCÈS : OneSignal est connecté avec l'ID :", userId);
+        } else {
+          console.log(
+            "❌ ERREUR : Aucun userId n'a été trouvé dans le localStorage.",
+          );
+        }
+      });
+    </script>
   </head>
   <body
     style="display: flex; min-height: 100vh; margin: 0; background: var(--bg)"

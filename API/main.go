@@ -190,36 +190,26 @@ func main() {
 	http.HandleFunc("GET /user/forums/messages", admin.ForumClientMessagesHandler)
 	http.HandleFunc("POST /user/forums/messages", admin.ForumClientMessagesHandler)
 
-	// --- MESSAGERIE (WEBSOCKET & HISTORIQUE) ---
 
-	// 1. L'historique des messages (Besoin du Token pour la sécurité)
-	// --- MESSAGERIE (WEBSOCKET & HISTORIQUE) ---
-
-	// 1. L'historique des messages (Besoin du Token pour la sécurité)
 	http.HandleFunc("OPTIONS /api/chat/history", admin.GetChatHistoryHandler)
 	http.HandleFunc("GET /api/chat/history", auth.VerifyTokenMiddleware(admin.GetChatHistoryHandler))
 
-	// 2. Le WebSocket (ATTENTION : Un WebSocket s'initie TOUJOURS avec un GET !)
 	http.HandleFunc("GET /ws/chat", admin.ChatHandler)
-
-http.HandleFunc("POST /admin/evenements/desinscription", admin.DesinscriptionHandler)
-http.HandleFunc("OPTIONS /admin/evenements/desinscription", admin.DesinscriptionHandler)
-	
-// 1. On autorise la vraie requête GET
-// Routes pour les revenus (Overview)
-http.HandleFunc("GET /admin/finance/overview", admin.FinanceOverviewHandler)
-http.HandleFunc("OPTIONS /admin/finance/overview", admin.FinanceOverviewHandler)
-
-// Routes pour le tableau des transactions
-http.HandleFunc("GET /admin/finance/transactions", admin.AdminTransactionsHandler)
-http.HandleFunc("OPTIONS /admin/finance/transactions", admin.AdminTransactionsHandler)
-	// 3. La liste des conversations pour le Dashboard
-	// On ajoute OPTIONS pour le CORS et GET avec le Middleware de sécurité
-	http.HandleFunc("OPTIONS /api/chat/conversations", admin.GetConversationsHandler)
-	http.HandleFunc("GET /api/chat/conversations", auth.VerifyTokenMiddleware(admin.GetConversationsHandler))
 
 	http.HandleFunc("POST /admin/evenements/desinscription", admin.DesinscriptionHandler)
 	http.HandleFunc("OPTIONS /admin/evenements/desinscription", admin.DesinscriptionHandler)
+	
+
+	http.HandleFunc("GET /admin/finance/overview", admin.FinanceOverviewHandler)
+	http.HandleFunc("OPTIONS /admin/finance/overview", admin.FinanceOverviewHandler)
+
+	http.HandleFunc("GET /admin/finance/transactions", admin.AdminTransactionsHandler)
+	http.HandleFunc("OPTIONS /admin/finance/transactions", admin.AdminTransactionsHandler)
+
+	http.HandleFunc("OPTIONS /api/chat/conversations", admin.GetConversationsHandler)
+	http.HandleFunc("GET /api/chat/conversations", auth.VerifyTokenMiddleware(admin.GetConversationsHandler))
+
+
 
 	fmt.Println("test de : http://localhost:8081")
 

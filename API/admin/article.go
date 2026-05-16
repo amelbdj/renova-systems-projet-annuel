@@ -69,18 +69,20 @@ if err != nil {
     http.Error(w, "ID de salarié invalide ou manquant", http.StatusBadRequest)
     return
 }
-	articles, err := bdd.GetArticlesBySalarie(salarieId)
+articles, err := bdd.GetArticlesBySalarie(salarieId)
 	if err != nil {
 		http.Error(w, "Erreur lors de la récupération des articles", http.StatusInternalServerError)
-
 		return
 	}	
 
-	response, err := json.Marshal(articles)
-	if err != nil {
-		http.Error(w, "Erreur lors de la conversion des articles en JSON", http.StatusInternalServerError)
-		return
+	// 🛡️ LE VRAI BOUCLIER ANTI-NULL GOLANG :
+	// Si la BDD ne trouve rien, on force la création d'un tableau vide
+	// pour que le JSON renvoie "[]" au lieu de "null"
+	if articles == nil {
+		articles = []models.Article{}
 	}
+
+	response, err := json.Marshal(articles)
 	
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -90,7 +92,7 @@ if err != nil {
 func DeleteArticle(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-    w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+    w.Header().Set("Access-Control-Allow-Methods", "DELETE, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
    
 	if r.Method == "OPTIONS" {
@@ -117,25 +119,35 @@ func DeleteArticle(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "article suppr")
 }
 func ValidateArticle(w http.ResponseWriter, r *http.Request) {
-
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-    w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-    w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Access-Control-Allow-Methods", "PUT, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
-   if r.Method == "OPTIONS" {
-        w.WriteHeader(http.StatusOK)
-        return 
-    }
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return 
+	}
+	
 	articleId, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
 		http.Error(w, "ID d'article invalide", http.StatusBadRequest)
 		return
 	}
 
+	// 1. On récupère l'article pour savoir à qui envoyer la notif
+	article, errGet := bdd.GetArticleById(articleId)
+
+	// 2. On valide en base
 	err = bdd.ValidateArticle(articleId)
 	if err != nil {
 		http.Error(w, "Erreur lors de la validation de l'article", http.StatusInternalServerError)
 		return
+	}
+
+	// 3. NOTIFICATION : On prévient l'auteur
+	if errGet == nil && article.IdSalarie != 0 { // Assure-toi que le champ s'appelle bien IdUser dans ton models.Article
+		msg := fmt.Sprintf("✅ Super ! Ton article '%s' a été validé et publié.", article.Titre)
+		go SendPushNotification(strconv.Itoa(article.IdSalarie), msg)
 	}
 
 	w.WriteHeader(http.StatusOK)
@@ -146,7 +158,7 @@ func ValidateArticle(w http.ResponseWriter, r *http.Request) {
 func RefuseArticle(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-    w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+    w.Header().Set("Access-Control-Allow-Methods", "PUT, OPTIONS")
     w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
 	   if r.Method == "OPTIONS" {
@@ -174,7 +186,7 @@ func RefuseArticle(w http.ResponseWriter, r *http.Request) {
 func ModifyArticle(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-    w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+    w.Header().Set("Access-Control-Allow-Methods", "PUT, OPTIONS")
     w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
 	    if r.Method == "OPTIONS" {
@@ -254,7 +266,9 @@ func CreateArticle(w http.ResponseWriter, r *http.Request) {
     fmt.Println("Erreur lors de l'insertion en BDD :", err)
     http.Error(w, err.Error(), http.StatusInternalServerError)
     return
-}
+	}
+
+	NotifyAllAdmins("✍️ Un nouvel article attend votre relecture.")
     
 w.Header().Set("Content-Type", "application/json") 
     w.WriteHeader(http.StatusCreated)
@@ -262,6 +276,7 @@ w.Header().Set("Content-Type", "application/json")
     
 
 }
+
 
 func GetArticleById(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")

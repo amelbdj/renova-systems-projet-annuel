@@ -47,18 +47,28 @@ func ValidateAnnonce(w http.ResponseWriter, r *http.Request) {
 	}
 
 	id, err := strconv.Atoi(r.PathValue("id"))
-
 	if err != nil {
 		http.Error(w, "id invalide", http.StatusBadRequest)
 		return
 	}
-	err = bdd.ValidateAnnonce(id)
+	
+	// 1. On récupère l'annonce AVANT de valider pour avoir l'ID du vendeur et le titre
+	annonce, errGet := bdd.GetAnnonceById(id)
 
+	// 2. On valide l'annonce en base
+	err = bdd.ValidateAnnonce(id)
 	if err != nil {
 		http.Error(w, "erreur de validation de l'annonce", http.StatusInternalServerError)
 		fmt.Println("erreur", err)
 		return
 	}
+	
+	// 3. NOTIFICATION : On prévient le vendeur !
+	if errGet == nil && annonce.IdUser != 0 {
+		msg := fmt.Sprintf("✅ Bonne nouvelle ! Ton annonce '%s' a été validée et est en ligne.", annonce.Titre)
+		go SendPushNotification(strconv.Itoa(annonce.IdUser), msg)
+	}
+
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, "Annonce validée avec succès")
 }
@@ -154,6 +164,8 @@ func CreateAnnonce(w http.ResponseWriter, r *http.Request) {
 	message := fmt.Sprintf("Felicitations ! Votre annonce '%s' a bien ete cree.", ann.Titre)
 
 	go SendPushNotification(userIDStr, message)
+
+NotifyAllAdmins(fmt.Sprintf("📢 Nouvelle annonce à valider : %s", ann.Titre))
 
 	w.WriteHeader(http.StatusCreated)
 	fmt.Fprintln(w, "Annonce créée avec succès")

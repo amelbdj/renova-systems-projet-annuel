@@ -115,6 +115,8 @@ func Inscription(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Database error or Email already exists", http.StatusInternalServerError)
 		return
 	}
+	fmt.Println("✅ Inscription réussie, j'alerte les admins !")
+NotifyAllAdmins("👤 Un nouvel utilisateur s'est  sur ReNova !")
 
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(map[string]string{"message": "User created successfully"})
@@ -184,6 +186,8 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+// ... après l'insertion du nouvel utilisateur ...inscrit
+NotifyAllAdmins("👤 Un nouvel utilisateur s'est  sur ReNova !")
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)

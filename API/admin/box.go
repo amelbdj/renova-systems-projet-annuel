@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"upcycleconnect/bdd"
 )
 
@@ -70,6 +71,31 @@ func ConfirmDeposit(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Code PIN incorrect ou expiré", http.StatusUnauthorized)
 			return
 		}
+
+		// --- NOTIFICATION ACHETEUR ---
+		// On cherche à qui appartient cet objet et quel est le code pour l'ouvrir
+		var acheteurID int
+		var titre string
+		var numBox string
+		var codeRetrait string
+
+		// ⚠️ Adapte le nom de tes tables/colonnes si elles sont un peu différentes
+		query := `
+			SELECT o.acheteur_id, a.titre, b.id, b.pin_code 
+			FROM box b
+			JOIN annonce a ON b.id_annonce = a.id
+			JOIN orders o ON o.annonce_id = a.id
+			WHERE b.pin_code = ? LIMIT 1
+		`
+		errInfo := bdd.Db.QueryRow(query, req.PinCode).Scan(&acheteurID, &titre, &numBox, &codeRetrait)
+
+		if errInfo == nil && acheteurID != 0 {
+			msg := fmt.Sprintf("🔓 Ton objet '%s' t'attend ! Tu peux le récupérer au Casier n°%s.", titre, numBox)
+			go SendPushNotification(strconv.Itoa(acheteurID), msg)
+		} else {
+			fmt.Println("Impossible de trouver l'acheteur pour lui envoyer la notif :", errInfo)
+		}
+		// -----------------------------
 
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, `{"message": "Dépôt validé, la box est verrouillée"}`)

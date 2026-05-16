@@ -1,9 +1,5 @@
-let monToken = localStorage.getItem("token");
-let userId = localStorage.getItem("userId");
-
 if (!monToken || !userId) {
-  alert("Vous devez être connecté pour accéder à cette page.");
-  window.location.href = "login.html";
+  window.location.href = "../login.html";
 }
 
 function chargerArticles() {

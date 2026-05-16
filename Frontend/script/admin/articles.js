@@ -1,10 +1,11 @@
+// 1. On récupère bien les deux éléments du localStorage
 let userId = localStorage.getItem("userId");
 
 function GetArticle() {
   const container = document.getElementById("result");
   if (!container) return;
 
-  fetch(`http://localhost:8081/admin/articles/salarie/${userId}`, {
+  fetch(`http://localhost:8081/admin/articles`, {
     headers: {
       Authorization: "Bearer " + monToken,
     },
@@ -14,16 +15,28 @@ function GetArticle() {
       return res.json();
     })
     .then((articles) => {
-      const currentTabId = document.querySelector(".vtab.on").id;
+      // 🛡️ LE BOUCLIER ANTI-NULL EST ICI :
+      // Si le serveur renvoie null ou un truc bizarre, on force un tableau vide []
+      if (!articles || !Array.isArray(articles)) {
+        articles = [];
+      }
+
+      // Petite sécurité (le ?.) au cas où aucun onglet n'a la classe "on" au chargement
+      const currentTab = document.querySelector(".vtab.on");
+      const currentTabId = currentTab ? currentTab.id : "";
+
       if (currentTabId !== "tout") container.innerHTML = "";
 
       let htmlContent = "";
+
+      // Maintenant le forEach ne plantera plus jamais !
       articles.forEach((article) => {
+        console.log("🔍 Contenu de l'article reçu :", article);
         const statut =
           article.statut || article.Statut || article.statut_validation;
 
         if (statut && statut.toLowerCase() === "en attente") {
-          const articleId = article.id_article;
+          const articleId = article.id;
 
           htmlContent += `
    <div class="val-item con" data-type="con">
@@ -44,7 +57,8 @@ function GetArticle() {
 
       if (htmlContent) {
         container.innerHTML += htmlContent;
-      } else if (!container.innerHTML) {
+      } else if (!container.innerHTML || container.innerHTML.trim() === "") {
+        // Si le tableau est vide, on affiche proprement le message
         container.innerHTML = `<div style="padding:20px" data-i18n="backoffice.ads.no_ads">Aucun article en attente.</div>`;
       }
 
@@ -52,7 +66,7 @@ function GetArticle() {
         appliquerTraductions();
       }
     })
-    .catch((err) => console.error(err));
+    .catch((err) => console.error("Erreur dans GetArticle :", err));
 }
 
 let articleActuelId = null;

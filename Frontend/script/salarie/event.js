@@ -1,6 +1,5 @@
 if (!monToken || !userId) {
-  alert("Vous devez être connecté pour accéder à cette page.");
-  window.location.href = "login.html";
+  window.location.href = "../login.html";
 }
 
 // ==========================================
