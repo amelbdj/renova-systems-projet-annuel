@@ -94,7 +94,7 @@ async function submitLogin() {
       } else if (donneesServeur.role === "Pro") {
         window.location.href = "espace_pro.html";
       } else if (donneesServeur.role === "Salarié") {
-        window.location.href = "espace_salarie.html";
+        window.location.href = "../Frontend/salarie/salarie_dashboard.html";
       } else if (donneesServeur.role === "Administrateur") {
         window.location.href = "admin_dashboard.html";
       } else {

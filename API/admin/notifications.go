@@ -5,12 +5,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"upcycleconnect/bdd"
 )
 
 const (
 	OneSignalAppID  = "79a53223-420a-46c8-83d9-1ca162fcb64f"
 	OneSignalAPIKey = "os_v2_app_pgstei2cbjdmra6zdsqwf7fwj7lecom3g6lu4pumdxlt4rvgw66selidc5gwe5r2gpo7pr7cdhfecc55xgdksr5rplozsejaaghkzsa"
 )
+
 
 func SendPushNotification(userID string, message string) {
 	payload := map[string]interface{}{
@@ -46,5 +48,20 @@ func SendPushNotification(userID string, message string) {
 
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(resp.Body)
+    
+	// LA FAMEUSE LIGNE QUI VA NOUS DONNER LA RÉPONSE DE ONESIGNAL :
+	fmt.Println("📡 RÉPONSE ONESIGNAL :", buf.String())
+}
 
+func NotifyAllAdmins(message string) {
+	adminIDs, err := bdd.GetAllAdminIDs()
+	if err != nil {
+		fmt.Println("Erreur lors de la récupération des admins:", err)
+		return
+	}
+	fmt.Printf("🔍 Admins trouvés: %v. Envoi de la notification...\n", adminIDs)
+
+	for _, id := range adminIDs {
+		go SendPushNotification(id, message)
+	}
 }

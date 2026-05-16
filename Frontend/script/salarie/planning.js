@@ -1,3 +1,6 @@
+if (!monToken || !userId) {
+  window.location.href = "../login.html";
+}
 let tousMesEvenements = [];
 let dateAffichee = new Date(2026, 2, 1); // Mars 2026 (les mois JS commencent à 0)
 let dateSelectionnee = "";
