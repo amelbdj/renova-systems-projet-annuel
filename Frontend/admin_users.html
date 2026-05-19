@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Utilisateurs — ReNova Admin</title>
+    <script src="../Frontend/script/auth_guard.js"></script>
+    <script>
+      checkSession("Administrateur");
+    </script>
+    <link rel="stylesheet" href="../Frontend/style/admin.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Outfit:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+    />
+    <script
+      src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js"
+      defer
+    ></script>
+    <script>
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(async function (OneSignal) {
+        // 1. Initialisation avec la nouvelle syntaxe
+        await OneSignal.init({
+          appId: "79a53223-420a-46c8-83d9-1ca162fcb64f",
+          notifyButton: {
+            enable: true,
+          },
+          // Note : on a retiré allowLocalhostAsSecureOrigin car c'est devenu inutile en v16
+        });
+
+        // 2. Connexion de l'utilisateur
+        const userId = localStorage.getItem("userId");
+        if (userId) {
+          await OneSignal.login(userId);
+          console.log("✅ SUCCÈS : OneSignal est connecté avec l'ID :", userId);
+        } else {
+          console.log(
+            "❌ ERREUR : Aucun userId n'a été trouvé dans le localStorage.",
+          );
+        }
+      });
+    </script>
+  </head>
+  <body
+    style="display: flex; min-height: 100vh; margin: 0; background: var(--bg)"
+  >
+    <aside
+      style="
+        width: 260px;
+        background: var(--bg2);
+        border-right: 1px solid var(--b0);
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        flex-shrink: 0;
+      "
+    >
+      <div
+        style="
+          font-family: &quot;Syne&quot;, sans-serif;
+          font-size: 24px;
+          font-weight: 800;
+          color: white;
+          text-align: center;
+        "
+      >
+        ReNova <em style="color: var(--or-l); font-style: normal">Admin</em>
+      </div>
+
+      <!-- Navigation (En utilisant tes classes .nav-link existantes) -->
+      <nav style="display: flex; flex-direction: column; gap: 8px">
+        <a
+          href="admin_dashboard.html"
+          class="nav-link active"
+          style="
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+          "
+        >
+          <span class="material-symbols-outlined" style="font-size: 20px"
+            >dashboard</span
+          >
+          Vue d'ensemble
+        </a>
+        <a
+          href="admin_users.html"
+          class="nav-link"
+          style="
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+          "
+        >
+          <span class="material-symbols-outlined" style="font-size: 20px"
+            >group</span
+          >
+          Utilisateurs
+        </a>
+        <a
+          href="admin_validations.html"
+          class="nav-link"
+          style="
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+          "
+        >
+          <span class="material-symbols-outlined" style="font-size: 20px"
+            >check_circle</span
+          >
+          Validations
+          <span
+            class="tag t-red"
+            style="margin-left: auto; font-size: 10px; padding: 2px 6px"
+            >18</span
+          >
+        </a>
+        <a
+          href="admin_conteneurs.html"
+          class="nav-link"
+          style="
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+          "
+        >
+          <span class="material-symbols-outlined" style="font-size: 20px"
+            >inventory_2</span
+          >
+          Logistique & Box
+        </a>
+        <a
+          href="admin_finances.html"
+          class="nav-link"
+          style="
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+          "
+        >
+          <span class="material-symbols-outlined" style="font-size: 20px"
+            >account_balance</span
+          >
+          Finances
+        </a>
+      </nav>
+    </aside>
+
+    <main style="flex: 1; padding: 40px">
+      <div class="hero fu">
+        <div class="hero-left">
+          <h1 class="hero-title">Gestion des <em>Utilisateurs</em></h1>
+          <p class="hero-desc">
+            Administrez les comptes particuliers, professionnels et salariés.
+          </p>
+        </div>
+        <button class="btn btn-g" onclick="openNewUser()">
+          <span class="material-symbols-outlined">person_add</span> Nouvel
+          utilisateur
+        </button>
+      </div>
+
+      <div class="card" style="margin-bottom: 25px">
+        <div class="card-bd frow" style="gap: 15px">
+          <input
+            type="text"
+            id="search-user-input"
+            class="fin"
+            placeholder="Rechercher un nom, email..."
+            style="flex: 1"
+          />
+          <select id="role-filter" class="fin" style="width: 200px">
+            <option value="">Tous les rôles</option>
+            <option value="Utilisateur">Particuliers</option>
+            <option value="Prestataire">Professionnels</option>
+            <option value="Salarié">Salariés</option>
+            <option value="Administrateur">Admins</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="u-table">
+          <p style="padding: 20px; text-align: center; color: var(--txt-m)">
+            Chargement des utilisateurs...
+          </p>
+        </div>
+      </div>
+    </main>
+
+    <div class="modal-bg" id="NewuserModal" style="display: none">
+      <div class="modal">
+        <div class="modal-x" onclick="closeModal('NewuserModal')">✕</div>
+        <div class="modal-h">
+          <span class="material-symbols-outlined">person_add</span>
+          <span data-i18n="backoffice.modal.new_user.title"
+            >Créer un compte</span
+          >
+        </div>
+        <div class="modal-sub" data-i18n="backoffice.modal.new_user.desc">
+          Créez manuellement un compte sur la plateforme.
+        </div>
+
+        <div class="frow">
+          <div>
+            <label
+              ><span data-i18n="backoffice.form.firstname">Prénom</span>
+              <span class="req">*</span></label
+            >
+            <input id="add-prenom" type="text" placeholder="Jean" />
+          </div>
+          <div>
+            <label
+              ><span data-i18n="backoffice.form.lastname">Nom</span>
+              <span class="req">*</span></label
+            >
+            <input id="add-nom" type="text" placeholder="Dupont" />
+          </div>
+        </div>
+
+        <div class="fgroup">
+          <label
+            ><span data-i18n="backoffice.form.email">Email</span>
+            <span class="req">*</span></label
+          >
+          <input
+            id="add-email"
+            type="email"
+            placeholder="jean.dupont@email.com"
+            autocomplete="username"
+          />
+        </div>
+
+        <div class="fgroup">
+          <label
+            ><span data-i18n="backoffice.form.password">Mot de passe</span>
+            <span class="req">*</span></label
+          >
+          <input
+            id="add-mdp"
+            type="password"
+            placeholder="••••••••"
+            autocomplete="new-password"
+          />
+        </div>
+
+        <div class="frow">
+          <div>
+            <label data-i18n="backoffice.form.role">Rôle</label>
+            <select id="add-role">
+              <option value="Utilisateur">Particulier</option>
+              <option value="Prestataire">Professionnel</option>
+              <option value="Salarié">Salarié</option>
+              <option value="Administrateur">Administrateur</option>
+            </select>
+          </div>
+          <div>
+            <label>Statut initial</label>
+            <select id="add-status">
+              <option value="Validé">Actif</option>
+              <option value="En attente">En attente</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="btn btn-o btn-full" onclick="CreateUser()">
+          Créer le compte ✓
+        </button>
+      </div>
+    </div>
+
+    <div class="modal-bg" id="editUserModal" style="display: none">
+      <div class="modal">
+        <div class="modal-x" onclick="closeModal('editUserModal')">✕</div>
+        <div class="modal-h">
+          <span class="material-symbols-outlined">person_edit</span>
+          <span data-i18n="backoffice.modal.edit_user.title"
+            >Modifier le compte</span
+          >
+        </div>
+        <div class="modal-sub">
+          Modifiez les informations ou changez les droits de cet utilisateur.
+        </div>
+
+        <div class="frow">
+          <div>
+            <label
+              ><span data-i18n="backoffice.form.firstname">Prénom</span>
+              <span class="req">*</span></label
+            >
+            <input type="text" id="edit-prenom" />
+          </div>
+          <div>
+            <label
+              ><span data-i18n="backoffice.form.lastname">Nom</span>
+              <span class="req">*</span></label
+            >
+            <input type="text" id="edit-nom" />
+          </div>
+        </div>
+
+        <div class="fgroup">
+          <label
+            ><span data-i18n="backoffice.form.email">Email</span>
+            <span class="req">*</span></label
+          >
+          <input type="email" id="edit-email" autocomplete="username" />
+        </div>
+
+        <div class="frow">
+          <div>
+            <label data-i18n="backoffice.form.role">Rôle</label>
+            <select id="edit-role">
+              <option value="Utilisateur">Particulier</option>
+              <option value="Prestataire">Professionnel</option>
+              <option value="Salarié">Salarié</option>
+              <option value="Administrateur">Administrateur</option>
+            </select>
+          </div>
+          <div>
+            <label>Statut</label>
+            <select id="edit-status">
+              <option value="Validé">Actif</option>
+              <option value="Suspendu">Suspendu</option>
+              <option value="Refusé">Banni</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="btn btn-o btn-full" onclick="UpdateUser()">
+          Enregistrer les modifications ✓
+        </button>
+      </div>
+    </div>
+
+    <div id="modalRefus" class="modal-overlay" style="display: none">
+      <div class="modal-content">
+        <h3 data-i18n="backoffice.users.refusal_title">Motif du refus</h3>
+        <p data-i18n="backoffice.users.refusal_desc">
+          Veuillez indiquer la raison du rejet de ce compte :
+        </p>
+
+        <textarea
+          id="motifTexte"
+          rows="4"
+          placeholder="Ex: Kbis illisible ou expiré..."
+          style="
+            width: 100%;
+            margin: 15px 0;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+          "
+        ></textarea>
+
+        <div style="display: flex; justify-content: end; gap: 10px">
+          <button class="btn btn-g" onclick="FermerModaleRefus()">
+            Annuler
+          </button>
+          <button class="btn btn-red" id="btnConfirmerRefus">
+            Confirmer le rejet
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="../Frontend/script/admin/translate.js" defer></script>
+    <script src="../Frontend/script/admin/user.js" defer></script>
+  </body>
+</html>

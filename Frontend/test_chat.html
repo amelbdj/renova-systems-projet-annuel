@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Test Messagerie Upcycle</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f4f4f9;
+        padding: 20px;
+      }
+      .chat-container {
+        width: 400px;
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      }
+      .chat-box {
+        height: 300px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 10px;
+        overflow-y: auto;
+        margin-bottom: 10px;
+        background: #fafafa;
+      }
+      .msg {
+        padding: 8px 12px;
+        margin-bottom: 5px;
+        border-radius: 15px;
+        max-width: 80%;
+        clear: both;
+      }
+      .msg-moi {
+        background: #dcf8c6;
+        float: right;
+      }
+      .msg-autre {
+        background: #fff;
+        border: 1px solid #eee;
+        float: left;
+      }
+      .controls {
+        display: flex;
+        gap: 5px;
+        margin-bottom: 15px;
+      }
+      input {
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        width: 100%;
+      }
+      button {
+        padding: 8px 15px;
+        background: #28a745;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="chat-container">
+      <h3>💬 Tchat en direct</h3>
+
+      <div class="controls">
+        <input type="number" id="mon-id" placeholder="Mon ID (ex: 1)" />
+        <input
+          type="number"
+          id="autre-id"
+          placeholder="ID Destinataire (ex: 2)"
+        />
+        <button onclick="connecter()">Connexion</button>
+      </div>
+
+      <div id="chat-box" class="chat-box"></div>
+
+      <div class="controls">
+        <input
+          type="text"
+          id="input-msg"
+          placeholder="Écrire un message..."
+          disabled
+        />
+        <button id="btn-send" onclick="envoyerMessage()" disabled>
+          Envoyer
+        </button>
+      </div>
+    </div>
+
+    <script>
+      let socket;
+      let monId;
+      let autreId;
+      const annonceId = 5; // On simule qu'on parle de l'annonce n°5
+
+      function connecter() {
+        monId = document.getElementById("mon-id").value;
+        autreId = document.getElementById("autre-id").value;
+
+        if (!monId || !autreId) {
+          alert("Mets un ID pour toi et un pour l'autre !");
+          return;
+        }
+
+        // 🔌 1. ON SE CONNECTE AU WEBSOCKET GO
+        socket = new WebSocket(`ws://localhost:8081/ws/chat?userId=${monId}`);
+
+        // Quand la connexion réussit
+        socket.onopen = () => {
+          afficherMessage("✅ Connecté au serveur !", "msg-autre", true);
+          document.getElementById("input-msg").disabled = false;
+          document.getElementById("btn-send").disabled = false;
+        };
+
+        // 📩 2. QUAND ON REÇOIT UN MESSAGE DU SERVEUR
+        socket.onmessage = (event) => {
+          const msg = JSON.parse(event.data);
+          afficherMessage(msg.contenu, "msg-autre");
+        };
+
+        // Si le serveur coupe
+        socket.onclose = () => {
+          afficherMessage("❌ Déconnecté du serveur.", "msg-autre", true);
+        };
+      }
+
+      // 🚀 3. QUAND ON ENVOIE UN MESSAGE
+      function envoyerMessage() {
+        const input = document.getElementById("input-msg");
+        const texte = input.value.trim();
+        if (!texte) return;
+
+        // On prépare l'objet exactement comme ton Modèle Go l'attend
+        const messageData = {
+          annonce_id: annonceId,
+          expediteur_id: parseInt(monId),
+          destinataire_id: parseInt(autreId),
+          contenu: texte,
+        };
+
+        // On l'envoie dans le tuyau WebSocket
+        socket.send(JSON.stringify(messageData));
+
+        // On l'affiche sur notre propre écran
+        afficherMessage(texte, "msg-moi");
+        input.value = ""; // On vide la case
+      }
+
+      function afficherMessage(texte, classeCss, isSystem = false) {
+        const box = document.getElementById("chat-box");
+        const style = isSystem
+          ? 'style="font-size:12px; color:gray; text-align:center; float:none;"'
+          : "";
+        box.innerHTML += `<div class="msg ${classeCss}" ${style}>${texte}</div>`;
+        box.scrollTop = box.scrollHeight; // Scroll auto en bas
+      }
+    </script>
+  </body>
+</html>

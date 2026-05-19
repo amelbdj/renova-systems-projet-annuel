@@ -76,15 +76,14 @@ async function submitLogin() {
 
     if (reponse.ok === true) {
       let donneesServeur = await reponse.json();
-      
-      localStorage.setItem('token', donneesServeur.token);
-      localStorage.setItem('userRole', donneesServeur.role);
-      localStorage.setItem('userId', donneesServeur.id);
 
-      localStorage.setItem('userName', donneesServeur.prenom); 
-      localStorage.setItem('userScore', donneesServeur.score || 0);
-      localStorage.setItem('tutorielVu', donneesServeur.tutorielVu);
-      
+      localStorage.setItem("token", donneesServeur.token);
+      localStorage.setItem("userRole", donneesServeur.role);
+      localStorage.setItem("userId", donneesServeur.id);
+      localStorage.setItem("userName", donneesServeur.prenom);
+      localStorage.setItem("userScore", donneesServeur.score || 0);
+      localStorage.setItem("tutorielVu", donneesServeur.tutorielVu);
+
       if (donneesServeur.statut === "En attente") {
         window.location.href = "attente.html";
         return;
@@ -92,13 +91,12 @@ async function submitLogin() {
 
       if (donneesServeur.role === "Utilisateur") {
         window.location.href = "espClient.html";
-      } 
-      else if (donneesServeur.role === "Prestataire") {
+      } else if (donneesServeur.role === "Pro") {
         window.location.href = "espace_pro.html";
       } else if (donneesServeur.role === "Salarié") {
-        window.location.href = "espace_salarie.html";
+        window.location.href = "../Frontend/salarie/salarie_dashboard.html";
       } else if (donneesServeur.role === "Administrateur") {
-        window.location.href = "espace_admin.html";
+        window.location.href = "admin_dashboard.html";
       } else {
         alert("Rôle inconnu. Contactez l'administrateur.");
       }

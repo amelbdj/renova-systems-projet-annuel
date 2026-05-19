@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Finances — ReNova Admin</title>
+
+    <script src="../Frontend/script/auth_guard.js"></script>
+    <script>
+      checkSession("Administrateur");
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="stylesheet" href="../Frontend/style/admin.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Outfit:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+    />
+    <script
+      src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js"
+      defer
+    ></script>
+    <script>
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(async function (OneSignal) {
+        // 1. Initialisation avec la nouvelle syntaxe
+        await OneSignal.init({
+          appId: "79a53223-420a-46c8-83d9-1ca162fcb64f",
+          notifyButton: {
+            enable: true,
+          },
+          // Note : on a retiré allowLocalhostAsSecureOrigin car c'est devenu inutile en v16
+        });
+
+        // 2. Connexion de l'utilisateur
+        const userId = localStorage.getItem("userId");
+        if (userId) {
+          await OneSignal.login(userId);
+          console.log("✅ SUCCÈS : OneSignal est connecté avec l'ID :", userId);
+        } else {
+          console.log(
+            "❌ ERREUR : Aucun userId n'a été trouvé dans le localStorage.",
+          );
+        }
+      });
+    </script>
+  </head>
+  <aside
+    style="
+      width: 260px;
+      background: var(--bg2);
+      border-right: 1px solid var(--b0);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      flex-shrink: 0;
+    "
+  >
+    <div
+      style="
+        font-family: &quot;Syne&quot;, sans-serif;
+        font-size: 24px;
+        font-weight: 800;
+        color: white;
+        text-align: center;
+      "
+    >
+      ReNova <em style="color: var(--or-l); font-style: normal">Admin</em>
+    </div>
+
+    <!-- Navigation (En utilisant tes classes .nav-link existantes) -->
+    <nav style="display: flex; flex-direction: column; gap: 8px">
+      <a
+        href="admin_dashboard.html"
+        class="nav-link active"
+        style="
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          text-decoration: none;
+        "
+      >
+        <span class="material-symbols-outlined" style="font-size: 20px"
+          >dashboard</span
+        >
+        Vue d'ensemble
+      </a>
+      <a
+        href="admin_users.html"
+        class="nav-link"
+        style="
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          text-decoration: none;
+        "
+      >
+        <span class="material-symbols-outlined" style="font-size: 20px"
+          >group</span
+        >
+        Utilisateurs
+      </a>
+      <a
+        href="admin_validations.html"
+        class="nav-link"
+        style="
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          text-decoration: none;
+        "
+      >
+        <span class="material-symbols-outlined" style="font-size: 20px"
+          >check_circle</span
+        >
+        Validations
+        <span
+          class="tag t-red"
+          style="margin-left: auto; font-size: 10px; padding: 2px 6px"
+          >18</span
+        >
+      </a>
+      <a
+        href="admin_conteneurs.html"
+        class="nav-link"
+        style="
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          text-decoration: none;
+        "
+      >
+        <span class="material-symbols-outlined" style="font-size: 20px"
+          >inventory_2</span
+        >
+        Logistique & Box
+      </a>
+      <a
+        href="admin_finances.html"
+        class="nav-link"
+        style="
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          text-decoration: none;
+        "
+      >
+        <span class="material-symbols-outlined" style="font-size: 20px"
+          >account_balance</span
+        >
+        Finances
+      </a>
+    </nav>
+
+    <!-- Bouton déconnexion en bas -->
+    <button
+      class="btn btn-o btn-full"
+      style="margin-top: auto"
+      onclick="logout()"
+    >
+      <span class="material-symbols-outlined" style="font-size: 18px"
+        >logout</span
+      >
+      Déconnexion
+    </button>
+  </aside>
+  <body
+    style="display: flex; min-height: 100vh; margin: 0; background: var(--bg)"
+  >
+    <div
+      class="dashboard-content"
+      style="flex: 1; padding: 40px; overflow-y: auto"
+    >
+      <div class="header-section" style="margin-bottom: 30px">
+        <h1
+          style="
+            color: white;
+            font-family: &quot;Syne&quot;;
+            margin: 0;
+            font-size: 2rem;
+          "
+        >
+          Gestion Financière
+        </h1>
+        <p style="color: var(--txt-m); margin-top: 5px">
+          Suivi des transactions, commissions et statuts Stripe Connect.
+        </p>
+      </div>
+
+      <div class="finance-grid">
+        <div class="bento-box">
+          <div class="box-title">
+            <span class="material-symbols-outlined" style="color: #4ade80"
+              >account_balance</span
+            >
+            Gains Plateforme
+          </div>
+          <div
+            style="font-size: 2.5rem; font-weight: bold; color: white"
+            id="total-commission"
+          >
+            0,00 €
+          </div>
+          <p style="color: var(--txt-m); font-size: 13px">
+            Commissions (5%) générées ce mois-ci
+          </p>
+        </div>
+
+        <div class="bento-box">
+          <div class="box-title">
+            <span class="material-symbols-outlined" style="color: #60a5fa"
+              >shopping_cart</span
+            >
+            Volume d'Affaires
+          </div>
+          <div
+            style="font-size: 2.5rem; font-weight: bold; color: white"
+            id="total-volume"
+          >
+            0,00 €
+          </div>
+          <p style="color: var(--txt-m); font-size: 13px">
+            Total des transactions sur la plateforme
+          </p>
+        </div>
+
+        <div class="bento-box">
+          <div class="box-title">
+            <span class="material-symbols-outlined" style="color: #635bff"
+              >payments</span
+            >
+            Dashboard Stripe
+          </div>
+          <p style="color: var(--txt-m); font-size: 14px; margin-bottom: 20px">
+            Accédez à votre espace Stripe pour gérer les virements, les litiges
+            et la comptabilité officielle.
+          </p>
+          <a
+            href="https://dashboard.stripe.com/"
+            target="_blank"
+            class="btn-stripe"
+            >Ouvrir Stripe</a
+          >
+        </div>
+
+        <div class="bento-box col-span-3">
+          <div class="box-title">
+            <span class="material-symbols-outlined">receipt_long</span>
+            Dernières transactions
+          </div>
+          <div style="overflow-x: auto">
+            <table class="tx-table">
+              <thead>
+                <tr>
+                  <th>ID Commande</th>
+                  <th>Date</th>
+                  <th>Article / Annonce</th>
+                  <th>Montant Payé</th>
+                  <th>Commission (5%)</th>
+                  <th>Statut</th>
+                </tr>
+              </thead>
+              <tbody id="table-transactions">
+                <tr>
+                  <td
+                    colspan="6"
+                    style="text-align: center; color: var(--txt-m)"
+                  >
+                    Chargement des transactions...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="../Frontend/script/admin/dash.js"></script>
+    <script src="../Frontend/script/admin/finance.js"></script>
+  </body>
+</html>

@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vue d'ensemble — ReNova Admin</title>
+
+    <!-- Tes scripts de sécurité -->
+    <script src="../Frontend/script/auth_guard.js"></script>
+    <script>
+      checkSession("Administrateur");
+    </script>
+
+    <!-- Tes styles existants -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="stylesheet" href="../Frontend/style/admin.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Outfit:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+    />
+    <script
+      src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js"
+      defer
+    ></script>
+    <script
+      src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js"
+      defer
+    ></script>
+    <script>
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+
+      OneSignalDeferred.push(async function (OneSignal) {
+        await OneSignal.init({
+          appId: "79a53223-420a-46c8-83d9-1ca162fcb64f",
+        });
+
+        // IMPORTANT
+        await OneSignal.Notifications.requestPermission();
+
+        const userId = parseInt(localStorage.getItem("userId"));
+
+        if (userId) {
+          // lie le navigateur à l'utilisateur
+          await OneSignal.login(userId);
+
+          console.log("✅ connecté :", userId);
+
+          console.log("permission :", OneSignal.Notifications.permission);
+
+          console.log("subscribed :", OneSignal.User.PushSubscription.optedIn);
+
+          console.log("subscription id :", OneSignal.User.PushSubscription.id);
+        }
+      });
+    </script>
+  </head>
+  <body
+    style="display: flex; min-height: 100vh; margin: 0; background: var(--bg)"
+  >
+    <!-- 1. LA SIDEBAR (MENU LATÉRAL) -->
+    <aside
+      style="
+        width: 260px;
+        background: var(--bg2);
+        border-right: 1px solid var(--b0);
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        flex-shrink: 0;
+      "
+    >
+      <div
+        style="
+          font-family: &quot;Syne&quot;, sans-serif;
+          font-size: 24px;
+          font-weight: 800;
+          color: white;
+          text-align: center;
+        "
+      >
+        ReNova <em style="color: var(--or-l); font-style: normal">Admin</em>
+      </div>
+
+      <!-- Navigation (En utilisant tes classes .nav-link existantes) -->
+      <nav style="display: flex; flex-direction: column; gap: 8px">
+        <a
+          href="admin_dashboard.html"
+          class="nav-link active"
+          style="
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+          "
+        >
+          <span class="material-symbols-outlined" style="font-size: 20px"
+            >dashboard</span
+          >
+          Vue d'ensemble
+        </a>
+        <a
+          href="admin_users.html"
+          class="nav-link"
+          style="
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+          "
+        >
+          <span class="material-symbols-outlined" style="font-size: 20px"
+            >group</span
+          >
+          Utilisateurs
+        </a>
+        <a
+          href="admin_validations.html"
+          class="nav-link"
+          style="
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+          "
+        >
+          <span class="material-symbols-outlined" style="font-size: 20px"
+            >check_circle</span
+          >
+          Validations
+          <span
+            class="tag t-red"
+            style="margin-left: auto; font-size: 10px; padding: 2px 6px"
+            >18</span
+          >
+        </a>
+        <a
+          href="admin_conteneurs.html"
+          class="nav-link"
+          style="
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+          "
+        >
+          <span class="material-symbols-outlined" style="font-size: 20px"
+            >inventory_2</span
+          >
+          Logistique & Box
+        </a>
+        <a
+          href="admin_finances.html"
+          class="nav-link"
+          style="
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+          "
+        >
+          <span class="material-symbols-outlined" style="font-size: 20px"
+            >account_balance</span
+          >
+          Finances
+        </a>
+      </nav>
+
+      <!-- Bouton déconnexion en bas -->
+      <button
+        class="btn btn-o btn-full"
+        style="margin-top: auto"
+        onclick="logout()"
+      >
+        <span class="material-symbols-outlined" style="font-size: 18px"
+          >logout</span
+        >
+        Déconnexion
+      </button>
+    </aside>
+
+    <!-- 2. LE CONTENU PRINCIPAL -->
+    <main style="flex: 1; padding: 40px; overflow-y: auto">
+      <!-- Hero / Titre -->
+      <section class="hero fu" style="padding-top: 0">
+        <div class="hero-left">
+          <div class="hero-eyebrow">Tableau de bord</div>
+          <h1 class="hero-title">Vue d'ensemble <em>ReNova</em></h1>
+          <p class="hero-desc">
+            Bienvenue Sylvain. Voici un résumé en temps réel de l'activité de la
+            plateforme.
+          </p>
+        </div>
+      </section>
+
+      <!-- Les 4 KPIs -->
+      <div class="kpi-grid fu fu1">
+        <div class="kpi" style="--kc: rgba(46, 204, 113, 0.08)">
+          <div class="kpi-top">
+            <div class="kpi-ico" style="background: rgba(46, 204, 113, 0.1)">
+              <span class="material-symbols-outlined"> group </span>
+            </div>
+            <div class="kpi-delta up">En direct</div>
+          </div>
+          <div class="kpi-val" id="dash-users">...</div>
+          <div class="kpi-lbl">Utilisateurs actifs</div>
+        </div>
+
+        <div class="kpi" style="--kc: rgba(74, 144, 240, 0.08)">
+          <div class="kpi-top">
+            <div class="kpi-ico" style="background: rgba(74, 144, 240, 0.1)">
+              <span class="material-symbols-outlined"> money_bag </span>
+            </div>
+            <div class="kpi-delta up" id="rev-mois-pourcentage">+...%</div>
+          </div>
+          <div class="kpi-val" id="rev-mois-montant">... €</div>
+          <div class="kpi-lbl">Revenus du mois</div>
+        </div>
+
+        <div class="kpi" style="--kc: rgba(255, 152, 0, 0.1)">
+          <div class="kpi-top">
+            <div class="kpi-ico" style="background: rgba(255, 152, 0, 0.12)">
+              <span class="material-symbols-outlined"> inventory_2 </span>
+            </div>
+            <div class="kpi-delta neu">Réseau</div>
+          </div>
+          <div class="kpi-val" id="dash-boxes" style="color: var(--or-l)">
+            ...
+          </div>
+          <div class="kpi-lbl">Conteneurs / Casiers</div>
+        </div>
+
+        <div class="kpi" style="--kc: rgba(0, 212, 232, 0.08)">
+          <div class="kpi-top">
+            <div class="kpi-ico" style="background: rgba(0, 212, 232, 0.1)">
+              <span class="material-symbols-outlined"> recycling </span>
+            </div>
+            <div class="kpi-delta up">Validés</div>
+          </div>
+          <div class="kpi-val" id="dash-waste" style="color: var(--cyan)">
+            ...
+          </div>
+          <div class="kpi-lbl">Déchets sauvés (Global)</div>
+        </div>
+      </div>
+
+      <!-- Grille : Alertes à gauche, Activité à droite -->
+      <div class="frow fu fu2" style="gap: 20px; align-items: start">
+        <!-- CENTRE D'ALERTES -->
+        <div class="card">
+          <div class="card-hd">
+            <div class="card-ht">
+              <div class="cht-i" style="background: rgba(240, 80, 80, 0.1)">
+                🚨
+              </div>
+              Centre d'actions requises
+            </div>
+          </div>
+          <div
+            class="card-bd"
+            style="display: flex; flex-direction: column; gap: 10px"
+          >
+            <div
+              class="tx-row"
+              style="
+                border-color: rgba(240, 80, 80, 0.2);
+                background: rgba(240, 80, 80, 0.03);
+              "
+            >
+              <div class="tx-ico" style="background: rgba(240, 80, 80, 0.1)">
+                <span class="material-symbols-outlined"> warning </span>
+              </div>
+              <div class="tx-info">
+                <div
+                  class="tx-name"
+                  id="alert-maintenance"
+                  style="color: var(--red)"
+                >
+                  Analyse réseau...
+                </div>
+                <div class="tx-date">Casiers nécessitant une intervention</div>
+              </div>
+              <button
+                class="btn btn-xs btn-red"
+                onclick="window.location.href = 'admin_conteneurs.html'"
+              >
+                Voir →
+              </button>
+            </div>
+
+            <div class="tx-row" style="border-color: rgba(255, 152, 0, 0.2)">
+              <div class="tx-ico" style="background: rgba(255, 152, 0, 0.1)">
+                <span class="material-symbols-outlined"> contract_edit </span>
+              </div>
+              <div class="tx-info">
+                <div
+                  class="tx-name"
+                  id="alert-annonces"
+                  style="color: var(--or-l)"
+                >
+                  Chargement...
+                </div>
+                <div class="tx-date">Soumises par les utilisateurs</div>
+              </div>
+              <button
+                class="btn btn-xs btn-o"
+                onclick="window.location.href = 'admin_validations.html'"
+              >
+                Modérer
+              </button>
+            </div>
+
+            <div class="tx-row" style="border-color: rgba(166, 124, 255, 0.2)">
+              <div class="tx-ico" style="background: rgba(166, 124, 255, 0.1)">
+                <span class="material-symbols-outlined"> calendar_today </span>
+              </div>
+              <div class="tx-info">
+                <div
+                  class="tx-name"
+                  id="alert-events"
+                  style="color: var(--purple)"
+                >
+                  Chargement...
+                </div>
+                <div class="tx-date">Proposés par les salariés</div>
+              </div>
+              <button
+                class="btn btn-xs btn-g"
+                style="color: var(--purple)"
+                onclick="window.location.href = 'admin_validations.html'"
+              >
+                Voir
+              </button>
+            </div>
+            <div class="tx-row" style="border-color: rgba(46, 204, 113, 0.2)">
+              <div class="tx-ico" style="background: rgba(46, 204, 113, 0.1)">
+                <span class="material-symbols-outlined"> stylus_note </span>
+              </div>
+              <div class="tx-info">
+                <div class="tx-name" id="alert-articles" style="color: #2ecc71">
+                  Chargement...
+                </div>
+                <div class="tx-date">Articles rédigés par l'équipe</div>
+              </div>
+              <button
+                class="btn btn-xs btn-o"
+                onclick="window.location.href = 'admin_validations.html'"
+              >
+                Lire
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ACTIVITÉ RÉCENTE -->
+        <div class="card">
+          <div class="card-hd">
+            <div class="card-ht">
+              <div class="cht-i" style="background: rgba(74, 144, 240, 0.1)">
+                <span class="material-symbols-outlined"> bolt </span>
+              </div>
+              Activité récente
+            </div>
+          </div>
+          <div class="card-bd tx-list">
+            <div class="tx-row">
+              <div class="tx-ico" style="background: rgba(46, 204, 113, 0.1)">
+                <span class="material-symbols-outlined"> credit_card </span>
+              </div>
+              <div class="tx-info">
+                <div class="tx-name">Abonnement Premium (Pro)</div>
+                <div class="tx-date">Il y a 10 minutes par Atelier Bois</div>
+              </div>
+              <div class="tx-amt in">+ 30,00 €</div>
+            </div>
+
+            <div class="tx-row">
+              <div class="tx-ico" style="background: rgba(255, 255, 255, 0.05)">
+                <span class="material-symbols-outlined"> person </span>
+              </div>
+              <div class="tx-info">
+                <div class="tx-name">Nouvelle inscription</div>
+                <div class="tx-date">Il y a 45 minutes - Particulier</div>
+              </div>
+              <div class="tx-amt" style="font-size: 12px; color: var(--txt-m)">
+                -
+              </div>
+            </div>
+
+            <div class="tx-row">
+              <div class="tx-ico" style="background: rgba(74, 144, 240, 0.1)">
+                <span class="material-symbols-outlined"> event </span>
+              </div>
+              <div class="tx-info">
+                <div class="tx-name">Dépôt en conteneur réussi</div>
+                <div class="tx-date">Il y a 2 heures - Box 12 (Montreuil)</div>
+              </div>
+              <div class="tx-amt" style="font-size: 12px; color: var(--txt-m)">
+                -
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <script src="script/admin/dash.js"></script>
+    <script src="script/admin/user.js"></script>
+    <script src="script/admin/finance.js"></script>
+  </body>
+</html>

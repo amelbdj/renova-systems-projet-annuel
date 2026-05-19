@@ -3,6 +3,7 @@ package bdd
 import (
 	"database/sql"
 	"fmt"
+	"strconv"
 	"strings"
 	"upcycleconnect/models"
 
@@ -359,4 +360,23 @@ func BanUser(userId int) error {
 	}
 
 	return nil
+}
+
+func GetAllAdminIDs() ([]string, error) {
+	
+	rows, err := Db.Query("SELECT id FROM pa2026.utilisateur WHERE role = 'Administrateur'")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var adminIDs []string
+	for rows.Next() {
+		var id int
+		if err := rows.Scan(&id); err == nil {
+			// On convertit direct en string pour OneSignal
+			adminIDs = append(adminIDs, strconv.Itoa(id))
+		}
+	}
+	return adminIDs, nil
 }
