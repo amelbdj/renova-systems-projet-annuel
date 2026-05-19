@@ -372,6 +372,30 @@
               </div>
             </div>
             <div class="card-bd">
+              <div
+                id="logistics-header"
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  margin-bottom: 15px;
+                "
+              >
+                <div
+                  id="current-view-title"
+                  style="font-weight: bold; color: white"
+                >
+                  Tous les Conteneurs
+                </div>
+                <button
+                  id="btn-back-conteneurs"
+                  class="btn btn-sm btn-o"
+                  style="display: none"
+                  onclick="GetConteneurs()"
+                >
+                  ← Retour aux conteneurs
+                </button>
+              </div>
               <div id="box-container" class="box-grid"></div>
             </div>
           </div>
@@ -685,7 +709,7 @@
         </div>
         <div class="fgroup">
           <label>Changer le statut</label>
-          <select>
+          <select id="selectBoxStatus">
             <option>Libre</option>
             <option>Occupé</option>
             <option>Maintenance</option>
@@ -700,13 +724,7 @@
           ></textarea>
         </div>
         <div style="display: flex; gap: 8px">
-          <button
-            class="btn btn-o btn-full"
-            onclick="
-              closeModal('boxModal');
-              alert('✅ Box mise à jour.');
-            "
-          >
+          <button class="btn btn-o btn-full" onclick="UpdateBoxStatusAPI()">
             Mettre à jour ✓
           </button>
           <button

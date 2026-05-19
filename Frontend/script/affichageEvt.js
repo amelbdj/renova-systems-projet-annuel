@@ -17,7 +17,7 @@ function chargerEvenementsClient(motCle = "") {
   fetch(url, {
     method: "GET",
     headers: {
-      Authorization: "Bearer " + monToken,
+      Authorization: "Bearer " + localStorage.getItem("token"),
     },
   })
     .then((res) => {
@@ -41,14 +41,18 @@ function chargerEvenementsClient(motCle = "") {
       let htmlContent = "";
       let evenementsAffiches = 0;
 
+      const maintenant = new Date();
+
       evenements.forEach((evt) => {
-        if (evt.statut_validation === "valide") {
+        const dateEvenement = new Date(evt.date_debut);
+
+        if (evt.statut_validation === "valide" && dateEvenement >= maintenant) {
           evenementsAffiches++;
 
           const idEvt = evt.id;
           const imageCover =
             evt.image_url ||
-            "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=500"; // Image d'event par défaut
+            "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=500";
 
           const textContent =
             evt.description || evt.contenu || "Pas de description.";
@@ -56,6 +60,23 @@ function chargerEvenementsClient(motCle = "") {
             textContent.length > 100
               ? textContent.substring(0, 100) + "..."
               : textContent;
+
+          // 💡 LOGIQUE D'AFFICHAGE DU BOUTON
+          let boutonAction = "";
+
+          if (evt.deja_inscrit) {
+            boutonAction = `
+                  <span style="background-color: #10b981; color: white; padding: 8px 15px; border-radius: 6px; font-weight: 600; font-size: 14px; margin-top: 10px; display: inline-block; cursor: default; opacity: 0.9;" onclick="event.stopPropagation();">
+                      ✓ Déjà inscrit
+                  </span>
+              `;
+          } else {
+            boutonAction = `
+                  <span style="background-color: var(--blue); color: white; padding: 8px 15px; border-radius: 6px; font-weight: 600; font-size: 14px; margin-top: 10px; display: inline-block; cursor: pointer;" onclick="Sinscrire(${idEvt}); event.stopPropagation();">
+                      S'inscrire ➔
+                  </span>
+              `;
+          }
 
           htmlContent += `
                 <div class="article-card" onclick="OuvrirEvenement(${idEvt})">
@@ -67,9 +88,7 @@ function chargerEvenementsClient(motCle = "") {
                         </p>
                         <p style="color: var(--txt-m); font-size: 14px; flex-grow: 1;">${resume}</p>
                         
-                        <span style="background-color: var(--blue); color: white; padding: 8px 15px; border-radius: 6px; font-weight: 600; font-size: 14px; margin-top: 10px; display: inline-block;" onclick="Sinscrire(${idEvt}); event.stopPropagation();">
-                            S'inscrire ➔
-                        </span>
+                        ${boutonAction}
                     </div>
                 </div>
             `;
@@ -80,7 +99,7 @@ function chargerEvenementsClient(motCle = "") {
         if (motCle !== "") {
           container.innerHTML = `<p style="color: var(--txt-m); text-align: center; grid-column: 1 / -1;">Aucun événement valide trouvé pour "<b>${motCle}</b>".</p>`;
         } else {
-          container.innerHTML = `<p style="color: var(--txt-m); text-align: center; grid-column: 1 / -1;">Aucun événement valide pour le moment.</p>`;
+          container.innerHTML = `<p style="color: var(--txt-m); text-align: center; grid-column: 1 / -1;">Aucun événement à venir pour le moment.</p>`;
         }
       } else {
         container.innerHTML = htmlContent;
@@ -191,3 +210,95 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+function SeDesinscrire(idEvent) {
+  // Petite confirmation pour éviter les clics accidentels
+  if (
+    !confirm("Voulez-vous vraiment annuler votre inscription à cet événement ?")
+  ) {
+    return;
+  }
+
+  const idUser = localStorage.getItem("userId");
+  const monToken = localStorage.getItem("token");
+
+  fetch("http://localhost:8081/admin/evenements/desinscription", {
+    method: "POST", // Ou "DELETE" selon comment ton backend est configuré
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + monToken,
+    },
+    body: JSON.stringify({
+      id_user: parseInt(idUser),
+      id_event: idEvent,
+    }),
+  })
+    .then(function (res) {
+      return res.json().then(function (data) {
+        if (!res.ok) {
+          throw data.erreur || "Erreur lors de la désinscription";
+        }
+        return data;
+      });
+    })
+    .then(function (data) {
+      // Si la désinscription marche, on recharge la liste pour remettre le bouton bleu !
+      chargerEvenementsClient();
+    })
+    .catch(function (errorMessage) {
+      alert("Attention : " + errorMessage);
+    });
+}
+
+function SeDesinscrire(idEvent) {
+  // 1. Demander confirmation (c'est toujours mieux pour éviter les clics par erreur)
+  if (
+    !confirm("Voulez-vous vraiment annuler votre inscription à cet événement ?")
+  ) {
+    return;
+  }
+
+  // 2. Récupérer les infos de l'utilisateur (comme pour l'inscription)
+  const idUser = localStorage.getItem("userId");
+  const monToken = localStorage.getItem("token");
+
+  if (!idUser || idUser === "null") {
+    alert("Erreur : Vous devez être connecté pour faire cette action.");
+    return;
+  }
+
+  // 3. Appel à la route Go qu'on vient de configurer
+  fetch("http://localhost:8081/admin/evenements/desinscription", {
+    method: "POST", // Correspond à la méthode acceptée par ton routeur Go
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + monToken,
+    },
+    body: JSON.stringify({
+      id_user: parseInt(idUser),
+      id_event: idEvent,
+    }),
+  })
+    .then(function (res) {
+      return res.json().then(function (data) {
+        if (!res.ok) {
+          throw data.erreur || "Erreur lors de la désinscription";
+        }
+        return data; // Les données de succès
+      });
+    })
+    .then(function (data) {
+      alert("Succès : " + (data.message || "Désinscription validée"));
+
+      // Fermer la modale si elle était ouverte
+      FermerEvenement();
+
+      // Recharge la liste des événements pour mettre à jour l'affichage
+      // Le bouton vert "Déjà inscrit" redeviendra un bouton bleu "S'inscrire"
+      if (typeof chargerEvenementsClient === "function") {
+        chargerEvenementsClient();
+      }
+    })
+    .catch(function (errorMessage) {
+      alert("Attention : " + errorMessage);
+    });
+}

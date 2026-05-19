@@ -67,3 +67,72 @@ func PaymentHistory(userID int) ([]map[string]interface{}, error) {
 	}
 	return history, nil
 }
+
+// GetFinanceOverviewMois récupère le volume total et la commission du mois en cours
+func GetFinanceOverviewMois() (float64, float64, error) {
+	query := `
+		SELECT 
+			COALESCE(SUM(montant_total), 0) AS total_volume,
+			COALESCE(SUM(commission), 0) AS total_commission
+		FROM pa2026.order 
+		WHERE MONTH(date_commande) = MONTH(CURRENT_DATE()) 
+		AND YEAR(date_commande) = YEAR(CURRENT_DATE())`
+
+	var volume float64
+	var commission float64
+
+	err := Db.QueryRow(query).Scan(&volume, &commission)
+	if err != nil {
+		return 0, 0, fmt.Errorf("erreur SQL GetFinanceOverviewMois : %v", err)
+	}
+
+	return volume, commission, nil
+}
+
+func GetAdminTransactions() ([]map[string]interface{}, error) {
+	// On récupère les infos de l'order ET le titre de l'annonce
+	query := `
+		SELECT 
+			o.id_commande, 
+			o.date_commande, 
+			a.titre, 
+			o.montant_total, 
+			o.commission 
+		FROM pa2026.order o
+		JOIN pa2026.annonce a ON o.id_annonce = a.id
+		ORDER BY o.date_commande DESC 
+		LIMIT 50`
+
+	rows, err := Db.Query(query)
+	if err != nil {
+		return nil, fmt.Errorf("Erreur SQL Transactions: %v", err)
+	}
+	defer rows.Close()
+
+	var transactions []map[string]interface{}
+	
+	for rows.Next() {
+		var id int
+		var date string
+		var titre string
+		var montant float64
+		var commission float64
+
+		err := rows.Scan(&id, &date, &titre, &montant, &commission)
+		if err != nil {
+			continue // S'il y a une erreur sur une ligne, on passe à la suivante
+		}
+
+		// On construit notre objet JSON
+		item := map[string]interface{}{
+			"id":         id,
+			"date":       date,
+			"titre":      titre,
+			"montant":    montant,
+			"commission": commission,
+		}
+		transactions = append(transactions, item)
+	}
+	
+	return transactions, nil
+}

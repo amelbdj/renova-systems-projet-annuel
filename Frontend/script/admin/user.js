@@ -1,3 +1,4 @@
+monToken = localStorage.getItem("token");
 function setVtab(element, type) {
   document
     .querySelectorAll(".vtab")
@@ -52,6 +53,10 @@ function OpenEditModalAPI(id, nom, prenom, email, role) {
 
 function AfficherTableau(users) {
   const container = document.querySelector(".u-table");
+
+  // 🛡️ LE FAMEUX BOUCLIER : Si le tableau n'est pas sur la page, on arrête tout !
+  if (!container) return;
+
   const totalStat = document.getElementById("totalUser");
 
   if (!users) users = [];
@@ -214,7 +219,12 @@ function Search(query, role) {
     url += `&role=${encodeURIComponent(role)}`;
   }
 
-  fetch(url)
+  fetch(url, {
+    method: "GET",
+    headers: {
+      Authorization: "Bearer " + localStorage.getItem("token"), // 👈 C'est ce passe-partout qui manquait !
+    },
+  })
     .then((res) => {
       if (!res.ok) throw new Error("Erreur de recherche");
       return res.json();
@@ -337,30 +347,35 @@ function FermerModaleRefus() {
   document.getElementById("modalRefus").style.display = "none";
 }
 
-document.getElementById("btnConfirmerRefus").onclick = function () {
-  const raison = document.getElementById("motifTexte").value;
+const btnConfirmerRefus = document.getElementById("btnConfirmerRefus");
 
-  if (!raison) {
-    alert("Merci de saisir un motif pour l'utilisateur.");
-    return;
-  }
+// 🛡️ LE BOUCLIER : On ne met le onclick que si le bouton existe sur la page !
+if (btnConfirmerRefus) {
+  btnConfirmerRefus.onclick = function () {
+    const raison = document.getElementById("motifTexte").value;
 
-  fetch(`http://localhost:8081/admin/users/refuse/${currentUserIdToRefuse}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + monToken,
-    },
-    body: JSON.stringify({ motif: raison }),
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      console.log(data.message);
-      FermerModaleRefus();
-      GetUsers(); // On rafraîchit le tableau
+    if (!raison) {
+      alert("Merci de saisir un motif pour l'utilisateur.");
+      return;
+    }
+
+    fetch(`http://localhost:8081/admin/users/refuse/${currentUserIdToRefuse}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + monToken,
+      },
+      body: JSON.stringify({ motif: raison }),
     })
-    .catch((err) => console.error("Erreur refus:", err));
-};
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data.message);
+        FermerModaleRefus();
+        GetUsers(); // On rafraîchit le tableau instantanément
+      })
+      .catch((err) => console.error("Erreur refus:", err));
+  };
+}
 
 function logout() {
   localStorage.clear();
@@ -398,4 +413,9 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+  // const role = localStorage.getItem("role");
+
+  // if (role != "Administrateur") {
+  //   window.location.href = "403.html";
+  // }
 });

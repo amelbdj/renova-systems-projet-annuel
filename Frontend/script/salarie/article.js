@@ -1,9 +1,5 @@
-let monToken = localStorage.getItem("token");
-let userId = localStorage.getItem("userId");
-
 if (!monToken || !userId) {
-  alert("Vous devez être connecté pour accéder à cette page.");
-  window.location.href = "login.html";
+  window.location.href = "../login.html";
 }
 
 function chargerArticles() {
@@ -21,41 +17,53 @@ function chargerArticles() {
     .then((articles) => {
       const conteneurPublies = document.getElementById("liste-publies");
       const conteneurBrouillons = document.getElementById("liste-brouillons");
-      const statArticle = document.getElementById("stat-article"); // Utilise getElementById      let compteurPublies = 0;
+      const statArticle = document.getElementById("stat-article");
+
       let compteurPublies = 0;
+
       // On vide les conteneurs
-      conteneurPublies.innerHTML = "";
-      conteneurBrouillons.innerHTML = "";
+      if (conteneurPublies) conteneurPublies.innerHTML = "";
+      if (conteneurBrouillons) conteneurBrouillons.innerHTML = "";
+
+      // 🛡️ LE FAMEUX BOUCLIER ANTI-NULL (Spécial Golang)
+      if (!articles) {
+        articles = [];
+      }
 
       articles.forEach((art) => {
-        // 1. Choix du style de badge selon le statut
+        // Choix du style de badge selon le statut
         let badgeStatut = "";
-        if (art.statut === "brouillon") {
+        let statut = (art.statut || "").toLowerCase(); // Sécurité pour les majuscules
+
+        if (statut === "brouillon") {
           badgeStatut = `<span class="tag t-amber">Brouillon</span>`;
-        } else if (art.statut === "en attente")
+        } else if (statut === "en attente") {
           badgeStatut = `<span class="tag t-blue">En attente</span>`;
-        else if (art.statut === "refuse")
+        } else if (statut === "refuse") {
           badgeStatut = `<span class="tag t-red">Refusé</span>`;
-        else {
+        } else {
           badgeStatut = `<span class="tag t-green">Publié</span>`;
           compteurPublies++;
         }
 
         let icone = "📝";
-        if (art.type.toLowerCase().includes("conseil"))
+        let typeArt = (art.type || "").toLowerCase();
+
+        if (typeArt.includes("conseil"))
           icone = `<span class="material-symbols-outlined">lightbulb</span>`;
-        if (art.type.toLowerCase().includes("news"))
+        if (typeArt.includes("news"))
           icone = `<span class="material-symbols-outlined">newspaper</span>`;
-        if (art.type.toLowerCase().includes("tuto"))
+        if (typeArt.includes("tuto"))
           icone = `<span class="material-symbols-outlined">build</span>`;
+
         const card = `
   <div class="post-item">
     <div class="post-ico" style="background:rgba(48,212,192,.09)">${icone}</div>
     <div class="post-body">
       <div class="post-title">${art.titre}</div>
-      <div class="post-excerpt">${art.contenu.substring(0, 65)}...</div>
+      <div class="post-excerpt">${art.contenu ? art.contenu.substring(0, 65) : ""}...</div>
       <div class="post-meta">
-          <span class="tag t-vi">${art.type}</span>
+          <span class="tag t-vi">${art.type || "Article"}</span>
           ${badgeStatut}
           <button class="btn btn-v btn-sm" onclick="editerArticle(${art.id})">＋ Modifier</button>
           <button class="mod-btn mod-ban" onclick="DeleteArticle(${art.id})">Supprimer</button>
@@ -64,19 +72,28 @@ function chargerArticles() {
   </div>
 `;
 
-        if (art.statut === "brouillon" || art.statut === "refuse") {
-          conteneurBrouillons.innerHTML += card;
+        if (statut === "brouillon" || statut === "refuse") {
+          if (conteneurBrouillons) conteneurBrouillons.innerHTML += card;
         } else {
-          conteneurPublies.innerHTML += card;
+          if (conteneurPublies) conteneurPublies.innerHTML += card;
         }
       });
 
-      statArticle.textContent = compteurPublies;
+      // Si le tableau est vide, on affiche un petit message sympa
+      if (articles.length === 0) {
+        if (conteneurPublies)
+          conteneurPublies.innerHTML = `<p style="color:var(--txt-m); font-size:13px; padding: 10px 0;">Aucun article publié.</p>`;
+        if (conteneurBrouillons)
+          conteneurBrouillons.innerHTML = `<p style="color:var(--txt-m); font-size:13px; padding: 10px 0;">Aucun brouillon en cours.</p>`;
+      }
+
+      if (statArticle) statArticle.textContent = compteurPublies;
     })
     .catch((error) => {
       console.error("Impossible de récupérer les articles", error);
-      document.getElementById("liste-publies").innerHTML =
-        `<p style="color:var(--red); font-size:13px;">Serveur indisponible.</p>`;
+      const conteneurPublies = document.getElementById("liste-publies");
+      if (conteneurPublies)
+        conteneurPublies.innerHTML = `<p style="color:var(--red); font-size:13px;">Serveur indisponible.</p>`;
     });
 }
 
@@ -119,13 +136,14 @@ function saveArticle(action) {
   }
 
   const articleData = {
-    id_salarie: parseInt(userId), // À remplacer par l'ID réel du salarié connecté apre sync avec faty
+    id_salarie: parseInt(userId),
     titre: titre,
     contenu: contenu,
     type: type,
   };
 
   let url = "";
+  let method = "";
   if (id !== "") {
     // Mode MODIFICATION
     url = `http://localhost:8081/admin/articles/modify/${id}/${action}`;
@@ -150,9 +168,10 @@ function saveArticle(action) {
     })
     .then((data) => {
       const message =
-        action === "publier" ? "Article publié !" : "Brouillon enregistré.";
+        action === "publier"
+          ? "Article publié / En attente !"
+          : "Brouillon enregistré.";
       alert(message);
-
       closePost();
       chargerArticles();
     })
@@ -164,6 +183,7 @@ function saveArticle(action) {
 
 function DeleteArticle(id) {
   if (!confirm("Êtes-vous sûr de vouloir supprimer cet article ?")) return;
+
   fetch(`http://localhost:8081/admin/articles/delete/${id}`, {
     method: "DELETE",
     headers: {
@@ -176,18 +196,15 @@ function DeleteArticle(id) {
     })
     .then((data) => {
       alert("Article supprimé !");
-      chargerArticles();
+      chargerArticles(); // Rafraîchit les articles APRES la suppression
     })
     .catch((err) => {
       console.error(err);
       alert("Erreur serveur : " + err.message);
     });
-
-  chargerArticles();
 }
 
 function openNewPost() {
-  // Vérifie bien que l'ID est postModal et pas autre chose !
   const modal = document.getElementById("postModal");
   if (modal) {
     modal.classList.add("open");
@@ -200,6 +217,13 @@ function closePost() {
   if (modal) {
     modal.classList.remove("open");
     modal.style.display = "none";
+
+    // On vide les champs du formulaire à la fermeture pour que la prochaine création soit propre
+    document.getElementById("edit-article-id").value = "";
+    document.getElementById("post-title").value = "";
+    document.getElementById("post-content").value = "";
+    const modalTitle = document.querySelector("#postModal .sec-title-text");
+    if (modalTitle) modalTitle.textContent = "Rédiger un article";
   }
 }
 
