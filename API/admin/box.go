@@ -108,6 +108,7 @@ func GetAllBoxs(w http.ResponseWriter, r *http.Request) {
     Boxs, err := bdd.GetBox()
     if err != nil {
         http.Error(w, "Erreur lors de la récupération des boxs : "+err.Error(), http.StatusInternalServerError)
+        
         return
     }
    response, err := json.Marshal(Boxs)

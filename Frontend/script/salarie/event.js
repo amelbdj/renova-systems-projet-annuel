@@ -122,18 +122,38 @@ function GetEvenements() {
 
           let dateFormatee = "Date inconnue";
           let heureFormatee = "";
+
           if (evt.date_debut) {
-            const d = new Date(evt.date_debut);
-            dateFormatee = d.toLocaleDateString("fr-FR", {
-              day: "numeric",
-              month: "short",
-            }); // "15 mars"
-            heureFormatee = d
-              .toLocaleTimeString("fr-FR", {
-                hour: "2-digit",
-                minute: "2-digit",
-              })
-              .replace(":", "h"); // "10h00"
+            try {
+              const morceaux = evt.date_debut.split(" a ");
+
+              if (morceaux.length === 2) {
+                const dateParts = morceaux[0].split("/");
+                const timeParts = morceaux[1].split(":");
+
+                const d = new Date(
+                  dateParts[2],
+                  dateParts[1] - 1,
+                  dateParts[0],
+                  timeParts[0],
+                  timeParts[1],
+                );
+
+                dateFormatee = d.toLocaleDateString("fr-FR", {
+                  day: "numeric",
+                  month: "short", // affichera "avr." ou "mars"
+                });
+
+                heureFormatee = d
+                  .toLocaleTimeString("fr-FR", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })
+                  .replace(":", "h"); // affichera "14h30"
+              }
+            } catch (error) {
+              console.error("Impossible de lire la date :", evt.date_debut);
+            }
           }
           // mettre une img specail event et formation par def
           htmlContent += `
