@@ -107,6 +107,7 @@ func main() {
 	http.HandleFunc("/auth/inscription", admin.Inscription)
 	http.HandleFunc("/admin/login", admin.Login)
 	http.HandleFunc("/update-tutorial", admin.UpdateTutorialStatus)
+	http.HandleFunc("/api/user/ecostats", admin.GetEcoStatsHandler)
 
 	// --- CATEGORIES ---
 	http.HandleFunc("POST /admin/categories/add", auth.VerifyTokenMiddleware(admin.CreateCategorie))
@@ -129,6 +130,7 @@ func main() {
 	http.HandleFunc("POST /api/annonces/vendre", admin.ConfirmPaymentAndOrder)
 	http.HandleFunc("OPTIONS /api/annonces/vendre", admin.ConfirmPaymentAndOrder)
 	http.HandleFunc("/api/user/stats", admin.GetEcoStatsHandler)
+	http.HandleFunc("/api/user/achats", admin.GetMyPurchases)
 
 	// --- EVENEMENTS ---
 	http.HandleFunc("GET /admin/evenements", admin.GetAllEvenements)
