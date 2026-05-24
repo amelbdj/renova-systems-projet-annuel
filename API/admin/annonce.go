@@ -318,20 +318,28 @@ func GetMyAnnonces(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetValidatedAnnonces(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
+    w.Header().Set("Content-Type", "application/json")
+    w.Header().Set("Access-Control-Allow-Origin", "*")
 
-	idStr := r.URL.Query().Get("id")
-	currentUserID, _ := strconv.Atoi(idStr)
+    idStr := r.URL.Query().Get("id")
+    currentUserID, _ := strconv.Atoi(idStr)
 
-	annonces, err := bdd.GetValidatedAnnonces(currentUserID)
+    annonces, err := bdd.GetValidatedAnnonces(currentUserID)
 
-	if err != nil {
-		fmt.Println("Erreur lors de la recup des annonces validées : ", err)
-		http.Error(w, "Erreur recup des annonces", http.StatusInternalServerError)
-		return
-	}
-	json.NewEncoder(w).Encode(annonces)
+    if err != nil {
+        fmt.Println("Erreur lors de la recup des annonces validées : ", err)
+        http.Error(w, "Erreur recup des annonces", http.StatusInternalServerError)
+        return
+    }
+
+    // --- LE CORRECTIF EST ICI ---
+    // Si la liste est vide, on force un tableau vide "[]" pour éviter le crash d'Android
+    if annonces == nil {
+        annonces = []models.Annonce{}
+    }
+    // ----------------------------
+
+    json.NewEncoder(w).Encode(annonces)
 }
 
 func GetOneAnnonce(w http.ResponseWriter, r *http.Request) {
@@ -446,6 +454,9 @@ func GetMyBoxes(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 500)
 		return
 	}
+	if data == nil {
+        data = []map[string]interface{}{}
+    }
 
 	json.NewEncoder(w).Encode(data)
 }
@@ -463,4 +474,23 @@ func GetEcoStatsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(stats)
+}
+func GetMyPurchases(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "application/json")
+    w.Header().Set("Access-Control-Allow-Origin", "*")
+
+    userID, _ := strconv.Atoi(r.URL.Query().Get("user_id"))
+
+    data, err := bdd.GetUserPurchases(userID)
+    if err != nil {
+        http.Error(w, err.Error(), 500)
+        return
+    }
+
+    // Notre fameux correctif pour Retrofit (Android)
+    if data == nil {
+        data = []map[string]interface{}{}
+    }
+
+    json.NewEncoder(w).Encode(data)
 }
