@@ -11,6 +11,7 @@ import (
 	"github.com/stripe/stripe-go/v81/account"
 	"github.com/stripe/stripe-go/v81/accountlink"
 	"github.com/stripe/stripe-go/v81/checkout/session"
+	"github.com/stripe/stripe-go/v81/paymentintent"
 )
 
 const StripeSecretKey = "sk_test_51TNFHBHbaxF1KOTtH89RRHNJQSQXSPVtOHMJDHicr1LW4XYeY4ZC6nYWwzVbDvFUUI58YA7KlJs9BiUyP5zD4XU300gaAUPVpI"
@@ -145,4 +146,61 @@ func PaymentAnnonce(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(map[string]string{"url": s.URL})
+}
+
+// Nouvelle route pour l'application Android
+func PaymentIntentMobile(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Content-Type", "application/json")
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	annonceID, _ := strconv.Atoi(r.URL.Query().Get("annonce_id"))
+	var prix float64
+	var stripeAccountIDSeller string
+	
+	query := `
+        SELECT a.prix, u.stripe_account_id 
+        FROM pa2026.annonce a 
+        JOIN pa2026.utilisateur u ON a.id_user = u.id 
+        WHERE a.id = ?`
+
+	err := bdd.Db.QueryRow(query, annonceID).Scan(&prix, &stripeAccountIDSeller)
+	if err != nil || stripeAccountIDSeller == "" {
+		http.Error(w, "Vendeur non configuré pour Stripe", http.StatusBadRequest)
+		return
+	}
+
+	stripe.Key = StripeSecretKey
+	unitAmount := int64(prix * 100)
+	commission := (unitAmount * 5) / 100
+
+	// Au lieu d'une session Web, on crée une intention de paiement silencieuse
+	params := &stripe.PaymentIntentParams{
+		Amount:   stripe.Int64(unitAmount),
+		Currency: stripe.String(string(stripe.CurrencyEUR)),
+		ApplicationFeeAmount: stripe.Int64(commission),
+		TransferData: &stripe.PaymentIntentTransferDataParams{
+			Destination: stripe.String(stripeAccountIDSeller),
+		},
+		AutomaticPaymentMethods: &stripe.PaymentIntentAutomaticPaymentMethodsParams{
+			Enabled: stripe.Bool(true), // Nécessaire pour le SDK Android
+		},
+	}
+
+	pi, err := paymentintent.New(params)
+	if err != nil {
+		http.Error(w, "Erreur Stripe", http.StatusInternalServerError)
+		return
+	}
+
+	// On renvoie le secret au téléphone Android !
+	json.NewEncoder(w).Encode(map[string]string{
+		"client_secret": pi.ClientSecret,
+	})
 }

@@ -67,40 +67,7 @@ func ConfirmDeposit(pinCode string) error {
     return nil
 }
 
-func CollectObject(barcode string, professionnelId int) error {
-    var histID int
-    var boxId int
-    var annonceId int
 
-    // CORRECTION : On lit depuis conteneur_id
-    err := Db.QueryRow("SELECT id, conteneur_id, annonce_id FROM historique_conteneurs WHERE code_barre_recuperation = ? AND date_retrait_effective IS NULL", barcode).Scan(&histID, &boxId, &annonceId)
-    if err != nil {
-        return errors.New("code-barres invalide ou objet déjà récupéré")
-    }
-
-    // CORRECTION : professionnel_id
-    _, err = Db.Exec("UPDATE historique_conteneurs SET date_retrait_effective = NOW(), professionnel_id = ? WHERE id = ?", professionnelId, histID)
-    if err != nil {
-        return err
-    }
-
-    _, err = Db.Exec("UPDATE box SET statut = 'libre', code_secret = NULL WHERE id = ?", boxId)
-    if err != nil {
-        return err
-    }
-
-    _, err = Db.Exec("UPDATE annonce SET statut = 'RECUPERE' WHERE id = ?", annonceId)
-    if err != nil {
-        return err
-    }
-
-    err = CalculateAndAddScore(annonceId, professionnelId)
-    if err != nil {
-        fmt.Println("Erreur lors du calcul du score :", err)
-    }
-
-    return nil
-}
 
 func GetUserReservations(userID int) ([]map[string]interface{}, error) {
     // CORRECTION : Les jointures utilisent les bons noms de la table historique_conteneurs
@@ -337,3 +304,102 @@ func UpdateBoxStatus(boxID int, statut string) error {
     _, err := Db.Exec("UPDATE box SET statut = ? WHERE id = ?", statut, boxID)
     return err
 }
+
+func CollectObject(pinCode string, professionnelId int) error {
+    var histID int
+    var boxId int
+    var annonceId int
+
+    // CORRECTION : On cherche par code_ouverture (le code PIN à 6 chiffres)
+    err := Db.QueryRow("SELECT id, conteneur_id, annonce_id FROM historique_conteneurs WHERE code_ouverture = ? AND date_retrait_effective IS NULL", pinCode).Scan(&histID, &boxId, &annonceId)
+    if err != nil {
+        return errors.New("code PIN de retrait invalide ou objet déjà récupéré")
+    }
+
+    _, err = Db.Exec("UPDATE historique_conteneurs SET date_retrait_effective = NOW(), professionnel_id = ? WHERE id = ?", professionnelId, histID)
+    if err != nil {
+        return err
+    }
+
+    _, err = Db.Exec("UPDATE box SET statut = 'libre', code_secret = NULL WHERE id = ?", boxId)
+    if err != nil {
+        return err
+    }
+
+    _, err = Db.Exec("UPDATE annonce SET statut = 'RECUPERE' WHERE id = ?", annonceId)
+    if err != nil {
+        return err
+    }
+
+    err = CalculateAndAddScore(annonceId, professionnelId)
+    if err != nil {
+        fmt.Println("Erreur lors du calcul du score :", err)
+    }
+
+    return nil
+}
+
+func SimulateHardwareDeposit(pinCode string) error {
+    var histID int
+    var boxId int
+    var annonceId int
+
+    // 1. On cherche la réservation liée à ce code PIN de dépôt
+    err := Db.QueryRow("SELECT id, conteneur_id, annonce_id FROM historique_conteneurs WHERE code_ouverture = ? AND date_depot_effective IS NULL", pinCode).Scan(&histID, &boxId, &annonceId)
+    if err != nil {
+        return errors.New("code PIN invalide ou objet déjà déposé")
+    }
+
+    // 2. On valide le dépôt dans l'historique
+    _, err = Db.Exec("UPDATE historique_conteneurs SET date_depot_effective = NOW() WHERE id = ?", histID)
+    if err != nil {
+        return err
+    }
+
+    // 3. On verrouille la Box (statut -> 'occupee')
+    _, err = Db.Exec("UPDATE box SET statut = 'occupee' WHERE id = ?", boxId)
+    if err != nil {
+        return err
+    }
+
+    // 4. L'annonce est en box, prête pour le catalogue (ENUM SQL: 'EN VENTE' ou garde sa logique)
+    _, err = Db.Exec("UPDATE annonce SET statut_vente = 'EN VENTE' WHERE id = ?", annonceId)
+    if err != nil {
+        return err
+    }
+
+    return nil
+}
+
+func SimulateHardwareWithdrawal(pinCode string) error {
+    var histID int
+    var boxId int
+    var annonceId int
+
+    // 1. On cherche la réservation via le code PIN (code_ouverture)
+    err := Db.QueryRow("SELECT id, conteneur_id, annonce_id FROM historique_conteneurs WHERE code_ouverture = ? AND date_retrait_effective IS NULL", pinCode).Scan(&histID, &boxId, &annonceId)
+    if err != nil {
+        return errors.New("code PIN de retrait invalide ou objet déjà récupéré")
+    }
+
+    // 2. On clôture l'historique (date de retrait)
+    _, err = Db.Exec("UPDATE historique_conteneurs SET date_retrait_effective = NOW() WHERE id = ?", histID)
+    if err != nil {
+        return err
+    }
+
+    // 3. On libère la Box (statut -> 'libre', code_secret -> NULL)
+    _, err = Db.Exec("UPDATE box SET statut = 'libre', code_secret = NULL WHERE id = ?", boxId)
+    if err != nil {
+        return err
+    }
+
+    // 4. L'annonce passe en statut 'VENDU' (qui fait partie de ton ENUM SQL officiel)
+    _, err = Db.Exec("UPDATE annonce SET statut_vente = 'VENDU' WHERE id = ?", annonceId)
+    if err != nil {
+        return err
+    }
+
+    return nil
+}
+

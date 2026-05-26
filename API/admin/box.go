@@ -307,3 +307,80 @@ func UpdateBoxStatusHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func SimulateWithdrawalHandler(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Access-Control-Allow-Origin", "*")
+    w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+    w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+    if r.Method == "OPTIONS" {
+        w.WriteHeader(http.StatusOK)
+        return
+    }
+
+    if r.Method == "POST" {
+        var req struct {
+            Barcode string `json:"barcode"`
+        }
+
+        if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+            http.Error(w, "Format de données invalide", http.StatusBadRequest)
+            return
+        }
+
+        if req.Barcode == "" {
+            http.Error(w, "Le code-barres est obligatoire", http.StatusBadRequest)
+            return
+        }
+
+        err := bdd.SimulateHardwareWithdrawal(req.Barcode)
+        if err != nil {
+            fmt.Println("Erreur SimulateHardwareWithdrawal :", err)
+            http.Error(w, err.Error(), http.StatusNotFound)
+            return
+        }
+
+        w.WriteHeader(http.StatusOK)
+        fmt.Fprint(w, `{"message": "Signal IoT simulé avec succès ! Transaction clôturée et box libérée."}`)
+        return
+    }
+}
+
+func SimulateDepositHandler(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Access-Control-Allow-Origin", "*")
+    w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+    w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+    if r.Method == "OPTIONS" {
+        w.WriteHeader(http.StatusOK)
+        return
+    }
+
+    if r.Method == "POST" {
+        var req struct {
+            Pin string `json:"pin"` // Doit correspondre exactement au JSON envoyé par le JS
+        }
+
+        if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+            http.Error(w, "Format de données invalide", http.StatusBadRequest)
+            return
+        }
+
+        if req.Pin == "" {
+            http.Error(w, "Le code PIN est obligatoire", http.StatusBadRequest)
+            return
+        }
+
+        // On appelle la fonction BDD mise à jour 
+        err := bdd.SimulateHardwareDeposit(req.Pin)
+        if err != nil {
+            fmt.Println("Erreur SimulateHardwareDeposit :", err)
+            http.Error(w, err.Error(), http.StatusNotFound)
+            return
+        }
+
+        w.WriteHeader(http.StatusOK)
+        fmt.Fprint(w, `{"message": "Signal IoT simulé avec succès ! Objet déposé et disponible."}`)
+        return
+    }
+}
