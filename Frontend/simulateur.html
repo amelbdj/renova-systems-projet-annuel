@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>UpcycleConnect - Simulateur Global IoT</title>
+    <style>
+      body {
+        background-color: #0a0a0a;
+        color: #ffffff;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        gap: 40px;
+      }
+      .simulator-card {
+        background-color: #1a1a1a;
+        padding: 40px;
+        border-radius: 16px;
+        border: 1px solid #333;
+        text-align: center;
+        width: 320px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      }
+      h2 {
+        margin-bottom: 10px;
+      }
+      .title-depot {
+        color: #ffa726;
+      }
+      .title-retrait {
+        color: #6772e5;
+      }
+      p {
+        color: #a0a0a0;
+        font-size: 14px;
+        margin-bottom: 24px;
+        min-height: 40px;
+      }
+      input {
+        width: 100%;
+        padding: 14px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+        border: 2px solid #444;
+        background-color: #111;
+        color: #fff;
+        font-size: 20px;
+        text-align: center;
+        font-weight: bold;
+      }
+      input:focus {
+        outline: none;
+        border-color: #888;
+      }
+      button {
+        width: 100%;
+        padding: 16px;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+      .btn-depot {
+        background-color: #fb8c00;
+      }
+      .btn-depot:hover {
+        background-color: #f57c00;
+      }
+      .btn-retrait {
+        background-color: #6772e5;
+      }
+      .btn-retrait:hover {
+        background-color: #5b66d6;
+      }
+      .message {
+        margin-top: 20px;
+        font-size: 15px;
+        font-weight: bold;
+        min-height: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="simulator-card">
+      <h2 class="title-depot">Digicode Vendeur</h2>
+      <p>
+        Simulez le dépôt. Entrez le code PIN reçu par le citoyen pour ouvrir et
+        verrouiller l'objet.
+      </p>
+
+      <input type="number" id="pinDepotInput" placeholder="Ex: 981878" />
+      <button class="btn-depot" onclick="simulerDepot()">
+        Valider le Dépôt
+      </button>
+      <div id="msgDepot" class="message"></div>
+    </div>
+
+    <div class="simulator-card">
+      <h2 class="title-retrait">Digicode Acheteur</h2>
+      <p>
+        Simulez le retrait. Entrez le code PIN affiché sur l'application mobile
+        de l'artisan.
+      </p>
+
+      <input type="number" id="pinRetraitInput" placeholder="Ex: 102002" />
+      <button class="btn-retrait" onclick="simulerRetrait()">
+        Valider le Retrait
+      </button>
+      <div id="msgRetrait" class="message"></div>
+    </div>
+
+    <script>
+      async function simulerDepot() {
+        const pin = document.getElementById("pinDepotInput").value.trim();
+        const msgDiv = document.getElementById("msgDepot");
+        if (!pin) {
+          msgDiv.style.color = "#FF5252";
+          msgDiv.innerText = "Code PIN requis.";
+          return;
+        }
+
+        msgDiv.style.color = "#FFA726";
+        msgDiv.innerText = "Connexion...";
+        try {
+          const response = await fetch(
+            "http://localhost:8081/api/hardware/simulate-deposit",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ pin: pin }),
+            },
+          );
+          if (response.ok) {
+            msgDiv.style.color = "#4CAF50";
+            msgDiv.innerText = "🟢 Objet déposé en Box !";
+            document.getElementById("pinDepotInput").value = "";
+          } else {
+            msgDiv.style.color = "#FF5252";
+            msgDiv.innerText = "🔴 Code PIN invalide.";
+          }
+        } catch (e) {
+          msgDiv.style.color = "#FF5252";
+          msgDiv.innerText = "🔴 Serveur injoignable.";
+        }
+      }
+
+      async function simulerRetrait() {
+        const pin = document.getElementById("pinRetraitInput").value.trim();
+        const msgDiv = document.getElementById("msgRetrait");
+        if (!pin) {
+          msgDiv.style.color = "#FF5252";
+          msgDiv.innerText = "Code PIN requis.";
+          return;
+        }
+
+        msgDiv.style.color = "#6772E5";
+        msgDiv.innerText = "Connexion...";
+        try {
+          const response = await fetch(
+            "http://localhost:8081/api/hardware/simulate-withdrawal",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              // On envoie le pin au serveur dans le champ 'barcode' pour correspondre au contrôleur
+              body: JSON.stringify({ barcode: pin }),
+            },
+          );
+          if (response.ok) {
+            msgDiv.style.color = "#4CAF50";
+            msgDiv.innerText = "🟢 Box libérée, retrait réussi !";
+            document.getElementById("pinRetraitInput").value = "";
+          } else {
+            msgDiv.style.color = "#FF5252";
+            msgDiv.innerText = "🔴 Code PIN de retrait invalide.";
+          }
+        } catch (e) {
+          msgDiv.style.color = "#FF5252";
+          msgDiv.innerText = "🔴 Serveur injoignable.";
+        }
+      }
+    </script>
+  </body>
+</html>

@@ -131,6 +131,8 @@ func main() {
 	http.HandleFunc("OPTIONS /api/annonces/vendre", admin.ConfirmPaymentAndOrder)
 	http.HandleFunc("/api/user/stats", admin.GetEcoStatsHandler)
 	http.HandleFunc("/api/user/achats", admin.GetMyPurchases)
+	http.HandleFunc("POST /api/mobile/payment-intent", admin.PaymentIntentMobile) // android payment intent
+	http.HandleFunc("OPTIONS /api/mobile/payment-intent", admin.PaymentIntentMobile)
 
 	// --- EVENEMENTS ---
 	http.HandleFunc("GET /admin/evenements", admin.GetAllEvenements)
@@ -211,7 +213,8 @@ func main() {
 	http.HandleFunc("OPTIONS /api/chat/conversations", admin.GetConversationsHandler)
 	http.HandleFunc("GET /api/chat/conversations", auth.VerifyTokenMiddleware(admin.GetConversationsHandler))
 
-
+	http.HandleFunc("/api/hardware/simulate-withdrawal", admin.SimulateWithdrawalHandler)
+http.HandleFunc("/api/hardware/simulate-deposit", admin.SimulateDepositHandler)
 
 	fmt.Println("test de : http://localhost:8081")
 
