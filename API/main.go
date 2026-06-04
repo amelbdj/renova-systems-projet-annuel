@@ -135,7 +135,8 @@ func main() {
 	http.HandleFunc("OPTIONS /api/mobile/payment-intent", admin.PaymentIntentMobile)
 
 	// --- EVENEMENTS ---
-	http.HandleFunc("GET /admin/evenements", admin.GetAllEvenements)
+	// --- EVENEMENTS ---
+	http.HandleFunc("GET /admin/evenements", auth.VerifyTokenMiddleware(admin.GetAllEvenements)) // 🟢 CORRECTION ICI
 	http.HandleFunc("POST /admin/evenements/add", auth.VerifyTokenMiddleware(admin.CreateEvenement))
 	http.HandleFunc("PUT /admin/evenements/{id}", auth.VerifyTokenMiddleware(admin.UpdateEvenement))
 	http.HandleFunc("DELETE /admin/evenements/delete/{id}", auth.VerifyTokenMiddleware(admin.DeleteEvenement))
@@ -215,6 +216,10 @@ func main() {
 
 	http.HandleFunc("/api/hardware/simulate-withdrawal", admin.SimulateWithdrawalHandler)
 http.HandleFunc("/api/hardware/simulate-deposit", admin.SimulateDepositHandler)
+http.HandleFunc("POST /api/web/checkout/evenement", admin.CreateEventCheckoutSession)
+http.HandleFunc("OPTIONS /api/web/checkout/evenement", admin.CreateEventCheckoutSession)
+
+// 1. On laisse passer la vérification CORS du navigateur
 
 	fmt.Println("test de : http://localhost:8081")
 

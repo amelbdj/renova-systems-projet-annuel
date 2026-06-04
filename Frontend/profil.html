@@ -3,7 +3,6 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self' http://localhost:8081 http://127.0.0.1:8081 https://connect.stripe.com; script-src 'self' 'unsafe-inline' https://js.stripe.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com;"> -->
     <title>Mon Profil</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
@@ -14,16 +13,20 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
     />
-
     <link rel="stylesheet" href="./style/profil.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
   </head>
   <body>
     <nav class="topnav">
       <div class="nav-links" style="margin-left: 28px">
         <button class="nav-link" onclick="history.back()">← Retour</button>
         <button class="nav-link active">Mon Profil</button>
-        <a class="nav-link" href="./espClient.html">Tableau de bord</a>
+        <a class="nav-link" id="linkDashboard" style="cursor: pointer"
+          >Tableau de bord</a
+        >
       </div>
       <div class="nav-right">
         <div class="nav-icon"><i class="fa-solid fa-bell"></i></div>
@@ -58,8 +61,8 @@
           <div class="ph-meta" id="displayEmail">marie.dupont@email.com</div>
           <div class="ph-tags">
             <span class="tag t-vi" id="displayRole">Particulier</span>
-            <span class="tag t-vi" id="stripeHeaderBadge" style="display: none"
-              > <i class="fa-solid fa-credit-card"></i> Paiements actifs</span
+            <span class="tag t-vi" id="stripeHeaderBadge" style="display: none">
+              <i class="fa-solid fa-credit-card"></i> Paiements actifs</span
             >
           </div>
         </div>
@@ -87,9 +90,10 @@
         <div class="card fu fu1">
           <div class="card-hd">
             <div class="card-ht">
-              <div class="cht-i" style="background: rgba(124, 95, 255, 0.1)">
-                
-              </div>
+              <div
+                class="cht-i"
+                style="background: rgba(124, 95, 255, 0.1)"
+              ></div>
               Coordonnées
             </div>
           </div>
@@ -140,7 +144,9 @@
 
       <div class="tab-panel" id="tab-paiements">
         <div class="sec-label fu">
-          <div class="sec-dot stripe-dot"><i class="fa-solid fa-credit-card"></i></div>
+          <div class="sec-dot stripe-dot">
+            <i class="fa-solid fa-credit-card"></i>
+          </div>
           <div class="sec-title">Paiements & Virements</div>
           <div class="sec-divider"></div>
         </div>
@@ -156,7 +162,9 @@
           <div class="stripe-bd">
             <div class="stripe-state" id="state-none">
               <div class="payout-none">
-                <div class="payout-none-icon"><i class="fa-solid fa-building-columns"></i></div>
+                <div class="payout-none-icon">
+                  <i class="fa-solid fa-building-columns"></i>
+                </div>
                 <div class="payout-none-text">
                   <h3>Configurez vos virements</h3>
                   <p>
@@ -173,10 +181,12 @@
 
             <div class="stripe-state" id="state-active" style="display: none">
               <div class="payout-active">
-                <div class="active-check"><i class="fa-solid fa-check"></i></div>
+                <div class="active-check">
+                  <i class="fa-solid fa-check"></i>
+                </div>
                 <div class="active-info">
                   <div class="active-badge">Actif</div>
-                  <h3> Virements actifs</h3>
+                  <h3>Virements actifs</h3>
                   <p>
                     Votre compte Stripe est opérationnel. Vous recevrez vos
                     paiements automatiquement.
@@ -199,10 +209,13 @@
           <div class="sec-divider"></div>
         </div>
         <div class="card fu fu2">
-  <div class="card-bd" id="salesHistoryList" style="padding: 0">
-      <div style="padding: 20px; color: var(--txt-m)">Chargement de l'historique...</div>
-  </div>
-</div>
+          <div class="card-bd" id="salesHistoryList" style="padding: 0">
+            <div style="padding: 20px; color: var(--txt-m)">
+              Chargement de l'historique...
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div class="tab-panel" id="tab-securite">
         <div class="sec-label fu">
@@ -235,22 +248,10 @@
     </div>
 
     <script>
-      document.addEventListener("DOMContentLoaded", async () => {
-        await loadUserProfile();
-
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get("stripe") === "success") {
-          alert("compte stripe configured");
-          setStripeState("active");
-          window.history.replaceState(
-            {},
-            document.title,
-            window.location.pathname,
-          );
-        }
-      });
+      let stripePayoutStatus = "none";
 
       function setStripeState(state) {
+        stripePayoutStatus = state;
         const stateNone = document.getElementById("state-none");
         const stateActive = document.getElementById("state-active");
         const tag = document.getElementById("stripeStatusTag");
@@ -265,13 +266,18 @@
         } else {
           if (stateNone) stateNone.style.display = "block";
           if (stateActive) stateActive.style.display = "none";
-          if (tag) tag.textContent = "Non configuré";
+          if (tag) {
+            tag.textContent = "Non configuré";
+            tag.style.color = ""; // Remettre la couleur par défaut
+          }
         }
       }
 
       async function loadUserProfile() {
         const userId = localStorage.getItem("userId");
         const token = localStorage.getItem("token");
+        const avatar = document.querySelector(".profile-ava");
+
         if (!userId) return;
 
         try {
@@ -293,11 +299,30 @@
             document.getElementById("displayName").textContent = full_name;
           if (document.getElementById("navName"))
             document.getElementById("navName").textContent = user.prenom;
+          if (avatar && user.prenom) {
+            avatar.textContent = user.prenom.charAt(0);
+          }
 
           if (document.getElementById("displayEmail"))
             document.getElementById("displayEmail").textContent = user.email;
           if (document.getElementById("displayRole"))
             document.getElementById("displayRole").textContent = user.role;
+
+          // ==========================================
+          // 🟢 REDIRECTION DYNAMIQUE SELON LE RÔLE
+          // ==========================================
+          const linkDash = document.getElementById("linkDashboard");
+          if (linkDash && user.role) {
+            const role = user.role.toLowerCase();
+            if (role.includes("salari")) {
+              linkDash.href = "salarie_dashboard.html"; // Remplace par le bon nom de fichier si besoin
+            } else if (role.includes("admin")) {
+              linkDash.href = "admin.html"; // Remplace par le bon nom de fichier si besoin
+            } else {
+              linkDash.href = "espClient.html";
+            }
+          }
+          // ==========================================
 
           if (document.getElementById("editPrenom"))
             document.getElementById("editPrenom").value = user.prenom;
@@ -367,47 +392,69 @@
       }
 
       async function loadSalesHistory() {
-    const userId = localStorage.getItem("userId");
-    const token = localStorage.getItem("token");
-    const historyList = document.getElementById("salesHistoryList");
+        const userId = localStorage.getItem("userId");
+        const token = localStorage.getItem("token");
+        const historyList = document.getElementById("salesHistoryList");
 
-    if (!userId || !historyList) return;
+        if (!userId || !historyList) return;
 
-    try {
-        const response = await fetch(`http://localhost:8081/api/user/payment-history?id=${userId}`, {
-            headers: { Authorization: `Bearer ${token}` },
-        });
+        try {
+          const response = await fetch(
+            `http://localhost:8081/api/user/payment-history?id=${userId}`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            },
+          );
 
-        if (!response.ok) throw new Error("Erreur historique");
+          if (!response.ok) throw new Error("Erreur historique");
 
-        const data = await response.json();
+          const data = await response.json();
 
-        if (!data || data.length === 0) {
+          if (!data || data.length === 0) {
             historyList.innerHTML = `<div style="padding: 20px; color: var(--txt-m)">Aucune vente effectuée pour le moment.</div>`;
             return;
-        }
+          }
 
-        historyList.innerHTML = data.map(item => `
-            <div style="display: flex; align-items: center; gap: 12px; padding: 13px 20px; border-bottom: 1px solid var(--b0);">
-                <div style="flex: 1">
-                    <div style="color: #fff">Vente — ${item.titre}</div>
-                    <div style="font-size: 11px; color: var(--txt-m)">${new Date(item.date).toLocaleDateString('fr-FR')}</div>
+          historyList.innerHTML = data
+            .map(
+              (item) => `
+                <div style="display: flex; align-items: center; gap: 12px; padding: 13px 20px; border-bottom: 1px solid var(--b0);">
+                    <div style="flex: 1">
+                        <div style="color: #fff">Vente — ${item.titre}</div>
+                        <div style="font-size: 11px; color: var(--txt-m)">${new Date(item.date).toLocaleDateString("fr-FR")}</div>
+                    </div>
+                    <div style="color: var(--green); font-weight: bold;">+${item.montant} €</div>
                 </div>
-                <div style="color: var(--green); font-weight: bold;">+${item.montant} €</div>
-            </div>
-        `).join('');
+            `,
+            )
+            .join("");
+        } catch (err) {
+          console.error("Erreur historique:", err);
+          historyList.innerHTML = `<div style="padding: 20px; color: var(--red)">Impossible de charger l'historique.</div>`;
+        }
+      }
 
-    } catch (err) {
-        console.error("Erreur historique:", err);
-        historyList.innerHTML = `<div style="padding: 20px; color: var(--red)">Impossible de charger l'historique.</div>`;
-    }
-}
+      function logout() {
+        localStorage.clear();
+        window.location.href = "login.html";
+      }
 
-document.addEventListener("DOMContentLoaded", async () => {
-    await loadUserProfile();
-    await loadSalesHistory(); 
-    
-});
+      // Initialisation au chargement de la page
+      document.addEventListener("DOMContentLoaded", async () => {
+        await loadUserProfile();
+        await loadSalesHistory();
+
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get("stripe") === "success") {
+          alert("Compte Stripe configuré avec succès !");
+          setStripeState("active");
+          window.history.replaceState(
+            {},
+            document.title,
+            window.location.pathname,
+          );
+        }
+      });
     </script>
   </body>
 </html>

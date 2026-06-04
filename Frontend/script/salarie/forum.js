@@ -1,5 +1,3 @@
-let monToken = localStorage.getItem("token");
-let userId = localStorage.getItem("userId");
 function GetForumMessages(filtreType) {
   const container = document.getElementById("forum-thread-list");
   if (!container) return;
