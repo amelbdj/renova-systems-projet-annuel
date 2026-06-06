@@ -21,19 +21,16 @@ function chargerArticles() {
 
       let compteurPublies = 0;
 
-      // On vide les conteneurs
       if (conteneurPublies) conteneurPublies.innerHTML = "";
       if (conteneurBrouillons) conteneurBrouillons.innerHTML = "";
 
-      // 🛡️ LE FAMEUX BOUCLIER ANTI-NULL (Spécial Golang)
       if (!articles) {
         articles = [];
       }
 
       articles.forEach((art) => {
-        // Choix du style de badge selon le statut
         let badgeStatut = "";
-        let statut = (art.statut || "").toLowerCase(); // Sécurité pour les majuscules
+        let statut = (art.statut || "").toLowerCase();
 
         if (statut === "brouillon") {
           badgeStatut = `<span class="tag t-amber">Brouillon</span>`;
@@ -79,7 +76,6 @@ function chargerArticles() {
         }
       });
 
-      // Si le tableau est vide, on affiche un petit message sympa
       if (articles.length === 0) {
         if (conteneurPublies)
           conteneurPublies.innerHTML = `<p style="color:var(--txt-m); font-size:13px; padding: 10px 0;">Aucun article publié.</p>`;
