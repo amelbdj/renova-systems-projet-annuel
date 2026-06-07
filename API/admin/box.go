@@ -384,3 +384,33 @@ func SimulateDepositHandler(w http.ResponseWriter, r *http.Request) {
         return
     }
 }
+
+func GetUserPickupsHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	// ⚠️ Récupère l'ID de l'acheteur selon comment tu gères ton token/session
+	// Ici un exemple si tu le passes dans l'URL : /api/pickups/{id}
+	acheteurIDStr := r.PathValue("id")
+	acheteurID, err := strconv.Atoi(acheteurIDStr)
+	if err != nil {
+		http.Error(w, "ID acheteur invalide", http.StatusBadRequest)
+		return
+	}
+
+	pickups, err := bdd.GetUserPickups(acheteurID)
+	if err != nil {
+		fmt.Println("Erreur GetUserPickups :", err)
+		http.Error(w, "Erreur serveur", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(pickups)
+}

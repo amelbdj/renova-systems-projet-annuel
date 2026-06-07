@@ -96,7 +96,7 @@ func StripeWebhookHandler(w http.ResponseWriter, r *http.Request) {
 			lastID, _ := res.LastInsertId()
 
 			// Puis on insère dans la table 'paiement'
-			_, err = bdd.Db.Exec("INSERT INTO paiement (id_commande, stripe_id, statut) VALUES (?, ?, ?)",
+			_, err = bdd.Db.Exec("INSERT INTO paiement (id_commande, stripe_id, statut,) VALUES (?, ?, ?)",
 				lastID, stripeID, "succeeded")
 
 			if err != nil {

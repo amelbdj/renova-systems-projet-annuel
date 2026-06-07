@@ -4,7 +4,11 @@ function GetEvent() {
   const container = document.getElementById("result");
   if (!container) return;
 
-  fetch("http://localhost:8081/admin/evenements")
+  fetch("http://localhost:8081/admin/evenements", {
+    headers: {
+      Authorization: "Bearer " + monToken,
+    },
+  })
     .then((res) => res.json())
     .then((events) => {
       const currentTabId = document.querySelector(".vtab.on").id;

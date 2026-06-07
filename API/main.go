@@ -171,6 +171,8 @@ func main() {
 
 	// boxes
 	http.HandleFunc("GET /api/user/boxes", admin.GetMyBoxes)
+	http.HandleFunc("GET /api/user/pickups/{id}", admin.GetUserPickupsHandler)
+	http.HandleFunc("OPTIONS /api/user/pickups/{id}", admin.GetUserPickupsHandler)
 	// Le {id} entre accolades indique à Go que cette partie de l'URL est une variable dynamique !
 	http.HandleFunc("GET /api/admin/conteneur/{id}/boxes", admin.GetBoxesForConteneurHandler)
 

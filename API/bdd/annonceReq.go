@@ -10,7 +10,7 @@ func GetAnnonces() ([]models.Annonce, error) {
 
 	var Annonces []models.Annonce
 
-	rows, err := Db.Query("SELECT DATE_FORMAT(a.created_at, '%d-%m-%Y') as created_at, a.id, a.titre, a.description, a.type, a.prix, a.statut_validation, a.code_postal, a.ville, a.etat, a.poids_kg, a.quantite, a.image, u.nom, u.prenom, c.libelle FROM pa2026.annonce a INNER JOIN pa2026.utilisateur u ON u.id = a.id_user INNER JOIN pa2026.categorie c ON c.id = a.id_categorie")
+	rows, err := Db.Query("SELECT DATE_FORMAT(a.created_at, '%d-%m-%Y') as created_at, a.id, a.titre, a.description, a.type, a.prix, a.statut_validation, a.code_postal, a.ville, a.etat, a.poids, a.quantite, a.image, u.nom, u.prenom, c.libelle FROM pa2026.annonce a INNER JOIN pa2026.utilisateur u ON u.id = a.id_user INNER JOIN pa2026.categorie c ON c.id = a.id_categorie")
 
 	if err != nil {
 		return nil, fmt.Errorf("get Annonces : %v", err.Error())
@@ -81,7 +81,7 @@ func RefuseAnnonce(annonceId int) error {
 
 func CreateAnnonce(annonce models.Annonce) error {
 	query := `INSERT INTO pa2026.annonce 
-              (titre, description, type, prix, code_postal, ville, etat, poids_kg, quantite, id_user, id_categorie, image) 
+              (titre, description, type, prix, code_postal, ville, etat, poids, quantite, id_user, id_categorie, image) 
               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
 	_, err := Db.Exec(query,
@@ -144,7 +144,7 @@ func UpdateAnnonce(annonceId int, annonce models.Annonce) error {
 
 	if StatutVente != "EN ATTENTE DEPOT" {
 		_, err = Db.Exec(
-			"UPDATE pa2026.annonce SET titre = ?, description = ?, type = ?, prix = ?, code_postal = ?, ville = ?, etat = ?, poids_kg = ?, quantite = ?, id_user = ?, id_categorie = ?, image = ? WHERE id = ?",
+			"UPDATE pa2026.annonce SET titre = ?, description = ?, type = ?, prix = ?, code_postal = ?, ville = ?, etat = ?, poids = ?, quantite = ?, id_user = ?, id_categorie = ?, image = ? WHERE id = ?",
 			annonce.Titre,
 			annonce.Description,
 			annonce.Type,
@@ -173,7 +173,7 @@ func GetAnnonceByTitle(query string, filtre string) ([]models.Annonce, error) {
 	search := "%" + query + "%"
 	if filtre != "Tout" && filtre != "" {
 		var Annonces []models.Annonce
-		rows, err := Db.Query("SELECT id, titre, description, type, prix, statut_validation, code_postal, ville, etat, poids_kg, quantite, nom, prenom, categorie FROM pa2026.annonce WHERE (UPPER(titre) LIKE ?) AND statut_validation = ?", search, filtre)
+		rows, err := Db.Query("SELECT id, titre, description, type, prix, statut_validation, code_postal, ville, etat, poids, quantite, nom, prenom, categorie FROM pa2026.annonce WHERE (UPPER(titre) LIKE ?) AND statut_validation = ?", search, filtre)
 
 		if err != nil {
 			fmt.Println("Erreur lors de l'exécution de la requête : ", err)
@@ -203,7 +203,7 @@ func GetAnnonceByTitle(query string, filtre string) ([]models.Annonce, error) {
 	} else {
 		var Annonces []models.Annonce
 		search := "%" + query + "%"
-		rows, err := Db.Query("SELECT id, titre, description, type, prix, statut_validation, code_postal, ville, etat, poids_kg, quantite, nom, prenom, categorie FROM pa2026.annonce WHERE UPPER(titre) LIKE ?", search)
+		rows, err := Db.Query("SELECT id, titre, description, type, prix, statut_validation, code_postal, ville, etat, poids, quantite, nom, prenom, categorie FROM pa2026.annonce WHERE UPPER(titre) LIKE ?", search)
 
 		if err != nil {
 			return nil, fmt.Errorf("get Annonce by title : %v", err.Error())
@@ -239,7 +239,7 @@ func GetAnnonceById(id int) (models.Annonce, error) {
          a.id, 
          a.id_user, -- <-- AJOUTÉ ICI
          a.titre, a.description, a.type, a.prix, a.statut_vente, a.statut_validation, 
-         a.code_postal, a.ville, a.etat, a.poids_kg, a.quantite, 
+         a.code_postal, a.ville, a.etat, a.poids, a.quantite, 
          COALESCE(pa2026.utilisateur.nom, ''), 
          COALESCE(pa2026.utilisateur.prenom, ''), 
          COALESCE(pa2026.categorie.libelle, ''), 
@@ -267,7 +267,14 @@ func GetAnnonceById(id int) (models.Annonce, error) {
 func GetAnnoncesByUser(userID int) ([]models.Annonce, error) {
 	var list []models.Annonce
 
-	rows, err := Db.Query("SELECT id, titre, prix, id_categorie, statut_vente, statut_validation, COALESCE(image, '') FROM pa2026.annonce WHERE id_user = ?", userID)
+	// 🟢 CORRECTION : On protège TOUTES les colonnes contre les valeurs NULL
+	query := `
+		SELECT id, titre, COALESCE(prix, 0), COALESCE(id_categorie, 0), 
+		       COALESCE(statut_vente, ''), COALESCE(statut_validation, ''), COALESCE(image, '') 
+		FROM pa2026.annonce 
+		WHERE id_user = ?`
+
+	rows, err := Db.Query(query, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -289,7 +296,7 @@ func GetValidatedAnnonces(currentUserID int) ([]models.Annonce, error) {
     query := `
         SELECT 
         a.id, a.titre, a.description, a.type, a.prix, a.statut_validation, 
-        a.code_postal, a.ville, a.etat, a.poids_kg, a.quantite, 
+        a.code_postal, a.ville, a.etat, a.poids, a.quantite, 
         COALESCE(u.nom, ''), 
         COALESCE(u.prenom, ''), 
         COALESCE(c.libelle, ''), 

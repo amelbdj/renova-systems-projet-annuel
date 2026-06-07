@@ -209,9 +209,12 @@ function OuvrirEvenement(id) {
 }
 
 function FermerEvenement() {
-  document.getElementById("articleModal").style.display = "none";
+  const modal = document.getElementById("articleModal");
+  // 🟢 SÉCURITÉ : On vérifie si la modale existe avant de toucher à son style
+  if (modal) {
+    modal.style.display = "none";
+  }
 }
-
 function SeDesinscrire(idEvent) {
   if (
     !confirm("Voulez-vous vraiment annuler votre inscription à cet événement ?")

@@ -37,8 +37,7 @@ func SendPushNotification(userID string, message string) {
 	}
 
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", "Basic "+OneSignalAPIKey)
-
+req.Header.Set("Authorization", "Key "+OneSignalAPIKey)
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		fmt.Println("Erreur envoi OneSignal:", err)
