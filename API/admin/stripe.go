@@ -225,19 +225,30 @@ func CreateEventCheckoutSession(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 1. Récupérer le titre et le prix de l'événement dans ta BDD
+	// 1. Récupération des informations de l'événement et du créateur
 	var titre string
 	var prix float64
-	err := bdd.Db.QueryRow("SELECT titre, prix FROM evenement WHERE id = ?", req.IdEvent).Scan(&titre, &prix)
+	var stripeAccountId string
+	
+	err := bdd.Db.QueryRow(`
+		SELECT e.titre, e.prix, u.stripe_account_id 
+		FROM evenement e 
+		JOIN utilisateur u ON e.id_salarie = u.id 
+		WHERE e.id = ?`, req.IdEvent).Scan(&titre, &prix, &stripeAccountId)
+	
 	if err != nil {
 		http.Error(w, "Événement introuvable", http.StatusNotFound)
 		return
 	}
 
 	stripe.Key = StripeSecretKey
-	unitAmount := int64(prix * 100) // Stripe fonctionne en centimes d'euros
+	
+	// 2. Calculs (Stripe en centimes, Base de données en euros)
+	unitAmount := int64(prix * 100)
+	commissionCentimes := int64(float64(unitAmount) * 0.05) // 5% pour Stripe
+	commissionEuros := prix * 0.05                          // 5% pour la BDD
 
-	// 2. Créer la session de paiement
+	// 3. Création de la session Stripe
 	params := &stripe.CheckoutSessionParams{
 		PaymentMethodTypes: stripe.StringSlice([]string{"card"}),
 		LineItems: []*stripe.CheckoutSessionLineItemParams{
@@ -253,23 +264,50 @@ func CreateEventCheckoutSession(w http.ResponseWriter, r *http.Request) {
 			},
 		},
 		Mode: stripe.String(string(stripe.CheckoutSessionModePayment)),
-		
-		// ⚠️ Remplace le port par celui de ton application Web HTML (ex: 5500 ou 3000)
+		PaymentIntentData: &stripe.CheckoutSessionPaymentIntentDataParams{
+			ApplicationFeeAmount: stripe.Int64(commissionCentimes),
+			TransferData: &stripe.CheckoutSessionPaymentIntentDataTransferDataParams{
+				Destination: stripe.String(stripeAccountId),
+			},
+		},
 		SuccessURL: stripe.String("http://localhost:8081/evenement.html?paiement=success"),
 		CancelURL:  stripe.String("http://localhost:8081/evenement.html?paiement=cancel"),
 	}
-
-	// 3. LA MAGIE ICI : On cache les IDs dans la session pour que Stripe nous les rende plus tard !
+	
 	params.AddMetadata("id_event", strconv.Itoa(req.IdEvent))
 	params.AddMetadata("id_user", strconv.Itoa(req.IdUser))
 
 	s, err := session.New(params)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Erreur Stripe: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	// 4. On renvoie l'URL magique au JavaScript
+	// 4. ÉTAPE BDD 1 : Création de la commande dans la table `order`
+	// Utilisation des backticks pour `order` car c'est un mot réservé en SQL
+	queryOrder := "INSERT INTO `order` (id_acheteur, id_annonce, montant_total, commission, date_commande) VALUES (?, ?, ?, ?, NOW())"
+	
+	result, errOrder := bdd.Db.Exec(queryOrder, req.IdUser, req.IdEvent, prix, commissionEuros)
+
+	if errOrder != nil {
+		fmt.Printf("ERREUR INSERTION ORDER : %v\n", errOrder)
+	} else {
+		// On récupère l'ID généré pour cette nouvelle commande
+		idCommandeCreee, _ := result.LastInsertId()
+		fmt.Printf("Commande %d créée avec %.2f€ de commission !\n", idCommandeCreee, commissionEuros)
+
+		// 5. ÉTAPE BDD 2 : Liaison avec Stripe dans la table `paiment` (sans le "e")
+		queryPaiement := "INSERT INTO paiment (id_commande, stripe_id, statut) VALUES (?, ?, ?)"
+		
+		_, errPaiement := bdd.Db.Exec(queryPaiement, idCommandeCreee, s.ID, "pending")
+		if errPaiement != nil {
+			fmt.Printf("ERREUR INSERTION PAIMENT : %v\n", errPaiement)
+		} else {
+			fmt.Println("Paiement mis en attente avec succès dans la BDD.")
+		}
+	}
+
+	// 6. Réponse envoyée au front-end
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]string{"checkout_url": s.URL})
 }

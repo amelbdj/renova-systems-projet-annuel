@@ -306,9 +306,25 @@ function UpdateUser() {
 }
 
 function UpdateValidationCount() {
+  // 🟢 1. On récupère le token
+
+  // 🟢 2. On prépare les options avec l'en-tête d'autorisation
+  const fetchOptions = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${monToken}`,
+    },
+  };
+
+  // 🟢 3. On passe fetchOptions en deuxième paramètre de tes fetch
   Promise.all([
-    fetch("http://localhost:8081/admin/annonces").then((res) => res.json()),
-    fetch("http://localhost:8081/admin/evenements").then((res) => res.json()),
+    fetch("http://localhost:8081/admin/annonces", fetchOptions).then((res) =>
+      res.json(),
+    ),
+    fetch("http://localhost:8081/admin/evenements", fetchOptions).then((res) =>
+      res.json(),
+    ),
   ])
     .then(([annonces, events]) => {
       let total = 0;
