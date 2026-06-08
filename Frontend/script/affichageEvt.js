@@ -60,9 +60,13 @@ function chargerEvenementsClient(motCle = "") {
           evenementsAffiches++;
 
           const idEvt = evt.id;
+
+          // 🟢 CORRECTION ICI : On ajoute http://localhost:8081/ devant le chemin de l'image
           const imageCover =
-            evt.image_url ||
-            "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=500";
+            evt.image_url && evt.image_url.trim() !== ""
+              ? `http://localhost:8081/${evt.image_url}`
+              : "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=500";
+
           const resume =
             (evt.description || "Pas de description.").substring(0, 100) +
             "...";
@@ -74,7 +78,7 @@ function chargerEvenementsClient(motCle = "") {
 
           htmlContent += `
                 <div class="article-card" onclick="OuvrirEvenement(${idEvt})">
-                    <img src="${imageCover}" alt="Image" class="card-img">
+                    <img src="${imageCover}" alt="Image" class="card-img" style="width: 100%; height: 200px; object-fit: cover;">
                     <div style="padding: 15px; flex-grow: 1; display: flex; flex-direction: column; align-items: center; text-align: center;">
                         <h3 style="margin-top: 0; color: #ffffff; font-size: 18px;">${evt.titre}</h3>
                         <p style="color: var(--blue-l); font-size: 13px; font-weight: bold;">${evt.date_debut}</p>
@@ -188,9 +192,11 @@ function OuvrirEvenement(id) {
   const evt = window.evenementData.find((a) => a.id === id);
   if (!evt) return;
 
+  // 🟢 CORRECTION ICI AUSSI : On ajoute le chemin absolu pour la modale
   const imageCover =
-    evt.image_url ||
-    "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=500";
+    evt.image_url && evt.image_url.trim() !== ""
+      ? `http://localhost:8081/${evt.image_url}`
+      : "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=500";
 
   document.getElementById("modalImage").src = imageCover;
   document.getElementById("modalTitre").textContent = evt.titre;

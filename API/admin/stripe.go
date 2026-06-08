@@ -296,8 +296,8 @@ func CreateEventCheckoutSession(w http.ResponseWriter, r *http.Request) {
 		idCommandeCreee, _ := result.LastInsertId()
 		fmt.Printf("Commande %d créée avec %.2f€ de commission !\n", idCommandeCreee, commissionEuros)
 
-		// 5. ÉTAPE BDD 2 : Liaison avec Stripe dans la table `paiment` (sans le "e")
-		queryPaiement := "INSERT INTO paiment (id_commande, stripe_id, statut) VALUES (?, ?, ?)"
+		// 5. ÉTAPE BDD 2 : Liaison avec Stripe dans la table `paiement` (sans le "e")
+		queryPaiement := "INSERT INTO paiement (id_commande, stripe_id, statut) VALUES (?, ?, ?)"
 		
 		_, errPaiement := bdd.Db.Exec(queryPaiement, idCommandeCreee, s.ID, "pending")
 		if errPaiement != nil {
