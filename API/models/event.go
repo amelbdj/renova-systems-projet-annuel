@@ -16,4 +16,5 @@ type Evenement struct {
 	IdSalarie        int     `json:"idSalarie"` // ID du salarié qui a créé l'événement
 	Prix             float64 `json:"prix"`
 	DejaInscrit      bool    `json:"deja_inscrit"`
+	ImageUrl string `json:"image_url"`
 }

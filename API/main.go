@@ -221,8 +221,8 @@ http.HandleFunc("/api/hardware/simulate-deposit", admin.SimulateDepositHandler)
 http.HandleFunc("POST /api/web/checkout/evenement", admin.CreateEventCheckoutSession)
 http.HandleFunc("OPTIONS /api/web/checkout/evenement", admin.CreateEventCheckoutSession)
 
-// 1. On laisse passer la vérification CORS du navigateur
-
+// Cette ligne dit à Go : "Si on te demande une URL qui commence par /static/, va chercher le fichier dans le dossier static de mon PC"
+http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	fmt.Println("test de : http://localhost:8081")
 
 	http.ListenAndServe(":8081", nil)
