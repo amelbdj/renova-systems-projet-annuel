@@ -17,7 +17,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function LancerRecherche() {
   const motCle = document.getElementById("searchInput").value.trim();
-
   chargerArticlesClient(motCle);
 }
 
@@ -65,9 +64,12 @@ function chargerArticlesClient(motCle = "") {
 
           const idArt = art.id;
 
-          const imageCover =
-            art.image_url ||
-            "https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=500";
+          // 🟢 CORRECTION ICI : Ajout de l'adresse du serveur pour les images des cartes
+          let imageCover =
+            "https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=500"; // Image par défaut
+          if (art.image_url && art.image_url.trim() !== "") {
+            imageCover = "http://localhost:8081/" + art.image_url;
+          }
 
           // Un petit résumé de 100 caractères
           const resume =
@@ -110,9 +112,12 @@ function OuvrirArticle(id) {
   const art = articlesData.find((a) => a.id === id);
   if (!art) return;
 
-  const imageCover =
-    art.image_url ||
+  // 🟢 CORRECTION ICI AUSSI : Ajout de l'adresse du serveur pour la fenêtre modale
+  let imageCover =
     "https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=500";
+  if (art.image_url && art.image_url.trim() !== "") {
+    imageCover = "http://localhost:8081/" + art.image_url;
+  }
 
   document.getElementById("modalImage").src = imageCover;
   document.getElementById("modalTitre").textContent = art.titre;
@@ -136,8 +141,8 @@ window.onclick = function (event) {
     modal.style.display = "none";
   }
 };
-const role = localStorage.getItem("role") || "client";
 
+const role = localStorage.getItem("role") || "client";
 const linkCSS = document.createElement("link");
 linkCSS.rel = "stylesheet";
 
@@ -148,14 +153,12 @@ if (role === "Pro") {
 }
 
 document.head.appendChild(linkCSS);
+
 function goToProfile() {
   const userId = localStorage.getItem("userId");
-  const role = localStorage.getItem("role");
-
   if (!userId) {
     window.location.href = "login.html";
     return;
   }
-
   window.location.href = `profil.html?id=${userId}`;
 }

@@ -23,24 +23,19 @@
     <script>
       window.OneSignalDeferred = window.OneSignalDeferred || [];
       OneSignalDeferred.push(async function (OneSignal) {
-        // 1. Initialisation avec la nouvelle syntaxe
         await OneSignal.init({
           appId: "79a53223-420a-46c8-83d9-1ca162fcb64f",
           notifyButton: {
             enable: true,
           },
-          // Note : on a retiré allowLocalhostAsSecureOrigin car c'est devenu inutile en v16
         });
 
-        // 2. Connexion de l'utilisateur
         const userId = localStorage.getItem("userId");
         if (userId) {
           await OneSignal.login(userId);
           console.log("✅ SUCCÈS : OneSignal est connecté avec l'ID :", userId);
         } else {
-          console.log(
-            "❌ ERREUR : Aucun userId n'a été trouvé dans le localStorage.",
-          );
+          console.log("❌ ERREUR : Aucun userId n'a été trouvé.");
         }
       });
     </script>
@@ -75,7 +70,6 @@
         ReNova <em style="color: var(--or-l); font-style: normal">Admin</em>
       </div>
 
-      <!-- Navigation (En utilisant tes classes .nav-link existantes) -->
       <nav style="display: flex; flex-direction: column; gap: 8px">
         <a
           href="admin_dashboard.html"
@@ -158,6 +152,16 @@
           Finances
         </a>
       </nav>
+      <button
+        class="btn btn-o btn-full"
+        style="margin-top: auto"
+        onclick="logout()"
+      >
+        <span class="material-symbols-outlined" style="font-size: 18px"
+          >logout</span
+        >
+        Déconnexion
+      </button>
     </aside>
 
     <main style="flex: 1; padding: 40px">
@@ -179,6 +183,7 @@
       </div>
 
       <div id="result" class="val-grid"></div>
+
       <div class="modal-bg" id="articleModModal" style="display: none">
         <div class="modal" style="width: 600px; max-width: 90vw">
           <div class="modal-x" onclick="closeArticleModal()">✕</div>
@@ -195,6 +200,20 @@
           >
             Détails de l'auteur...
           </div>
+
+          <img
+            id="modal-art-image"
+            src=""
+            alt="Couverture de l'article"
+            style="
+              width: 100%;
+              height: 250px;
+              object-fit: cover;
+              border-radius: 8px;
+              margin-bottom: 20px;
+              display: none;
+            "
+          />
 
           <div
             id="modal-art-content"

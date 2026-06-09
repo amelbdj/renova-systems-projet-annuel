@@ -1,80 +1,40 @@
 package bdd
 
 import (
-	"fmt"
 	"upcycleconnect/models"
 )
 
 func GetArticles(searchWord string) ([]models.Article, error) {
-
 	var Articles []models.Article
 
 	if searchWord != "" {
-		rows, err := Db.Query("SELECT id_article, id_salarie, titre, contenu, type, statut, DATE_FORMAT(created_at, '%d/%m/%Y') as created_at, utilisateur.nom, utilisateur.prenom FROM article_news INNER JOIN utilisateur ON article_news.id_salarie = utilisateur.id WHERE titre LIKE ? OR contenu LIKE ? ORDER BY id_article DESC", "%"+searchWord+"%", "%"+searchWord+"%")
-		if err != nil {
-			fmt.Println("Erreur lors de l'exécution de la requête : ", err)
-			return nil, fmt.Errorf("get Articles : %v", err.Error())
-		}
+		rows, err := Db.Query("SELECT id_article, id_salarie, titre, contenu, type, statut, DATE_FORMAT(created_at, '%d/%m/%Y') as created_at, utilisateur.nom, utilisateur.prenom, IFNULL(image_url, '') FROM article_news INNER JOIN utilisateur ON article_news.id_salarie = utilisateur.id WHERE titre LIKE ? OR contenu LIKE ? ORDER BY id_article DESC", "%"+searchWord+"%", "%"+searchWord+"%")
+		if err != nil { return nil, err }
 		defer rows.Close()
 
 		for rows.Next() {
 			var Article models.Article
-
-			err := rows.Scan(&Article.Id, 
-				&Article.IdSalarie, 
-				&Article.Titre, 
-				&Article.Contenu, 
-				&Article.Type, 
-				&Article.Statut,
-				&Article.CreatedAt,
-				&Article.NomAuteur,
-				&Article.PrenomAuteur,
-			)
-
-			if err != nil {
-				return nil, fmt.Errorf("get Articles : %v", err.Error())
-			}
-
-			
+			err := rows.Scan(&Article.Id, &Article.IdSalarie, &Article.Titre, &Article.Contenu, &Article.Type, &Article.Statut, &Article.CreatedAt, &Article.NomAuteur, &Article.PrenomAuteur, &Article.ImageUrl)
+			if err != nil { return nil, err }
 			Articles = append(Articles, Article)
 		}
 	} else {
-		rows, err := Db.Query("SELECT id_article, id_salarie, titre, contenu, type, statut, DATE_FORMAT(created_at, '%d/%m/%Y') as created_at, utilisateur.nom, utilisateur.prenom FROM article_news INNER JOIN utilisateur ON article_news.id_salarie = utilisateur.id ORDER BY id_article DESC")
-		if err != nil {
-			fmt.Println("Erreur lors de l'exécution de la requête : ", err)
-			return nil, fmt.Errorf("get Articles : %v", err.Error())
-		}
+		rows, err := Db.Query("SELECT id_article, id_salarie, titre, contenu, type, statut, DATE_FORMAT(created_at, '%d/%m/%Y') as created_at, utilisateur.nom, utilisateur.prenom, IFNULL(image_url, '') FROM article_news INNER JOIN utilisateur ON article_news.id_salarie = utilisateur.id ORDER BY id_article DESC")
+		if err != nil { return nil, err }
 		defer rows.Close()
 
 		for rows.Next() {
 			var Article models.Article
-
-			err := rows.Scan(&Article.Id, 
-				&Article.IdSalarie, 
-				&Article.Titre, 
-				&Article.Contenu, 
-				&Article.Type, 
-				&Article.Statut,
-				&Article.CreatedAt,
-				&Article.NomAuteur,
-				&Article.PrenomAuteur,
-			)
-
-			if err != nil {
-				return nil, fmt.Errorf("get Articles : %v", err.Error())
-			}
-
-			
+			err := rows.Scan(&Article.Id, &Article.IdSalarie, &Article.Titre, &Article.Contenu, &Article.Type, &Article.Statut, &Article.CreatedAt, &Article.NomAuteur, &Article.PrenomAuteur, &Article.ImageUrl)
+			if err != nil { return nil, err }
 			Articles = append(Articles, Article)
 		}
 	}
-
 	return Articles, nil
 }
 
 func GetArticlesBySalarie(salarieID int) ([]models.Article, error) {
-
-    rows, err := Db.Query("SELECT id_article, id_salarie, titre, contenu, type, statut FROM article_news WHERE id_salarie = ?", salarieID)
+    rows, err := Db.Query("SELECT id_article, id_salarie, titre, contenu, type, statut, IFNULL(image_url, '') FROM article_news WHERE id_salarie = ?", salarieID)
     if err != nil {
         return nil, err
     }
@@ -83,7 +43,7 @@ func GetArticlesBySalarie(salarieID int) ([]models.Article, error) {
     var articles []models.Article
     for rows.Next() {
         var article models.Article
-        err := rows.Scan(&article.Id, &article.IdSalarie, &article.Titre, &article.Contenu, &article.Type, &article.Statut)
+        err := rows.Scan(&article.Id, &article.IdSalarie, &article.Titre, &article.Contenu, &article.Type, &article.Statut, &article.ImageUrl)
         if err != nil {
             return nil, err
         }
@@ -107,7 +67,7 @@ func DeleteArticle(id int) error {
     return err
 }
 
-func CreateArticle(article models.Article, action string)error{
+func CreateArticle(article models.Article, action string) error {
     var statutFinal string
     if action == "publier" {
         statutFinal = "en attente" 
@@ -115,42 +75,33 @@ func CreateArticle(article models.Article, action string)error{
         statutFinal = "brouillon"
     }
 
-
-              
-    _, err := Db.Exec(`INSERT INTO article_news (id_salarie, titre, contenu, type, statut) 
-              VALUES (?, ?, ?, ?, ?)`, article.IdSalarie, article.Titre, article.Contenu, article.Type, statutFinal)
-    if err != nil {
-        return  err
-    }
-
-   
-
-    return  nil
+    // 🟢 Sauvegarde avec image_url
+    _, err := Db.Exec(`INSERT INTO article_news (id_salarie, titre, contenu, type, statut, image_url) 
+              VALUES (?, ?, ?, ?, ?, ?)`, article.IdSalarie, article.Titre, article.Contenu, article.Type, statutFinal, article.ImageUrl)
+    return err
 }
 
-func ModifyArticle(id int, titre, contenu, articleType, action string) error {
+func ModifyArticle(id int, titre, contenu, articleType, action string, imageUrl string) error {
 	var statutFinal string
 	if action == "publier" {
 		statutFinal = "en attente"
 	} else {
 		statutFinal = "brouillon"
 	}
+
+    // 🟢 Mise à jour conditionnelle (Si on a uploadé une nouvelle image, on la met à jour, sinon on garde l'ancienne)
+    if imageUrl != "" {
+        _, err := Db.Exec(`UPDATE article_news SET titre = ?, contenu = ?, type = ?, statut = ?, image_url = ? WHERE id_article = ?`, titre, contenu, articleType, statutFinal, imageUrl, id)
+	    return err
+    }
+
 	_, err := Db.Exec(`UPDATE article_news SET titre = ?, contenu = ?, type = ?, statut = ? WHERE id_article = ?`, titre, contenu, articleType, statutFinal, id)
-	if err != nil {
-		return  err
-	}
-	return nil
+	return err
 }
 
 func GetArticleById(id int) (models.Article, error) {
-
     var article models.Article 
-
-    row := Db.QueryRow("SELECT id_article, id_salarie, titre, contenu, type, statut FROM article_news WHERE id_article = ?", id)
-    err := row.Scan(&article.Id, &article.IdSalarie, &article.Titre, &article.Contenu, &article.Type, &article.Statut)
-    if err != nil {
-        return models.Article{}, err
-    }
-    return article, nil
+    row := Db.QueryRow("SELECT id_article, id_salarie, titre, contenu, type, statut, IFNULL(image_url, '') FROM article_news WHERE id_article = ?", id)
+    err := row.Scan(&article.Id, &article.IdSalarie, &article.Titre, &article.Contenu, &article.Type, &article.Statut, &article.ImageUrl)
+    return article, err
 }
-
