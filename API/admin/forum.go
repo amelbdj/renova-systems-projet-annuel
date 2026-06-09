@@ -94,8 +94,6 @@ func GetForumsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
-
-
 	if r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
 		return
@@ -107,13 +105,17 @@ func GetForumsHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Erreur serveur", http.StatusInternalServerError)
 			return
 		}
+		
+		if topics == nil {
+			topics = []models.ForumTopic{}
+		}
+
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(topics)
 		return
 	}
 
 	if r.Method == "POST" {
-		// mieux que new struct?
 		var req struct {
 			IdUser  int    `json:"id_user"`
 			Titre   string `json:"titre"`
@@ -123,14 +125,12 @@ func GetForumsHandler(w http.ResponseWriter, r *http.Request) {
 		err := json.NewDecoder(r.Body).Decode(&req)
 		if err != nil || req.Titre == "" || req.Message == "" {
 			http.Error(w, "Données invalides", http.StatusBadRequest)
-			fmt.Println("Erreur décodage POST nouveau sujet forum:", err)
 			return
 		}
 
 		err = bdd.CreerNouveauSujet(req.IdUser, req.Titre, req.Message)
 		if err != nil {
 			http.Error(w, "Erreur lors de la création", http.StatusInternalServerError)
-			fmt.Println("Erreur BDD POST nouveau sujet forum:", err)
 			return
 		}
 
@@ -149,7 +149,6 @@ func ForumClientMessagesHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-
 	if r.Method == "GET" {
 		topicStr := r.URL.Query().Get("topic_id")
 		topicId, err := strconv.Atoi(topicStr)
@@ -165,15 +164,18 @@ func ForumClientMessagesHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		// 🛡️ ACCORDÉON DE SÉCURITÉ CONTRE LE RETOUR NULL
+		if messages == nil {
+			messages = []models.MessageForum{}
+		}
+
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(messages)
 		return
 	}
 
-	
 	if r.Method == "POST" {
 		var req models.MessageForum
-
 		err := json.NewDecoder(r.Body).Decode(&req)
 		
 		if err != nil || req.Contenu == "" || req.IdTopic == 0 || req.IdUser == 0 {
