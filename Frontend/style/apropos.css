@@ -102,10 +102,26 @@ body::before {
   z-index: 0;
   pointer-events: none;
   background:
-    radial-gradient(ellipse 70% 45% at 8% 0%, rgba(20, 60, 200, 0.14) 0%, transparent 55%),
-    radial-gradient(ellipse 55% 40% at 92% 12%, rgba(0, 201, 122, 0.06) 0%, transparent 55%),
-    radial-gradient(ellipse 50% 35% at 92% 100%, rgba(0, 212, 232, 0.07) 0%, transparent 55%),
-    radial-gradient(ellipse 35% 25% at 50% 50%, rgba(49, 115, 255, 0.04) 0%, transparent 70%);
+    radial-gradient(
+      ellipse 70% 45% at 8% 0%,
+      rgba(20, 60, 200, 0.14) 0%,
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse 55% 40% at 92% 12%,
+      rgba(0, 201, 122, 0.06) 0%,
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse 50% 35% at 92% 100%,
+      rgba(0, 212, 232, 0.07) 0%,
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse 35% 25% at 50% 50%,
+      rgba(49, 115, 255, 0.04) 0%,
+      transparent 70%
+    );
 }
 body::after {
   content: "";
@@ -117,8 +133,16 @@ body::after {
     linear-gradient(rgba(49, 115, 255, 0.022) 1px, transparent 1px),
     linear-gradient(90deg, rgba(49, 115, 255, 0.022) 1px, transparent 1px);
   background-size: 52px 52px;
-  -webkit-mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, #000 30%, transparent 75%);
-  mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, #000 30%, transparent 75%);
+  -webkit-mask-image: radial-gradient(
+    ellipse 90% 70% at 50% 0%,
+    #000 30%,
+    transparent 75%
+  );
+  mask-image: radial-gradient(
+    ellipse 90% 70% at 50% 0%,
+    #000 30%,
+    transparent 75%
+  );
 }
 
 /* Accessibilité : focus clavier visible */
@@ -340,7 +364,9 @@ button:focus-visible {
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
   border-bottom: 1px solid var(--b0);
-  transition: border-color 0.25s, background 0.25s;
+  transition:
+    border-color 0.25s,
+    background 0.25s;
 }
 .navbar.scrolled {
   background: rgba(5, 8, 15, 0.9);
@@ -628,7 +654,8 @@ button:focus-visible {
   animation: pulse 2s ease-in-out infinite;
 }
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1);
   }
@@ -692,7 +719,11 @@ button:focus-visible {
   content: "";
   position: absolute;
   inset: -10% 0 0 5%;
-  background: radial-gradient(circle at 50% 40%, rgba(49, 115, 255, 0.18) 0%, transparent 60%);
+  background: radial-gradient(
+    circle at 50% 40%,
+    rgba(49, 115, 255, 0.18) 0%,
+    transparent 60%
+  );
   filter: blur(20px);
   z-index: 0;
 }
@@ -704,12 +735,17 @@ button:focus-visible {
   border-radius: var(--r);
   padding: 14px;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
-  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
 }
 .hv-card:hover {
   transform: translateY(-6px) !important;
   border-color: var(--b2);
-  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--b1);
+  box-shadow:
+    0 30px 70px rgba(0, 0, 0, 0.6),
+    0 0 0 1px var(--b1);
   z-index: 9;
 }
 .hv-1 {
@@ -792,7 +828,11 @@ button:focus-visible {
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 80% 0%, var(--step-glow, rgba(49, 115, 255, 0.07)) 0%, transparent 55%);
+  background: radial-gradient(
+    circle at 80% 0%,
+    var(--step-glow, rgba(49, 115, 255, 0.07)) 0%,
+    transparent 55%
+  );
   pointer-events: none;
 }
 .step-card:hover {
@@ -866,7 +906,11 @@ button:focus-visible {
   width: 460px;
   height: 460px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(49, 115, 255, 0.16) 0%, transparent 65%);
+  background: radial-gradient(
+    circle,
+    rgba(49, 115, 255, 0.16) 0%,
+    transparent 65%
+  );
   pointer-events: none;
 }
 .pro-grid {
@@ -908,7 +952,9 @@ button:focus-visible {
 .pro-card.featured {
   border-color: var(--b2);
   background: rgba(49, 115, 255, 0.06);
-  box-shadow: 0 0 0 1px var(--b1), 0 16px 40px rgba(49, 115, 255, 0.12);
+  box-shadow:
+    0 0 0 1px var(--b1),
+    0 16px 40px rgba(49, 115, 255, 0.12);
 }
 .pro-card-badge {
   position: absolute;
@@ -996,7 +1042,11 @@ button:focus-visible {
   transform: translate(-50%, -50%);
   width: 620px;
   height: 320px;
-  background: radial-gradient(ellipse, rgba(49, 115, 255, 0.14) 0%, transparent 65%);
+  background: radial-gradient(
+    ellipse,
+    rgba(49, 115, 255, 0.14) 0%,
+    transparent 65%
+  );
   pointer-events: none;
 }
 .cta-final-inner {
@@ -1205,5 +1255,361 @@ button:focus-visible {
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PAGE À PROPOS — mission, valeurs, frise, équipe, engagements
+═══════════════════════════════════════════════════════════════ */
+/* En-tête de section centré (non présent dans la version actuelle du CSS) */
+.sec-head.center {
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.sec-head.center .sec-sub {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* MISSION */
+.mission-grid {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 48px;
+  align-items: center;
+}
+.mission-text p {
+  color: var(--txt-m);
+  font-size: 15.5px;
+  line-height: 1.8;
+  margin-bottom: 16px;
+  font-weight: 300;
+}
+.mission-text p strong {
+  color: var(--txt);
+  font-weight: 600;
+}
+.mission-visual {
+  position: relative;
+  border-radius: 22px;
+  border: 1px solid var(--b2);
+  background: linear-gradient(135deg, #0a1a3a 0%, #0d2452 55%, #0a1d3f 100%);
+  padding: 40px 36px;
+  overflow: hidden;
+}
+.mission-visual::before {
+  content: "";
+  position: absolute;
+  top: -40%;
+  right: -10%;
+  width: 360px;
+  height: 360px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(0, 212, 232, 0.18) 0%,
+    transparent 65%
+  );
+  pointer-events: none;
+}
+.mission-quote {
+  position: relative;
+  font-family: "Syne", sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: #fff;
+  letter-spacing: -0.01em;
+}
+.mission-quote em {
+  font-style: normal;
+  background: linear-gradient(120deg, var(--blue-l), var(--cyan));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.mission-sign {
+  position: relative;
+  margin-top: 22px;
+  font-size: 13px;
+  color: rgba(204, 220, 245, 0.6);
+}
+
+/* VALEURS */
+.value-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+.value-card {
+  position: relative;
+  background: var(--card);
+  border: 1px solid var(--b0);
+  border-radius: var(--r);
+  padding: 26px 22px;
+  overflow: hidden;
+  transition: 0.2s;
+}
+.value-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at 85% 0%,
+    var(--v-glow, rgba(49, 115, 255, 0.08)) 0%,
+    transparent 55%
+  );
+  pointer-events: none;
+}
+.value-card:hover {
+  border-color: var(--v-border, var(--b2));
+  transform: translateY(-3px);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.3);
+}
+.value-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--card2);
+  border: 1px solid var(--b1);
+  margin-bottom: 16px;
+}
+.value-icon svg {
+  width: 21px;
+  height: 21px;
+}
+.value-title {
+  font-family: "Syne", sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8px;
+}
+.value-desc {
+  font-size: 13.5px;
+  color: var(--txt-m);
+  line-height: 1.6;
+}
+.v-green {
+  --v-glow: rgba(0, 201, 122, 0.1);
+  --v-border: rgba(0, 201, 122, 0.34);
+}
+.v-blue {
+  --v-glow: rgba(49, 115, 255, 0.1);
+  --v-border: rgba(49, 115, 255, 0.38);
+}
+.v-cyan {
+  --v-glow: rgba(0, 212, 232, 0.1);
+  --v-border: rgba(0, 212, 232, 0.34);
+}
+.v-amber {
+  --v-glow: rgba(255, 171, 48, 0.1);
+  --v-border: rgba(255, 171, 48, 0.34);
+}
+.v-green .value-icon svg {
+  color: var(--green);
+}
+.v-blue .value-icon svg {
+  color: var(--blue-l);
+}
+.v-cyan .value-icon svg {
+  color: var(--cyan);
+}
+.v-amber .value-icon svg {
+  color: var(--amber);
+}
+
+/* FRISE CHRONOLOGIQUE */
+.timeline {
+  position: relative;
+  max-width: 760px;
+  margin: 0 auto;
+  padding-left: 8px;
+}
+.timeline::before {
+  content: "";
+  position: absolute;
+  left: 13px;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+  background: linear-gradient(
+    180deg,
+    var(--blue) 0%,
+    var(--cyan) 50%,
+    transparent 100%
+  );
+  opacity: 0.4;
+}
+.tl-item {
+  position: relative;
+  padding-left: 48px;
+  padding-bottom: 34px;
+}
+.tl-item:last-child {
+  padding-bottom: 0;
+}
+.tl-dot {
+  position: absolute;
+  left: 4px;
+  top: 2px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--card2);
+  border: 2px solid var(--blue);
+  box-shadow: 0 0 12px rgba(49, 115, 255, 0.5);
+}
+.tl-year {
+  font-family: "Syne", sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--blue-l);
+  margin-bottom: 4px;
+}
+.tl-title {
+  font-family: "Syne", sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 6px;
+}
+.tl-desc {
+  font-size: 14px;
+  color: var(--txt-m);
+  line-height: 1.65;
+  max-width: 560px;
+}
+
+/* ÉQUIPE */
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.team-card {
+  background: var(--card);
+  border: 1px solid var(--b0);
+  border-radius: var(--r);
+  padding: 28px 22px;
+  text-align: center;
+  transition: 0.2s;
+}
+.team-card:hover {
+  border-color: var(--b2);
+  transform: translateY(-3px);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.3);
+}
+.team-ava {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  margin: 0 auto 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Syne", sans-serif;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #fff;
+  box-shadow: 0 6px 20px rgba(49, 115, 255, 0.32);
+}
+.team-ava.g1 {
+  background: linear-gradient(135deg, var(--blue-d), var(--blue));
+}
+.team-ava.g2 {
+  background: linear-gradient(135deg, #00a060, var(--green));
+  box-shadow: 0 6px 20px rgba(0, 201, 122, 0.3);
+}
+.team-ava.g3 {
+  background: linear-gradient(135deg, #0090a8, var(--cyan));
+  box-shadow: 0 6px 20px rgba(0, 212, 232, 0.3);
+}
+.team-ava.g4 {
+  background: linear-gradient(135deg, #7a4ed8, var(--purple));
+  box-shadow: 0 6px 20px rgba(166, 124, 255, 0.3);
+}
+.team-name {
+  font-family: "Syne", sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 3px;
+}
+.team-role {
+  font-size: 13px;
+  color: var(--txt-m);
+}
+
+/* ENGAGEMENTS */
+.commit-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.commit-card {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  background: var(--card);
+  border: 1px solid var(--b0);
+  border-radius: var(--r);
+  padding: 24px;
+}
+.commit-icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 201, 122, 0.1);
+  border: 1px solid rgba(0, 201, 122, 0.22);
+}
+.commit-icon svg {
+  width: 19px;
+  height: 19px;
+  color: var(--green);
+}
+.commit-title {
+  font-family: "Syne", sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 4px;
+}
+.commit-desc {
+  font-size: 13px;
+  color: var(--txt-m);
+  line-height: 1.55;
+}
+
+@media (max-width: 1024px) {
+  .mission-grid {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+  .value-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .team-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .commit-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 600px) {
+  .value-grid {
+    grid-template-columns: 1fr;
+  }
+  .team-grid {
+    grid-template-columns: 1fr 1fr;
   }
 }

@@ -162,6 +162,104 @@
         </div>
       </div>
     </div>
+    <div
+      id="modal-nouveau-sujet"
+      class="modal-overlay"
+      style="
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+      "
+    >
+      <div
+        class="modal-content"
+        style="
+          width: 500px;
+          max-width: 90vw;
+          padding: 25px;
+          display: flex;
+          flex-direction: column;
+          background: var(--bg);
+          border-radius: 8px;
+        "
+      >
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+          "
+        >
+          <h3 style="margin: 0">Créer un nouveau sujet</h3>
+          <span
+            onclick="fermerModalSujet()"
+            style="cursor: pointer; font-size: 24px; font-weight: bold"
+            >&times;</span
+          >
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 15px">
+          <div>
+            <label
+              style="
+                font-size: 14px;
+                color: var(--txt-m);
+                margin-bottom: 5px;
+                display: block;
+              "
+              >Titre du sujet</label
+            >
+            <input
+              type="text"
+              id="nouveau-sujet-titre"
+              placeholder="Ex: Besoin d'aide pour réparer un meuble..."
+              style="
+                width: 100%;
+                padding: 10px;
+                border-radius: 6px;
+                border: 1px solid var(--b0);
+                background: var(--bg2);
+                color: white;
+              "
+            />
+          </div>
+          <div>
+            <label
+              style="
+                font-size: 14px;
+                color: var(--txt-m);
+                margin-bottom: 5px;
+                display: block;
+              "
+              >Votre premier message</label
+            >
+            <textarea
+              id="nouveau-sujet-message"
+              rows="6"
+              placeholder="Expliquez votre problème en détail..."
+              style="
+                width: 100%;
+                padding: 10px;
+                border-radius: 6px;
+                border: 1px solid var(--b0);
+                background: var(--bg2);
+                color: white;
+                resize: vertical;
+              "
+            ></textarea>
+          </div>
+          <button
+            class="btn btn-p"
+            onclick="validerNouveauSujet()"
+            style="align-self: flex-end; margin-top: 10px"
+          >
+            Publier le sujet
+          </button>
+        </div>
+      </div>
+    </div>
   </body>
   <script src="../Frontend/script/forum.js" defer></script>
   <script src="../Frontend/script/profil.js" defer></script>
