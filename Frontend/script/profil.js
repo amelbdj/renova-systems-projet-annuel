@@ -1,4 +1,7 @@
 let stripePayoutStatus = "none";
+if (!localStorage.getItem("token") || !localStorage.getItem("userId")) {
+  window.location.replace("login.html");
+}
 
 document.addEventListener("DOMContentLoaded", async () => {
   await loadUserProfile();
@@ -141,4 +144,12 @@ function showTab(name) {
 function logout() {
   localStorage.clear();
   window.location.href = "login.html";
+}
+function goToProfile() {
+  const userId = localStorage.getItem("userId");
+  if (!userId) {
+    window.location.href = "login.html";
+    return;
+  }
+  window.location.href = `profil.html?id=${userId}`;
 }
