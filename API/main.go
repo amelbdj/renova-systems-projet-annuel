@@ -99,6 +99,8 @@ func main() {
 	http.HandleFunc("PUT /admin/users/ban/{id}", auth.VerifyTokenMiddleware(admin.BanUserHandler))
 	http.HandleFunc("GET /api/user/payment-history", admin.PaymentHistoryHandler)
 	http.HandleFunc("OPTIONS /api/user/payment-history", admin.PaymentHistoryHandler)
+	http.HandleFunc("POST /api/user/update-password", auth.VerifyTokenMiddleware(admin.UpdatePasswordHandler))
+	http.HandleFunc("OPTIONS /api/user/update-password", admin.UpdatePasswordHandler)
 
 	// Auth, Tutorial & Upload
 	http.HandleFunc("/api/upload-document", auth.VerifyTokenMiddleware(admin.UploadDocumentHandler))
@@ -197,7 +199,6 @@ func main() {
 	http.HandleFunc("GET /user/forums/messages", admin.ForumClientMessagesHandler)
 	http.HandleFunc("POST /user/forums/messages", admin.ForumClientMessagesHandler)
 
-
 	http.HandleFunc("OPTIONS /api/chat/history", admin.GetChatHistoryHandler)
 	http.HandleFunc("GET /api/chat/history", auth.VerifyTokenMiddleware(admin.GetChatHistoryHandler))
 
@@ -205,7 +206,6 @@ func main() {
 
 	http.HandleFunc("POST /admin/evenements/desinscription", admin.DesinscriptionHandler)
 	http.HandleFunc("OPTIONS /admin/evenements/desinscription", admin.DesinscriptionHandler)
-	
 
 	http.HandleFunc("GET /admin/finance/overview", admin.FinanceOverviewHandler)
 	http.HandleFunc("OPTIONS /admin/finance/overview", admin.FinanceOverviewHandler)
@@ -217,12 +217,12 @@ func main() {
 	http.HandleFunc("GET /api/chat/conversations", auth.VerifyTokenMiddleware(admin.GetConversationsHandler))
 
 	http.HandleFunc("/api/hardware/simulate-withdrawal", admin.SimulateWithdrawalHandler)
-http.HandleFunc("/api/hardware/simulate-deposit", admin.SimulateDepositHandler)
-http.HandleFunc("POST /api/web/checkout/evenement", admin.CreateEventCheckoutSession)
-http.HandleFunc("OPTIONS /api/web/checkout/evenement", admin.CreateEventCheckoutSession)
+	http.HandleFunc("/api/hardware/simulate-deposit", admin.SimulateDepositHandler)
+	http.HandleFunc("POST /api/web/checkout/evenement", admin.CreateEventCheckoutSession)
+	http.HandleFunc("OPTIONS /api/web/checkout/evenement", admin.CreateEventCheckoutSession)
 
-// Cette ligne dit à Go : "Si on te demande une URL qui commence par /static/, va chercher le fichier dans le dossier static de mon PC"
-http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+	// Cette ligne dit à Go : "Si on te demande une URL qui commence par /static/, va chercher le fichier dans le dossier static de mon PC"
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	fmt.Println("test de : http://localhost:8081")
 
 	http.ListenAndServe(":8081", nil)

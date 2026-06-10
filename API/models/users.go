@@ -18,6 +18,12 @@ type User struct {
 	StripeVerifCompleted bool    `json:"stripe_verif_completed"`
 }
 
+type UpdatePasswordInput struct {
+	ID          int    `json:"id"`
+	OldPassword string `json:"old_password"`
+	NewPassword string `json:"new_password"`
+}
+
 type RefuseRequest struct {
 	Motif string `json:"motif"`
 }
