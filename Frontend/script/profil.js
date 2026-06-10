@@ -21,7 +21,6 @@ function setStripeState(state) {
   const status = document.getElementById("stripeStatus");
 
   if (!button || !status) {
-    // console.error("Stripe elements not found"); // Optionnel de le cacher si on n'est pas sur la page qui a ces boutons
     return;
   }
 
@@ -60,14 +59,10 @@ async function loadUserProfile() {
     const user = await res.json();
     console.log("Full User Data:", user);
 
-    // =========================================================
-    // 🟢 GESTION DYNAMIQUE DU LIEN "TABLEAU DE BORD" SELON LE RÔLE
-    // =========================================================
     const linkDash = document.getElementById("linkDashboard");
     if (linkDash && user.role) {
       const role = user.role.toLowerCase();
 
-      // On vérifie le rôle et on adapte le lien HTML
       if (role.includes("salari")) {
         linkDash.href = "salarie_dashboard.html"; // Ajuste le nom exact de ta page Salarié
       } else if (role.includes("admin")) {
@@ -76,9 +71,7 @@ async function loadUserProfile() {
         linkDash.href = "espClient.html"; // Page par défaut (Particulier/Pro)
       }
     }
-    // =========================================================
 
-    // Check for 1 (integer) or true (boolean)
     if (
       user.stripe_verif_completed === true ||
       user.stripe_verif_completed === 1
