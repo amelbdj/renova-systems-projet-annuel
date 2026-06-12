@@ -226,10 +226,26 @@
         <div class="card fu fu1">
           <div class="card-bd">
             <div class="fgroup">
-              <label>Mot de passe actuel</label
-              ><input type="password" placeholder="••••••••" />
+              <label>Mot de passe actuel</label>
+              <input type="password" id="currentPwd" placeholder="••••••••" />
             </div>
-            <button class="btn btn-v btn-sm">Mettre à jour</button>
+            <div class="fgroup">
+              <label>Nouveau mot de passe</label>
+              <input type="password" id="newPwd" placeholder="Nouveau mot de passe" />
+            </div>
+            <div class="fgroup">
+              <label>Confirmer le mot de passe</label>
+              <input type="password" id="confirmPwd" placeholder="Confirmez le mot de passe" />
+              <div id="pwdMatchErr" style="display: none; color: #ff4d4d; font-size: 12px; margin-top: 5px;">
+                Les mots de passe ne correspondent pas.
+              </div>
+              <div id="pwdSuccess" style="display: none; color: #00c97a; font-size: 12px; margin-top: 5px;">
+                Mot de passe mis à jour avec succès !
+              </div>
+            </div>
+            <button class="btn btn-v btn-sm" onclick="updatePassword()" style="margin-top: 10px;">
+              Mettre à jour
+            </button>
           </div>
         </div>
       </div>
@@ -268,7 +284,7 @@
           if (stateActive) stateActive.style.display = "none";
           if (tag) {
             tag.textContent = "Non configuré";
-            tag.style.color = ""; // Remettre la couleur par défaut
+            tag.style.color = ""; 
           }
         }
       }
@@ -293,7 +309,6 @@
           const data = await response.json();
           const user = Array.isArray(data) ? data[0] : data;
 
-          // Personalisation starts here
           const full_name = `${user.prenom} ${user.nom}`;
           if (document.getElementById("displayName"))
             document.getElementById("displayName").textContent = full_name;
@@ -308,9 +323,6 @@
           if (document.getElementById("displayRole"))
             document.getElementById("displayRole").textContent = user.role;
 
-          // ==========================================
-          // 🟢 REDIRECTION DYNAMIQUE SELON LE RÔLE
-          // ==========================================
           const linkDash = document.getElementById("linkDashboard");
           if (linkDash && user.role) {
             const role = user.role.toLowerCase();
@@ -322,7 +334,6 @@
               linkDash.href = "espClient.html";
             }
           }
-          // ==========================================
 
           if (document.getElementById("editPrenom"))
             document.getElementById("editPrenom").value = user.prenom;
@@ -439,7 +450,63 @@
         window.location.href = "login.html";
       }
 
-      // Initialisation au chargement de la page
+      async function updatePassword() {
+        const currentPwd = document.getElementById("currentPwd").value;
+        const newPwd = document.getElementById("newPwd").value;
+        const confirmPwd = document.getElementById("confirmPwd").value;
+        const errorDiv = document.getElementById("pwdMatchErr");
+        const successDiv = document.getElementById("pwdSuccess");
+        
+        const userId = localStorage.getItem("userId");
+        const token = localStorage.getItem("token");
+
+        errorDiv.style.display = "none";
+        successDiv.style.display = "none";
+
+        if (!currentPwd || !newPwd || !confirmPwd) {
+            errorDiv.textContent = "Veuillez remplir tous les champs.";
+            errorDiv.style.display = "block";
+            return;
+        }
+
+        if (newPwd !== confirmPwd) {
+            errorDiv.textContent = "Les nouveaux mots de passe ne correspondent pas.";
+            errorDiv.style.display = "block";
+            return;
+            
+        }
+
+        try {
+          const response = await fetch(`http://localhost:8081/api/user/update-password`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify({
+              id: parseInt(userId),
+              old_password: currentPwd,
+              new_password: newPwd
+            })
+          });
+
+          if (response.ok) {
+            successDiv.style.display = "block";
+            document.getElementById("currentPwd").value = "";
+            document.getElementById("newPwd").value = "";
+            document.getElementById("confirmPwd").value = "";
+          } else {
+            const data = await response.json();
+            errorDiv.textContent = data.error || "L'ancien mot de passe est incorrect.";
+            errorDiv.style.display = "block";
+          }
+        } catch (err) {
+          console.error("Erreur mise à jour mot de passe:", err);
+    errorDiv.textContent = "Erreur de connexion au serveur.";
+    errorDiv.style.display = "block";
+        }
+      }
+
       document.addEventListener("DOMContentLoaded", async () => {
         await loadUserProfile();
         await loadSalesHistory();
