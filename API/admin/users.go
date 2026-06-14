@@ -360,28 +360,35 @@ func GetUserByName(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(users)
 }
 
+// Dans users.go
 func ValidateUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	
 	if r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
 		return
 	}
+	
 	idStr := r.PathValue("id")
-
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
 		http.Error(w, "id invalide", http.StatusBadRequest)
 		return
 	}
-	err = bdd.ValidateUser(id)
+
+	prenom, email, err := bdd.ValidateUser(id)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	go bdd.EnvoyerEmailValidation(email, prenom)
+
 	w.Header().Set("Content-Type", "application/json")
-	fmt.Fprintln(w, "utilisateur validé")
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintln(w, `{"message": "Utilisateur validé avec succès !"}`)
 }
 
 type RefuseRequest struct {
@@ -411,11 +418,13 @@ func RefuseUser(w http.ResponseWriter, r *http.Request) {
 		req.Motif = "Non spécifié"
 	}
 
-	err = bdd.RefuseUser(id, req.Motif)
+	prenom, email, err := bdd.RefuseUser(id, req.Motif)
 	if err != nil {
 		http.Error(w, "Erreur BDD : "+err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	go bdd.EnvoyerEmailRefus(email, prenom, req.Motif)
 
 	w.Header().Set("Content-Type", "application/json")
 	fmt.Fprint(w, `{"message": "Utilisateur refusé avec motif enregistré"}`)
