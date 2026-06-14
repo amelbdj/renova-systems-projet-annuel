@@ -84,8 +84,13 @@ async function submitLogin() {
       localStorage.setItem("userScore", donneesServeur.score || 0);
       localStorage.setItem("tutorielVu", donneesServeur.tutorielVu);
 
-      if (donneesServeur.statut === "En attente") {
+      if (donneesServeur.validation === "En attente") {
         window.location.href = "attente.html";
+        return;
+      }
+
+      if (donneesServeur.validation === "Rejeté") {
+        window.location.href = "403.html";
         return;
       }
 
