@@ -3,6 +3,7 @@ package bdd
 import (
 	"database/sql"
 	"fmt"
+	"net/smtp"
 	"strconv"
 	"strings"
 	"upcycleconnect/models"
@@ -279,18 +280,25 @@ func GetUserByName(query string, role string) ([]models.User, error) {
 	}
 }
 
-func ValidateUser(id int) error {
+func ValidateUser(id int) (string, string, error) { // Retourne prenom, email, erreur
 	_, err := Db.Exec(
 		"UPDATE pa2026.utilisateur SET validation = 'Validé' WHERE id = ?",
 		id,
 	)
 	if err != nil {
-		return fmt.Errorf("validate user : %v", err.Error())
+		return "", "", fmt.Errorf("validate user : %v", err.Error())
 	}
-	return nil
+
+	var prenom, email string
+	err = Db.QueryRow("SELECT prenom, email FROM pa2026.utilisateur WHERE id = ?", id).Scan(&prenom, &email)
+	if err != nil {
+		return "", "", fmt.Errorf("erreur récupération infos pour email : %v", err.Error())
+	}
+
+	return prenom, email, nil
 }
 
-func RefuseUser(id int, motif string) error {
+func RefuseUser(id int, motif string) (string, string, error) { // On ajoute les retours string, string
 	_, err := Db.Exec(
 		"UPDATE pa2026.utilisateur SET validation = 'Rejeté', motif_refus = ? WHERE id = ?",
 		motif,
@@ -298,12 +306,18 @@ func RefuseUser(id int, motif string) error {
 	)
 	if err != nil {
 		fmt.Println("Erreur:", err)
-
-		return fmt.Errorf("refuse user : %v", err.Error())
+		return "", "", fmt.Errorf("refuse user : %v", err.Error())
 	}
-	return nil
-}
 
+	// 2. On récupère ses infos pour lui envoyer l'e-mail
+	var prenom, email string
+	err = Db.QueryRow("SELECT prenom, email FROM pa2026.utilisateur WHERE id = ?", id).Scan(&prenom, &email)
+	if err != nil {
+		return "", "", fmt.Errorf("erreur récupération infos pour email refus : %v", err.Error())
+	}
+
+	return prenom, email, nil
+}
 // Dans ton fichier bdd/documents.go (ou là où tu gères la BDD)
 func InsertDocument(userID string, typeDocument string, cheminFichier string) error {
 	// On insère le document avec le statut "En attente" par défaut
@@ -379,4 +393,82 @@ func GetAllAdminIDs() ([]string, error) {
 		}
 	}
 	return adminIDs, nil
+}
+
+func EnvoyerEmailValidation(emailDestinataire string, prenom string) error {
+	expediteur := "noreply@upcycleconnect.fr" 
+	motDePasse := "voir avec ndoya"      
+	serveurSMTP := "192.168.80.10"            
+	port := "25" // verif avec ndoya                             
+
+	auth := smtp.PlainAuth("", expediteur, motDePasse, serveurSMTP)
+
+	sujet := "Subject: UpcycleConnect - Votre compte est validé ! 🎉\n"
+	typeMIME := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
+	
+	corpsMessage := fmt.Sprintf(`
+		<html>
+			<body style="font-family: Arial, sans-serif; color: #333;">
+				<h2>Bonjour %s,</h2>
+				<p>Nous avons le plaisir de vous informer que votre compte a été validé par l'administration d'<strong>UpcycleConnect</strong> !</p>
+				<p>Vous pouvez dès à présent vous connecter à votre espace et accéder à vos services.</p>
+				<br>
+				<p>À très vite,</p>
+				<p><em>L'équipe UpcycleConnect</em></p>
+			</body>
+		</html>
+	`, prenom)
+
+	messageComplet := []byte(sujet + typeMIME + corpsMessage)
+
+	adresseServeur := serveurSMTP + ":" + port
+	err := smtp.SendMail(adresseServeur, auth, expediteur, []string{emailDestinataire}, messageComplet)
+	
+	if err != nil {
+		return fmt.Errorf("erreur de connexion à hMailServer (192.168.80.10) : %v", err)
+	}
+
+	fmt.Println(" E-mail envoyé avec succès via la DMZ à", emailDestinataire)
+	return nil
+}
+
+// Dans userReq.go (à la suite de ta fonction EnvoyerEmailValidation)
+
+func EnvoyerEmailRefus(emailDestinataire string, prenom string, motif string) {
+	expediteur := "noreply@upcycleconnect.fr" 
+	motDePasse := "voir avec ndoya"      
+	serveurSMTP := "192.168.80.10"            
+	port := "25" // verif avec ndoya   
+
+	auth := smtp.PlainAuth("", expediteur, motDePasse, serveurSMTP)
+
+	sujet := "Subject: UpcycleConnect - Information concernant votre inscription\n"
+	typeMIME := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
+	
+	corpsMessage := fmt.Sprintf(`
+		<html>
+			<body style="font-family: Arial, sans-serif; color: #333;">
+				<h2>Bonjour %s,</h2>
+				<p>Nous faisons suite à votre demande d'inscription sur la plateforme <strong>UpcycleConnect</strong>.</p>
+				<p>Après examen, nous sommes au regret de vous informer que nous ne pouvons pas valider votre compte pour la raison suivante :</p>
+				<blockquote style="border-left: 4px solid #e74c3c; padding-left: 15px; color: #555; font-style: italic; background-color: #f9f9f9; padding: 10px;">
+					%s
+				</blockquote>
+				<p>Si vous pensez qu'il s'agit d'une erreur ou si vous avez des éléments complémentaires à nous fournir, n'hésitez pas à nous contacter.</p>
+				<br>
+				<p>Cordialement,</p>
+				<p><em>L'équipe UpcycleConnect</em></p>
+			</body>
+		</html>
+	`, prenom, motif)
+
+	messageComplet := []byte(sujet + typeMIME + corpsMessage)
+	adresseServeur := serveurSMTP + ":" + port
+
+	err := smtp.SendMail(adresseServeur, auth, expediteur, []string{emailDestinataire}, messageComplet)
+	if err != nil {
+		fmt.Printf("Erreur d'envoi d'e-mail de refus à %s : %v\n", emailDestinataire, err)
+		return
+	}
+	fmt.Printf("📧 E-mail de refus envoyé avec succès à %s\n", emailDestinataire)
 }

@@ -18,7 +18,14 @@ import (
 
 	"github.com/stripe/stripe-go/v81"
 	"github.com/stripe/stripe-go/v81/account"
+	"golang.org/x/crypto/bcrypt"
 )
+
+type UpdatePasswordInput struct {
+	ID          int    `json:"id"`
+	OldPassword string `json:"old_password"`
+	NewPassword string `json:"new_password"`
+}
 
 func GetIP(r *http.Request) string {
 	forwarded := r.Header.Get("X-Forwarded-For")
@@ -116,7 +123,7 @@ func Inscription(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	fmt.Println("✅ Inscription réussie, j'alerte les admins !")
-NotifyAllAdmins("👤 Un nouvel utilisateur s'est  sur ReNova !")
+	NotifyAllAdmins("👤 Un nouvel utilisateur s'est  sur ReNova !")
 
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(map[string]string{"message": "User created successfully"})
@@ -186,8 +193,8 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-// ... après l'insertion du nouvel utilisateur ...inscrit
-NotifyAllAdmins("👤 Un nouvel utilisateur s'est  sur ReNova !")
+	// ... après l'insertion du nouvel utilisateur ...inscrit
+	NotifyAllAdmins("👤 Un nouvel utilisateur s'est  sur ReNova !")
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
@@ -276,41 +283,40 @@ func GetUserById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
 
-    if r.Method == "OPTIONS" {
-        w.WriteHeader(http.StatusOK)
-        return
-    }
+	idStr := r.URL.Query().Get("id")
+	if idStr == "" {
+		idStr = r.PathValue("id")
+	}
+	id, _ := strconv.Atoi(idStr)
 
-    idStr := r.URL.Query().Get("id")
-    if idStr == "" {
-        idStr = r.PathValue("id")
-    }
-    id, _ := strconv.Atoi(idStr)
+	user, err := bdd.GetUserById(id)
+	if err != nil {
+		http.Error(w, "Utilisateur introuvable", http.StatusNotFound)
+		return
+	}
 
-    user, err := bdd.GetUserById(id)
-    if err != nil {
-        http.Error(w, "Utilisateur introuvable", http.StatusNotFound)
-        return
-    }
+	if user.StripeAccountId != nil && *user.StripeAccountId != "0" && *user.StripeAccountId != "" && !user.StripeVerifCompleted {
+		stripe.Key = StripeSecretKey
 
-    if user.StripeAccountId != nil && *user.StripeAccountId != "0" && *user.StripeAccountId != "" && !user.StripeVerifCompleted {
-        stripe.Key = StripeSecretKey
-        
-        acc, err := account.GetByID(*user.StripeAccountId, nil)
+		acc, err := account.GetByID(*user.StripeAccountId, nil)
 
-        if err == nil && acc.PayoutsEnabled {
-            _, execErr := bdd.Db.Exec("UPDATE utilisateur SET stripe_verif_completed = 1 WHERE id = ?", id)
-            if execErr == nil {
-                user.StripeVerifCompleted = true
-            }
-        } else if err != nil {
-            fmt.Println("Erreur Stripe :", err)
-        }
-    }
+		if err == nil && acc.PayoutsEnabled {
+			_, execErr := bdd.Db.Exec("UPDATE utilisateur SET stripe_verif_completed = 1 WHERE id = ?", id)
+			if execErr == nil {
+				user.StripeVerifCompleted = true
+			}
+		} else if err != nil {
+			fmt.Println("Erreur Stripe :", err)
+		}
+	}
 
-    w.Header().Set("Content-Type", "application/json")
-    json.NewEncoder(w).Encode(user)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(user)
 }
 
 func GetUserByRole(w http.ResponseWriter, r *http.Request) {
@@ -354,28 +360,35 @@ func GetUserByName(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(users)
 }
 
+// Dans users.go
 func ValidateUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	
 	if r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
 		return
 	}
+	
 	idStr := r.PathValue("id")
-
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
 		http.Error(w, "id invalide", http.StatusBadRequest)
 		return
 	}
-	err = bdd.ValidateUser(id)
+
+	prenom, email, err := bdd.ValidateUser(id)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	go bdd.EnvoyerEmailValidation(email, prenom)
+
 	w.Header().Set("Content-Type", "application/json")
-	fmt.Fprintln(w, "utilisateur validé")
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintln(w, `{"message": "Utilisateur validé avec succès !"}`)
 }
 
 type RefuseRequest struct {
@@ -405,11 +418,13 @@ func RefuseUser(w http.ResponseWriter, r *http.Request) {
 		req.Motif = "Non spécifié"
 	}
 
-	err = bdd.RefuseUser(id, req.Motif)
+	prenom, email, err := bdd.RefuseUser(id, req.Motif)
 	if err != nil {
 		http.Error(w, "Erreur BDD : "+err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	go bdd.EnvoyerEmailRefus(email, prenom, req.Motif)
 
 	w.Header().Set("Content-Type", "application/json")
 	fmt.Fprint(w, `{"message": "Utilisateur refusé avec motif enregistré"}`)
@@ -544,4 +559,52 @@ func BanUserHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, `{"message": "Utilisateur banni avec succès"}`)
+}
+
+func UpdatePasswordHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Content-Type", "application/json")
+
+	if r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	if r.Method != http.MethodPost {
+		http.Error(w, `{"error": "Méthode non autorisée"}`, http.StatusMethodNotAllowed)
+		return
+	}
+
+	var input UpdatePasswordInput
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		http.Error(w, `{"error": "Données invalides"}`, http.StatusBadRequest)
+		return
+	}
+
+	var hashedDBPassword string
+	err := bdd.Db.QueryRow("SELECT mot_de_passe FROM pa2026.utilisateur WHERE id = ?", input.ID).Scan(&hashedDBPassword)
+	if err != nil {
+		http.Error(w, `{"error": "Utilisateur non trouvé"}`, http.StatusNotFound)
+		return
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(hashedDBPassword), []byte(input.OldPassword))
+	if err != nil {
+		http.Error(w, `{"error": "L'ancien mot de passe est incorrect"}`, http.StatusUnauthorized)
+		return
+	}
+	newHashedPassword, err := bcrypt.GenerateFromPassword([]byte(input.NewPassword), 10)
+	if err != nil {
+		http.Error(w, `{"error": "Erreur lors du hachage"}`, http.StatusInternalServerError)
+		return
+	}
+	_, err = bdd.Db.Exec("UPDATE pa2026.utilisateur SET mot_de_passe = ? WHERE id = ?", string(newHashedPassword), input.ID)
+	if err != nil {
+		http.Error(w, `{"error": "Erreur de mise à jour en BDD"}`, http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{"message": "Mot de passe mis à jour avec succès !"})
 }

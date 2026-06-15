@@ -3,8 +3,11 @@ package admin
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
+	"os"
 	"strconv"
+	"time"
 	"upcycleconnect/bdd"
 	"upcycleconnect/models"
 )
@@ -16,7 +19,7 @@ func GetAllEvenements(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
-		return 
+		return
 	}
 
 	searchWord := r.URL.Query().Get("search")
@@ -30,7 +33,6 @@ func GetAllEvenements(w http.ResponseWriter, r *http.Request) {
 	} else if val := r.Context().Value("id_user"); val != nil {
 		idUser, _ = val.(int)
 	}
-
 
 	Evenements, err := bdd.GetEvenements(searchWord, idUser)
 
@@ -56,14 +58,14 @@ func ValidateEvenement(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
-		return 
+		return
 	}
 
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
 		http.Error(w, "id invalide", http.StatusBadRequest)
 		return
-	}	
+	}
 	err = bdd.ValidateEvenement(id)
 	if err != nil {
 		http.Error(w, "erreur de validation de l'Evenement", http.StatusInternalServerError)
@@ -81,14 +83,14 @@ func RefuseEvenement(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
-		return 
+		return
 	}
-	
+
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
 		http.Error(w, "id invalide", http.StatusBadRequest)
 		return
-	}	
+	}
 	err = bdd.RefuseEvenement(id)
 	if err != nil {
 		http.Error(w, "erreur de refus de l'Evenement", http.StatusInternalServerError)
@@ -99,6 +101,7 @@ func RefuseEvenement(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Evenement refusée avec succès")
 }
 
+// 🟢 NOUVELLE FONCTION CREATEEVENEMENT
 func CreateEvenement(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
@@ -106,20 +109,54 @@ func CreateEvenement(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
-		return 
-	}
-	var Evenement models.Evenement
-	fmt.Println("hello from CreateEvenement")
-	err := json.NewDecoder(r.Body).Decode(&Evenement)
-	if err != nil {
-		http.Error(w, "données invalides", http.StatusBadRequest)
-		fmt.Println("erreur", err)
 		return
 	}
+
+	fmt.Println("hello from CreateEvenement (Multipart Mode)")
+
+	// 1. Lire le formulaire (Max 10 Mo)
+	err := r.ParseMultipartForm(10 << 20)
+	if err != nil {
+		http.Error(w, "Erreur lors de la lecture du formulaire", http.StatusBadRequest)
+		fmt.Println("Erreur ParseMultipartForm :", err)
+		return
+	}
+
+	// 2. Extraire les champs texte manuellement
+	var Evenement models.Evenement
+	Evenement.IdSalarie, _ = strconv.Atoi(r.FormValue("idSalarie"))
+	Evenement.Titre = r.FormValue("titre")
+	Evenement.Type = r.FormValue("type")
+	Evenement.Description = r.FormValue("description")
+	Evenement.DateDebut = r.FormValue("date_debut")
+	Evenement.DateFin = r.FormValue("date_fin")
+	Evenement.Lieu = r.FormValue("lieu")
+	Evenement.NbPlaces, _ = strconv.Atoi(r.FormValue("capacite"))
+	Evenement.Prix, _ = strconv.ParseFloat(r.FormValue("tarif"), 64)
+
+	// 3. Traiter le fichier image s'il existe
+	file, handler, errFile := r.FormFile("image")
+	if errFile == nil {
+		defer file.Close()
+		os.MkdirAll("./static/uploads/events", os.ModePerm)
+		nomFichier := fmt.Sprintf("%d_%s", time.Now().Unix(), handler.Filename)
+		cheminComplet := "./static/uploads/events/" + nomFichier
+
+		f, err := os.OpenFile(cheminComplet, os.O_WRONLY|os.O_CREATE, 0666)
+		if err == nil {
+			defer f.Close()
+			io.Copy(f, file)
+			Evenement.ImageUrl = "static/uploads/events/" + nomFichier
+		} else {
+			fmt.Println("Erreur création fichier :", err)
+		}
+	}
+
+	// 4. Envoyer à la base de données
 	err = bdd.CreateEvenement(Evenement)
 	if err != nil {
 		http.Error(w, "erreur de création de l'Evenement", http.StatusInternalServerError)
-		fmt.Println("erreur", err)
+		fmt.Println("erreur bdd.CreateEvenement :", err)
 		return
 	}
 	w.WriteHeader(http.StatusOK)
@@ -133,8 +170,8 @@ func DeleteEvenement(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
-		return 
-	}	
+		return
+	}
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
 		http.Error(w, "id invalide", http.StatusBadRequest)
@@ -157,7 +194,7 @@ func UpdateEvenement(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
-		return 
+		return
 	}
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
@@ -166,7 +203,7 @@ func UpdateEvenement(w http.ResponseWriter, r *http.Request) {
 	}
 	var Evenement models.Evenement
 
-	err = json.NewDecoder(r.Body).Decode(&Evenement)	
+	err = json.NewDecoder(r.Body).Decode(&Evenement)
 	if err != nil {
 		http.Error(w, "données invalides", http.StatusBadRequest)
 		return
@@ -188,7 +225,7 @@ func InscrireClient(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
-		return 
+		return
 	}
 
 	var insc models.InscriptionRequest

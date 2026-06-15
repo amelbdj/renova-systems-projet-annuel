@@ -1,23 +1,61 @@
+// =====================================================================
+// VARIABLES GLOBALES (Utilisation de "var" pour éviter les plantages)
+// =====================================================================
+var monToken = localStorage.getItem("token");
+var userId = localStorage.getItem("userId");
+
+// Redirection si non connecté
 if (!monToken || !userId) {
   window.location.href = "../login.html";
 }
 
-// ==========================================
-// 1. CRÉATION D'UN ÉVÉNEMENT
-// ==========================================
-function CreateEvent() {
-  const titre = document.getElementById("evt-titre").value.trim();
-  const type = document.getElementById("evt-type").value;
-  const desc = document.getElementById("evt-desc").value.trim();
-  const date = document.getElementById("evt-date").value;
-  const lieu = document.getElementById("evt-lieu").value.trim();
-  const heureDebut = document.getElementById("evt-heure-debut").value;
-  const heureFin = document.getElementById("evt-heure-fin").value;
-  const capacite = document.getElementById("evt-capacite").value;
-  const tarif = document.getElementById("evt-tarif").value;
+// =====================================================================
+// 1. OUVRIR ET FERMER LA FENÊTRE DE CRÉATION
+// =====================================================================
+function openNewEvt() {
+  document.getElementById("evtModal").style.display = "flex";
+}
 
-  const datetimeDebut = `${date} ${heureDebut || "00:00"}:00`;
-  const datetimeFin = `${date} ${heureFin || "00:00"}:00`;
+function closeEvt() {
+  document.getElementById("evtModal").style.display = "none";
+}
+
+function resetEvtForm() {
+  document.getElementById("evt-titre").value = "";
+  document.getElementById("evt-desc").value = "";
+  document.getElementById("evt-date").value = "";
+  document.getElementById("evt-lieu").value = "";
+  document.getElementById("evt-heure-debut").value = "10:00";
+  document.getElementById("evt-heure-fin").value = "13:00";
+  document.getElementById("evt-capacite").value = "";
+  document.getElementById("evt-tarif").value = "";
+
+  var imageInput = document.getElementById("evt-image");
+  if (imageInput) {
+    imageInput.value = "";
+  }
+}
+
+// =====================================================================
+// 2. CRÉER UN ÉVÉNEMENT (AVEC IMAGE)
+// =====================================================================
+function CreateEvent() {
+  var titre = document.getElementById("evt-titre").value.trim();
+  var type = document.getElementById("evt-type").value;
+  var desc = document.getElementById("evt-desc").value.trim();
+  var date = document.getElementById("evt-date").value;
+  var lieu = document.getElementById("evt-lieu").value.trim();
+  var heureDebut = document.getElementById("evt-heure-debut").value;
+  var heureFin = document.getElementById("evt-heure-fin").value;
+  var capacite = document.getElementById("evt-capacite").value;
+  var tarif = document.getElementById("evt-tarif").value;
+
+  // L'image
+  var imageInput = document.getElementById("evt-image");
+  var imageFile = null;
+  if (imageInput && imageInput.files.length > 0) {
+    imageFile = imageInput.files[0];
+  }
 
   if (!titre || !desc || !date) {
     alert(
@@ -26,254 +64,246 @@ function CreateEvent() {
     return;
   }
 
-  // Vérification que la date n'est pas dans le passé
-  if (date) {
-    const selectedDate = new Date(date);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+  var datetimeDebut = date + " " + (heureDebut || "00:00") + ":00";
+  var datetimeFin = date + " " + (heureFin || "00:00") + ":00";
 
-    if (selectedDate < today) {
-      alert("Erreur : La date de l'événement ne peut pas être dans le passé.");
-      return;
-    }
+  // Utilisation de FormData pour envoyer le texte ET le fichier
+  var formData = new FormData();
+  formData.append("idSalarie", userId);
+  formData.append("titre", titre);
+  formData.append("type", type);
+  formData.append("description", desc);
+  formData.append("date_debut", datetimeDebut);
+  formData.append("date_fin", datetimeFin);
+  formData.append("lieu", lieu);
+
+  if (capacite) {
+    formData.append("capacite", capacite);
+  } else {
+    formData.append("capacite", 0);
+  }
+  if (tarif) {
+    formData.append("tarif", tarif);
+  } else {
+    formData.append("tarif", 0);
   }
 
-  const eventData = {
-    idSalarie: parseInt(userId),
-    titre: titre,
-    type: type,
-    description: desc,
-    date_debut: datetimeDebut,
-    date_fin: datetimeFin,
-    lieu: lieu,
-    capacite: parseInt(capacite) || 0,
-    tarif: parseFloat(tarif) || 0,
-  };
+  if (imageFile) {
+    formData.append("image", imageFile);
+  }
 
   fetch("http://localhost:8081/admin/evenements/add", {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
       Authorization: "Bearer " + monToken,
     },
-    body: JSON.stringify(eventData),
+    body: formData, // Le navigateur gère le format tout seul !
   })
-    .then((res) => {
-      if (!res.ok) throw new Error("Erreur lors de la création");
-      return res.text();
+    .then(function (reponse) {
+      if (!reponse.ok) {
+        throw new Error("Erreur lors de la création");
+      }
+      return reponse.text();
     })
-    .then(() => {
+    .then(function () {
       alert("Événement soumis avec succès. Il est en attente de validation.");
       closeEvt();
       resetEvtForm();
-      GetEvenements();
+      GetEvenements(); // On met à jour la liste
     })
-    .catch((err) => {
-      console.error(err);
-      alert("Une erreur est survenue.");
+    .catch(function (erreur) {
+      console.log(erreur);
+      alert("Erreur lors de l'enregistrement de l'événement.");
     });
 }
 
-// ==========================================
-// 2. LECTURE DES ÉVÉNEMENTS (GRILLE & KPI)
-// ==========================================
+// =====================================================================
+// 3. AFFICHER LES ÉVÉNEMENTS DU SALARIÉ
+// =====================================================================
 function GetEvenements() {
-  const container = document.getElementById("event-grid");
-  if (!container) return;
+  var conteneur = document.getElementById("event-grid");
+  if (!conteneur) return;
 
-  let counterEvt = 0;
-  let counterValide = 0;
+  var counterEvt = 0;
+  var counterValide = 0;
 
-  fetch(`http://localhost:8081/admin/evenements`, {
+  fetch("http://localhost:8081/admin/evenements", {
     headers: {
       Authorization: "Bearer " + monToken,
     },
   })
-    .then((res) => {
-      if (!res.ok) throw new Error("Erreur serveur événements");
-      return res.json();
+    .then(function (reponse) {
+      return reponse.json();
     })
-    .then((evenements) => {
-      let htmlContent = "";
+    .then(function (evenements) {
+      if (!evenements) {
+        evenements = [];
+      }
 
-      // Sécurité si la BDD renvoie null
-      if (!evenements) evenements = [];
+      var htmlContent = "";
+      var statEvent = document.getElementById("stat-event");
+      var statAttente = document.getElementById("stat-valide");
 
-      // On filtre pour ne garder que les événements de ce salarié
-      const mesEvenements = evenements.filter(
-        (e) =>
-          e.id_salarie == userId ||
-          e.IdSalarie == userId ||
-          e.idSalarie == userId,
-      );
-
-      const statEvent = document.getElementById("stat-event");
-      const statAttente = document.getElementById("stat-valide");
+      // On ne garde que les événements créés par ce salarié
+      var mesEvenements = [];
+      for (var i = 0; i < evenements.length; i++) {
+        if (
+          evenements[i].id_salarie == userId ||
+          evenements[i].IdSalarie == userId ||
+          evenements[i].idSalarie == userId
+        ) {
+          mesEvenements.push(evenements[i]);
+        }
+      }
 
       if (mesEvenements.length === 0) {
-        container.innerHTML = `
-          <div style="color:var(--txt-m); padding:20px;">Vous n'avez créé aucun événement pour le moment.</div>
-          <div class="evt-add" onclick="openNewEvt()"><div class="plus">＋</div><span>Créer un événement</span></div>`;
-
-        // On met les compteurs à 0
+        conteneur.innerHTML =
+          "<p style='color:var(--txt-m); padding:20px;'>Vous n'avez créé aucun événement pour le moment.</p>";
         if (statEvent) statEvent.textContent = 0;
         if (statAttente) statAttente.textContent = 0;
         return;
       }
 
-      mesEvenements.forEach((evt) => {
-        let statusBadge = "";
-        let actionButtons = "";
-        counterEvt++; // +1 événement total
+      for (var j = 0; j < mesEvenements.length; j++) {
+        var evt = mesEvenements[j];
+        counterEvt++;
 
-        const statut = evt.statut_validation
+        var statut = evt.statut_validation
           ? evt.statut_validation.toLowerCase()
           : "en attente";
+        var statusBadge = "";
+        var actionButtons = "";
 
         if (statut === "valide" || statut === "en ligne") {
-          counterValide++; // +1 événement validé
-          statusBadge = `<div class="evt-status t-green">✓ En ligne</div>`;
-          actionButtons = `
-            <span class="tag t-green">Publiée</span>
-            <div style="display:flex;gap:5px">
-              <button class="btn btn-g btn-xs" onclick="editerEvenement(${evt.id})">Modifier</button>
-              <button class="btn btn-danger btn-xs" onclick="DeleteEvenement(${evt.id})">Annuler</button>
-            </div>`;
+          counterValide++;
+          statusBadge = "<div class='evt-status t-green'>✓ En ligne</div>";
+          actionButtons =
+            "<button class='btn btn-danger btn-xs' onclick='DeleteEvenement(" +
+            evt.id +
+            ")'>Annuler</button>";
         } else {
-          statusBadge = `<div class="evt-status t-amber">⏳ En attente</div>`;
-          actionButtons = `
-            <span class="tag t-amber">Validation en cours</span>
-            <button class="btn btn-g btn-xs" onclick="editerEvenement(${evt.id})">Modifier</button>
-            <button class="btn btn-danger btn-xs" onclick="DeleteEvenement(${evt.id})">Annuler</button>`;
+          statusBadge = "<div class='evt-status t-amber'>⏳ En attente</div>";
+          actionButtons =
+            "<button class='btn btn-danger btn-xs' onclick='DeleteEvenement(" +
+            evt.id +
+            ")'>Annuler</button>";
         }
 
-        // FORMATAGE DE LA DATE (Sépare la date de l'heure du format SQL)
-        let dateFormatee = "Date inconnue";
-        let heureFormatee = "";
+        var dateFormatee = evt.date_debut;
+        var typeAffichage = evt.type || evt.format || "Événement";
 
-        if (evt.date_debut) {
-          if (evt.date_debut.includes(" a ")) {
-            const parts = evt.date_debut.split(" a ");
-            dateFormatee = parts[0];
-            heureFormatee = parts[1].replace(":", "h");
-          } else {
-            dateFormatee = evt.date_debut;
-          }
-        }
+        // ----------------------------------------------------
+        // GESTION IMAGE VS BANNIÈRE BLEUE
+        // ----------------------------------------------------
+        var topSectionHtml = "";
 
-        // FORMATAGE DU PRIX
-        const prixEvt = parseFloat(evt.prix || evt.Prix) || 0;
-        let prixAffichage = "";
-        let tagPrixClass = "";
-
-        if (prixEvt > 0) {
-          prixAffichage = prixEvt.toFixed(2) + " €";
-          tagPrixClass = "t-amber";
-        } else {
-          prixAffichage = "Gratuit";
-          tagPrixClass = "t-green";
-        }
-
-        htmlContent += `
-        <div class="evt-card">
-          <div class="evt-banner" style="background:linear-gradient(135deg,#100820,#1c1040)">
-            📅 
-            <div class="evt-type-badge etb-formation">${evt.type || evt.format || "Événement"}</div>
-            ${statusBadge}
+        if (evt.image_url && evt.image_url !== "") {
+          // IMAGE (Pas de bannière bleue)
+          topSectionHtml =
+            `
+        <div style="position: relative;">
+          <img src="http://localhost:8081/` +
+            evt.image_url +
+            `" style="width: 100%; height: 160px; object-fit: cover; border-radius: 12px 12px 0 0; display: block;" />
+          <div style="position: absolute; top: 12px; right: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); border-radius: 20px;">
+            ` +
+            statusBadge +
+            `
           </div>
-          <div class="evt-body">
-            <div class="evt-name">${evt.titre}</div>
-            <div class="evt-desc">${evt.description}</div>
-            <div class="evt-meta">
-              <span class="tag t-vi">📅 ${dateFormatee}</span>
-              ${heureFormatee ? `<span class="tag t-blue">⏰ ${heureFormatee}</span>` : ""}
-              <span class="tag" style="color:var(--txt-m);background:var(--bg3);border:1px solid var(--b0)">👥 Max ${evt.nb_places || evt.capacite || 0}</span>
-              <span class="tag ${tagPrixClass}">💶 ${prixAffichage}</span>
-            </div>
-            <div class="evt-foot">
-              ${actionButtons}
-            </div>
+          <div style="position: absolute; top: 12px; left: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);" class="evt-type-badge etb-formation">
+            ` +
+            typeAffichage +
+            `
           </div>
         </div>`;
-      });
+        } else {
+          // PAS D'IMAGE (Bannière bleue avec calendrier)
+          topSectionHtml =
+            `
+        <div class="evt-banner" style="background:linear-gradient(135deg,#100820,#1c1040); margin: 0; border-radius: 12px 12px 0 0;">
+          📅 
+          <div class="evt-type-badge etb-formation">` +
+            typeAffichage +
+            `</div>
+          ` +
+            statusBadge +
+            `
+        </div>`;
+        }
 
-      htmlContent += `
-      <div class="evt-add" onclick="openNewEvt()">
-        <div class="plus">＋</div>
-        <span>Créer un événement ou une formation</span>
+        htmlContent +=
+          `
+      <div class="evt-card" style="padding: 0; border: 1px solid var(--b0); border-radius: 12px; background: var(--bg2); margin-bottom: 20px;">
+        
+        ` +
+          topSectionHtml +
+          `
+        
+        <div class="evt-body" style="padding: 20px;">
+          <div class="evt-name">` +
+          evt.titre +
+          `</div>
+          <div class="evt-desc" style="margin-top: 10px;">` +
+          evt.description +
+          `</div>
+          <div class="evt-meta" style="margin-top: 15px;">
+            <span class="tag t-vi">📅 ` +
+          dateFormatee +
+          `</span>
+          </div>
+          <div class="evt-foot" style="margin-top: 15px;">
+            ` +
+          actionButtons +
+          `
+          </div>
+        </div>
       </div>`;
+      }
 
-      container.innerHTML = htmlContent;
+      conteneur.innerHTML = htmlContent;
 
-      // On met à jour les KPI dans le HTML
       if (statEvent) statEvent.textContent = counterEvt;
       if (statAttente) statAttente.textContent = counterValide;
     })
-    .catch((err) => console.error(err));
+    .catch(function (erreur) {
+      console.log(erreur);
+    });
 }
 
-// ==========================================
-// 3. SUPPRESSION D'UN ÉVÉNEMENT
-// ==========================================
+// =====================================================================
+// 4. SUPPRIMER UN ÉVÉNEMENT
+// =====================================================================
 function DeleteEvenement(id) {
-  if (!confirm("Êtes-vous sûr de vouloir annuler cet événement ?")) return;
+  if (!confirm("Êtes-vous sûr de vouloir annuler cet événement ?")) {
+    return;
+  }
 
-  // L'URL corrigée avec /delete/
-  fetch(`http://localhost:8081/admin/evenements/delete/${id}`, {
+  fetch("http://localhost:8081/admin/evenements/delete/" + id, {
     method: "DELETE",
     headers: {
       Authorization: "Bearer " + monToken,
     },
   })
-    .then((res) => {
-      if (!res.ok) throw new Error("Erreur lors de la suppression");
-      return res.text();
-    })
-    .then(() => {
+    .then(function (reponse) {
+      if (!reponse.ok) throw new Error("Erreur lors de la suppression");
       alert("Événement annulé avec succès.");
-      GetEvenements(); // Met à jour la liste
+      GetEvenements();
     })
-    .catch((err) => {
-      console.error(err);
+    .catch(function (erreur) {
+      console.log(erreur);
       alert("Une erreur est survenue lors de l'annulation.");
     });
 }
 
-// ==========================================
-// 4. FONCTIONS UTILITAIRES (MODALES)
-// ==========================================
-function openNewEvt() {
-  document.getElementById("evtModal").classList.add("open");
-}
-
-function closeEvt() {
-  document.getElementById("evtModal").classList.remove("open");
-}
-
-function resetEvtForm() {
-  document.getElementById("evt-titre").value = "";
-  document.getElementById("evt-desc").value = "";
-  document.getElementById("evt-date").value = "";
-  document.getElementById("evt-lieu").value = "";
-  document.getElementById("evt-capacite").value = "";
-  document.getElementById("evt-tarif").value = "";
-}
-
-function editerEvenement(id) {
-  alert("La modification d'événement sera bientôt disponible !");
-  // À implémenter avec une modale pré-remplie
-}
-
-// ==========================================
-// INITIALISATION AU CHARGEMENT DE LA PAGE
-// ==========================================
-document.addEventListener("DOMContentLoaded", () => {
+// =====================================================================
+// LANCEMENT AU DÉMARRAGE
+// =====================================================================
+document.addEventListener("DOMContentLoaded", function () {
   GetEvenements();
 
-  // Bloque la sélection de dates antérieures à aujourd'hui
-  const dateInput = document.getElementById("evt-date");
+  var dateInput = document.getElementById("evt-date");
   if (dateInput) {
-    const today = new Date().toISOString().split("T")[0];
+    var today = new Date().toISOString().split("T")[0];
     dateInput.setAttribute("min", today);
   }
 });

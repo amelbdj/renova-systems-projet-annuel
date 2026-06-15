@@ -1,4 +1,3 @@
-// 1. On récupère bien les deux éléments du localStorage
 let userId = localStorage.getItem("userId");
 
 function GetArticle() {
@@ -15,13 +14,10 @@ function GetArticle() {
       return res.json();
     })
     .then((articles) => {
-      // 🛡️ LE BOUCLIER ANTI-NULL EST ICI :
-      // Si le serveur renvoie null ou un truc bizarre, on force un tableau vide []
       if (!articles || !Array.isArray(articles)) {
         articles = [];
       }
 
-      // Petite sécurité (le ?.) au cas où aucun onglet n'a la classe "on" au chargement
       const currentTab = document.querySelector(".vtab.on");
       const currentTabId = currentTab ? currentTab.id : "";
 
@@ -29,9 +25,7 @@ function GetArticle() {
 
       let htmlContent = "";
 
-      // Maintenant le forEach ne plantera plus jamais !
       articles.forEach((article) => {
-        console.log("🔍 Contenu de l'article reçu :", article);
         const statut =
           article.statut || article.Statut || article.statut_validation;
 
@@ -58,7 +52,6 @@ function GetArticle() {
       if (htmlContent) {
         container.innerHTML += htmlContent;
       } else if (!container.innerHTML || container.innerHTML.trim() === "") {
-        // Si le tableau est vide, on affiche proprement le message
         container.innerHTML = `<div style="padding:20px" data-i18n="backoffice.ads.no_ads">Aucun article en attente.</div>`;
       }
 
@@ -91,10 +84,26 @@ function openArticleModal(id) {
     .then((article) => {
       document.getElementById("modal-art-title").textContent =
         article.titre || article.Titre;
+
       document.getElementById("modal-art-meta").innerHTML = `
         <span class="tag t-vi">${article.type || article.Type || "Article"}</span> 
         • Rédigé par <b>${article.prenom_auteur || ""} ${article.nom_auteur || ""}</b>
       `;
+
+      // 🟢 GESTION DE L'IMAGE DANS L'ADMIN
+      const imgElement = document.getElementById("modal-art-image");
+      const imageUrl = article.image_url || article.ImageUrl; // Tolérance pour la majuscule
+
+      if (imgElement) {
+        if (imageUrl && imageUrl.trim() !== "") {
+          imgElement.src = "http://localhost:8081/" + imageUrl;
+          imgElement.style.display = "block"; // On affiche l'image
+        } else {
+          imgElement.src = "";
+          imgElement.style.display = "none"; // On la cache s'il n'y en a pas
+        }
+      }
+
       document.getElementById("modal-art-content").textContent =
         article.contenu || article.Contenu;
 
@@ -102,6 +111,7 @@ function openArticleModal(id) {
         ValidateArticle(id);
         closeArticleModal();
       };
+
       document.getElementById("btn-modal-refuser").onclick = function () {
         RefuseArticle(id);
         closeArticleModal();

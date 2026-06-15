@@ -1,4 +1,4 @@
-let sujetActifId = null; // Variable globale pour savoir dans quel sujet on se trouve
+let sujetActifId = null;
 
 function initForum() {
   chargerForum();
@@ -34,9 +34,7 @@ function chargerForum() {
         <div class="sujet-card" onclick="ouvrirSujet(${sujet.id_topic}, '${safeTitre}')">
             <div class="sujet-header">
                 <div class="sujet-titre">${sujet.titre}</div>
-                <div class="sujet-badge"><span class="material-symbols-outlined">
-chat_bubble
-</span> ${sujet.nb_reponses}</div>
+                <div class="sujet-badge"><span class="material-symbols-outlined">chat_bubble</span> ${sujet.nb_reponses}</div>
             </div>
             <div class="sujet-meta">
                 Par <strong>${sujet.auteur}</strong> le ${sujet.date_creation}
@@ -54,7 +52,6 @@ chat_bubble
 window.ouvrirSujet = function (idTopic, titre) {
   sujetActifId = idTopic;
 
-  // On cache la liste, on affiche la zone de messages
   document.getElementById("vue-liste-forums").style.display = "none";
   document.getElementById("vue-sujet-actif").style.display = "flex";
   document.getElementById("titre-sujet-actif").textContent = titre;
@@ -80,26 +77,41 @@ function chargerMessagesSujet(idTopic) {
     headers: { Authorization: "Bearer " + token },
   })
     .then(function (res) {
+      if (!res.ok) throw new Error("Erreur serveur lors de la récupération");
       return res.json();
     })
     .then(function (messages) {
+      console.log(
+        "🔍 Payload reçu du serveur pour le sujet " + idTopic + " :",
+        messages,
+      );
       zone.innerHTML = "";
 
-      if (!messages || messages.length === 0) {
+      // 🛡️ BLINDAGE DES DONNÉES LOCALES CONTRE LE RETOUR NULL
+      if (messages === null || !messages) {
+        messages = [];
+      }
+
+      if (messages.length === 0) {
         zone.innerHTML =
-          "<p style='text-align:center; padding:20px; color:gray;'>Aucune réponse pour le moment. Soyez le premier !</p>";
+          "<p style='text-align:center; padding:20px; color:gray;'>Aucune réponse visible pour le moment.</p>";
         return;
       }
 
       messages.forEach(function (m) {
+        const prenom = m.prenom_auteur || m.PrenomAuteur || "Utilisateur";
+        const nom = m.nom_auteur || m.NomAuteur || "Anonyme";
+        const date = m.date_creation || m.DateCreation || "";
+        const contenu = m.contenu || m.Contenu || "";
+
         zone.innerHTML += `
         <div class="msg-card">
             <div class="msg-meta">
-                <span class="msg-auteur">${m.prenom_auteur} ${m.nom_auteur}</span> 
-                <span>• ${m.date_creation}</span>
+                <span class="msg-auteur">${prenom} ${nom}</span> 
+                <span>• ${date}</span>
             </div>
             <div class="msg-contenu">
-                ${m.contenu}
+                ${contenu}
             </div>
         </div>
     `;
@@ -108,6 +120,8 @@ function chargerMessagesSujet(idTopic) {
     })
     .catch(function (err) {
       console.error("Erreur messages:", err);
+      zone.innerHTML =
+        "<p style='color:red; text-align:center; padding:20px;'>Erreur lors du chargement des messages.</p>";
     });
 }
 
@@ -135,9 +149,7 @@ window.envoyerMessage = function () {
   })
     .then(function (res) {
       if (!res.ok) throw new Error("Erreur d'envoi");
-
       inputElement.value = "";
-
       chargerMessagesSujet(sujetActifId);
     })
     .catch(function (err) {
@@ -172,7 +184,6 @@ window.validerNouveauSujet = function () {
     titre: titre,
     message: message,
   };
-  console.log("CE QUE J'ENVOIE AU GO :", payload);
 
   fetch("http://localhost:8081/user/forums", {
     method: "POST",
@@ -184,9 +195,8 @@ window.validerNouveauSujet = function () {
   })
     .then(function (res) {
       if (!res.ok) throw new Error("Erreur de création");
-
       fermerModalSujet();
-      chargerForum(); // recharger pour mettre a jour la lsite
+      chargerForum();
     })
     .catch(function (err) {
       console.error("Erreur:", err);
@@ -196,13 +206,10 @@ window.validerNouveauSujet = function () {
 
 function goToProfile() {
   const userId = localStorage.getItem("userId");
-  const role = localStorage.getItem("role");
-
   if (!userId) {
     window.location.href = "login.html";
     return;
   }
-
   window.location.href = `profil.html?id=${userId}`;
 }
 

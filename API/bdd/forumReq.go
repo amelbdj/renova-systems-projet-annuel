@@ -6,9 +6,8 @@ import (
 )
 
 func GetForumMessages(filtre string) ([]models.MessageForum, error) {
-	var messages []models.MessageForum
+	messages := []models.MessageForum{}
 
-	
 	requete := `
 		SELECT m.id_message, m.id_topic, m.id_user, m.contenu, m.est_modere, m.est_signale, m.date_creation, 
 			   COALESCE(u.nom, 'Anonyme'), COALESCE(u.prenom, 'Utilisateur'), COALESCE(t.titre, 'Topic inconnu')
@@ -45,13 +44,16 @@ func GetForumMessages(filtre string) ([]models.MessageForum, error) {
 
 	return messages, nil
 }
+
 func ModerateForumMessage(idMessage int, action string) error {
 	var requete string
 
 	switch action {
 	case "approuver":
-		requete = "UPDATE pa2026.message_forum SET est_modere = 1, est_signale = 0 WHERE id_message = ?"
+		// Si 'approuver' signifie qu'on le laisse visible, on peut simplement remettre est_signale à 0
+		requete = "UPDATE pa2026.message_forum SET est_modere = 0, est_signale = 0 WHERE id_message = ?"
 	case "masquer":
+		// Masquer passe le statut à 1 pour l'isoler des requêtes clients standard
 		requete = "UPDATE pa2026.message_forum SET est_modere = 1 WHERE id_message = ?"
 	default:
 		return fmt.Errorf("action de modération inconnue")
@@ -74,7 +76,7 @@ func GetForumStats() (models.StatistiqueForum, error) {
 		return stats, err
 	}
 
-	err = Db.QueryRow("SELECT COUNT(DISTINCT id_user) FROM pa2026.message_forum WHERE date_creation >= NOW() - INTERVAL 7 DAY").Scan(&stats.MembresActifs) // distinc pour EVITER LES DOUBLONS
+	err = Db.QueryRow("SELECT COUNT(DISTINCT id_user) FROM pa2026.message_forum WHERE date_creation >= NOW() - INTERVAL 7 DAY").Scan(&stats.MembresActifs)
 	if err != nil {
 		return stats, err
 	}
@@ -85,7 +87,7 @@ func GetForumStats() (models.StatistiqueForum, error) {
 func GetAllTopics() ([]models.ForumTopic, error) {
 	topics := []models.ForumTopic{}
 
-	lignes, err := Db.Query("SELECT t.id_topic, t.titre, DATE_FORMAT(t.date_creation, '%d-%m-%Y à %H:%i') as date_creation, u.prenom as auteur, (SELECT COUNT(*) FROM message_forum m WHERE m.id_topic = t.id_topic) as nb_reponses FROM topic_forum t LEFT JOIN utilisateur u ON t.id_user = u.id ORDER BY t.date_creation DESC")
+	lignes, err := Db.Query("SELECT t.id_topic, t.titre, DATE_FORMAT(t.date_creation, '%d-%m-%Y à %H:%i') as date_creation, u.prenom as auteur, (SELECT COUNT(*) FROM message_forum m WHERE m.id_topic = t.id_topic AND m.est_modere = 0) as nb_reponses FROM topic_forum t LEFT JOIN utilisateur u ON t.id_user = u.id ORDER BY t.date_creation DESC")
 	if err != nil {
 		fmt.Println("ERREUR SQL Forum :", err)
 		return topics, err
@@ -102,7 +104,8 @@ func GetAllTopics() ([]models.ForumTopic, error) {
 }
 
 func GetMessagesByTopicClient(topicId int) ([]models.MessageForum, error) {
-    var messages []models.MessageForum
+    // 🟢 RÈGLE DE SÉCURITÉ : Initialisation explicite sous forme de tableau vide pour éviter les retours null
+    messages := []models.MessageForum{}
 
     rows, err := Db.Query(`
         SELECT m.id_message, m.id_topic, m.id_user, m.contenu, m.est_modere, m.est_signale, 
@@ -115,7 +118,6 @@ func GetMessagesByTopicClient(topicId int) ([]models.MessageForum, error) {
         ORDER BY m.date_creation ASC
     `, topicId)
 
-	
     if err != nil {
         return nil, fmt.Errorf("erreur récupération messages du topic : %v", err)
     }
@@ -138,13 +140,10 @@ func GetMessagesByTopicClient(topicId int) ([]models.MessageForum, error) {
 }
 
 func AjouterMessageForum(topicId int, userId int, contenu string) error {
-
 	_, err := Db.Exec("INSERT INTO pa2026.message_forum (id_topic, id_user, contenu, est_modere, est_signale) VALUES (?, ?, ?, 0, 0)", topicId, userId, contenu)
-	
 	if err != nil {
 		return fmt.Errorf("erreur lors de l'insertion du message : %v", err)
 	}
-
 	return nil
 }
 

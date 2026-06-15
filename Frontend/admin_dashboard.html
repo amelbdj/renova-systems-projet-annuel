@@ -5,13 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vue d'ensemble — ReNova Admin</title>
 
-    <!-- Tes scripts de sécurité -->
     <script src="../Frontend/script/auth_guard.js"></script>
     <script>
       checkSession("Administrateur");
     </script>
 
-    <!-- Tes styles existants -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="stylesheet" href="../Frontend/style/admin.css" />
     <link
@@ -22,38 +20,44 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
     />
-    <script
-      src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js"
-      defer
-    ></script>
+
     <script
       src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js"
       defer
     ></script>
     <script>
       window.OneSignalDeferred = window.OneSignalDeferred || [];
-
       OneSignalDeferred.push(async function (OneSignal) {
+        // 1. Initialisation unique
         await OneSignal.init({
           appId: "79a53223-420a-46c8-83d9-1ca162fcb64f",
+          safari_web_id:
+            "web.onesignal.auto.2473987d-7114-4e84-8494-f768208d432f",
+          allowLocalhostAsSecureOrigin: true,
+          notifyButton: {
+            enable: true,
+            displayPredicate: () => true, // Force l'affichage de la cloche
+          },
         });
 
-        // IMPORTANT
+        // 2. Demande de permission au navigateur (comme Fati l'avait fait)
         await OneSignal.Notifications.requestPermission();
 
-        const userId = parseInt(localStorage.getItem("userId"));
-
+        // 3. Connexion de l'Admin avec son ID
+        const userId = localStorage.getItem("userId");
         if (userId) {
-          // lie le navigateur à l'utilisateur
           await OneSignal.login(userId);
 
-          console.log("✅ connecté :", userId);
-
-          console.log("permission :", OneSignal.Notifications.permission);
-
-          console.log("subscribed :", OneSignal.User.PushSubscription.optedIn);
-
-          console.log("subscription id :", OneSignal.User.PushSubscription.id);
+          // Logs de debug pour vérifier que tout marche
+          console.log("✅ Admin connecté à OneSignal avec l'ID :", userId);
+          console.log(
+            "Permission accordée ? :",
+            OneSignal.Notifications.permission,
+          );
+          console.log(
+            "Abonné aux Pushs ? :",
+            OneSignal.User.PushSubscription.optedIn,
+          );
         }
       });
     </script>

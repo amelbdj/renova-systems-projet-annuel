@@ -16,9 +16,7 @@ import (
 const WebhookSecret = "whsec_ca8df90af4b7eb3045da3e1ab058edeb4ea8597a2d49b88adec258b0037f4fbc"
 
 func StripeWebhookHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("\n=======================================")
-	fmt.Println("🔔 WEBHOOK : Réception d'un événement Stripe")
-	fmt.Println("=======================================")
+
 
 	const MaxBodyBytes = int64(65536)
 	r.Body = http.MaxBytesReader(w, r.Body, MaxBodyBytes)
@@ -29,17 +27,16 @@ func StripeWebhookHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 🟢 CORRECTION ICI : Utilisation de ConstructEventWithOptions pour ignorer le décalage de version dahlia/acacia en local
 	event, err := webhook.ConstructEventWithOptions(payload, r.Header.Get("Stripe-Signature"), WebhookSecret, webhook.ConstructEventOptions{
 		IgnoreAPIVersionMismatch: true,
 	})
 	if err != nil {
-		fmt.Println("❌ ERREUR DE SIGNATURE : Vérifie ton WebhookSecret", err)
+		fmt.Println("ERREUR DE SIGNATURE : Vérifie ton WebhookSecret", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	fmt.Println("✅ SIGNATURE VALIDE ! Événement :", event.Type)
+	fmt.Println("SIGNATURE VALIDE Événement :", event.Type)
 
 	// Cas 1 : Mise à jour d'un compte Stripe Connect
 	if event.Type == "account.updated" {
@@ -49,7 +46,7 @@ func StripeWebhookHandler(w http.ResponseWriter, r *http.Request) {
 			// Mise à jour du statut de l'utilisateur dans la table 'utilisateur'
 			_, err := bdd.Db.Exec("UPDATE utilisateur SET stripe_verif_completed = 1 WHERE stripe_account_id = ?", account.ID)
 			if err != nil {
-				fmt.Println("❌ ERREUR SQL (account.updated) :", err)
+				fmt.Println("ERREUR SQL (account.updated) :", err)
 			}
 		}
 	}
@@ -59,7 +56,7 @@ func StripeWebhookHandler(w http.ResponseWriter, r *http.Request) {
 		var session stripe.CheckoutSession
 		err := json.Unmarshal(event.Data.Raw, &session)
 		if err != nil {
-			fmt.Println("❌ ERREUR JSON :", err)
+			fmt.Println("ERREUR JSON :", err)
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
@@ -74,17 +71,16 @@ func StripeWebhookHandler(w http.ResponseWriter, r *http.Request) {
 		stripeID := session.ID
 		montantTotal := float64(session.AmountTotal) / 100.0
 
-		fmt.Printf("💰 Paiement reçu ! User: %d, Event: %d, Montant: %.2f€\n", idUser, idEvent, montantTotal)
+		fmt.Printf("Paiement reçu ! User: %d, Event: %d, Montant: %.2f€\n", idUser, idEvent, montantTotal)
 
-		// --- ACTION 1 : Insertion dans la table 'inscription' ---
+		// Insertion dans la table 'inscription' 
 		_, err = bdd.Db.Exec("INSERT INTO inscription (id_user, id_event) VALUES (?, ?)", idUser, idEvent)
 		if err != nil {
-			fmt.Println("❌ ERREUR SQL (Table inscription) :", err)
+			fmt.Println("ERREUR SQL (Table inscription) :", err)
 		} else {
-			fmt.Println("✅ Inscription enregistrée avec succès !")
+			fmt.Println("Inscription enregistrée avec succès !")
 		}
 
-		// --- ACTION 2 : Enregistrement comptable ---
 		// On commence par créer une commande dans la table 'order'
 		res, err := bdd.Db.Exec("INSERT INTO `order` (id_acheteur, id_annonce, montant_total, commission) VALUES (?, ?, ?, ?)",
 			idUser, idEvent, montantTotal, 0.0) // On utilise id_event comme id_annonce ici pour simplifier
@@ -95,14 +91,13 @@ func StripeWebhookHandler(w http.ResponseWriter, r *http.Request) {
 			// On récupère l'ID de la commande pour l'associer au paiement
 			lastID, _ := res.LastInsertId()
 
-			// Puis on insère dans la table 'paiement'
-			_, err = bdd.Db.Exec("INSERT INTO paiement (id_commande, stripe_id, statut) VALUES (?, ?, ?)",
+			_, err = bdd.Db.Exec("INSERT INTO paiement(id_commande, stripe_id, statut) VALUES (?, ?, ?)",
 				lastID, stripeID, "succeeded")
 
 			if err != nil {
-				fmt.Println("❌ ERREUR SQL (Table paiement) :", err)
+				fmt.Println("ERREUR SQL (Table paiement) :", err)
 			} else {
-				fmt.Println("✅ Paiement stocké en base de données !")
+				fmt.Println("Paiement stocké en base de données !")
 			}
 		}
 	}

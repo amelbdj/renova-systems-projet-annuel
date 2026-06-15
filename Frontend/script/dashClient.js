@@ -49,10 +49,11 @@ async function loadMyAnnonces() {
 
     let annoncesActives = [];
     if (toutesAnnonces && toutesAnnonces.length > 0) {
-      annoncesActives = toutesAnnonces.filter(ann => 
-        ann.statut_vente !== "VENDU" && 
-        ann.statut_vente !== "EN ATTENTE DEPOT" && 
-        ann.statut_vente !== "EN BOX"
+      annoncesActives = toutesAnnonces.filter(
+        (ann) =>
+          ann.statut_vente !== "VENDU" &&
+          ann.statut_vente !== "EN ATTENTE DEPOT" &&
+          ann.statut_vente !== "EN BOX",
       );
     }
 
@@ -98,7 +99,8 @@ async function loadMyAnnonces() {
     annGrid.appendChild(addBox);
   } catch (err) {
     console.error("Erreur chargement annonces:", err);
-  }}
+  }
+}
 
 async function deleteAnnonce(id) {
   if (!confirm("Voulez-vous supprimez l'annonce ?")) return;
@@ -152,41 +154,79 @@ function goToProfile() {
   window.location.href = `profil.html?id=${userId}`;
 }
 
-async function loadUserBoxes() {
-    const userId = localStorage.getItem('userId'); 
-    const grid = document.getElementById('systeme-conteneurs');
+async function loadAllUserBoxes() {
+  const userId = localStorage.getItem("userId");
+  const grid = document.getElementById("systeme-conteneurs"); // On garde le même ID !
 
-    if (!grid) return;
+  if (!grid) return;
 
-    try {
-        const response = await fetch(`http://localhost:8081/api/user/boxes?user_id=${userId}`);
-        const boxes = await response.json();
+  try {
+    // 1. On lance les deux requêtes en même temps
+    const [resDeposits, resPickups] = await Promise.all([
+      fetch(`http://localhost:8081/api/user/boxes?user_id=${userId}`),
+      fetch(`http://localhost:8081/api/user/pickups/${userId}`),
+    ]);
 
-        if (!boxes || boxes.length === 0) {
-            grid.innerHTML = `
+    // On gère le cas où l'API renvoie "null" en mettant un tableau vide par défaut []
+    const deposits = (await resDeposits.json()) || [];
+    const pickups = (await resPickups.json()) || [];
+
+    // 2. On combine les deux listes en leur ajoutant un tag pour les reconnaître
+    const allItems = [
+      ...deposits.map((item) => ({ ...item, typeAction: "depot" })),
+      ...pickups.map((item) => ({ ...item, typeAction: "recuperation" })),
+    ];
+
+    // S'il n'a ni dépôt ni retrait à faire
+    if (allItems.length === 0) {
+      grid.innerHTML = `
                 <div class="cont-card avail">
-                    <div class="cont-body">Vous n'avez aucun dépôt actif pour le moment.</div>
-                    <span class="tag t-green">Prêt pour un nouvel achat</span>
+                    <div class="cont-body">Vous n'avez aucun objet en box pour le moment.</div>
+                    <span class="tag t-green">Prêt pour de nouveaux achats ou ventes</span>
                 </div>`;
-            return;
-        }
+      return;
+    }
 
-        grid.innerHTML = boxes.map(box => `
-            <div class="cont-card active">
+    // 3. On affiche tout dans la même grille
+    grid.innerHTML = allItems
+      .map((box) => {
+        // Variables qui changent selon la pastille
+        const isDepot = box.typeAction === "depot";
+        const pastilleText = isDepot ? "DÉPÔT" : "RÉCUPÉRATION";
+        const pastilleColor = isDepot
+          ? "background-color: #f39c12;"
+          : "background-color: #27ae60;"; // Orange / Vert
+        const statutAffichage = isDepot ? box.etat : box.statut_vente;
+        const dateAffichage = isDepot
+          ? `Réservé le ${new Date(box.date).toLocaleDateString()}`
+          : `Déposé le ${new Date(box.date_depot).toLocaleDateString()}`;
+        const btnText = isDepot
+          ? "Imprimer le bon de dépôt"
+          : "Imprimer le bon de retrait";
+
+        return `
+            <div class="cont-card active" style="position: relative;">
+                
+                <div style="position: absolute; top: -10px; right: -10px; ${pastilleColor} color: white; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 10;">
+                    ${pastilleText}
+                </div>
+
                 <div class="cont-top">
                     <div>
                         <div class="cont-id">${box.numero_box}</div> 
-                        <div style="font-size: 11px; color: var(--blue-l); margin-top: 2px">Statut : ${box.etat}</div>
+                        <div style="font-size: 11px; color: var(--blue-l); margin-top: 2px">Statut : ${statutAffichage}</div>
                     </div>
-                    <div class="cont-led led-b"></div>
+                    <div class="cont-led ${isDepot ? "led-b" : ""}" style="${!isDepot ? "background-color: #27ae60; box-shadow: 0 0 8px #27ae60;" : ""}"></div>
                 </div>
+                
                 <div class="cont-body">
                     <strong>Objet : ${box.objet}</strong><br>
                     <i class="fas fa-map-marker-alt"></i> ${box.lieu}<br>
-                    <small>Réservé le ${new Date(box.date).toLocaleDateString()}</small>
+                    <small>${dateAffichage}</small>
                 </div>
+                
                 <div class="cont-codes">
-                    <span class="ccode blue">PIN : ${box.code_pin}</span>
+                    <span class="ccode blue" style="${!isDepot ? "font-size: 1.1em; font-weight: bold;" : ""}">PIN : ${box.code_pin}</span>
                     <span class="ccode purple">REF : ${box.barcode}</span>
                 </div>
                 
@@ -200,21 +240,24 @@ async function loadUserBoxes() {
                 </div>
 
                 <button class="btn btn-g btn-sm" style="margin-top: 12px; width:100%" onclick="window.print()">
-                    <i class="fas fa-download"></i> Imprimer le bon de dépôt
+                    <i class="fas fa-download"></i> ${btnText}
                 </button>
             </div>
-        `).join('');
+        `;
+      })
+      .join("");
 
-        if (window.JsBarcode) {
-            JsBarcode(".barcode-img").init();
-        }
-
-    } catch (error) {
-        console.error("Erreur lors du chargement des boxes:", error);
-        grid.innerHTML = "<p>Erreur de connexion au système de conteneurs.</p>";
+    if (window.JsBarcode) {
+      JsBarcode(".barcode-img").init();
     }
+  } catch (error) {
+    console.error("Erreur lors du chargement des boxes:", error);
+    grid.innerHTML = "<p>Erreur de connexion au système de conteneurs.</p>";
+  }
 }
 
+// N'oublie pas de l'appeler au chargement de la page :
+window.addEventListener("DOMContentLoaded", loadAllUserBoxes);
 function togglePriceField() {
   const typeSelect = document.querySelector("#annForm select").value;
   const priceContainer = document.getElementById("priceContainer");
@@ -235,13 +278,15 @@ async function loadEcoScore() {
   const userId = localStorage.getItem("userId");
 
   try {
-    const response = await fetch("http://localhost:8081/api/user/stats?user_id=" + userId);
+    const response = await fetch(
+      "http://localhost:8081/api/user/stats?user_id=" + userId,
+    );
     const stats = await response.json();
 
     const monScore = stats.score;
 
     const elementsScore = document.querySelectorAll(".user-score");
-    
+
     elementsScore.forEach((element) => {
       element.textContent = monScore;
     });
@@ -254,28 +299,31 @@ async function loadEcoScore() {
     const barreProgression = document.querySelector(".score-lfill");
     if (barreProgression) {
       let pourcentage = (monScore / 1000) * 100;
-      
+
       if (pourcentage > 100) {
         pourcentage = 100;
       }
-      
-      barreProgression.style.setProperty("width", pourcentage + "%", "important");
+
+      barreProgression.style.setProperty(
+        "width",
+        pourcentage + "%",
+        "important",
+      );
     }
 
     const casesStats = document.querySelectorAll(".sstat-v");
     if (casesStats.length >= 4) {
-      casesStats[0].textContent = stats.objets_donnes || 0;           
-      casesStats[1].textContent = (stats.dechets_evites || 0) + " kg";  
-      casesStats[2].textContent = "-";                                
-      casesStats[3].textContent = "-";                                  
+      casesStats[0].textContent = stats.objets_donnes || 0;
+      casesStats[1].textContent = (stats.dechets_evites || 0) + " kg";
+      casesStats[2].textContent = "-";
+      casesStats[3].textContent = "-";
     }
-
   } catch (error) {
     console.error("Erreur lors du chargement du score :", error);
   }
 }
 document.addEventListener("DOMContentLoaded", () => {
   loadMyAnnonces();
-  loadUserBoxes();
+  loadAllUserBoxes(); // 🟢 CORRECTION ICI (à remplacer en haut et en bas du fichier)
   loadEcoScore();
 });
