@@ -11,6 +11,7 @@ import (
 	"github.com/stripe/stripe-go/v81/account"
 	"github.com/stripe/stripe-go/v81/accountlink"
 	"github.com/stripe/stripe-go/v81/checkout/session"
+	"github.com/stripe/stripe-go/v81/paymentintent"
 )
 
 const StripeSecretKey = "sk_test_51TNFHBHbaxF1KOTtH89RRHNJQSQXSPVtOHMJDHicr1LW4XYeY4ZC6nYWwzVbDvFUUI58YA7KlJs9BiUyP5zD4XU300gaAUPVpI"
@@ -145,4 +146,130 @@ func PaymentAnnonce(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(map[string]string{"url": s.URL})
+}
+
+// Nouvelle route pour l'application Android
+func PaymentIntentMobile(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Content-Type", "application/json")
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	annonceID, _ := strconv.Atoi(r.URL.Query().Get("annonce_id"))
+	var prix float64
+	var stripeAccountIDSeller string
+	
+	query := `
+        SELECT a.prix, u.stripe_account_id 
+        FROM pa2026.annonce a 
+        JOIN pa2026.utilisateur u ON a.id_user = u.id 
+        WHERE a.id = ?`
+
+	err := bdd.Db.QueryRow(query, annonceID).Scan(&prix, &stripeAccountIDSeller)
+	if err != nil || stripeAccountIDSeller == "" {
+		http.Error(w, "Vendeur non configuré pour Stripe", http.StatusBadRequest)
+		return
+	}
+
+	stripe.Key = StripeSecretKey
+	unitAmount := int64(prix * 100)
+	commission := (unitAmount * 5) / 100
+
+	// Au lieu d'une session Web, on crée une intention de paiement silencieuse
+	params := &stripe.PaymentIntentParams{
+		Amount:   stripe.Int64(unitAmount),
+		Currency: stripe.String(string(stripe.CurrencyEUR)),
+		ApplicationFeeAmount: stripe.Int64(commission),
+		TransferData: &stripe.PaymentIntentTransferDataParams{
+			Destination: stripe.String(stripeAccountIDSeller),
+		},
+		AutomaticPaymentMethods: &stripe.PaymentIntentAutomaticPaymentMethodsParams{
+			Enabled: stripe.Bool(true), // Nécessaire pour le SDK Android
+		},
+	}
+
+	pi, err := paymentintent.New(params)
+	if err != nil {
+		http.Error(w, "Erreur Stripe", http.StatusInternalServerError)
+		return
+	}
+
+	// On renvoie le secret au téléphone Android !
+	json.NewEncoder(w).Encode(map[string]string{
+		"client_secret": pi.ClientSecret,
+	})
+}
+
+func CreateEventCheckoutSession(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	var req struct {
+		IdUser  int `json:"id_user"`
+		IdEvent int `json:"id_event"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Requête invalide", http.StatusBadRequest)
+		return
+	}
+
+	// 1. Récupérer le titre et le prix de l'événement dans ta BDD
+	var titre string
+	var prix float64
+	err := bdd.Db.QueryRow("SELECT titre, prix FROM evenement WHERE id = ?", req.IdEvent).Scan(&titre, &prix)
+	if err != nil {
+		http.Error(w, "Événement introuvable", http.StatusNotFound)
+		return
+	}
+
+	stripe.Key = StripeSecretKey
+	unitAmount := int64(prix * 100) // Stripe fonctionne en centimes d'euros
+
+	// 2. Créer la session de paiement
+	params := &stripe.CheckoutSessionParams{
+		PaymentMethodTypes: stripe.StringSlice([]string{"card"}),
+		LineItems: []*stripe.CheckoutSessionLineItemParams{
+			{
+				PriceData: &stripe.CheckoutSessionLineItemPriceDataParams{
+					Currency: stripe.String("eur"),
+					ProductData: &stripe.CheckoutSessionLineItemPriceDataProductDataParams{
+						Name: stripe.String("Inscription : " + titre),
+					},
+					UnitAmount: stripe.Int64(unitAmount),
+				},
+				Quantity: stripe.Int64(1),
+			},
+		},
+		Mode: stripe.String(string(stripe.CheckoutSessionModePayment)),
+		
+		// ⚠️ Remplace le port par celui de ton application Web HTML (ex: 5500 ou 3000)
+		SuccessURL: stripe.String("http://localhost:8081/evenement.html?paiement=success"),
+		CancelURL:  stripe.String("http://localhost:8081/evenement.html?paiement=cancel"),
+	}
+
+	// 3. LA MAGIE ICI : On cache les IDs dans la session pour que Stripe nous les rende plus tard !
+	params.AddMetadata("id_event", strconv.Itoa(req.IdEvent))
+	params.AddMetadata("id_user", strconv.Itoa(req.IdUser))
+
+	s, err := session.New(params)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// 4. On renvoie l'URL magique au JavaScript
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"checkout_url": s.URL})
 }

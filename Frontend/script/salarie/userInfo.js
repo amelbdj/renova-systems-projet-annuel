@@ -112,6 +112,16 @@ function logout() {
   localStorage.clear();
   window.location.href = "../login.html";
 }
+function goToProfile() {
+  const userId = localStorage.getItem("userId");
+  const role = localStorage.getItem("role");
 
+  if (!userId) {
+    window.location.href = "../login.html";
+    return;
+  }
+
+  window.location.href = `../profil.html?id=${userId}`;
+}
 // Lancement au chargement du DOM
 document.addEventListener("DOMContentLoaded", chargerProfil);

@@ -107,6 +107,7 @@ func main() {
 	http.HandleFunc("/auth/inscription", admin.Inscription)
 	http.HandleFunc("/admin/login", admin.Login)
 	http.HandleFunc("/update-tutorial", admin.UpdateTutorialStatus)
+	http.HandleFunc("/api/user/ecostats", admin.GetEcoStatsHandler)
 
 	// --- CATEGORIES ---
 	http.HandleFunc("POST /admin/categories/add", auth.VerifyTokenMiddleware(admin.CreateCategorie))
@@ -129,9 +130,13 @@ func main() {
 	http.HandleFunc("POST /api/annonces/vendre", admin.ConfirmPaymentAndOrder)
 	http.HandleFunc("OPTIONS /api/annonces/vendre", admin.ConfirmPaymentAndOrder)
 	http.HandleFunc("/api/user/stats", admin.GetEcoStatsHandler)
+	http.HandleFunc("/api/user/achats", admin.GetMyPurchases)
+	http.HandleFunc("POST /api/mobile/payment-intent", admin.PaymentIntentMobile) // android payment intent
+	http.HandleFunc("OPTIONS /api/mobile/payment-intent", admin.PaymentIntentMobile)
 
 	// --- EVENEMENTS ---
-	http.HandleFunc("GET /admin/evenements", admin.GetAllEvenements)
+	// --- EVENEMENTS ---
+	http.HandleFunc("GET /admin/evenements", auth.VerifyTokenMiddleware(admin.GetAllEvenements)) // 🟢 CORRECTION ICI
 	http.HandleFunc("POST /admin/evenements/add", auth.VerifyTokenMiddleware(admin.CreateEvenement))
 	http.HandleFunc("PUT /admin/evenements/{id}", auth.VerifyTokenMiddleware(admin.UpdateEvenement))
 	http.HandleFunc("DELETE /admin/evenements/delete/{id}", auth.VerifyTokenMiddleware(admin.DeleteEvenement))
@@ -209,7 +214,12 @@ func main() {
 	http.HandleFunc("OPTIONS /api/chat/conversations", admin.GetConversationsHandler)
 	http.HandleFunc("GET /api/chat/conversations", auth.VerifyTokenMiddleware(admin.GetConversationsHandler))
 
+	http.HandleFunc("/api/hardware/simulate-withdrawal", admin.SimulateWithdrawalHandler)
+http.HandleFunc("/api/hardware/simulate-deposit", admin.SimulateDepositHandler)
+http.HandleFunc("POST /api/web/checkout/evenement", admin.CreateEventCheckoutSession)
+http.HandleFunc("OPTIONS /api/web/checkout/evenement", admin.CreateEventCheckoutSession)
 
+// 1. On laisse passer la vérification CORS du navigateur
 
 	fmt.Println("test de : http://localhost:8081")
 

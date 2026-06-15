@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Espace Salariés — Conseils & News</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
       href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Outfit:wght@300;400;500;600&display=swap"
       rel="stylesheet"
@@ -14,37 +13,44 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
     />
+
     <link rel="stylesheet" href="../style/salarie.css" />
   </head>
   <body>
     <nav class="topnav">
       <div class="nav-logo">
-        <span class="logo-circle">R</span>
-        <div class="logo-text">
-          <span class="logo-top">ReNova</span
-          ><span class="logo-sub">Systems</span>
-        </div>
+        <img src="ton_logo.jpg" alt="ReNova" />
       </div>
       <div class="nav-links">
-        <a href="salarie_dashboard.html" class="nav-link">Vue d'ensemble</a>
+        <a href="salarie_dashboard.html" class="nav-link">Accueil</a>
         <a href="salarie_events.html" class="nav-link">Événements</a>
-        <a href="salarie_planning.html" class="nav-link">Mon Planning</a>
-        <a href="salarie_content.html" class="nav-link active"
-          >Conseils & News</a
-        >
-        <a href="salarie_forum.html" class="nav-link">Modération Forum</a>
+        <a href="salarie_planning.html" class="nav-link">Planning</a>
+        <a href="salarie_content.html" class="nav-link">Conseils & News</a>
+        <a href="salarie_forum.html" class="nav-link">Modération</a>
       </div>
       <div class="nav-right">
-        <div class="profile-card">
-          <div class="profile-ava">A</div>
-          <div class="profile-info">
-            <div class="profile-name">Chargement...</div>
-            <div class="profile-role">Salarié</div>
+        <div class="lang-btn">
+          <span class="material-symbols-outlined">public</span>Lang
+        </div>
+        <div class="nav-icon">
+          <span class="material-symbols-outlined">search</span>
+        </div>
+        <div class="nav-icon">
+          <span class="material-symbols-outlined" onclick="logout()"
+            >logout</span
+          >
+        </div>
+        <div class="nav-icon">
+          <span class="material-symbols-outlined">notifications</span>
+          <div class="notif-dot"></div>
+        </div>
+        <div class="profile-btn" onclick="goToProfile()">
+          <div class="profile-ava"></div>
+          <div>
+            <div class="profile-name"></div>
+            <div class="profile-role"></div>
           </div>
         </div>
-        <button class="logout-btn" onclick="logout()">
-          <span class="material-symbols-outlined">logout</span>
-        </button>
       </div>
     </nav>
 
