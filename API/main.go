@@ -101,6 +101,12 @@ func main() {
 	http.HandleFunc("OPTIONS /api/user/payment-history", admin.PaymentHistoryHandler)
 	http.HandleFunc("POST /api/user/update-password", auth.VerifyTokenMiddleware(admin.UpdatePasswordHandler))
 	http.HandleFunc("OPTIONS /api/user/update-password", admin.UpdatePasswordHandler)
+	http.HandleFunc("POST /api/pro/upgrade", admin.UpgradeToPremiumHandler)
+	http.HandleFunc("OPTIONS /api/pro/upgrade", admin.UpgradeToPremiumHandler)
+	http.HandleFunc("POST /api/pro/portal", admin.CustomerPortalHandler)
+	http.HandleFunc("OPTIONS /api/pro/portal", admin.CustomerPortalHandler)
+	http.HandleFunc("GET /api/pro/sync", admin.SyncPremiumStatusHandler)
+	http.HandleFunc("OPTIONS /api/pro/sync", admin.SyncPremiumStatusHandler)
 
 	// Auth, Tutorial & Upload
 	http.HandleFunc("/api/upload-document", auth.VerifyTokenMiddleware(admin.UploadDocumentHandler))
@@ -170,6 +176,8 @@ func main() {
 	http.HandleFunc("OPTIONS /admin/connect-stripe", admin.ConnectToStripe)
 	http.HandleFunc("OPTIONS /api/payment-annonce", admin.PaymentAnnonce)
 	http.HandleFunc("POST /api/payment-annonce", admin.PaymentAnnonce)
+	http.HandleFunc("POST /api/pro/subscribe", auth.VerifyTokenMiddleware(admin.CreateProSubscriptionHandler))
+	http.HandleFunc("OPTIONS /api/pro/subscribe", admin.CreateProSubscriptionHandler)
 
 	// boxes
 	http.HandleFunc("GET /api/user/boxes", admin.GetMyBoxes)
