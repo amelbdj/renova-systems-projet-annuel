@@ -16,6 +16,8 @@ type User struct {
 	CheminFichier        string  `json:"chemin_fichier"`
 	StripeAccountId      *string `json:"stripe_account_id"`
 	StripeVerifCompleted bool    `json:"stripe_verif_completed"`
+	EstPremium           int     `json:"est_premium"`
+	StripeCustomerId     *string `json:"stripe_customer_id"`
 }
 
 type UpdatePasswordInput struct {
