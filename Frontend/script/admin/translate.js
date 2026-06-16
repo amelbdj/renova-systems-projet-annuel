@@ -3,6 +3,7 @@ monToken = localStorage.getItem("token");
 function changerLangue(langue) {
   localStorage.setItem("langue", langue); // On mémorise le choix pour toutes les pages
   fetch(`http://localhost:8081/api/translations?lang=${langue}`, {
+    cache: "no-store", // on veut toujours les traductions à jour (sinon le navigateur garde l'ancienne version)
     headers: {
       Authorization: "Bearer " + monToken,
     },

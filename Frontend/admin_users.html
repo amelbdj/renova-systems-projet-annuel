@@ -53,6 +53,9 @@
   <body
     style="display: flex; min-height: 100vh; margin: 0; background: var(--bg)"
   >
+    <!-- Sélecteur de langue (boutons générés par translate.js) -->
+    <div id="wrapper" style="position:fixed; bottom:16px; right:16px; z-index:2000; display:flex; gap:6px;"></div>
+
     <aside
       style="
         width: 260px;
@@ -95,7 +98,7 @@
           <span class="material-symbols-outlined" style="font-size: 20px"
             >dashboard</span
           >
-          Vue d'ensemble
+          <span data-i18n="backoffice.sidebar.overview">Vue d'ensemble</span>
         </a>
         <a
           href="admin_users.html"
@@ -110,7 +113,7 @@
           <span class="material-symbols-outlined" style="font-size: 20px"
             >group</span
           >
-          Utilisateurs
+          <span data-i18n="backoffice.sidebar.users">Utilisateurs</span>
         </a>
         <a
           href="admin_validations.html"
@@ -125,7 +128,7 @@
           <span class="material-symbols-outlined" style="font-size: 20px"
             >check_circle</span
           >
-          Validations
+          <span data-i18n="backoffice.sidebar.validations">Validations</span>
           <span
             class="tag t-red"
             style="margin-left: auto; font-size: 10px; padding: 2px 6px"
@@ -145,7 +148,7 @@
           <span class="material-symbols-outlined" style="font-size: 20px"
             >inventory_2</span
           >
-          Logistique & Box
+          <span data-i18n="backoffice.sidebar.logistics">Logistique & Box</span>
         </a>
         <a
           href="admin_finances.html"
@@ -160,7 +163,7 @@
           <span class="material-symbols-outlined" style="font-size: 20px"
             >account_balance</span
           >
-          Finances
+          <span data-i18n="backoffice.sidebar.finances">Finances</span>
         </a>
       </nav>
       <button
@@ -171,21 +174,20 @@
         <span class="material-symbols-outlined" style="font-size: 18px"
           >logout</span
         >
-        Déconnexion
+        <span data-i18n="backoffice.sidebar.logout">Déconnexion</span>
       </button>
     </aside>
 
     <main style="flex: 1; padding: 40px">
       <div class="hero fu">
         <div class="hero-left">
-          <h1 class="hero-title">Gestion des <em>Utilisateurs</em></h1>
-          <p class="hero-desc">
+          <h1 class="hero-title" data-i18n="backoffice.users.hero_title">Gestion des <em>Utilisateurs</em></h1>
+          <p class="hero-desc" data-i18n="backoffice.users.hero_desc">
             Administrez les comptes particuliers, professionnels et salariés.
           </p>
         </div>
         <button class="btn btn-g" onclick="openNewUser()">
-          <span class="material-symbols-outlined">person_add</span> Nouvel
-          utilisateur
+          <span class="material-symbols-outlined">person_add</span> <span data-i18n="backoffice.users.new_user_btn">Nouvel utilisateur</span>
         </button>
       </div>
 
@@ -196,21 +198,22 @@
             id="search-user-input"
             class="fin"
             placeholder="Rechercher un nom, email..."
+            data-i18n-placeholder="backoffice.users.search_ph"
             style="flex: 1"
           />
           <select id="role-filter" class="fin" style="width: 200px">
-            <option value="">Tous les rôles</option>
-            <option value="Utilisateur">Particuliers</option>
-            <option value="Prestataire">Professionnels</option>
-            <option value="Salarié">Salariés</option>
-            <option value="Administrateur">Admins</option>
+            <option value="" data-i18n="backoffice.users.filter_all">Tous les rôles</option>
+            <option value="Utilisateur" data-i18n="backoffice.users.filter_individuals">Particuliers</option>
+            <option value="Prestataire" data-i18n="backoffice.users.filter_pros">Professionnels</option>
+            <option value="Salarié" data-i18n="backoffice.users.filter_employees">Salariés</option>
+            <option value="Administrateur" data-i18n="backoffice.users.filter_admins">Admins</option>
           </select>
         </div>
       </div>
 
       <div class="card">
         <div class="u-table">
-          <p style="padding: 20px; text-align: center; color: var(--txt-m)">
+          <p style="padding: 20px; text-align: center; color: var(--txt-m)" data-i18n="backoffice.users.loading">
             Chargement des utilisateurs...
           </p>
         </div>
@@ -277,22 +280,22 @@
           <div>
             <label data-i18n="backoffice.form.role">Rôle</label>
             <select id="add-role">
-              <option value="Utilisateur">Particulier</option>
-              <option value="Prestataire">Professionnel</option>
-              <option value="Salarié">Salarié</option>
-              <option value="Administrateur">Administrateur</option>
+              <option value="Utilisateur" data-i18n="backoffice.users.role_individual">Particulier</option>
+              <option value="Prestataire" data-i18n="backoffice.users.role_pro">Professionnel</option>
+              <option value="Salarié" data-i18n="backoffice.users.role_employee">Salarié</option>
+              <option value="Administrateur" data-i18n="backoffice.users.role_admin">Administrateur</option>
             </select>
           </div>
           <div>
-            <label>Statut initial</label>
+            <label data-i18n="backoffice.users.status_initial">Statut initial</label>
             <select id="add-status">
-              <option value="Validé">Actif</option>
-              <option value="En attente">En attente</option>
+              <option value="Validé" data-i18n="backoffice.users.status_active">Actif</option>
+              <option value="En attente" data-i18n="backoffice.users.status_pending">En attente</option>
             </select>
           </div>
         </div>
 
-        <button class="btn btn-o btn-full" onclick="CreateUser()">
+        <button class="btn btn-o btn-full" onclick="CreateUser()" data-i18n="backoffice.users.create_btn">
           Créer le compte ✓
         </button>
       </div>
@@ -307,7 +310,7 @@
             >Modifier le compte</span
           >
         </div>
-        <div class="modal-sub">
+        <div class="modal-sub" data-i18n="backoffice.users.edit_desc">
           Modifiez les informations ou changez les droits de cet utilisateur.
         </div>
 
@@ -340,23 +343,23 @@
           <div>
             <label data-i18n="backoffice.form.role">Rôle</label>
             <select id="edit-role">
-              <option value="Utilisateur">Particulier</option>
-              <option value="Prestataire">Professionnel</option>
-              <option value="Salarié">Salarié</option>
-              <option value="Administrateur">Administrateur</option>
+              <option value="Utilisateur" data-i18n="backoffice.users.role_individual">Particulier</option>
+              <option value="Prestataire" data-i18n="backoffice.users.role_pro">Professionnel</option>
+              <option value="Salarié" data-i18n="backoffice.users.role_employee">Salarié</option>
+              <option value="Administrateur" data-i18n="backoffice.users.role_admin">Administrateur</option>
             </select>
           </div>
           <div>
-            <label>Statut</label>
+            <label data-i18n="backoffice.users.status">Statut</label>
             <select id="edit-status">
-              <option value="Validé">Actif</option>
-              <option value="Suspendu">Suspendu</option>
-              <option value="Refusé">Banni</option>
+              <option value="Validé" data-i18n="backoffice.users.status_active">Actif</option>
+              <option value="Suspendu" data-i18n="backoffice.users.status_suspended">Suspendu</option>
+              <option value="Refusé" data-i18n="backoffice.users.status_banned">Banni</option>
             </select>
           </div>
         </div>
 
-        <button class="btn btn-o btn-full" onclick="UpdateUser()">
+        <button class="btn btn-o btn-full" onclick="UpdateUser()" data-i18n="backoffice.users.save_btn">
           Enregistrer les modifications ✓
         </button>
       </div>
@@ -373,6 +376,7 @@
           id="motifTexte"
           rows="4"
           placeholder="Ex: Kbis illisible ou expiré..."
+          data-i18n-placeholder="backoffice.users.refusal_ph"
           style="
             width: 100%;
             margin: 15px 0;
@@ -383,10 +387,10 @@
         ></textarea>
 
         <div style="display: flex; justify-content: end; gap: 10px">
-          <button class="btn btn-g" onclick="FermerModaleRefus()">
+          <button class="btn btn-g" onclick="FermerModaleRefus()" data-i18n="backoffice.users.cancel">
             Annuler
           </button>
-          <button class="btn btn-red" id="btnConfirmerRefus">
+          <button class="btn btn-red" id="btnConfirmerRefus" data-i18n="backoffice.users.confirm_reject">
             Confirmer le rejet
           </button>
         </div>
