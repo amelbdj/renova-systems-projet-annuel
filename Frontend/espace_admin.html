@@ -21,13 +21,16 @@
   />
   <body>
     <div class="wrapper">
-      <div id="wrapper" style="text-align: right; padding: 10px">
-        <button
-          class="btn btn-sm btn-g"
-          id="btn-toggle-form"
-          onclick="LoadFormulaireTraduction()"
-        >
-          Ajouter une langue
+      <!-- Les boutons de langue sont générés ici automatiquement -->
+      <div id="wrapper" style="text-align: right; padding: 10px"></div>
+
+      <!-- Boutons d'action : export du modèle + afficher le formulaire d'import -->
+      <div style="text-align: right; padding: 0 10px 10px">
+        <button class="btn btn-sm btn-o" onclick="ExporterLangue('fr')">
+          ⬇️ Exporter le FR (modèle)
+        </button>
+        <button class="btn btn-sm btn-g" id="btn-toggle-form">
+          ➕ Ajouter une langue
         </button>
       </div>
 
@@ -42,39 +45,41 @@
       >
         <h3>Formulaire d'ajout de langue</h3>
 
-        <form id="form-add-language">
-          <div style="margin-bottom: 10px">
-            <label><strong>Code de la langue (ex: es, it) :</strong></label
-            ><br />
-            <input
-              type="text"
-              id="input_lang_code"
-              required
-              maxlength="2"
-              style="padding: 5px"
-            />
-          </div>
-          <hr />
+        <div style="margin-bottom: 10px">
+          <label><strong>Code de la langue (ex: es, it) :</strong></label><br />
+          <input
+            type="text"
+            id="input_lang_code"
+            required
+            maxlength="5"
+            style="padding: 5px"
+          />
+        </div>
 
-          <div id="dynamic-fields-container">
-            <p><i>Chargement des mots à traduire...</i></p>
-          </div>
+        <div style="margin-bottom: 10px">
+          <label><strong>Nom de la langue (ex: Espagnol) :</strong></label><br />
+          <input type="text" id="input_lang_name" required style="padding: 5px" />
+        </div>
 
-          <button
-            type="submit"
-            style="
-              background: #4caf50;
-              color: white;
-              padding: 10px;
-              margin-top: 15px;
-              border: none;
-              border-radius: 5px;
-              cursor: pointer;
-            "
-          >
-            Enregistrer la langue
-          </button>
-        </form>
+        <div style="margin-bottom: 10px">
+          <label><strong>Fichier de traduction (.json) :</strong></label><br />
+          <input type="file" id="input_fichier_json" accept=".json" required />
+        </div>
+
+        <button
+          onclick="ImporterLangue()"
+          style="
+            background: #4caf50;
+            color: white;
+            padding: 10px;
+            margin-top: 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+          "
+        >
+          Importer la langue
+        </button>
       </div>
 
       <section class="hero fu">

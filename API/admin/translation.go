@@ -10,32 +10,6 @@ import (
 
 
 
-var CacheTraductions = make(map[string]map[string]string)
-
-// RefreshCache charge la BDD en RAM (à appeler dans le main.go)
-func RefreshCache() {
-	// On récupère toutes les langues actives
-	rows, err := bdd.Db.Query("SELECT lang_code, msg_key, msg_value FROM translations")
-	if err != nil {
-		return
-	}
-	defer rows.Close()
-
-	// On vide le cache actuel pour le mettre à jour
-	newCache := make(map[string]map[string]string)
-
-	for rows.Next() {
-		var lang, key, value string
-		if err := rows.Scan(&lang, &key, &value); err == nil {
-			if newCache[lang] == nil {
-				newCache[lang] = make(map[string]string)
-			}
-			newCache[lang][key] = value
-		}
-	}
-	CacheTraductions = newCache
-}
-
 func GetTranslations(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
     w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
@@ -50,15 +24,11 @@ func GetTranslations(w http.ResponseWriter, r *http.Request) {
 		lang = "fr"
 	}
 
-	translations := CacheTraductions[lang]
-	
-	if translations == nil {
-		var err error
-		translations, err = bdd.GetTranslationsByLang(lang)
-		if err != nil {
-			http.Error(w, "Erreur BDD", http.StatusInternalServerError)
-			return
-		}
+	// On récupère les traductions directement depuis la BDD
+	translations, err := bdd.GetTranslationsByLang(lang)
+	if err != nil {
+		http.Error(w, "Erreur BDD", http.StatusInternalServerError)
+		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -129,8 +99,8 @@ func AddLanguage(w http.ResponseWriter, r *http.Request) {
 
 	// On lit le JSON envoyé par le Front
 	err := json.NewDecoder(r.Body).Decode(&payload)
-	if err != nil || payload.LangCode == "" {
-		http.Error(w, `{"erreur": "Données invalides"}`, http.StatusBadRequest)
+	if err != nil || payload.LangCode == "" || payload.LangName == "" {
+		http.Error(w, `{"erreur": "Données invalides (code et nom de langue obligatoires)"}`, http.StatusBadRequest)
 		return
 	}
 
