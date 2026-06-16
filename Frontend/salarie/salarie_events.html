@@ -18,16 +18,19 @@
     <link rel="stylesheet" href="../style/salarie.css" />
   </head>
   <body>
+    <!-- Sélecteur de langue (boutons générés par translate.js) -->
+    <div id="wrapper" style="position:fixed; bottom:16px; right:16px; z-index:2000; display:flex; gap:6px;"></div>
+
     <nav class="topnav">
       <div class="nav-logo">
         <img src="ton_logo.jpg" alt="ReNova" />
       </div>
       <div class="nav-links">
-        <a href="salarie_dashboard.html" class="nav-link">Accueil</a>
-        <a href="salarie_events.html" class="nav-link active">Événements</a>
-        <a href="salarie_planning.html" class="nav-link">Planning</a>
-        <a href="salarie_content.html" class="nav-link">Conseils & News</a>
-        <a href="salarie_forum.html" class="nav-link">Modération</a>
+        <a href="salarie_dashboard.html" class="nav-link" data-i18n="landing.nav.home">Accueil</a>
+        <a href="salarie_events.html" class="nav-link active" data-i18n="landing.nav.events">Événements</a>
+        <a href="salarie_planning.html" class="nav-link" data-i18n="forum.nav.planning">Planning</a>
+        <a href="salarie_content.html" class="nav-link" data-i18n="salarie.nav.content">Conseils & News</a>
+        <a href="salarie_forum.html" class="nav-link" data-i18n="salarie.nav.moderation">Modération</a>
       </div>
       <div class="nav-right">
         <div class="lang-btn">
@@ -59,15 +62,16 @@
       <section id="events" style="padding: 40px 0 52px">
         <div class="sec-label fu">
           <div class="sec-num">1</div>
-          <div class="sec-title-text">Événements & Formations</div>
+          <div class="sec-title-text" data-i18n="salarie.events.title">Événements & Formations</div>
           <div class="sec-divider"></div>
-          <span class="tag t-amber" style="flex-shrink: 0"
+          <span class="tag t-amber" style="flex-shrink: 0" data-i18n="salarie.events.validation_required"
             >⚠ Validation requise</span
           >
           <button
             class="btn btn-v btn-sm"
             style="flex-shrink: 0"
             onclick="openNewEvt()"
+            data-i18n="salarie.events.create"
           >
             ＋ Créer
           </button>
@@ -75,7 +79,7 @@
 
         <div class="warning-banner fu">
           <div class="wi">⚠️</div>
-          <div>
+          <div data-i18n="salarie.events.warning">
             <strong style="color: #fff">Rappel important</strong> — Tout
             événement ou formation créé doit être
             <strong style="color: rgba(245, 166, 35, 0.9)"
@@ -91,7 +95,7 @@
     </div>
 
     <footer>
-      <div class="wrapper">
+      <div class="wrapper" data-i18n="salarie.footer">
         <strong>ReNova Systems</strong> — Espace Salariés &nbsp;·&nbsp; Software
         · Infrastructure · Security · Cloud
       </div>
@@ -156,7 +160,7 @@
           <span class="material-symbols-outlined" style="color: var(--primary)"
             >calendar_today</span
           >
-          Créer un événement
+          <span data-i18n="salarie.events.modal_title">Créer un événement</span>
         </h2>
         <p
           style="
@@ -165,6 +169,7 @@
             font-size: 14px;
             line-height: 1.5;
           "
+          data-i18n="salarie.events.modal_desc"
         >
           Saisissez les informations de l'événement. Votre création sera soumise
           à validation d'un responsable.
@@ -185,7 +190,7 @@
           "
         >
           <span style="font-size: 16px">⚠️</span>
-          <div>
+          <div data-i18n="salarie.events.modal_warning">
             <strong>Validation obligatoire</strong> — Un responsable devra
             approuver cet événement avant qu'il soit visible dans le catalogue
             (24–48h).
@@ -194,27 +199,28 @@
 
         <div class="frow">
           <div>
-            <label>Titre <span class="req">*</span></label>
+            <label><span data-i18n="salarie.events.title_label">Titre</span> <span class="req">*</span></label>
             <input
               type="text"
               id="evt-titre"
               placeholder="ex : Atelier participatif"
+              data-i18n-placeholder="salarie.events.title_ph"
               style="width: 100%"
             />
           </div>
           <div>
-            <label>Type <span class="req">*</span></label>
+            <label><span data-i18n="salarie.events.type_label">Type</span> <span class="req">*</span></label>
             <select id="evt-type" style="width: 100%">
-              <option value="formation">Formation</option>
-              <option value="atelier">Atelier</option>
-              <option value="evenement">Événement</option>
-              <option value="reunion">Réunion</option>
+              <option value="formation" data-i18n="salarie.events.type_training">Formation</option>
+              <option value="atelier" data-i18n="salarie.events.type_workshop">Atelier</option>
+              <option value="evenement" data-i18n="salarie.events.type_event">Événement</option>
+              <option value="reunion" data-i18n="salarie.events.type_meeting">Réunion</option>
             </select>
           </div>
         </div>
 
         <div class="fgroup" style="margin-top: 15px">
-          <label>Image de couverture (Optionnelle)</label>
+          <label data-i18n="salarie.events.image_label">Image de couverture (Optionnelle)</label>
           <input
             type="file"
             id="evt-image"
@@ -232,10 +238,11 @@
         </div>
 
         <div class="fgroup" style="margin-top: 15px">
-          <label>Description <span class="req">*</span></label>
+          <label><span data-i18n="salarie.events.desc_label">Description</span> <span class="req">*</span></label>
           <textarea
             id="evt-desc"
             placeholder="Objectif, public cible, matériel nécessaire…"
+            data-i18n-placeholder="salarie.events.desc_ph"
             rows="4"
             style="width: 100%; resize: vertical"
           ></textarea>
@@ -243,15 +250,16 @@
 
         <div class="frow" style="margin-top: 15px">
           <div>
-            <label>Date <span class="req">*</span></label>
+            <label><span data-i18n="salarie.events.date_label">Date</span> <span class="req">*</span></label>
             <input type="date" id="evt-date" style="width: 100%" />
           </div>
           <div>
-            <label>Lieu</label>
+            <label data-i18n="salarie.events.place_label">Lieu</label>
             <input
               type="text"
               id="evt-lieu"
               placeholder="ex : Atelier Nord"
+              data-i18n-placeholder="salarie.events.place_ph"
               style="width: 100%"
             />
           </div>
@@ -259,7 +267,7 @@
 
         <div class="frow" style="margin-top: 15px">
           <div>
-            <label>Heure début</label>
+            <label data-i18n="salarie.events.start_label">Heure début</label>
             <input
               type="time"
               id="evt-heure-debut"
@@ -268,7 +276,7 @@
             />
           </div>
           <div>
-            <label>Heure fin</label>
+            <label data-i18n="salarie.events.end_label">Heure fin</label>
             <input
               type="time"
               id="evt-heure-fin"
@@ -280,20 +288,22 @@
 
         <div class="frow" style="margin-top: 15px">
           <div>
-            <label>Capacité max</label>
+            <label data-i18n="salarie.events.capacity_label">Capacité max</label>
             <input
               type="number"
               id="evt-capacite"
               placeholder="ex : 15"
+              data-i18n-placeholder="salarie.events.capacity_ph"
               style="width: 100%"
             />
           </div>
           <div>
-            <label>Tarif (€)</label>
+            <label data-i18n="salarie.events.price_label">Tarif (€)</label>
             <input
               type="number"
               id="evt-tarif"
               placeholder="0 = gratuit"
+              data-i18n-placeholder="salarie.events.price_ph"
               style="width: 100%"
             />
           </div>
@@ -308,12 +318,15 @@
             font-weight: 600;
           "
           onclick="CreateEvent()"
+          data-i18n="salarie.events.submit"
         >
           Soumettre pour validation ✓
         </button>
       </div>
     </div>
 
+    <!-- translate.js : moteur de traduction (data-i18n + mémoire de la langue) -->
+    <script src="../script/admin/translate.js" defer></script>
     <script src="../script/salarie/userInfo.js" defer></script>
     <script src="../script/salarie/event.js" defer></script>
   </body>
