@@ -48,6 +48,9 @@
   <body
     style="display: flex; min-height: 100vh; margin: 0; background: var(--bg)"
   >
+    <!-- Sélecteur de langue (boutons générés par translate.js) -->
+    <div id="wrapper" style="position:fixed; bottom:16px; right:16px; z-index:2000; display:flex; gap:6px;"></div>
+
     <aside
       style="
         width: 260px;
@@ -90,7 +93,7 @@
           <span class="material-symbols-outlined" style="font-size: 20px"
             >dashboard</span
           >
-          Vue d'ensemble
+          <span data-i18n="backoffice.sidebar.overview">Vue d'ensemble</span>
         </a>
         <a
           href="admin_users.html"
@@ -105,7 +108,7 @@
           <span class="material-symbols-outlined" style="font-size: 20px"
             >group</span
           >
-          Utilisateurs
+          <span data-i18n="backoffice.sidebar.users">Utilisateurs</span>
         </a>
         <a
           href="admin_validations.html"
@@ -120,7 +123,7 @@
           <span class="material-symbols-outlined" style="font-size: 20px"
             >check_circle</span
           >
-          Validations
+          <span data-i18n="backoffice.sidebar.validations">Validations</span>
           <span
             class="tag t-red"
             style="margin-left: auto; font-size: 10px; padding: 2px 6px"
@@ -140,7 +143,7 @@
           <span class="material-symbols-outlined" style="font-size: 20px"
             >inventory_2</span
           >
-          Logistique & Box
+          <span data-i18n="backoffice.sidebar.logistics">Logistique & Box</span>
         </a>
         <a
           href="admin_finances.html"
@@ -155,7 +158,7 @@
           <span class="material-symbols-outlined" style="font-size: 20px"
             >account_balance</span
           >
-          Finances
+          <span data-i18n="backoffice.sidebar.finances">Finances</span>
         </a>
       </nav>
       <button
@@ -166,14 +169,14 @@
         <span class="material-symbols-outlined" style="font-size: 18px"
           >logout</span
         >
-        Déconnexion
+        <span data-i18n="backoffice.sidebar.logout">Déconnexion</span>
       </button>
     </aside>
 
     <main style="flex: 1; padding: 40px">
       <div class="hero">
-        <h1 class="hero-title">Réseau de <em>Conteneurs</em></h1>
-        <p class="hero-desc">
+        <h1 class="hero-title" data-i18n="backoffice.cont.title">Réseau de <em>Conteneurs</em></h1>
+        <p class="hero-desc" data-i18n="backoffice.cont.desc">
           Gérez les box intelligentes et les codes d'accès.
         </p>
       </div>
@@ -196,42 +199,44 @@
         <div class="modal-x" onclick="closeModal('NewConteneurModal')">✕</div>
         <div class="modal-h">
           <span class="material-symbols-outlined">inventory_2</span>
-          <span>Nouveau Conteneur</span>
+          <span data-i18n="backoffice.cont.new_container">Nouveau Conteneur</span>
         </div>
-        <div class="modal-sub">
+        <div class="modal-sub" data-i18n="backoffice.cont.new_container_sub">
           Déployez un nouveau point de collecte physique sur la carte.
         </div>
 
         <div class="fgroup">
-          <label>Nom / Identifiant <span class="req">*</span></label>
+          <label><span data-i18n="backoffice.cont.name_label">Nom / Identifiant</span> <span class="req">*</span></label>
           <input
             id="add-c-nom"
             type="text"
             placeholder="Ex: Box Gare de Lyon"
+            data-i18n-placeholder="backoffice.cont.name_ph"
           />
         </div>
 
         <div class="fgroup">
-          <label>Adresse complète <span class="req">*</span></label>
+          <label><span data-i18n="backoffice.cont.address_label">Adresse complète</span> <span class="req">*</span></label>
           <input
             id="add-c-adresse"
             type="text"
             placeholder="Ex: 12 rue de la Paix"
+            data-i18n-placeholder="backoffice.cont.address_ph"
           />
         </div>
 
         <div class="frow">
           <div>
-            <label>Code Postal <span class="req">*</span></label>
+            <label><span data-i18n="backoffice.cont.zip_label">Code Postal</span> <span class="req">*</span></label>
             <input id="add-c-cp" type="text" placeholder="75012" />
           </div>
           <div>
-            <label>Ville <span class="req">*</span></label>
+            <label><span data-i18n="backoffice.cont.city_label">Ville</span> <span class="req">*</span></label>
             <input id="add-c-ville" type="text" placeholder="Paris" />
           </div>
         </div>
 
-        <button class="btn btn-o btn-full" onclick="CreateConteneur()">
+        <button class="btn btn-o btn-full" onclick="CreateConteneur()" data-i18n="backoffice.cont.deploy">
           Déployer le conteneur ✓
         </button>
       </div>
@@ -242,19 +247,19 @@
         <div class="modal-x" onclick="closeModal('NewBoxModal')">✕</div>
         <div class="modal-h">
           <span class="material-symbols-outlined">add_box</span>
-          <span>Nouveau Casier</span>
+          <span data-i18n="backoffice.cont.new_box">Nouveau Casier</span>
         </div>
-        <div class="modal-sub">
+        <div class="modal-sub" data-i18n="backoffice.cont.new_box_sub">
           Ajoutez un casier de stockage à l'intérieur de ce conteneur.
         </div>
 
         <div class="fgroup">
-          <label>Taille du casier <span class="req">*</span></label>
+          <label><span data-i18n="backoffice.cont.size_label">Taille du casier</span> <span class="req">*</span></label>
           <select id="add-b-taille">
-            <option value="S">Petit (S)</option>
-            <option value="M">Moyen (M)</option>
-            <option value="L">Grand (L)</option>
-            <option value="XL">Très grand (XL)</option>
+            <option value="S" data-i18n="backoffice.cont.size_s">Petit (S)</option>
+            <option value="M" data-i18n="backoffice.cont.size_m">Moyen (M)</option>
+            <option value="L" data-i18n="backoffice.cont.size_l">Grand (L)</option>
+            <option value="XL" data-i18n="backoffice.cont.size_xl">Très grand (XL)</option>
           </select>
         </div>
 
@@ -265,11 +270,14 @@
           onclick="
             CreateBox(document.getElementById('current-conteneur-id').value)
           "
+          data-i18n="backoffice.cont.add_box"
         >
           Ajouter le casier ✓
         </button>
       </div>
     </div>
+    <!-- translate.js : moteur de traduction (data-i18n + mémoire de la langue) -->
+    <script src="../Frontend/script/admin/translate.js" defer></script>
     <script src="../Frontend/script/admin/box.js" defer></script>
   </body>
 </html>
