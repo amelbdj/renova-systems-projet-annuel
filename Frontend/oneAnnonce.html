@@ -19,9 +19,12 @@
     />
   </head>
   <body>
+    <!-- Sélecteur de langue (boutons générés par translate.js) -->
+    <div id="wrapper" style="position:fixed; bottom:16px; right:16px; z-index:2000; display:flex; gap:6px;"></div>
+
     <nav class="topnav">
       <div class="nav-links">
-        <a class="nav-link" href="annonceAll.html">← Retour aux annonces</a>
+        <a class="nav-link" href="annonceAll.html" data-i18n="oneAnnonce.back">← Retour aux annonces</a>
       </div>
       <div class="nav-right">
         <div class="nav-ava"><i class="fas fa-user"></i></div>
@@ -29,7 +32,7 @@
     </nav>
 
     <div class="breadcrumb">
-      <a href="annonceAll.html">Annonce</a>
+      <a href="annonceAll.html" data-i18n="oneAnnonce.breadcrumb">Annonce</a>
       <span>›</span>
       <span id="bcCat">—</span>
       <span>›</span>
@@ -44,11 +47,11 @@
       style="display: none; text-align: center; padding: 80px"
     >
       <div style="font-size: 4rem"><i class="fas fa-search"></i></div>
-      <h2>Annonce introuvable</h2>
-      <p>Cette annonce n'existe pas ou le serveur est inaccessible.</p>
+      <h2 data-i18n="oneAnnonce.not_found_title">Annonce introuvable</h2>
+      <p data-i18n="oneAnnonce.not_found_desc">Cette annonce n'existe pas ou le serveur est inaccessible.</p>
       <br />
       <a href="annonceAll.html" style="color: var(--vi-l)"
-        ><i class="fas fa-arrow-left"></i> Retour à la liste</a
+        ><i class="fas fa-arrow-left"></i> <span data-i18n="oneAnnonce.back_list">Retour à la liste</span></a
       >
     </div>
     <div id="contact-zone" style="margin-top: 20px"></div>
@@ -87,7 +90,7 @@
             align-items: center;
           "
         >
-          <h3 style="margin: 0; font-size: 16px; color: var(--txt)">
+          <h3 style="margin: 0; font-size: 16px; color: var(--txt)" data-i18n="oneAnnonce.chat_title">
             💬 Discussion
           </h3>
           <button
@@ -130,6 +133,7 @@
             type="text"
             id="chat-input"
             placeholder="Écrivez votre message..."
+            data-i18n-placeholder="oneAnnonce.chat_ph"
             style="
               flex: 1;
               padding: 10px;
@@ -147,6 +151,8 @@
       </div>
     </div>
 
+    <!-- translate.js : moteur de traduction (data-i18n + mémoire de la langue) -->
+    <script src="./script/admin/translate.js"></script>
     <script src="./script/annonces/oneAnnonce.js"></script>
     <script src="./script/messagerie/messagerie.js"></script>
   </body>

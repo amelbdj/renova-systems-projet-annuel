@@ -23,7 +23,8 @@ function LancerRecherche() {
 function chargerArticlesClient(motCle = "") {
   const container = document.getElementById("liste-articles");
   container.innerHTML =
-    "<p style='color: var(--txt-m); text-align: center; grid-column: 1 / -1;'>Chargement des articles...</p>";
+    "<p style='color: var(--txt-m); text-align: center; grid-column: 1 / -1;' data-i18n=\"article.loading\">Chargement des articles...</p>";
+  if (typeof appliquerTraductions === "function") appliquerTraductions();
 
   let url = `http://localhost:8081/admin/articles`;
 
@@ -49,8 +50,9 @@ function chargerArticlesClient(motCle = "") {
           container.innerHTML = `<p style="color: var(--txt-m); text-align: center; grid-column: 1 / -1;">Aucun résultat trouvé pour "<b>${motCle}</b>".</p>`;
         } else {
           container.innerHTML =
-            "<p style='color: var(--txt-m); text-align: center; grid-column: 1 / -1;'>Aucun article publié pour le moment.</p>";
+            "<p style='color: var(--txt-m); text-align: center; grid-column: 1 / -1;' data-i18n=\"article.empty\">Aucun article publié pour le moment.</p>";
         }
+        if (typeof appliquerTraductions === "function") appliquerTraductions();
         return;
       }
 
@@ -84,7 +86,7 @@ function chargerArticlesClient(motCle = "") {
                         <h3 style="margin-top: 0; color: #ffffff; font-size: 18px;">${art.titre}</h3>
                         <p style="color: var(--txt-m); font-size: 12px; margin-bottom: 8px;"><span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">calendar_today</span> ${art.created_at}</p>
                         <p style="color: var(--txt-m); font-size: 14px; flex-grow: 1;">${resume}</p>
-                        <span style="color: var(--blue); font-weight: 600; font-size: 14px; margin-top: 10px;">Lire l'article ➔</span>
+                        <span style="color: var(--blue); font-weight: 600; font-size: 14px; margin-top: 10px;" data-i18n="article.read_more">Lire l'article ➔</span>
                     </div>
                 </div>
             `;
@@ -95,16 +97,20 @@ function chargerArticlesClient(motCle = "") {
         if (motCle !== "") {
           container.innerHTML = `<p style="color: var(--txt-m); text-align: center; grid-column: 1 / -1;">Aucun article valide trouvé pour "<b>${motCle}</b>".</p>`;
         } else {
-          container.innerHTML = `<p style="color: var(--txt-m); text-align: center; grid-column: 1 / -1;">Aucun article valide pour le moment.</p>`;
+          container.innerHTML = `<p style="color: var(--txt-m); text-align: center; grid-column: 1 / -1;" data-i18n="article.empty_valid">Aucun article valide pour le moment.</p>`;
         }
       } else {
         container.innerHTML = htmlContent;
       }
+
+      // On traduit les cartes / messages qu'on vient d'injecter
+      if (typeof appliquerTraductions === "function") appliquerTraductions();
     })
     .catch((err) => {
       console.error("Erreur chargement articles :", err);
       container.innerHTML =
-        "<p style='color: var(--red); text-align: center; grid-column: 1 / -1;'>Erreur de connexion au serveur.</p>";
+        "<p style='color: var(--red); text-align: center; grid-column: 1 / -1;' data-i18n=\"article.error\">Erreur de connexion au serveur.</p>";
+      if (typeof appliquerTraductions === "function") appliquerTraductions();
     });
 }
 
@@ -124,8 +130,9 @@ function OuvrirArticle(id) {
 
   const auteur = `${art.prenom_auteur || ""} ${art.nom_auteur || ""}`.trim();
 
+  const tFn = typeof t === "function" ? t : (k) => k;
   document.getElementById("modalMeta").textContent =
-    `Publié le ${art.created_at} par ${auteur}`;
+    `${tFn("article.published_on")} ${art.created_at} ${tFn("article.by")} ${auteur}`;
   document.getElementById("modalContenu").innerHTML = art.contenu;
 
   document.getElementById("articleModal").style.display = "flex";
