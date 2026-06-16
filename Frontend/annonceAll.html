@@ -11,13 +11,16 @@
 </head>
 <body>
 
+<!-- Sélecteur de langue (boutons générés par translate.js) -->
+<div id="wrapper" style="position:fixed; bottom:16px; right:16px; z-index:1000; display:flex; gap:6px;"></div>
+
 <nav class="topnav">
   <!-- <img class="nav-logo" src="./assets/logo renova.png" alt="Renova Systems logo"> -->
   <div class="nav-links">
-    <button class="nav-link" onclick="history.back()">← Retour</button>
-    <button class="nav-link">Accueil</button>
-    <button class="nav-link active">Annonces</button>
-    <a class="nav-link" href="./espClient.html">Dashboard</a>
+    <button class="nav-link" onclick="history.back()" data-i18n="annonce.nav.back">← Retour</button>
+    <button class="nav-link" data-i18n="landing.nav.home">Accueil</button>
+    <button class="nav-link active" data-i18n="annonce.nav.listings">Annonces</button>
+    <a class="nav-link" href="./espClient.html" data-i18n="annonce.nav.dashboard">Dashboard</a>
     <!-- <button class="nav-link">Catalogue</button> -->
   </div>
   <div class="nav-right">
@@ -28,12 +31,12 @@
 <div class="hero">
   <div class="hero-inner">
     <div class="hero-text fu">
-      <div class="hero-eyebrow">Annonces</div>
-      
+      <div class="hero-eyebrow" data-i18n="annonce.hero.title">Annonces</div>
+
       <div class="search-bar">
         <span style="font-size:15px"><i class="fas fa-search"></i></span>
-        <input type="text" id="searchInput" placeholder="Rechercher un objet, une catégorie…" oninput="filterListings()">
-        <button class="btn-search">Rechercher</button>
+        <input type="text" id="searchInput" placeholder="Rechercher un objet, une catégorie…" data-i18n-placeholder="annonce.search.placeholder" oninput="filterListings()">
+        <button class="btn-search" data-i18n="annonce.search.button">Rechercher</button>
       </div>
     </div>
     
@@ -43,23 +46,23 @@
 <div class="page-body">
   <aside class="sidebar fu">
     <div class="filter-card">
-      <div class="filter-title">Catégorie</div>
+      <div class="filter-title" data-i18n="annonce.filter.category_title">Catégorie</div>
       <div class="filter-opts">
-        <div class="f-opt on" onclick="toggleFilter(this,'cat','all')"><div class="f-opt-left"><span><i class="fa-solid fa-earth-africa"></i></span>Toutes</div><div class="f-count">18</div></div>
-        <div class="f-opt" onclick="toggleFilter(this,'cat','mobilier')"><div class="f-opt-left"><div class="check-box"></div><span><i class="fa-solid fa-couch"></i></span>Mobilier</div><div class="f-count">5</div></div>
-        <div class="f-opt" onclick="toggleFilter(this,'cat','outillage')"><div class="f-opt-left"><div class="check-box"></div><span><i class="fa-solid fa-wrench"></i></span>Outillage</div><div class="f-count">4</div></div>
-        <div class="f-opt" onclick="toggleFilter(this,'cat','textile')"><div class="f-opt-left"><div class="check-box"></div><span><i class="fa-solid fa-tshirt"></i></span>Textile</div><div class="f-count">3</div></div>
-        <div class="f-opt" onclick="toggleFilter(this,'cat','electronique')"><div class="f-opt-left"><div class="check-box"></div><span><i class="fa-solid fa-mobile"></i></span>Électronique</div><div class="f-count">3</div></div>
-        <div class="f-opt" onclick="toggleFilter(this,'cat','deco')"><div class="f-opt-left"><div class="check-box"></div><span><i class="fa-solid fa-paint-roller"></i></span>Déco</div><div class="f-count">3</div></div>
-        <div class="f-opt" onclick="toggleFilter(this,'cat','livres')"><div class="f-opt-left"><div class="check-box"></div><span><i class="fa-solid fa-book"></i></span>Livres</div><div class="f-count">1</div></div>
+        <div class="f-opt on" onclick="toggleFilter(this,'cat','all')"><div class="f-opt-left"><span><i class="fa-solid fa-earth-africa"></i></span><span data-i18n="annonce.filter.all_f">Toutes</span></div><div class="f-count">18</div></div>
+        <div class="f-opt" onclick="toggleFilter(this,'cat','mobilier')"><div class="f-opt-left"><div class="check-box"></div><span><i class="fa-solid fa-couch"></i></span><span data-i18n="annonce.cat.furniture">Mobilier</span></div><div class="f-count">5</div></div>
+        <div class="f-opt" onclick="toggleFilter(this,'cat','outillage')"><div class="f-opt-left"><div class="check-box"></div><span><i class="fa-solid fa-wrench"></i></span><span data-i18n="annonce.cat.tools">Outillage</span></div><div class="f-count">4</div></div>
+        <div class="f-opt" onclick="toggleFilter(this,'cat','textile')"><div class="f-opt-left"><div class="check-box"></div><span><i class="fa-solid fa-tshirt"></i></span><span data-i18n="annonce.cat.textile">Textile</span></div><div class="f-count">3</div></div>
+        <div class="f-opt" onclick="toggleFilter(this,'cat','electronique')"><div class="f-opt-left"><div class="check-box"></div><span><i class="fa-solid fa-mobile"></i></span><span data-i18n="annonce.cat.electronics">Électronique</span></div><div class="f-count">3</div></div>
+        <div class="f-opt" onclick="toggleFilter(this,'cat','deco')"><div class="f-opt-left"><div class="check-box"></div><span><i class="fa-solid fa-paint-roller"></i></span><span data-i18n="annonce.cat.deco">Déco</span></div><div class="f-count">3</div></div>
+        <div class="f-opt" onclick="toggleFilter(this,'cat','livres')"><div class="f-opt-left"><div class="check-box"></div><span><i class="fa-solid fa-book"></i></span><span data-i18n="annonce.cat.books">Livres</span></div><div class="f-count">1</div></div>
       </div>
     </div>
     <div class="filter-card">
-      <div class="filter-title">Type</div>
+      <div class="filter-title" data-i18n="annonce.filter.type_title">Type</div>
       <div class="filter-opts">
-        <div class="f-opt on"  onclick="toggleFilter(this,'type','all')"><div class="f-opt-left"><span><i class="fa-solid fa-earth-africa"></i></span>Tous</div></div>
-        <div class="f-opt" onclick="toggleFilter(this,'type','vente')"><div class="f-opt-left"><div class="check-box"></div><span><i class="fa-solid fa-money-bill"></i></span>Vente</div><div class="f-count">12</div></div>
-        <div class="f-opt" onclick="toggleFilter(this,'type','don')"><div class="f-opt-left"><div class="check-box"></div><span><i class="fa-solid fa-gift"></i></span>Don gratuit</div><div class="f-count">6</div></div>
+        <div class="f-opt on"  onclick="toggleFilter(this,'type','all')"><div class="f-opt-left"><span><i class="fa-solid fa-earth-africa"></i></span><span data-i18n="annonce.filter.all_m">Tous</span></div></div>
+        <div class="f-opt" onclick="toggleFilter(this,'type','vente')"><div class="f-opt-left"><div class="check-box"></div><span><i class="fa-solid fa-money-bill"></i></span><span data-i18n="annonce.type.sale">Vente</span></div><div class="f-count">12</div></div>
+        <div class="f-opt" onclick="toggleFilter(this,'type','don')"><div class="f-opt-left"><div class="check-box"></div><span><i class="fa-solid fa-gift"></i></span><span data-i18n="annonce.type.donation">Don gratuit</span></div><div class="f-count">6</div></div>
       </div>
     </div>
     
@@ -77,13 +80,13 @@
 
   <main>
     <div class="sort-bar fu">
-      <div class="results-count"><strong id="resultCount">18</strong> annonces trouvées</div>
+      <div class="results-count"><strong id="resultCount">18</strong> <span data-i18n="annonce.results_found">annonces trouvées</span></div>
       <div style="display:flex;align-items:center;gap:10px">
         <select class="sort-select" onchange="sortListings(this.value)">
-          <option value="recent">Plus récentes</option>
-          <option value="price-asc">Prix croissant</option>
-          <option value="price-desc">Prix décroissant</option>
-          <option value="alpha">A → Z</option>
+          <option value="recent" data-i18n="annonce.sort.recent">Plus récentes</option>
+          <option value="price-asc" data-i18n="annonce.sort.price_asc">Prix croissant</option>
+          <option value="price-desc" data-i18n="annonce.sort.price_desc">Prix décroissant</option>
+          <option value="alpha" data-i18n="annonce.sort.alpha">A → Z</option>
         </select>
         <div class="view-btns">
           <div class="view-btn on" id="vGrid" onclick="setView('grid')" title="Grille">▦</div>
@@ -96,6 +99,8 @@
   </main>
 </div>
 
+<!-- translate.js : moteur de traduction (data-i18n + mémoire de la langue) -->
+<script src="./script/admin/translate.js"></script>
 <script src="./script/annonces/annonceAll.js"></script>
 </body>
 </html>

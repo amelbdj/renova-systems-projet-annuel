@@ -23,7 +23,8 @@ function chargerForum() {
 
       if (!topics || topics.length === 0) {
         container.innerHTML =
-          "<p>Aucun sujet pour le moment. Soyez le premier !</p>";
+          '<p data-i18n="forum.empty">Aucun sujet pour le moment. Soyez le premier !</p>';
+        if (typeof appliquerTraductions === "function") appliquerTraductions();
         return;
       }
 
@@ -37,15 +38,19 @@ function chargerForum() {
                 <div class="sujet-badge"><span class="material-symbols-outlined">chat_bubble</span> ${sujet.nb_reponses}</div>
             </div>
             <div class="sujet-meta">
-                Par <strong>${sujet.auteur}</strong> le ${sujet.date_creation}
+                <span data-i18n="forum.by">Par</span> <strong>${sujet.auteur}</strong> <span data-i18n="forum.on">le</span> ${sujet.date_creation}
             </div>
         </div>
     `;
       });
+
+      // On (re)traduit les sujets qu'on vient d'injecter
+      if (typeof appliquerTraductions === "function") appliquerTraductions();
     })
     .catch(function (error) {
       console.error("Erreur chargement forum :", error);
-      container.innerHTML = "<p>Impossible de charger le forum.</p>";
+      container.innerHTML = '<p data-i18n="forum.load_error">Impossible de charger le forum.</p>';
+      if (typeof appliquerTraductions === "function") appliquerTraductions();
     });
 }
 
@@ -94,7 +99,8 @@ function chargerMessagesSujet(idTopic) {
 
       if (messages.length === 0) {
         zone.innerHTML =
-          "<p style='text-align:center; padding:20px; color:gray;'>Aucune réponse visible pour le moment.</p>";
+          "<p style='text-align:center; padding:20px; color:gray;' data-i18n=\"forum.no_replies\">Aucune réponse visible pour le moment.</p>";
+        if (typeof appliquerTraductions === "function") appliquerTraductions();
         return;
       }
 
@@ -121,7 +127,8 @@ function chargerMessagesSujet(idTopic) {
     .catch(function (err) {
       console.error("Erreur messages:", err);
       zone.innerHTML =
-        "<p style='color:red; text-align:center; padding:20px;'>Erreur lors du chargement des messages.</p>";
+        "<p style='color:red; text-align:center; padding:20px;' data-i18n=\"forum.messages_error\">Erreur lors du chargement des messages.</p>";
+      if (typeof appliquerTraductions === "function") appliquerTraductions();
     });
 }
 
