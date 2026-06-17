@@ -25,6 +25,7 @@ func main() {
 	route.RoutesPlanning()
 	route.RoutesFinance()
 	route.RoutesDivers()
+	route.RoutesPro()
 
 	fmt.Println("test de : http://localhost:8081")
 	http.ListenAndServe(":8081", nil)

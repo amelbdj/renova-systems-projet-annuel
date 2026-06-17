@@ -18,7 +18,11 @@ import (
 
 	"github.com/stripe/stripe-go/v81"
 	"github.com/stripe/stripe-go/v81/account"
+	"github.com/stripe/stripe-go/v81/checkout/session"
+	"github.com/stripe/stripe-go/v81/subscription"
 	"golang.org/x/crypto/bcrypt"
+
+	portalsession "github.com/stripe/stripe-go/v81/billingportal/session"
 )
 
 type UpdatePasswordInput struct {
@@ -365,12 +369,12 @@ func ValidateUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-	
+
 	if r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
 		return
 	}
-	
+
 	idStr := r.PathValue("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
@@ -607,4 +611,130 @@ func UpdatePasswordHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]string{"message": "Mot de passe mis à jour avec succès !"})
+}
+
+func UpgradeToPremiumHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	userID := r.URL.Query().Get("id")
+	sessionID := r.URL.Query().Get("session_id") // 🟢 Get the session ID from the URL
+
+	if userID == "" || sessionID == "" {
+		http.Error(w, `{"error": "Missing parameters"}`, http.StatusBadRequest)
+		return
+	}
+
+	// 🟢 Hardcode your secret key so Go can talk to Stripe
+	stripe.Key = "sk_test_51TNFHBHbaxF1KOTtH89RRHNJQSQXSPVtOHMJDHicr1LW4XYeY4ZC6nYWwzVbDvFUUI58YA7KlJs9BiUyP5zD4XU300gaAUPVpI"
+
+	// Ask Stripe for the session details to get the Customer ID
+	s, err := session.Get(sessionID, nil)
+	if err != nil {
+		fmt.Println("Error fetching Stripe session:", err)
+		http.Error(w, `{"error": "Invalid session"}`, http.StatusInternalServerError)
+		return
+	}
+
+	customerID := s.Customer.ID
+
+	// 🟢 Update the database with BOTH premium status AND the Customer ID
+	query := "UPDATE utilisateur SET est_premium = 1, stripe_customer_id = ? WHERE id = ?"
+	_, dbErr := bdd.Db.Exec(query, customerID, userID)
+	if dbErr != nil {
+		fmt.Println("Database error:", dbErr)
+		http.Error(w, `{"error": "Could not upgrade user"}`, http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"message": "Account upgraded!"})
+}
+
+func CustomerPortalHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	userID := r.URL.Query().Get("id")
+
+	// Fetch their Customer ID from your database
+	var customerID string
+	err := bdd.Db.QueryRow("SELECT stripe_customer_id FROM utilisateur WHERE id = ?", userID).Scan(&customerID)
+
+	if err != nil || customerID == "" {
+		http.Error(w, `{"error": "Customer not found"}`, http.StatusNotFound)
+		return
+	}
+
+	stripe.Key = "sk_test_51TNFHBHbaxF1KOTtH89RRHNJQSQXSPVtOHMJDHicr1LW4XYeY4ZC6nYWwzVbDvFUUI58YA7KlJs9BiUyP5zD4XU300gaAUPVpI"
+
+	// Create the portal session
+	params := &stripe.BillingPortalSessionParams{
+		Customer:  stripe.String(customerID),
+		ReturnURL: stripe.String("http://127.0.0.1:5500/renova-systems-projet-annuel/Frontend/espPro.html"), // Where they go when they click "Back"
+	}
+
+	ps, err := portalsession.New(params)
+	if err != nil {
+		fmt.Println("Error creating portal:", err)
+		http.Error(w, `{"error": "Stripe error"}`, http.StatusInternalServerError)
+		return
+	}
+
+	// Send the portal URL to the frontend
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"url": ps.URL})
+}
+
+func SyncPremiumStatusHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	userID := r.URL.Query().Get("id")
+	var customerID string
+
+	// 1. Récupérer le Stripe Customer ID
+	err := bdd.Db.QueryRow("SELECT stripe_customer_id FROM utilisateur WHERE id = ?", userID).Scan(&customerID)
+	if err != nil || customerID == "" {
+		http.Error(w, `{"error": "Aucun compte Stripe trouvé"}`, http.StatusNotFound)
+		return
+	}
+
+	stripe.Key = "sk_test_51TNFHBHbaxF1KOTtH89RRHNJQSQXSPVtOHMJDHicr1LW4XYeY4ZC6nYWwzVbDvFUUI58YA7KlJs9BiUyP5zD4XU300gaAUPVpI"
+
+	// 2. Demander à Stripe si un abonnement "actif" existe pour ce client
+	params := &stripe.SubscriptionListParams{
+		Customer: stripe.String(customerID),
+		Status:   stripe.String("active"),
+	}
+	iter := subscription.List(params)
+
+	estPremium := 0
+	if iter.Next() {
+		estPremium = 1 // On a trouvé un abonnement actif !
+	}
+
+	// 3. Mettre à jour la base de données avec la vraie réponse de Stripe
+	bdd.Db.Exec("UPDATE utilisateur SET est_premium = ? WHERE id = ?", estPremium, userID)
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]int{"est_premium": estPremium})
 }
