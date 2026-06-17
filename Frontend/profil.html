@@ -20,11 +20,14 @@
     />
   </head>
   <body>
+    <!-- Sélecteur de langue (boutons générés par translate.js) -->
+    <div id="wrapper" style="position:fixed; bottom:16px; right:16px; z-index:2000; display:flex; gap:6px;"></div>
+
     <nav class="topnav">
       <div class="nav-links" style="margin-left: 28px">
-        <button class="nav-link" onclick="history.back()">← Retour</button>
-        <button class="nav-link active">Mon Profil</button>
-        <a class="nav-link" id="linkDashboard" style="cursor: pointer"
+        <button class="nav-link" onclick="history.back()" data-i18n="annonce.nav.back">← Retour</button>
+        <button class="nav-link active" data-i18n="profil.nav.title">Mon Profil</button>
+        <a class="nav-link" id="linkDashboard" style="cursor: pointer" data-i18n="profil.nav.dashboard"
           >Tableau de bord</a
         >
       </div>
@@ -62,29 +65,29 @@
           <div class="ph-tags">
             <span class="tag t-vi" id="displayRole">Particulier</span>
             <span class="tag t-vi" id="stripeHeaderBadge" style="display: none">
-              <i class="fa-solid fa-credit-card"></i> Paiements actifs</span
+              <i class="fa-solid fa-credit-card"></i> <span data-i18n="profil.header.payments_active">Paiements actifs</span></span
             >
           </div>
         </div>
         <div class="ph-actions">
           <button class="btn btn-g btn-sm" onclick="showSaveBar()">
-            <i class="fa-solid fa-pen"></i> Modifier
+            <i class="fa-solid fa-pen"></i> <span data-i18n="profil.header.edit">Modifier</span>
           </button>
         </div>
       </div>
 
       <div class="profile-tabs fu fu1">
-        <button class="ptab active" onclick="showTab('general')">
+        <button class="ptab active" onclick="showTab('general')" data-i18n="profil.tab.general">
           Général
         </button>
-        <button class="ptab" onclick="showTab('paiements')">Paiements</button>
-        <button class="ptab" onclick="showTab('securite')">Sécurité</button>
+        <button class="ptab" onclick="showTab('paiements')" data-i18n="profil.tab.payments">Paiements</button>
+        <button class="ptab" onclick="showTab('securite')" data-i18n="profil.tab.security">Sécurité</button>
       </div>
 
       <div class="tab-panel active" id="tab-general">
         <div class="sec-label fu">
           <div class="sec-dot">1</div>
-          <div class="sec-title">Informations personnelles</div>
+          <div class="sec-title" data-i18n="profil.general.section">Informations personnelles</div>
           <div class="sec-divider"></div>
         </div>
         <div class="card fu fu1">
@@ -94,13 +97,13 @@
                 class="cht-i"
                 style="background: rgba(124, 95, 255, 0.1)"
               ></div>
-              Coordonnées
+              <span data-i18n="profil.general.contact">Coordonnées</span>
             </div>
           </div>
           <div class="card-bd">
             <div class="frow">
               <div class="fgroup">
-                <label>Prénom</label
+                <label data-i18n="profil.general.firstname">Prénom</label
                 ><input
                   type="text"
                   id="editPrenom"
@@ -109,7 +112,7 @@
                 />
               </div>
               <div class="fgroup">
-                <label>Nom</label
+                <label data-i18n="profil.general.lastname">Nom</label
                 ><input
                   type="text"
                   id="editNom"
@@ -120,7 +123,7 @@
             </div>
             <div class="frow">
               <div class="fgroup">
-                <label>Adresse e-mail</label
+                <label data-i18n="profil.general.email">Adresse e-mail</label
                 ><input
                   type="email"
                   id="editEmail"
@@ -131,7 +134,7 @@
             </div>
             <div class="frow">
               <div class="fgroup">
-                <label>Langue préférée</label>
+                <label data-i18n="profil.general.pref_lang">Langue préférée</label>
                 <select onchange="showSaveBar()">
                   <option selected>🇫🇷 Français</option>
                   <option>🇬🇧 English</option>
@@ -147,16 +150,16 @@
           <div class="sec-dot stripe-dot">
             <i class="fa-solid fa-credit-card"></i>
           </div>
-          <div class="sec-title">Paiements & Virements</div>
+          <div class="sec-title" data-i18n="profil.pay.section">Paiements & Virements</div>
           <div class="sec-divider"></div>
         </div>
 
         <div class="stripe-section fu fu1">
           <div class="stripe-hd">
             <div class="stripe-ht">
-              <i class="fa-brands fa-cc-stripe"></i> Recevoir des virements
+              <i class="fa-brands fa-cc-stripe"></i> <span data-i18n="profil.pay.receive">Recevoir des virements</span>
             </div>
-            <span class="tag t-red" id="stripeStatusTag">Non configuré</span>
+            <span class="tag t-red" id="stripeStatusTag" data-i18n="profil.pay.not_configured">Non configuré</span>
           </div>
 
           <div class="stripe-bd">
@@ -166,14 +169,14 @@
                   <i class="fa-solid fa-building-columns"></i>
                 </div>
                 <div class="payout-none-text">
-                  <h3>Configurez vos virements</h3>
-                  <p>
+                  <h3 data-i18n="profil.pay.setup_title">Configurez vos virements</h3>
+                  <p data-i18n="profil.pay.setup_desc">
                     Pour recevoir l'argent de vos ventes, vous devez connecter
                     un compte bancaire via Stripe.
                   </p>
                   <button class="btn-stripe-connect" onclick="stripeConnect()">
                     <i class="fa-brands fa-cc-stripe"></i>
-                    Activer les paiements
+                    <span data-i18n="profil.pay.activate">Activer les paiements</span>
                   </button>
                 </div>
               </div>
@@ -185,15 +188,16 @@
                   <i class="fa-solid fa-check"></i>
                 </div>
                 <div class="active-info">
-                  <div class="active-badge">Actif</div>
-                  <h3>Virements actifs</h3>
-                  <p>
+                  <div class="active-badge" data-i18n="profil.pay.active_badge">Actif</div>
+                  <h3 data-i18n="profil.pay.active_title">Virements actifs</h3>
+                  <p data-i18n="profil.pay.active_desc">
                     Votre compte Stripe est opérationnel. Vous recevrez vos
                     paiements automatiquement.
                   </p>
                   <button
                     class="btn-stripe-manage"
                     onclick="alert('Redirection vers le dashboard Stripe...')"
+                    data-i18n="profil.pay.manage"
                   >
                     Gérer dans Stripe
                   </button>
@@ -205,12 +209,12 @@
 
         <div class="sec-label fu fu2">
           <div class="sec-dot teal-dot">2</div>
-          <div class="sec-title">Historique des transactions</div>
+          <div class="sec-title" data-i18n="profil.pay.history_section">Historique des transactions</div>
           <div class="sec-divider"></div>
         </div>
         <div class="card fu fu2">
           <div class="card-bd" id="salesHistoryList" style="padding: 0">
-            <div style="padding: 20px; color: var(--txt-m)">
+            <div style="padding: 20px; color: var(--txt-m)" data-i18n="profil.pay.history_loading">
               Chargement de l'historique...
             </div>
           </div>
@@ -220,30 +224,30 @@
       <div class="tab-panel" id="tab-securite">
         <div class="sec-label fu">
           <div class="sec-dot">3</div>
-          <div class="sec-title">Sécurité</div>
+          <div class="sec-title" data-i18n="profil.tab.security">Sécurité</div>
           <div class="sec-divider"></div>
         </div>
         <div class="card fu fu1">
           <div class="card-bd">
             <div class="fgroup">
-              <label>Mot de passe actuel</label>
+              <label data-i18n="profil.sec.current_pwd">Mot de passe actuel</label>
               <input type="password" id="currentPwd" placeholder="••••••••" />
             </div>
             <div class="fgroup">
-              <label>Nouveau mot de passe</label>
-              <input type="password" id="newPwd" placeholder="Nouveau mot de passe" />
+              <label data-i18n="profil.sec.new_pwd">Nouveau mot de passe</label>
+              <input type="password" id="newPwd" placeholder="Nouveau mot de passe" data-i18n-placeholder="profil.sec.new_pwd" />
             </div>
             <div class="fgroup">
-              <label>Confirmer le mot de passe</label>
-              <input type="password" id="confirmPwd" placeholder="Confirmez le mot de passe" />
-              <div id="pwdMatchErr" style="display: none; color: #ff4d4d; font-size: 12px; margin-top: 5px;">
+              <label data-i18n="profil.sec.confirm_pwd">Confirmer le mot de passe</label>
+              <input type="password" id="confirmPwd" placeholder="Confirmez le mot de passe" data-i18n-placeholder="profil.sec.confirm_pwd_ph" />
+              <div id="pwdMatchErr" style="display: none; color: #ff4d4d; font-size: 12px; margin-top: 5px;" data-i18n="profil.sec.mismatch">
                 Les mots de passe ne correspondent pas.
               </div>
-              <div id="pwdSuccess" style="display: none; color: #00c97a; font-size: 12px; margin-top: 5px;">
+              <div id="pwdSuccess" style="display: none; color: #00c97a; font-size: 12px; margin-top: 5px;" data-i18n="profil.sec.success">
                 Mot de passe mis à jour avec succès !
               </div>
             </div>
-            <button class="btn btn-v btn-sm" onclick="updatePassword()" style="margin-top: 10px;">
+            <button class="btn btn-v btn-sm" onclick="updatePassword()" style="margin-top: 10px;" data-i18n="profil.sec.update">
               Mettre à jour
             </button>
           </div>
@@ -252,16 +256,19 @@
     </div>
 
     <div class="save-bar" id="saveBar">
-      <span class="save-hint"> Modifications non sauvegardées</span>
+      <span class="save-hint" data-i18n="profil.save.hint"> Modifications non sauvegardées</span>
       <div style="display: flex; gap: 8px">
-        <button class="btn btn-g btn-sm" onclick="hideSaveBar()">
+        <button class="btn btn-g btn-sm" onclick="hideSaveBar()" data-i18n="profil.save.cancel">
           Annuler
         </button>
         <button class="btn btn-v btn-sm" onclick="saveProfile()">
-          <i class="fa-solid fa-save"></i> Enregistrer
+          <i class="fa-solid fa-save"></i> <span data-i18n="profil.save.save">Enregistrer</span>
         </button>
       </div>
     </div>
+
+    <!-- translate.js : moteur de traduction (data-i18n + mémoire de la langue) -->
+    <script src="./script/admin/translate.js"></script>
 
     <script>
       let stripePayoutStatus = "none";
@@ -276,15 +283,19 @@
           if (stateNone) stateNone.style.display = "none";
           if (stateActive) stateActive.style.display = "block";
           if (tag) {
-            tag.textContent = "Paiements Actifs";
+            tag.setAttribute("data-i18n", "profil.pay.payments_active");
+            tag.textContent =
+              typeof t === "function" ? t("profil.pay.payments_active") : "Paiements Actifs";
             tag.style.color = "#00c97a";
           }
         } else {
           if (stateNone) stateNone.style.display = "block";
           if (stateActive) stateActive.style.display = "none";
           if (tag) {
-            tag.textContent = "Non configuré";
-            tag.style.color = ""; 
+            tag.setAttribute("data-i18n", "profil.pay.not_configured");
+            tag.textContent =
+              typeof t === "function" ? t("profil.pay.not_configured") : "Non configuré";
+            tag.style.color = "";
           }
         }
       }
@@ -422,7 +433,8 @@
           const data = await response.json();
 
           if (!data || data.length === 0) {
-            historyList.innerHTML = `<div style="padding: 20px; color: var(--txt-m)">Aucune vente effectuée pour le moment.</div>`;
+            historyList.innerHTML = `<div style="padding: 20px; color: var(--txt-m)" data-i18n="profil.pay.no_sales">Aucune vente effectuée pour le moment.</div>`;
+            if (typeof appliquerTraductions === "function") appliquerTraductions();
             return;
           }
 
@@ -431,7 +443,7 @@
               (item) => `
                 <div style="display: flex; align-items: center; gap: 12px; padding: 13px 20px; border-bottom: 1px solid var(--b0);">
                     <div style="flex: 1">
-                        <div style="color: #fff">Vente — ${item.titre}</div>
+                        <div style="color: #fff"><span data-i18n="profil.pay.sale">Vente</span> — ${item.titre}</div>
                         <div style="font-size: 11px; color: var(--txt-m)">${new Date(item.date).toLocaleDateString("fr-FR")}</div>
                     </div>
                     <div style="color: var(--green); font-weight: bold;">+${item.montant} €</div>
@@ -439,9 +451,11 @@
             `,
             )
             .join("");
+          if (typeof appliquerTraductions === "function") appliquerTraductions();
         } catch (err) {
           console.error("Erreur historique:", err);
-          historyList.innerHTML = `<div style="padding: 20px; color: var(--red)">Impossible de charger l'historique.</div>`;
+          historyList.innerHTML = `<div style="padding: 20px; color: var(--red)" data-i18n="profil.pay.history_error">Impossible de charger l'historique.</div>`;
+          if (typeof appliquerTraductions === "function") appliquerTraductions();
         }
       }
 
@@ -464,16 +478,16 @@
         successDiv.style.display = "none";
 
         if (!currentPwd || !newPwd || !confirmPwd) {
-            errorDiv.textContent = "Veuillez remplir tous les champs.";
+            errorDiv.textContent = t("profil.sec.fill_all");
             errorDiv.style.display = "block";
             return;
         }
 
         if (newPwd !== confirmPwd) {
-            errorDiv.textContent = "Les nouveaux mots de passe ne correspondent pas.";
+            errorDiv.textContent = t("profil.sec.new_mismatch");
             errorDiv.style.display = "block";
             return;
-            
+
         }
 
         try {
@@ -497,12 +511,12 @@
             document.getElementById("confirmPwd").value = "";
           } else {
             const data = await response.json();
-            errorDiv.textContent = data.error || "L'ancien mot de passe est incorrect.";
+            errorDiv.textContent = data.error || t("profil.sec.wrong_old");
             errorDiv.style.display = "block";
           }
         } catch (err) {
           console.error("Erreur mise à jour mot de passe:", err);
-    errorDiv.textContent = "Erreur de connexion au serveur.";
+    errorDiv.textContent = t("profil.sec.server_error");
     errorDiv.style.display = "block";
         }
       }
@@ -513,7 +527,7 @@
 
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get("stripe") === "success") {
-          alert("Compte Stripe configuré avec succès !");
+          alert(t("profil.pay.stripe_success"));
           setStripeState("active");
           window.history.replaceState(
             {},

@@ -21,7 +21,7 @@ async function loadOneAnnonce() {
         { method: "POST" },
       );
       if (res.ok) {
-        alert("🎉 Paiement réussi ! L'objet est maintenant à vous.");
+        alert(t("oneAnnonce.payment_success"));
         window.location.href = `oneAnnonce.html?id=${id}`;
       } else {
         console.error("Le serveur a renvoyé une erreur lors de la vente.");
@@ -47,7 +47,7 @@ async function loadOneAnnonce() {
 async function openCheckout(type) {
   const buyerId = localStorage.getItem("userId");
   if (!buyerId) {
-    alert("Veuillez vous connecter pour continuer.");
+    alert(t("oneAnnonce.login_required"));
     window.location.href = "login.html";
     return;
   }
@@ -60,7 +60,7 @@ async function openCheckout(type) {
       );
 
       if (response.status === 403) {
-        alert(" Configurez d'abord votre Stripe ID dans votre profil !");
+        alert(t("oneAnnonce.stripe_required"));
         window.location.href = `profil.html?id=${buyerId}`;
         return;
       }
@@ -68,29 +68,28 @@ async function openCheckout(type) {
       const data = await response.json();
       window.location.href = data.url;
     } catch (err) {
-      alert("Erreur lors de la création de la session de paiement.");
+      alert(t("oneAnnonce.payment_error"));
     }
-  }
-  else if (type === "reserve") {
-    const confirmReserve = confirm("Voulez-vous reserver cet objet gratuitement ? Le vendeur sera notifie pour le deposer dans un box.");
-    
+  } else if (type === "reserve") {
+    const confirmReserve = confirm(t("oneAnnonce.reserve_confirm"));
+
     if (!confirmReserve) return;
 
     try {
       const response = await fetch(
         `http://localhost:8081/api/annonces/vendre?id=${currentItem.id}&buyer_id=${buyerId}`,
-        { method: "POST" }
+        { method: "POST" },
       );
 
       if (response.ok) {
-        alert(" Objet reserve avec succes ");
-        window.location.reload(); 
+        alert(t("oneAnnonce.reserve_success"));
+        window.location.reload();
       } else {
-        alert("Erreur lors de la réservation de l'objet.");
+        alert(t("oneAnnonce.reserve_error"));
       }
     } catch (err) {
       console.error("Erreur de réservation:", err);
-      alert("Erreur de connexion au serveur.");
+      alert(t("oneAnnonce.server_error"));
     }
   }
 }
@@ -112,23 +111,23 @@ function renderPage(item) {
       <div>
         <div class="img-hero fu" style="background: ${imgSrc ? `url('${imgSrc}') center/cover` : "var(--bg4)"}">
           ${imgSrc ? "" : '<div style="font-size:3rem"><i class="fa-solid fa-box-archive"></i></div>'}
-          ${isSold ? '<div class="sold-tag">VENDU</div>' : ""}
+          ${isSold ? '<div class="sold-tag" data-i18n="oneAnnonce.sold_tag">VENDU</div>' : ""}
         </div>
 
         <div class="detail-section fu">
-          <div class="ds-title">Description</div>
-          <div class="ds-text">${item.description || "Aucune description fournie."}</div>
+          <div class="ds-title" data-i18n="oneAnnonce.description">Description</div>
+          <div class="ds-text">${item.description || '<span data-i18n="oneAnnonce.no_description">Aucune description fournie.</span>'}</div>
         </div>
 
         <div class="detail-section fu">
-          <div class="ds-title">Informations</div>
-          <p><i class="fas fa-map-marker-alt"></i> Lieu : ${item.ville} (${item.code_postal})</p>
-          <p><i class="fas fa-info-circle"></i> État : ${item.etat || "Non spécifié"}</p>
-          <p><i class="fas fa-weight-hanging"></i> Poids : ${item.poids_kg} kg</p>
+          <div class="ds-title" data-i18n="oneAnnonce.info">Informations</div>
+          <p><i class="fas fa-map-marker-alt"></i> <span data-i18n="oneAnnonce.place">Lieu</span> : ${item.ville} (${item.code_postal})</p>
+          <p><i class="fas fa-info-circle"></i> <span data-i18n="oneAnnonce.condition">État</span> : ${item.etat || '<span data-i18n="oneAnnonce.unspecified">Non spécifié</span>'}</p>
+          <p><i class="fas fa-weight-hanging"></i> <span data-i18n="oneAnnonce.weight">Poids</span> : ${item.poids_kg} kg</p>
         </div>
 
         <div class="detail-section fu">
-          <div class="ds-title">Vendeur</div>
+          <div class="ds-title" data-i18n="oneAnnonce.seller">Vendeur</div>
           <div class="seller-card">
             <div class="seller-ava"><i class="fas fa-user"></i></div>
             <div>
@@ -140,28 +139,31 @@ function renderPage(item) {
 
       <div class="buy-box fu">
         <div class="buy-box-inner">
-          <div class="bb-type ${isFree ? "don" : "vente"}">${isFree ? " Don gratuit" : " À vendre"}</div>
+          <div class="bb-type ${isFree ? "don" : "vente"}">${isFree ? '<span data-i18n="annonce.type.donation">Don gratuit</span>' : '<span data-i18n="oneAnnonce.for_sale">À vendre</span>'}</div>
           <h1 class="bb-title">${item.titre}</h1>
-          
+
           <div class="bb-price-wrap">
-            <div class="bb-price ${isFree ? "free" : ""}">${isFree ? "Gratuit" : item.prix + " €"}</div>
+            <div class="bb-price ${isFree ? "free" : ""}">${isFree ? '<span data-i18n="annonce.card.free">Gratuit</span>' : item.prix + " €"}</div>
           </div>
 
           ${!isSold ? '<div id="contact-zone" style="margin-bottom: 15px;"></div>' : ""}
 
           ${
             isSold
-              ? `<button class="btn-main btn-sold" disabled>
+              ? `<button class="btn-main btn-sold" disabled data-i18n="oneAnnonce.sold_btn">
                  Cet objet a été vendu
                </button>`
               : isFree
-                ? `<button class="btn-main btn-reserve" onclick="openCheckout('reserve')"> Réserver l'objet</button>`
-                : `<button class="btn-main btn-buy-now" onclick="openCheckout('buy')"> <i class="fas fa-shopping-cart"></i> Acheter maintenant</button>`
+                ? `<button class="btn-main btn-reserve" onclick="openCheckout('reserve')" data-i18n="oneAnnonce.reserve_btn"> Réserver l'objet</button>`
+                : `<button class="btn-main btn-buy-now" onclick="openCheckout('buy')"> <i class="fas fa-shopping-cart"></i> <span data-i18n="oneAnnonce.buy_btn">Acheter maintenant</span></button>`
           }
           
         </div>
       </div>
     </div>`;
+
+  // On traduit le contenu qu'on vient d'injecter
+  if (typeof appliquerTraductions === "function") appliquerTraductions();
 
   const monUserId = parseInt(localStorage.getItem("userId"));
 
@@ -172,8 +174,9 @@ function renderPage(item) {
     if (btnContainer) {
       btnContainer.innerHTML = `
               <button id="btn-dynamic-contact" class="btn-main" style="background-color: var(--vi); margin-bottom: 10px;">
-                  <i class="fas fa-comment-dots"></i> Contacter le vendeur
+                  <i class="fas fa-comment-dots"></i> <span data-i18n="oneAnnonce.contact_seller">Contacter le vendeur</span>
               </button>`;
+      if (typeof appliquerTraductions === "function") appliquerTraductions();
 
       document
         .getElementById("btn-dynamic-contact")

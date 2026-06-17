@@ -12,6 +12,19 @@
     <link rel="stylesheet" href="./style/login.css" />
   </head>
   <body>
+    <!-- Sélecteur de langue (les boutons sont générés par translate.js) -->
+    <div
+      id="wrapper"
+      style="
+        position: absolute;
+        top: 12px;
+        right: 16px;
+        z-index: 10;
+        display: flex;
+        gap: 6px;
+      "
+    ></div>
+
     <div class="split">
       <div class="left">
         <div class="geo geo1"></div>
@@ -33,18 +46,18 @@
           </div>
 
           <div class="left-hero">
-            <div class="left-eyebrow">Plateforme ReNova</div>
-            <h1 class="left-title">
+            <div class="left-eyebrow" data-i18n="login.left.eyebrow">Plateforme ReNova</div>
+            <h1 class="left-title" data-i18n="login.left.title">
               L'économie<br />circulaire,<br /><em>réinventée</em>
             </h1>
-            <p class="left-desc">
+            <p class="left-desc" data-i18n="login.left.desc">
               Donnez, récupérez, créez. ReNova connecte particuliers, artisans
               et salariés autour d'une même vision : zéro déchet, 100%
               réutilisé.
             </p>
           </div>
 
-          <div class="left-footer">
+          <div class="left-footer" data-i18n="login.left.footer">
             <strong>ReNova Systems</strong> — Software · Infrastructure ·
             Security · Cloud<br />
             © 2026 · Tous droits réservés
@@ -55,27 +68,36 @@
       <div class="right">
         <div class="auth-box">
           <div class="form-panel active" id="panelLogin">
-            <div class="form-title">Bon retour 👋</div>
-            <div class="form-sub">Connectez-vous à votre espace ReNova.</div>
+            <div class="form-title" data-i18n="login.form.title">Bon retour 👋</div>
+            <div class="form-sub" data-i18n="login.form.sub">
+              Connectez-vous à votre espace ReNova.
+            </div>
 
             <div class="fgroup">
-              <label>Adresse e-mail <span class="req">*</span></label>
+              <label
+                ><span data-i18n="login.form.email_label">Adresse e-mail</span>
+                <span class="req">*</span></label
+              >
               <div class="input-wrap has-prefix">
                 <span class="prefix">✉️</span>
                 <input
                   type="email"
                   id="loginEmail"
                   placeholder="votre@email.com"
+                  data-i18n-placeholder="login.form.email_ph"
                   oninput="validateEmail(this)"
                 />
               </div>
-              <div class="field-err" id="loginEmailErr">
+              <div class="field-err" id="loginEmailErr" data-i18n="login.form.email_err">
                 Adresse e-mail invalide.
               </div>
             </div>
 
             <div class="fgroup">
-              <label>Mot de passe <span class="req">*</span></label>
+              <label
+                ><span data-i18n="login.form.pwd_label">Mot de passe</span>
+                <span class="req">*</span></label
+              >
               <div class="password-wrap">
                 <input
                   type="password"
@@ -92,7 +114,9 @@
                   👁
                 </button>
               </div>
-              <div class="field-err" id="loginPwdErr">Mot de passe requis.</div>
+              <div class="field-err" id="loginPwdErr" data-i18n="login.form.pwd_err">
+                Mot de passe requis.
+              </div>
             </div>
 
             <div class="forgot">
@@ -102,12 +126,13 @@
                   showForgot();
                   return false;
                 "
+                data-i18n="login.form.forgot"
                 >Mot de passe oublié ?</a
               >
             </div>
 
             <div style="margin-top: 18px">
-              <button class="btn-primary" onclick="submitLogin()">
+              <button class="btn-primary" onclick="submitLogin()" data-i18n="login.form.submit">
                 Se connecter →
               </button>
             </div>
@@ -120,14 +145,15 @@
         </div> -->
 
             <div class="switch-prompt">
-              Pas encore de compte ? <a href="register.html">S'inscrire →</a>
+              <span data-i18n="login.form.no_account">Pas encore de compte ?</span>
+              <a href="register.html" data-i18n="login.form.signup">S'inscrire →</a>
             </div>
           </div>
 
           <div id="loginSuccess" class="success-msg">
             <div class="success-ico">✅</div>
-            <div class="success-title">Connexion réussie !</div>
-            <div class="success-desc">
+            <div class="success-title" data-i18n="login.success.title">Connexion réussie !</div>
+            <div class="success-desc" data-i18n="login.success.desc">
               Vous allez être redirigé vers votre espace dans un instant…
             </div>
             <div
@@ -138,7 +164,7 @@
                 flex-wrap: wrap;
               "
             >
-              <button class="btn-ghost" onclick="showSpaceSelect()">
+              <button class="btn-ghost" onclick="showSpaceSelect()" data-i18n="login.success.choose">
                 Choisir mon espace →
               </button>
             </div>
@@ -148,10 +174,10 @@
             id="spaceSelect"
             style="display: none; animation: fadeIn 0.3s ease both"
           >
-            <div class="form-title" style="margin-bottom: 6px">
+            <div class="form-title" style="margin-bottom: 6px" data-i18n="login.space.title">
               Choisir votre espace
             </div>
-            <div class="form-sub">
+            <div class="form-sub" data-i18n="login.space.sub">
               Sélectionnez l'espace auquel vous souhaitez accéder.
             </div>
             <div
@@ -178,7 +204,7 @@
                 >
                   🏠
                 </div>
-                <div><div class="sp-name">Espace Particuliers</div></div>
+                <div><div class="sp-name" data-i18n="login.space.individuals">Espace Particuliers</div></div>
                 <div class="sp-arr" style="color: var(--vi-l); font-size: 16px">
                   ›
                 </div>
@@ -196,7 +222,7 @@
                 <div class="sp-ico" style="background: rgba(0, 212, 180, 0.15)">
                   🔨
                 </div>
-                <div><div class="sp-name">Espace Professionnels</div></div>
+                <div><div class="sp-name" data-i18n="login.space.pros">Espace Professionnels</div></div>
                 <div class="sp-arr" style="color: var(--vi-l); font-size: 16px">
                   ›
                 </div>
@@ -217,7 +243,7 @@
                 >
                   🎓
                 </div>
-                <div><div class="sp-name">Espace Salariés</div></div>
+                <div><div class="sp-name" data-i18n="login.space.employees">Espace Salariés</div></div>
                 <div class="sp-arr" style="color: var(--vi-l); font-size: 16px">
                   ›
                 </div>
@@ -235,7 +261,7 @@
                 <div class="sp-ico" style="background: rgba(255, 152, 0, 0.12)">
                   ⚙️
                 </div>
-                <div><div class="sp-name">Back Office</div></div>
+                <div><div class="sp-name" data-i18n="login.space.backoffice">Back Office</div></div>
                 <div class="sp-arr" style="color: #ffb84d; font-size: 16px">
                   ›
                 </div>
@@ -246,6 +272,8 @@
       </div>
     </div>
 
+    <!-- translate.js : moteur de traduction (data-i18n + mémoire de la langue) -->
+    <script src="./script/admin/translate.js"></script>
     <script src="./script/login.js"></script>
   </body>
 </html>

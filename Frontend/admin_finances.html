@@ -91,7 +91,7 @@
         <span class="material-symbols-outlined" style="font-size: 20px"
           >dashboard</span
         >
-        Vue d'ensemble
+        <span data-i18n="backoffice.sidebar.overview">Vue d'ensemble</span>
       </a>
       <a
         href="admin_users.html"
@@ -106,7 +106,7 @@
         <span class="material-symbols-outlined" style="font-size: 20px"
           >group</span
         >
-        Utilisateurs
+        <span data-i18n="backoffice.sidebar.users">Utilisateurs</span>
       </a>
       <a
         href="admin_validations.html"
@@ -121,7 +121,7 @@
         <span class="material-symbols-outlined" style="font-size: 20px"
           >check_circle</span
         >
-        Validations
+        <span data-i18n="backoffice.sidebar.validations">Validations</span>
         <span
           class="tag t-red"
           style="margin-left: auto; font-size: 10px; padding: 2px 6px"
@@ -141,7 +141,7 @@
         <span class="material-symbols-outlined" style="font-size: 20px"
           >inventory_2</span
         >
-        Logistique & Box
+        <span data-i18n="backoffice.sidebar.logistics">Logistique & Box</span>
       </a>
       <a
         href="admin_finances.html"
@@ -156,7 +156,7 @@
         <span class="material-symbols-outlined" style="font-size: 20px"
           >account_balance</span
         >
-        Finances
+        <span data-i18n="backoffice.sidebar.finances">Finances</span>
       </a>
     </nav>
 
@@ -169,12 +169,15 @@
       <span class="material-symbols-outlined" style="font-size: 18px"
         >logout</span
       >
-      Déconnexion
+      <span data-i18n="backoffice.sidebar.logout">Déconnexion</span>
     </button>
   </aside>
   <body
     style="display: flex; min-height: 100vh; margin: 0; background: var(--bg)"
   >
+    <!-- Sélecteur de langue (boutons générés par translate.js) -->
+    <div id="wrapper" style="position:fixed; bottom:16px; right:16px; z-index:2000; display:flex; gap:6px;"></div>
+
     <div
       class="dashboard-content"
       style="flex: 1; padding: 40px; overflow-y: auto"
@@ -188,9 +191,9 @@
             font-size: 2rem;
           "
         >
-          Gestion Financière
+          <span data-i18n="backoffice.fin.title">Gestion Financière</span>
         </h1>
-        <p style="color: var(--txt-m); margin-top: 5px">
+        <p style="color: var(--txt-m); margin-top: 5px" data-i18n="backoffice.fin.desc">
           Suivi des transactions, commissions et statuts Stripe Connect.
         </p>
       </div>
@@ -201,7 +204,7 @@
             <span class="material-symbols-outlined" style="color: #4ade80"
               >account_balance</span
             >
-            Gains Plateforme
+            <span data-i18n="backoffice.fin.platform_earnings">Gains Plateforme</span>
           </div>
           <div
             style="font-size: 2.5rem; font-weight: bold; color: white"
@@ -209,7 +212,7 @@
           >
             0,00 €
           </div>
-          <p style="color: var(--txt-m); font-size: 13px">
+          <p style="color: var(--txt-m); font-size: 13px" data-i18n="backoffice.fin.commissions_month">
             Commissions (5%) générées ce mois-ci
           </p>
         </div>
@@ -219,7 +222,7 @@
             <span class="material-symbols-outlined" style="color: #60a5fa"
               >shopping_cart</span
             >
-            Volume d'Affaires
+            <span data-i18n="backoffice.fin.business_volume">Volume d'Affaires</span>
           </div>
           <div
             style="font-size: 2.5rem; font-weight: bold; color: white"
@@ -227,7 +230,7 @@
           >
             0,00 €
           </div>
-          <p style="color: var(--txt-m); font-size: 13px">
+          <p style="color: var(--txt-m); font-size: 13px" data-i18n="backoffice.fin.total_transactions">
             Total des transactions sur la plateforme
           </p>
         </div>
@@ -237,9 +240,9 @@
             <span class="material-symbols-outlined" style="color: #635bff"
               >payments</span
             >
-            Dashboard Stripe
+            <span data-i18n="backoffice.fin.stripe_dashboard">Dashboard Stripe</span>
           </div>
-          <p style="color: var(--txt-m); font-size: 14px; margin-bottom: 20px">
+          <p style="color: var(--txt-m); font-size: 14px; margin-bottom: 20px" data-i18n="backoffice.fin.stripe_desc">
             Accédez à votre espace Stripe pour gérer les virements, les litiges
             et la comptabilité officielle.
           </p>
@@ -247,6 +250,7 @@
             href="https://dashboard.stripe.com/"
             target="_blank"
             class="btn-stripe"
+            data-i18n="backoffice.fin.open_stripe"
             >Ouvrir Stripe</a
           >
         </div>
@@ -254,18 +258,18 @@
         <div class="bento-box col-span-3">
           <div class="box-title">
             <span class="material-symbols-outlined">receipt_long</span>
-            Dernières transactions
+            <span data-i18n="backoffice.fin.last_transactions">Dernières transactions</span>
           </div>
           <div style="overflow-x: auto">
             <table class="tx-table">
               <thead>
                 <tr>
-                  <th>ID Commande</th>
-                  <th>Date</th>
-                  <th>Article / Annonce</th>
-                  <th>Montant Payé</th>
-                  <th>Commission (5%)</th>
-                  <th>Statut</th>
+                  <th data-i18n="backoffice.fin.th_order">ID Commande</th>
+                  <th data-i18n="backoffice.fin.th_date">Date</th>
+                  <th data-i18n="backoffice.fin.th_item">Article / Annonce</th>
+                  <th data-i18n="backoffice.fin.th_amount">Montant Payé</th>
+                  <th data-i18n="backoffice.fin.th_commission">Commission (5%)</th>
+                  <th data-i18n="backoffice.fin.th_status">Statut</th>
                 </tr>
               </thead>
               <tbody id="table-transactions">
@@ -273,6 +277,7 @@
                   <td
                     colspan="6"
                     style="text-align: center; color: var(--txt-m)"
+                    data-i18n="backoffice.fin.loading"
                   >
                     Chargement des transactions...
                   </td>
@@ -284,6 +289,8 @@
       </div>
     </div>
 
+    <!-- translate.js : moteur de traduction (data-i18n + mémoire de la langue) -->
+    <script src="../Frontend/script/admin/translate.js"></script>
     <script src="../Frontend/script/admin/dash.js"></script>
     <script src="../Frontend/script/admin/finance.js"></script>
   </body>

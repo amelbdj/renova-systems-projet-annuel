@@ -1,7 +1,9 @@
 let currentTranslations = {};
 monToken = localStorage.getItem("token");
 function changerLangue(langue) {
+  localStorage.setItem("langue", langue); // On mémorise le choix pour toutes les pages
   fetch(`http://localhost:8081/api/translations?lang=${langue}`, {
+    cache: "no-store", // on veut toujours les traductions à jour (sinon le navigateur garde l'ancienne version)
     headers: {
       Authorization: "Bearer " + monToken,
     },
@@ -48,61 +50,44 @@ function appliquerTraductions() {
   });
 }
 
-function LoadFormulaireTraduction() {
-  fetch("http://localhost:8081/admin/translations/keys", {
-    headers: {
-      Authorization: "Bearer " + monToken,
-    },
-  })
-    .then((res) => {
-      if (!res.ok) throw new Error("Erreur réseau");
-      return res.json();
-    })
-    .then((keys) => {
-      const container = document.getElementById("dynamic-fields-container");
+// Import d'une nouvelle langue à partir d'un fichier JSON
+function ImporterLangue() {
+  const code = document
+    .getElementById("input_lang_code")
+    .value.trim()
+    .toLowerCase();
+  const nom = document.getElementById("input_lang_name").value.trim();
+  const fichierInput = document.getElementById("input_fichier_json");
 
-      // 🛡️ SÉCURITÉ ICI : Si le conteneur n'existe pas sur la page actuelle, on arrête la fonction !
-      if (!container) return;
+  // Petites vérifications avant d'envoyer
+  if (code === "" || nom === "") {
+    alert("Merci de remplir le code ET le nom de la langue.");
+    return;
+  }
+  if (fichierInput.files.length === 0) {
+    alert("Merci de choisir un fichier JSON.");
+    return;
+  }
 
-      container.innerHTML = ""; // On vide avant de remplir
+  const fichier = fichierInput.files[0];
+  const lecteur = new FileReader();
 
-      keys.forEach((key) => {
-        container.innerHTML += `
-                <div style="margin-bottom: 10px;">
-                    <label>Traduire : <strong>${key}</strong></label><br>
-                    <input type="text" data-key="${key}" class="input-traduction" required style="width: 100%; padding: 5px;">
-                </div>
-            `;
-      });
-    })
-    .catch((err) => {
-      console.error("Erreur de chargement des clés :", err);
-    });
-}
+  // Cette fonction se lance UNE FOIS que le fichier est lu
+  lecteur.onload = function () {
+    let contenuJson;
+    try {
+      // On transforme le texte du fichier en objet JavaScript
+      contenuJson = JSON.parse(lecteur.result);
+    } catch (e) {
+      alert("❌ Le fichier n'est pas un JSON valide.");
+      return;
+    }
 
-// On lance le dessin du formulaire tout de suite
-LoadFormulaireTraduction();
-
-// Gestion de la soumission du formulaire d'ajout de langue
-const formAddLanguage = document.getElementById("form-add-language");
-
-// 🛡️ SÉCURITÉ ICI : On vérifie si l'élément form-add-language existe
-if (formAddLanguage) {
-  formAddLanguage.addEventListener("submit", function (event) {
-    event.preventDefault();
-
-    const codeLangue = document
-      .getElementById("input_lang_code")
-      .value.toLowerCase();
-    const dataToSend = { lang_code: codeLangue, translations: [] };
-    const inputs = document.querySelectorAll(".input-traduction");
-
-    inputs.forEach((input) => {
-      dataToSend.translations.push({
-        msg_key: input.getAttribute("data-key"),
-        msg_value: input.value,
-      });
-    });
+    const dataToSend = {
+      lang_code: code,
+      lang_name: nom,
+      data: contenuJson,
+    };
 
     fetch("http://localhost:8081/admin/translations/add", {
       method: "POST",
@@ -115,17 +100,48 @@ if (formAddLanguage) {
       .then((res) => {
         if (!res.ok) throw new Error("Erreur serveur");
 
-        alert("✅ La langue a été ajoutée avec succès !");
-        document.getElementById("form-add-language").reset();
+        alert("✅ La langue a été importée avec succès !");
+        document.getElementById("input_lang_code").value = "";
+        document.getElementById("input_lang_name").value = "";
+        fichierInput.value = "";
 
-        // 🌟 L'ASTUCE DE PRO : On met à jour les boutons en haut instantanément !
+        // 🌟 On met à jour les boutons de langue tout de suite !
         GetLanguages();
       })
       .catch((err) => {
         console.error(err);
-        alert("❌ Erreur lors de l'enregistrement.");
+        alert("❌ Erreur lors de l'import.");
       });
-  });
+  };
+
+  // On lance la lecture du fichier (en texte)
+  lecteur.readAsText(fichier);
+}
+
+// Export d'une langue en fichier JSON (sert de modèle à traduire)
+function ExporterLangue(code) {
+  fetch(`http://localhost:8081/api/translations?lang=${code}`, {
+    headers: {
+      Authorization: "Bearer " + monToken,
+    },
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      // On transforme l'objet en texte JSON bien indenté
+      const texte = JSON.stringify(data, null, 2);
+
+      // On crée un fichier en mémoire et on déclenche le téléchargement
+      const blob = new Blob([texte], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+
+      const lien = document.createElement("a");
+      lien.href = url;
+      lien.download = code + ".json";
+      lien.click();
+
+      URL.revokeObjectURL(url); // On nettoie
+    })
+    .catch((err) => console.error("Erreur export:", err));
 }
 
 const btnToggleForm = document.getElementById("btn-toggle-form");
@@ -180,5 +196,7 @@ function GetLanguages() {
 // Initialisation au chargement de la page
 document.addEventListener("DOMContentLoaded", () => {
   GetLanguages();
-  changerLangue("fr"); // On charge le français par défaut
+  // On reprend la langue choisie précédemment, sinon français par défaut
+  const langueSauvegardee = localStorage.getItem("langue") || "fr";
+  changerLangue(langueSauvegardee);
 });

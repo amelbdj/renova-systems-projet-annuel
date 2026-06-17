@@ -169,12 +169,14 @@ func UpdateUserById(user models.User) error {
 func GetUserById(id int) (models.User, error) {
 	var user models.User
 
-	err := Db.QueryRow("SELECT id, nom, prenom, email, mot_de_passe, role, type_statut, nom_entreprise, siret, score, validation, stripe_account_id, stripe_verif_completed FROM pa2026.utilisateur WHERE id = ?", id).Scan(
+	err := Db.QueryRow("SELECT id, nom, prenom, email, mot_de_passe, role, type_statut, nom_entreprise, siret, score, validation, stripe_account_id, stripe_verif_completed, est_premium, stripe_customer_id FROM pa2026.utilisateur WHERE id = ?", id).Scan(
 		&user.Id, &user.Nom, &user.Prenom, &user.Email, &user.MotDePasse,
 		&user.Role, &user.TypeStatut, &user.NomEntreprise, &user.Siret,
 		&user.Score, &user.Validation,
 		&user.StripeAccountId,
 		&user.StripeVerifCompleted,
+		&user.EstPremium,
+		&user.StripeCustomerId,
 	)
 
 	if err != nil {
@@ -350,9 +352,8 @@ func CheckEmailExists(email string) (bool, error) {
 	}
 }
 
+func LogConnexion(idUser int, ip string) error {
 
-func LogConnexion(idUser int, ip string)  error {
-   
 	_, err := Db.Exec("INSERT INTO pa2026.log_connexion (id_user, ip, date_connexion) VALUES (?, ?, NOW())", idUser, ip)
 
 	if err != nil {
@@ -377,7 +378,6 @@ func BanUser(userId int) error {
 }
 
 func GetAllAdminIDs() ([]string, error) {
-	
 	rows, err := Db.Query("SELECT id FROM pa2026.utilisateur WHERE role = 'Administrateur'")
 	if err != nil {
 		return nil, err
@@ -396,16 +396,15 @@ func GetAllAdminIDs() ([]string, error) {
 }
 
 func EnvoyerEmailValidation(emailDestinataire string, prenom string) error {
-	expediteur := "noreply@upcycleconnect.fr" 
-	motDePasse := "voir avec ndoya"      
-	serveurSMTP := "192.168.80.10"            
-	port := "25" // verif avec ndoya                             
+	expediteur := "noreply@upcycleconnect.fr"
+	motDePasse := "voir avec ndoya"
+	serveurSMTP := "192.168.80.10"
+	port := "25" // verif avec ndoya
 
 	auth := smtp.PlainAuth("", expediteur, motDePasse, serveurSMTP)
 
 	sujet := "Subject: UpcycleConnect - Votre compte est validé ! 🎉\n"
 	typeMIME := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
-	
 	corpsMessage := fmt.Sprintf(`
 		<html>
 			<body style="font-family: Arial, sans-serif; color: #333;">
@@ -423,7 +422,6 @@ func EnvoyerEmailValidation(emailDestinataire string, prenom string) error {
 
 	adresseServeur := serveurSMTP + ":" + port
 	err := smtp.SendMail(adresseServeur, auth, expediteur, []string{emailDestinataire}, messageComplet)
-	
 	if err != nil {
 		return fmt.Errorf("erreur de connexion à hMailServer (192.168.80.10) : %v", err)
 	}
@@ -435,16 +433,15 @@ func EnvoyerEmailValidation(emailDestinataire string, prenom string) error {
 // Dans userReq.go (à la suite de ta fonction EnvoyerEmailValidation)
 
 func EnvoyerEmailRefus(emailDestinataire string, prenom string, motif string) {
-	expediteur := "noreply@upcycleconnect.fr" 
-	motDePasse := "voir avec ndoya"      
-	serveurSMTP := "192.168.80.10"            
-	port := "25" // verif avec ndoya   
+	expediteur := "noreply@upcycleconnect.fr"
+	motDePasse := "voir avec ndoya"
+	serveurSMTP := "192.168.80.10"
+	port := "25" // verif avec ndoya
 
 	auth := smtp.PlainAuth("", expediteur, motDePasse, serveurSMTP)
 
 	sujet := "Subject: UpcycleConnect - Information concernant votre inscription\n"
 	typeMIME := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
-	
 	corpsMessage := fmt.Sprintf(`
 		<html>
 			<body style="font-family: Arial, sans-serif; color: #333;">
@@ -470,5 +467,5 @@ func EnvoyerEmailRefus(emailDestinataire string, prenom string, motif string) {
 		fmt.Printf("Erreur d'envoi d'e-mail de refus à %s : %v\n", emailDestinataire, err)
 		return
 	}
-	fmt.Printf("📧 E-mail de refus envoyé avec succès à %s\n", emailDestinataire)
+	fmt.Printf(" E-mail de refus envoyé avec succès à %s\n", emailDestinataire)
 }

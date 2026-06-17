@@ -20,24 +20,78 @@
     <title>Forum</title>
   </head>
   <body>
+    <!-- Sélecteur de langue (boutons générés par translate.js) -->
+    <div
+      id="wrapper"
+      style="
+        position: fixed;
+        bottom: 16px;
+        right: 16px;
+        z-index: 2000;
+        display: flex;
+        gap: 6px;
+      "
+    ></div>
+
     <nav class="topnav">
       <div class="nav-logo">
         <img src="../Frontend/assets/logo renova.png" alt="ReNova" />
       </div>
       <div class="nav-links">
-        <a class="nav-link active">Accueil</a>
-        <a class="nav-link" href="../Frontend/espClient.html">Annonces</a>
-        <a class="nav-link" href="../Frontend/espClient.html">Conteneurs</a>
-        <a class="nav-link" href="../Frontend/espClient.html">Catalogue</a>
-        <a class="nav-link" href="../Frontend/espClient.html">Planning</a>
-        <a class="nav-link" href="../Frontend/espClient.html">Mon score</a>
-        <a class="nav-link" href="../Frontend/article.html">Article</a>
-        <a class="nav-link" href="../Frontend/evenement.html">Evenement</a>
-        <a class="nav-link" href="../Frontend/forum.html">Forum</a>
+        <a class="nav-link active" data-i18n="landing.nav.home">Accueil</a>
+        <a
+          class="nav-link"
+          href="../Frontend/espClient.html"
+          data-i18n="annonce.nav.listings"
+          >Annonces</a
+        >
+        <a
+          class="nav-link"
+          href="../Frontend/espClient.html"
+          data-i18n="forum.nav.containers"
+          >Conteneurs</a
+        >
+        <a
+          class="nav-link"
+          href="../Frontend/espClient.html"
+          data-i18n="forum.nav.catalog"
+          >Catalogue</a
+        >
+        <a
+          class="nav-link"
+          href="../Frontend/espClient.html"
+          data-i18n="forum.nav.planning"
+          >Planning</a
+        >
+        <a
+          class="nav-link"
+          href="../Frontend/espClient.html"
+          data-i18n="forum.nav.score"
+          >Mon score</a
+        >
+        <a
+          class="nav-link"
+          href="../Frontend/article.html"
+          data-i18n="forum.nav.article"
+          >Article</a
+        >
+        <a
+          class="nav-link"
+          href="../Frontend/evenement.html"
+          data-i18n="forum.nav.event"
+          >Evenement</a
+        >
+        <a
+          class="nav-link"
+          href="../Frontend/forum.html"
+          data-i18n="forum.nav.forum"
+          >Forum</a
+        >
       </div>
       <div class="nav-right">
         <button class="nav-link" onclick="showSection('messages-section')">
-          <i class="fas fa-envelope"></i> Mes Messages
+          <i class="fas fa-envelope"></i>
+          <span data-i18n="forum.nav.messages">Mes Messages</span>
         </button>
         <div class="lang-btn">
           <span class="material-symbols-outlined"> public </span>Lang
@@ -57,7 +111,9 @@
           <div class="profile-ava">👤</div>
           <div>
             <div class="profile-name" id="navName">Your Name</div>
-            <div class="profile-role">Particulier</div>
+            <div class="profile-role" data-i18n="register.role.individual">
+              Particulier
+            </div>
           </div>
         </div>
       </div>
@@ -80,8 +136,12 @@
       >
         <div id="vue-liste-forums">
           <div class="forum-main-header">
-            <h3>Forum d'Entraide</h3>
-            <button class="btn btn-p" onclick="ouvrirNouveauSujet()">
+            <h3 data-i18n="forum.title">Forum d'Entraide</h3>
+            <button
+              class="btn btn-p"
+              onclick="ouvrirNouveauSujet()"
+              data-i18n="forum.new_topic"
+            >
               + Nouveau Sujet
             </button>
           </div>
@@ -93,10 +153,16 @@
           style="display: none; flex-direction: column; height: 100%"
         >
           <div class="sujet-actif-header">
-            <button class="btn btn-g" onclick="retourListeForums()">
+            <button
+              class="btn btn-g"
+              onclick="retourListeForums()"
+              data-i18n="annonce.nav.back"
+            >
               ← Retour
             </button>
-            <h3 id="titre-sujet-actif">Chargement...</h3>
+            <h3 id="titre-sujet-actif" data-i18n="forum.loading_short">
+              Chargement...
+            </h3>
           </div>
           <div
             id="zone-messages"
@@ -107,8 +173,13 @@
               type="text"
               id="input-nouveau-message"
               placeholder="Écrire une réponse..."
+              data-i18n-placeholder="forum.reply_placeholder"
             />
-            <button class="btn btn-p" onclick="envoyerMessage()">
+            <button
+              class="btn btn-p"
+              onclick="envoyerMessage()"
+              data-i18n="forum.send"
+            >
               Envoyer
             </button>
           </div>
@@ -121,9 +192,11 @@
       class="dashboard-section"
       style="display: none; padding: 20px"
     >
-      <h2>Mes Conversations</h2>
+      <h2 data-i18n="forum.my_conversations">Mes Conversations</h2>
       <div id="conversations-list"></div>
-      <div id="no-messages" style="display: none">Aucun message.</div>
+      <div id="no-messages" style="display: none" data-i18n="forum.no_messages">
+        Aucun message.
+      </div>
     </section>
 
     <div
@@ -149,7 +222,7 @@
         <div
           style="padding: 15px; display: flex; justify-content: space-between"
         >
-          <h3>Discussion</h3>
+          <h3 data-i18n="forum.discussion">Discussion</h3>
           <span onclick="closeChat()" style="cursor: pointer">&times;</span>
         </div>
         <div
@@ -157,8 +230,15 @@
           style="flex: 1; overflow-y: auto; padding: 15px"
         ></div>
         <div style="padding: 15px; display: flex; gap: 10px">
-          <input type="text" id="chat-input" placeholder="Message..." />
-          <button onclick="sendChatMessage()">Envoyer</button>
+          <input
+            type="text"
+            id="chat-input"
+            placeholder="Message..."
+            data-i18n-placeholder="forum.message_placeholder"
+          />
+          <button onclick="sendChatMessage()" data-i18n="forum.send">
+            Envoyer
+          </button>
         </div>
       </div>
     </div>
@@ -192,7 +272,9 @@
             margin-bottom: 20px;
           "
         >
-          <h3 style="margin: 0">Créer un nouveau sujet</h3>
+          <h3 style="margin: 0" data-i18n="forum.modal_title">
+            Créer un nouveau sujet
+          </h3>
           <span
             onclick="fermerModalSujet()"
             style="cursor: pointer; font-size: 24px; font-weight: bold"
@@ -209,12 +291,14 @@
                 margin-bottom: 5px;
                 display: block;
               "
+              data-i18n="forum.topic_title_label"
               >Titre du sujet</label
             >
             <input
               type="text"
               id="nouveau-sujet-titre"
               placeholder="Ex: Besoin d'aide pour réparer un meuble..."
+              data-i18n-placeholder="forum.topic_title_ph"
               style="
                 width: 100%;
                 padding: 10px;
@@ -233,12 +317,14 @@
                 margin-bottom: 5px;
                 display: block;
               "
+              data-i18n="forum.first_message_label"
               >Votre premier message</label
             >
             <textarea
               id="nouveau-sujet-message"
               rows="6"
               placeholder="Expliquez votre problème en détail..."
+              data-i18n-placeholder="forum.first_message_ph"
               style="
                 width: 100%;
                 padding: 10px;
@@ -254,6 +340,7 @@
             class="btn btn-p"
             onclick="validerNouveauSujet()"
             style="align-self: flex-end; margin-top: 10px"
+            data-i18n="forum.publish"
           >
             Publier le sujet
           </button>
@@ -261,6 +348,8 @@
       </div>
     </div>
   </body>
+  <!-- translate.js : moteur de traduction (data-i18n + mémoire de la langue) -->
+  <script src="../Frontend/script/admin/translate.js" defer></script>
   <script src="../Frontend/script/forum.js" defer></script>
   <script src="../Frontend/script/profil.js" defer></script>
   <script src="../Frontend/script/messagerie/messagerie.js" defer></script>

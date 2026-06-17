@@ -17,16 +17,19 @@
     <link rel="stylesheet" href="../style/salarie.css" />
   </head>
   <body>
+    <!-- Sélecteur de langue (boutons générés par translate.js) -->
+    <div id="wrapper" style="position:fixed; bottom:16px; right:16px; z-index:2000; display:flex; gap:6px;"></div>
+
     <nav class="topnav">
       <div class="nav-logo">
         <img src="ton_logo.jpg" alt="ReNova" />
       </div>
       <div class="nav-links">
-        <a href="salarie_dashboard.html" class="nav-link">Accueil</a>
-        <a href="salarie_events.html" class="nav-link">Événements</a>
-        <a href="salarie_planning.html" class="nav-link">Planning</a>
-        <a href="salarie_content.html" class="nav-link">Conseils & News</a>
-        <a href="salarie_forum.html" class="nav-link">Modération</a>
+        <a href="salarie_dashboard.html" class="nav-link" data-i18n="landing.nav.home">Accueil</a>
+        <a href="salarie_events.html" class="nav-link" data-i18n="landing.nav.events">Événements</a>
+        <a href="salarie_planning.html" class="nav-link" data-i18n="forum.nav.planning">Planning</a>
+        <a href="salarie_content.html" class="nav-link" data-i18n="salarie.nav.content">Conseils & News</a>
+        <a href="salarie_forum.html" class="nav-link" data-i18n="salarie.nav.moderation">Modération</a>
       </div>
       <div class="nav-right">
         <div class="lang-btn">
@@ -58,21 +61,21 @@
       <section id="content" class="sec-pane on" style="padding: 40px 0">
         <div class="sec-label fu">
           <div class="sec-num teal">3</div>
-          <div class="sec-title-text">Conseils & News</div>
+          <div class="sec-title-text" data-i18n="salarie.nav.content">Conseils & News</div>
           <div class="sec-divider"></div>
-          <button class="btn btn-g" onclick="openNewPost()">
+          <button class="btn btn-g" onclick="openNewPost()" data-i18n="salarie.content.write">
             ＋ Rédiger un article
           </button>
         </div>
         <div class="content-layout fu fu1">
           <div class="content-side">
-            <h3 style="margin-bottom: 15px; font-weight: 600">
+            <h3 style="margin-bottom: 15px; font-weight: 600" data-i18n="salarie.content.drafts">
               En attente de relecture / Brouillons
             </h3>
             <div id="liste-brouillons" class="articles-list"></div>
           </div>
           <div class="content-main">
-            <h3 style="margin-bottom: 15px; font-weight: 600">
+            <h3 style="margin-bottom: 15px; font-weight: 600" data-i18n="salarie.content.published">
               Mes publications en ligne
             </h3>
             <div id="liste-publies" class="articles-grid"></div>
@@ -84,39 +87,42 @@
     <div class="modal-bg" id="postModal">
       <div class="modal shadow">
         <div class="modal-h">
-          <div class="modal-t">Nouvel Article</div>
+          <div class="modal-t" data-i18n="salarie.content.modal_title">Nouvel Article</div>
           <button class="modal-close" onclick="closePost()">✕</button>
         </div>
         <div class="modal-b fu fu1" style="gap: 15px">
           <input type="hidden" id="edit-article-id" />
           <div class="form-group">
-            <label>Titre de l'article</label>
+            <label data-i18n="salarie.content.title_label">Titre de l'article</label>
             <input
               type="text"
               id="post-title"
               placeholder="Ex: Les secrets de la valorisation de composants"
+              data-i18n-placeholder="salarie.content.title_ph"
             />
           </div>
           <div class="form-group">
-            <label>Catégorie / Mots-clés</label>
+            <label data-i18n="salarie.content.cat_label">Catégorie / Mots-clés</label>
             <input
               type="text"
               id="post-type"
               placeholder="Ex: Éco-conception, Tuto, Logistique"
+              data-i18n-placeholder="salarie.content.cat_ph"
             />
           </div>
 
           <div class="form-group">
-            <label>Image de couverture</label>
+            <label data-i18n="salarie.content.image_label">Image de couverture</label>
             <input type="file" id="post-image" accept="image/*" />
           </div>
 
           <div class="form-group">
-            <label>Contenu de l'article</label>
+            <label data-i18n="salarie.content.content_label">Contenu de l'article</label>
             <textarea
               id="post-content"
               rows="8"
               placeholder="Écrivez votre article ici... Enregistrez-le en brouillon ou soumettez-le directement à l'administration."
+              data-i18n-placeholder="salarie.content.content_ph"
             ></textarea>
           </div>
           <div class="fu" style="gap: 10px; margin-top: 10px">
@@ -124,6 +130,7 @@
               class="btn btn-g"
               style="flex: 1"
               onclick="sauvegarderBrouillon()"
+              data-i18n="salarie.content.save_draft"
             >
               Enregistrer Brouillon
             </button>
@@ -131,6 +138,7 @@
               class="btn btn-v"
               style="flex: 1"
               onclick="soumettreAValidation()"
+              data-i18n="salarie.content.request_publish"
             >
               Demander la publication
             </button>
@@ -139,6 +147,8 @@
       </div>
     </div>
 
+    <!-- translate.js : moteur de traduction (data-i18n + mémoire de la langue) -->
+    <script src="../script/admin/translate.js" defer></script>
     <script src="../script/salarie/userInfo.js" defer></script>
     <script src="../script/salarie/article.js" defer></script>
   </body>

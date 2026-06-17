@@ -215,8 +215,9 @@ func CalculateAndAddScore(annonceId int, professionnelId int) error {
     var materiau string
     var particulierId int
 
-    // On utilise id_user comme dans tes autres requêtes liées aux annonces
-    err := Db.QueryRow("SELECT poids, type_materiau, id_user FROM annonce WHERE id = ?", annonceId).Scan(&poids, &materiau, &particulierId)
+    // Note : la table annonce n'a pas de colonne type_materiau → on ne la lit pas.
+    // Le matériau reste vide, donc le coefficient "autre" s'applique par défaut.
+    err := Db.QueryRow("SELECT poids_kg, id_user FROM pa2026.annonce WHERE id = ?", annonceId).Scan(&poids, &particulierId)
     if err != nil {
         return err
     }
@@ -235,7 +236,7 @@ func CalculateAndAddScore(annonceId int, professionnelId int) error {
     }
 
     gainScore := poids * coef
-    _, err = Db.Exec("UPDATE users SET score = score + ? WHERE id = ?", gainScore, particulierId)
+    _, err = Db.Exec("UPDATE pa2026.utilisateur SET score = score + ? WHERE id = ?", gainScore, particulierId)
     return err
 }
 
