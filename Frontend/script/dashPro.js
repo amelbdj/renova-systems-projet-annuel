@@ -281,6 +281,20 @@ async function saveProjet() {
     await loadProjets();
 }
 
+async function deleteProjet(id) {
+    if (!confirm("Supprimer ce projet ?")) return;
+    const token = localStorage.getItem("token");
+    const response = await fetch(`http://localhost:8081/api/pro/projets/delete?id=${id}`, {
+        method: "DELETE",
+        headers: { "Authorization": `Bearer ${token}` }
+    });
+    if (response.ok) {
+        loadProjets();
+    } else {
+        alert("Erreur lors de la suppression.");
+    }
+}
+
 // --- ETAPES ---
 
 let currentProjetId = null;

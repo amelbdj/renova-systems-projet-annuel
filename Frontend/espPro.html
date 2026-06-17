@@ -708,14 +708,14 @@ function openNewProject() {
     modal.classList.add("open");
 }
 
-function closeProjModal(){document.getElementById('projModal').classList.remove('open');alert('✅ Projet enregistré et ajouté à votre portfolio !')}
+function closeProjModal(){document.getElementById('projModal').classList.remove('open');}
 
 /* ── UPGRADE MODAL ──────────────────────────────── */
 function openUpgrade(){document.getElementById('upgradeModal').classList.add('open')}
 function closeUpgrade(){document.getElementById('upgradeModal').classList.remove('open')}
 
 /* ── CLOSE ON BG ────────────────────────────────── */
-['scanModal','payModal','projModal','upgradeModal'].forEach(id=>{
+['scanModal','payModal','projModal','upgradeModal','etapesModal'].forEach(id=>{
   document.getElementById(id).addEventListener('click',function(e){
     if(e.target===this)this.classList.remove('open');
   });
