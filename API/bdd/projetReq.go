@@ -1,0 +1,43 @@
+package bdd
+
+import "upcycleconnect/models"
+
+func CreateProjet(p models.Projet) error {
+	_, err := Db.Exec(
+		`INSERT INTO projet_pro (id_user, titre, desc_etapes, url_photo_avant, url_photo_apres) VALUES (?, ?, ?, ?, ?)`,
+		p.IdUser, p.Titre, p.Description, p.AvantDesc, p.Photo,
+	)
+	return err
+}
+
+func GetProjetsByUser(idUser int) ([]models.Projet, error) {
+	rows, err := Db.Query(
+		`SELECT id_projet, id_user, titre, desc_etapes, url_photo_avant, url_photo_apres FROM projet_pro WHERE id_user = ?`,
+		idUser,
+	)
+	if err != nil { return nil, err }
+	defer rows.Close()
+
+	var projets []models.Projet
+	for rows.Next() {
+		var p models.Projet
+		if err := rows.Scan(&p.Id, &p.IdUser, &p.Titre, &p.Description, &p.AvantDesc, &p.Photo); err != nil {
+			return nil, err
+		}
+		projets = append(projets, p)
+	}
+	return projets, nil
+}
+
+func DeleteProjet(id int) error {
+	_, err := Db.Exec(`DELETE FROM projet_pro WHERE id_projet = ?`, id)
+	return err
+}
+
+func UpdateProjet(p models.Projet) error {
+	_, err := Db.Exec(
+		`UPDATE projet_pro SET titre = ?, desc_etapes = ?, url_photo_avant = ?, url_photo_apres = ? WHERE id_projet = ?`,
+		p.Titre, p.Description, p.AvantDesc, p.Photo, p.Id,
+	)
+	return err
+}

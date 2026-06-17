@@ -7,10 +7,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="./style/pro.css">
-<script src="./script/dashPro.js" ></script>
 </head>
 <body>
-
 <div id="tut">
   <div class="tut-card">
     <div class="tut-head">
@@ -357,64 +355,12 @@
       <button class="btn btn-t btn-sm" style="flex-shrink:0" onclick="openNewProject()">＋ Nouveau projet</button>
     </div>
     <div class="proj-grid fu fu1">
-
-      <div class="proj-card">
-        <div class="proj-banner" style="background:linear-gradient(135deg,#100e03,#1e1a06)">
-          🪑
-          <div class="proj-impact">🌱 −12 kg CO₂</div>
-        </div>
-        <div class="proj-body">
-          <div class="proj-name">Table basse palettes</div>
-          <div class="proj-desc">Récupération de 3 palettes EPAL. Ponçage, lasure naturelle, assemblage.</div>
-          <div class="before-after">
-            <div class="ba-col before"><div class="bai">🗑️</div><div class="bal">Avant</div>Palettes en décharge</div>
-            <div class="ba-col after"><div class="bai">✨</div><div class="bal">Après</div>Meuble design vendu</div>
-          </div>
-          <div class="proj-meta"><span class="tag t-teal">Mobilier</span><span class="tag t-green">Terminé</span></div>
-          <div class="proj-foot"><span style="font-size:12px;color:var(--txt-m)">Fév. 2026</span><button class="btn btn-g btn-xs">Voir →</button></div>
-        </div>
-      </div>
-
-      <div class="proj-card">
-        <div class="proj-banner" style="background:linear-gradient(135deg,#031010,#051e1e)">
-          🧵
-          <div class="proj-impact">🌱 −4 kg CO₂</div>
-        </div>
-        <div class="proj-body">
-          <div class="proj-name">Collection sacs upcyclés</div>
-          <div class="proj-desc">5 kg de chutes de jean recyclées en 8 sacs à main originaux.</div>
-          <div class="before-after">
-            <div class="ba-col before"><div class="bai">♻️</div><div class="bal">Avant</div>Chutes textiles</div>
-            <div class="ba-col after"><div class="bai">👜</div><div class="bal">Après</div>8 sacs vendus 35€</div>
-          </div>
-          <div class="proj-meta"><span class="tag t-purple">Textile</span><span class="tag t-teal">En cours</span></div>
-          <div class="proj-foot"><span style="font-size:12px;color:var(--txt-m)">Mars 2026</span><button class="btn btn-g btn-xs">Voir →</button></div>
-        </div>
-      </div>
-
-      <div class="proj-card">
-        <div class="proj-banner" style="background:linear-gradient(135deg,#0a0309,#160512)">
-          🔧
-          <div class="proj-impact">🌱 −19 kg CO₂</div>
-        </div>
-        <div class="proj-body">
-          <div class="proj-name">Lampes industrielles</div>
-          <div class="proj-desc">Tuyaux en acier récupérés transformés en luminaires style industriel.</div>
-          <div class="before-after">
-            <div class="ba-col before"><div class="bai">🔩</div><div class="bal">Avant</div>Ferraille rebut</div>
-            <div class="ba-col after"><div class="bai">💡</div><div class="bal">Après</div>6 lampes vendues</div>
-          </div>
-          <div class="proj-meta"><span class="tag t-amber">Métal</span><span class="tag t-green">Terminé</span></div>
-          <div class="proj-foot"><span style="font-size:12px;color:var(--txt-m)">Jan. 2026</span><button class="btn btn-g btn-xs">Voir →</button></div>
-        </div>
-      </div>
-
       <div class="proj-add" onclick="openNewProject()">
         <div class="plus">＋</div>
         <span>Documenter un nouveau projet</span>
       </div>
     </div>
-  </section>
+</section>
 
   <!-- ═══════════════════════════════════════
    ⑤ DASHBOARD PREMIUM + NOTIFICATIONS
@@ -443,7 +389,7 @@
             <div class="spark-bar" style="height:65%"></div><div class="spark-bar hi" style="height:90%"></div>
             <div class="spark-bar hi" style="height:100%"></div>
           </div>
-        </div>
+        </div><div class="proj-card">
         <div class="an-card">
           <div class="an-top">
             <div class="an-ico" style="background:rgba(46,204,113,.1)">🌱</div>
@@ -595,11 +541,54 @@
       <div><label>Situation après</label><input type="text" placeholder="ex : Meuble design vendu"></div>
     </div>
     <div class="fgroup"><label>CO₂ évité estimé (kg)</label><input type="number" placeholder="ex : 12"></div>
-    <div style="border:2px dashed var(--b1);border-radius:10px;padding:20px;text-align:center;cursor:pointer;background:var(--bg3);margin-bottom:14px">
-      <div style="font-size:1.8rem;margin-bottom:6px">📷</div>
-      <div style="font-size:13px;color:var(--txt-m)">Ajouter des photos (avant / après)</div>
+    <div style="border:2px dashed var(--b1);border-radius:10px;padding:20px;text-align:center;cursor:pointer;background:var(--bg3);margin-bottom:14px" onclick="document.getElementById('photoInput').click()">
+  <div style="font-size:1.8rem;margin-bottom:6px">📷</div>
+  <div style="font-size:13px;color:var(--txt-m)" id="photoLabel">Ajouter une photo (avant / après)</div>
+  <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="document.getElementById('photoLabel').textContent = this.files[0]?.name || 'Ajouter une photo'">
+</div>
+    <button class="btn btn-t btn-full" onclick="saveProjet()">Enregistrer le projet ✓</button>
+  </div>
+</div>
+
+<!-- ETAPES MODAL -->
+<div class="modal-bg" id="etapesModal">
+  <div class="modal" style="max-width:600px;width:90%">
+    <div class="modal-x" onclick="closeEtapesModal()">✕</div>
+    <div class="modal-h" id="etapesModalTitre">🔨 Étapes du projet</div>
+    <div class="modal-sub">Suivez et documentez la transformation étape par étape.</div>
+
+    <!-- Progression -->
+    <div id="etapesProgression" style="margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--txt-m);margin-bottom:6px">
+        <span>Progression</span>
+        <span id="etapesCount">0 / 0 terminées</span>
+      </div>
+      <div style="height:6px;background:var(--b0);border-radius:3px;overflow:hidden">
+        <div id="etapesProgressBar" style="height:100%;background:var(--teal);border-radius:3px;transition:width .3s;width:0%"></div>
+      </div>
     </div>
-    <button class="btn btn-t btn-full" onclick="closeProjModal()">Enregistrer le projet ✓</button>
+
+    <!-- Liste des étapes -->
+    <div id="etapesList" style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;max-height:300px;overflow-y:auto"></div>
+
+    <!-- Formulaire ajout étape -->
+    <div style="border:1px solid var(--b1);border-radius:10px;padding:14px;background:var(--bg3)">
+      <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--txt)">➕ Nouvelle étape</div>
+      <div class="fgroup" style="margin-bottom:8px">
+        <input type="text" id="etapeTitre" placeholder="Titre de l'étape (ex: Ponçage)">
+      </div>
+      <div class="fgroup" style="margin-bottom:10px">
+        <textarea id="etapeDescription" placeholder="Description optionnelle…" style="height:60px"></textarea>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <select id="etapeStatut" style="flex:1">
+          <option value="a_faire">📋 À faire</option>
+          <option value="en_cours">🔄 En cours</option>
+          <option value="termine">✅ Terminé</option>
+        </select>
+        <button class="btn btn-t btn-sm" onclick="addEtape()">Ajouter</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -708,7 +697,17 @@ function closePay(){document.getElementById('payModal').classList.remove('open')
 function confirmPay(){closePay();alert('🎉 Paiement confirmé ! Facture PDF disponible sous peu.')}
 
 /* ── PROJECT MODAL ──────────────────────────────── */
-function openNewProject(){document.getElementById('projModal').classList.add('open')}
+function openNewProject() {
+    const modal = document.getElementById("projModal");
+    delete modal.dataset.editId;
+    delete modal.dataset.oldPhoto;
+    document.querySelectorAll("#projModal input[type='text']").forEach(i => i.value = "");
+    document.querySelector("#projModal textarea").value = "";
+    document.getElementById("photoLabel").textContent = "Ajouter une photo (avant / après)";
+    document.getElementById("photoInput").value = "";
+    modal.classList.add("open");
+}
+
 function closeProjModal(){document.getElementById('projModal').classList.remove('open');alert('✅ Projet enregistré et ajouté à votre portfolio !')}
 
 /* ── UPGRADE MODAL ──────────────────────────────── */
@@ -721,6 +720,10 @@ function closeUpgrade(){document.getElementById('upgradeModal').classList.remove
     if(e.target===this)this.classList.remove('open');
   });
 });
+</script>
+<script src="./script/dashPro.js"></script>
+<script>
+    loadProjets();
 </script>
 </body>
 </html>

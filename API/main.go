@@ -229,6 +229,25 @@ func main() {
 	http.HandleFunc("POST /api/web/checkout/evenement", admin.CreateEventCheckoutSession)
 	http.HandleFunc("OPTIONS /api/web/checkout/evenement", admin.CreateEventCheckoutSession)
 
+	
+http.HandleFunc("GET /api/pro/projets", auth.VerifyTokenMiddleware(admin.GetProjetsHandler))
+http.HandleFunc("POST /api/pro/projets/create", auth.VerifyTokenMiddleware(admin.CreateProjetHandler))
+http.HandleFunc("OPTIONS /api/pro/projets", admin.GetProjetsHandler)
+http.HandleFunc("OPTIONS /api/pro/projets/create", admin.CreateProjetHandler)
+http.HandleFunc("DELETE /api/pro/projets/delete", auth.VerifyTokenMiddleware(admin.DeleteProjetHandler))
+http.HandleFunc("PUT /api/pro/projets/update", auth.VerifyTokenMiddleware(admin.UpdateProjetHandler))
+http.HandleFunc("OPTIONS /api/pro/projets/delete", admin.DeleteProjetHandler)
+http.HandleFunc("OPTIONS /api/pro/projets/update", admin.UpdateProjetHandler)
+
+http.HandleFunc("POST /api/pro/etapes/create", auth.VerifyTokenMiddleware(admin.CreateEtapeHandler))
+http.HandleFunc("GET /api/pro/etapes", auth.VerifyTokenMiddleware(admin.GetEtapesHandler))
+http.HandleFunc("DELETE /api/pro/etapes/delete", auth.VerifyTokenMiddleware(admin.DeleteEtapeHandler))
+http.HandleFunc("PUT /api/pro/etapes/statut", auth.VerifyTokenMiddleware(admin.UpdateEtapeStatutHandler))
+http.HandleFunc("OPTIONS /api/pro/etapes/create", admin.CreateEtapeHandler)
+http.HandleFunc("OPTIONS /api/pro/etapes", admin.GetEtapesHandler)
+http.HandleFunc("OPTIONS /api/pro/etapes/delete", admin.DeleteEtapeHandler)
+http.HandleFunc("OPTIONS /api/pro/etapes/statut", admin.UpdateEtapeStatutHandler)
+
 	// Cette ligne dit à Go : "Si on te demande une URL qui commence par /static/, va chercher le fichier dans le dossier static de mon PC"
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	fmt.Println("test de : http://localhost:8081")
