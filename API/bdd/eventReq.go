@@ -181,6 +181,33 @@ func InscrireClient(idUser int, idEvent int) error {
 	return nil
 }
 
+func GetInscrits(idEvent int) ([]models.Inscrit, error) {
+	var inscrits []models.Inscrit
+
+	query := `SELECT utilisateur.nom, utilisateur.prenom, utilisateur.email,
+	          DATE_FORMAT(inscription.date_inscrip, '%d/%m/%Y a %H:%i') as date_inscrip
+	          FROM inscription
+	          INNER JOIN utilisateur ON utilisateur.id = inscription.id_user
+	          WHERE inscription.id_event = ?
+	          ORDER BY inscription.date_inscrip ASC`
+
+	rows, err := Db.Query(query, idEvent)
+	if err != nil {
+		return nil, fmt.Errorf("get inscrits : %v", err.Error())
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var inscrit models.Inscrit
+		err := rows.Scan(&inscrit.Nom, &inscrit.Prenom, &inscrit.Email, &inscrit.DateInscription)
+		if err != nil {
+			return nil, fmt.Errorf("get inscrits scan : %v", err.Error())
+		}
+		inscrits = append(inscrits, inscrit)
+	}
+	return inscrits, nil
+}
+
 func SupprimerInscription(idUser int, idEvent int) error {
 	query := "DELETE FROM inscription WHERE id_user = ? AND id_event = ?"
 	result, err := Db.Exec(query, idUser, idEvent)

@@ -195,9 +195,60 @@ window.ouvrirDetailEvent = function (id) {
       "' target='_blank' style='color:#fff; background:var(--vi); padding:8px 14px; border-radius:6px; text-decoration:none;'>📄 Télécharger le support PDF</a></p>";
   }
 
+  html +=
+    "<div style='margin-top:18px; border-top:1px solid var(--b0); padding-top:14px;'>" +
+    "<strong>Personnes inscrites</strong>" +
+    "<div id='detail-inscrits' style='margin-top:8px;'>Chargement...</div>" +
+    "</div>";
+
   document.getElementById("detail-body").innerHTML = html;
   document.getElementById("detailModal").style.display = "flex";
+
+  chargerInscrits(evt.id);
 };
+
+function chargerInscrits(id) {
+  fetch("http://localhost:8081/admin/evenements/inscrits/" + id, {
+    headers: {
+      Authorization: "Bearer " + monToken,
+    },
+  })
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (inscrits) {
+      let zone = document.getElementById("detail-inscrits");
+      if (!zone) return;
+
+      if (!inscrits || inscrits.length === 0) {
+        zone.innerHTML =
+          "<p style='color:var(--txt-d);'>Aucune personne inscrite pour le moment.</p>";
+        return;
+      }
+
+      let liste = "<ul style='margin:0; padding-left:18px;'>";
+      for (let i = 0; i < inscrits.length; i++) {
+        liste +=
+          "<li>" +
+          inscrits[i].prenom +
+          " " +
+          inscrits[i].nom +
+          " — " +
+          inscrits[i].email +
+          "</li>";
+      }
+      liste += "</ul>";
+      zone.innerHTML = liste;
+    })
+    .catch(function (error) {
+      let zone = document.getElementById("detail-inscrits");
+      if (zone) {
+        zone.innerHTML =
+          "<p style='color:var(--txt-d);'>Erreur lors du chargement des inscrits.</p>";
+      }
+      console.error(error);
+    });
+}
 
 window.fermerDetailEvent = function () {
   document.getElementById("detailModal").style.display = "none";

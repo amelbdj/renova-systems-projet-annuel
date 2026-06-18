@@ -191,6 +191,38 @@ func CreateEvenement(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Evenement créée avec succès")
 }
 
+func GetInscritsEvenement(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		http.Error(w, "id invalide", http.StatusBadRequest)
+		return
+	}
+
+	inscrits, err := bdd.GetInscrits(id)
+	if err != nil {
+		http.Error(w, "erreur de récupération des inscrits", http.StatusInternalServerError)
+		fmt.Println("erreur", err)
+		return
+	}
+
+	response, err := json.Marshal(inscrits)
+	if err != nil {
+		http.Error(w, "erreur de conversion", 500)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	fmt.Fprintf(w, "%s", response)
+}
+
 func DeleteEvenement(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "DELETE, OPTIONS")

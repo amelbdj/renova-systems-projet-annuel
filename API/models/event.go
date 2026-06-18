@@ -19,3 +19,10 @@ type Evenement struct {
 	ImageUrl         string  `json:"image_url"`
 	PdfUrl           string  `json:"pdf_url"`
 }
+
+type Inscrit struct {
+	Nom             string `json:"nom"`
+	Prenom          string `json:"prenom"`
+	Email           string `json:"email"`
+	DateInscription string `json:"date_inscription"`
+}

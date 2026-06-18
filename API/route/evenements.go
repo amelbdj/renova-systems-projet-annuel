@@ -14,11 +14,13 @@ func RoutesEvenements() {
 	http.HandleFunc("OPTIONS /admin/evenements/refuse/{id}", admin.RefuseEvenement)
 	http.HandleFunc("OPTIONS /admin/evenements/add", admin.CreateEvenement)
 	http.HandleFunc("OPTIONS /admin/evenements", admin.GetAllEvenements)
+	http.HandleFunc("OPTIONS /admin/evenements/inscrits/{id}", admin.GetInscritsEvenement)
 	http.HandleFunc("OPTIONS /admin/evenements/inscription", admin.InscrireClient)
 	http.HandleFunc("OPTIONS /admin/evenements/desinscription", admin.DesinscriptionHandler)
 	http.HandleFunc("OPTIONS /api/web/checkout/evenement", admin.CreateEventCheckoutSession)
 
 	http.HandleFunc("GET /admin/evenements", auth.VerifyTokenMiddleware(admin.GetAllEvenements))
+	http.HandleFunc("GET /admin/evenements/inscrits/{id}", auth.VerifyTokenMiddleware(admin.GetInscritsEvenement))
 	http.HandleFunc("POST /admin/evenements/add", auth.VerifyTokenMiddleware(admin.CreateEvenement))
 	http.HandleFunc("PUT /admin/evenements/{id}", auth.VerifyTokenMiddleware(admin.UpdateEvenement))
 	http.HandleFunc("DELETE /admin/evenements/delete/{id}", auth.VerifyTokenMiddleware(admin.DeleteEvenement))
