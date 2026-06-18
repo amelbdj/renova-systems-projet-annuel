@@ -16,7 +16,7 @@ func GetEvenements(searchWord string, idUser int) ([]models.Evenement, error) {
 		          evenement.nb_places, evenement.statut_validation, evenement.format, 
 		          evenement.lieu, evenement.type, evenement.id_salarie, utilisateur.nom,
 		          utilisateur.prenom, evenement.prix, COALESCE(evenement.image_url, '') as image_url,
-		          COALESCE(evenement.pdf_url, '') as pdf_url,
+		          COALESCE((SELECT url_fichier FROM ressource_pedagogique WHERE id_event = evenement.id ORDER BY id_ressource DESC LIMIT 1), '') as pdf_url,
 		          (SELECT COUNT(*) FROM inscription WHERE id_user = ? AND id_event = evenement.id) > 0 AS deja_inscrit
 		          FROM pa2026.Evenement
 		          INNER JOIN utilisateur ON utilisateur.id = Evenement.id_salarie
@@ -45,7 +45,7 @@ func GetEvenements(searchWord string, idUser int) ([]models.Evenement, error) {
 		          evenement.nb_places, evenement.statut_validation, evenement.format, 
 		          evenement.lieu, evenement.type, evenement.id_salarie, utilisateur.nom,
 		          utilisateur.prenom, evenement.prix, COALESCE(evenement.image_url, '') as image_url,
-		          COALESCE(evenement.pdf_url, '') as pdf_url,
+		          COALESCE((SELECT url_fichier FROM ressource_pedagogique WHERE id_event = evenement.id ORDER BY id_ressource DESC LIMIT 1), '') as pdf_url,
 		          (SELECT COUNT(*) FROM inscription WHERE id_user = ? AND id_event = evenement.id) > 0 AS deja_inscrit
 		          FROM pa2026.Evenement
 		          INNER JOIN utilisateur ON utilisateur.id = Evenement.id_salarie`
@@ -98,11 +98,24 @@ func RefuseEvenement(EvenementId int) error {
 	return nil
 }
 
-func CreateEvenement(Evenement models.Evenement) error {
-	_, err := Db.Exec("INSERT INTO pa2026.Evenement (titre, description, date_debut, date_fin, nb_places, statut_validation, format, lieu, type, id_salarie, prix, image_url, pdf_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-		Evenement.Titre, Evenement.Description, Evenement.DateDebut, Evenement.DateFin, Evenement.NbPlaces, "en attente", Evenement.Format, Evenement.Lieu, Evenement.Type, Evenement.IdSalarie, Evenement.Prix, Evenement.ImageUrl, Evenement.PdfUrl)
+func CreateEvenement(Evenement models.Evenement) (int64, error) {
+	result, err := Db.Exec("INSERT INTO pa2026.Evenement (titre, description, date_debut, date_fin, nb_places, statut_validation, format, lieu, type, id_salarie, prix, image_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+		Evenement.Titre, Evenement.Description, Evenement.DateDebut, Evenement.DateFin, Evenement.NbPlaces, "en attente", Evenement.Format, Evenement.Lieu, Evenement.Type, Evenement.IdSalarie, Evenement.Prix, Evenement.ImageUrl)
 	if err != nil {
-		return fmt.Errorf("création de l'événement échouée : %v", err)
+		return 0, fmt.Errorf("création de l'événement échouée : %v", err)
+	}
+	id, err := result.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+	return id, nil
+}
+
+func CreateRessource(idSalarie int, idEvent int, titre string, urlFichier string) error {
+	_, err := Db.Exec("INSERT INTO pa2026.ressource_pedagogique (id_salarie, id_event, titre, url_fichier) VALUES (?, ?, ?, ?)",
+		idSalarie, idEvent, titre, urlFichier)
+	if err != nil {
+		return fmt.Errorf("création de la ressource pédagogique échouée : %v", err)
 	}
 	return nil
 }

@@ -181,12 +181,20 @@ func CreateEvenement(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	err = bdd.CreateEvenement(Evenement)
+	newId, err := bdd.CreateEvenement(Evenement)
 	if err != nil {
 		http.Error(w, "erreur de création de l'Evenement", http.StatusInternalServerError)
 		fmt.Println("erreur bdd.CreateEvenement :", err)
 		return
 	}
+
+	if Evenement.PdfUrl != "" {
+		errRes := bdd.CreateRessource(Evenement.IdSalarie, int(newId), Evenement.Titre, Evenement.PdfUrl)
+		if errRes != nil {
+			fmt.Println("erreur bdd.CreateRessource :", errRes)
+		}
+	}
+
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, "Evenement créée avec succès")
 }

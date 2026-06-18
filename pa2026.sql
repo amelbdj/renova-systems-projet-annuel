@@ -312,7 +312,6 @@ CREATE TABLE IF NOT EXISTS `evenement` (
   `lieu` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '0',
   `prix` int DEFAULT '0',
   `image_url` varchar(255) DEFAULT NULL,
-  `pdf_url` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_event` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -522,6 +521,7 @@ CREATE TABLE IF NOT EXISTS `ressource_pedagogique` (
   `id_salarie` int DEFAULT NULL,
   `titre` varchar(150) DEFAULT NULL,
   `url_fichier` varchar(255) DEFAULT NULL,
+  `id_event` int DEFAULT NULL,
   PRIMARY KEY (`id_ressource`),
   UNIQUE KEY `id_ressource` (`id_ressource`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
