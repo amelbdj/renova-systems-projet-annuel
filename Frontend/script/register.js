@@ -1,4 +1,4 @@
-/* ─── TOGGLE PASSWORD ─────────────────────── */
+
 function togglePwd(id, btn) {
   const inp = document.getElementById(id);
   if (!inp) return;
@@ -7,7 +7,7 @@ function togglePwd(id, btn) {
   btn.textContent = show ? "🔒" : "👁";
 }
 
-/* ─── VALIDATION HELPERS ──────────────────── */
+
 function validateEmail(inp) {
   const ok = /^[^@]+@[^@]+\.[^@]+$/.test(inp.value.trim());
   inp.classList.toggle("err", inp.value && !ok);
@@ -34,7 +34,7 @@ function validateConfirm(inp) {
   inp.classList.toggle("ok", ok);
 }
 
-/* ─── PASSWORD STRENGTH ───────────────────── */
+
 function checkStrength(inp) {
   const v = inp.value;
   let score = 0;
@@ -61,7 +61,7 @@ function var_(n) {
   return getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 }
 
-/* ─── STEP NAVIGATION ─────────────────────── */
+
 let curStep = 1;
 function goStep(n) {
   if (n > curStep) {
@@ -109,7 +109,7 @@ function goStep(n) {
   }
 }
 
-/* ─── ROLE & DATABASE LOGIC ─────────────────────────── */
+
 let roleChoisi = "";
 
 function selectRole(element, codeRole) {
@@ -172,7 +172,7 @@ function olderThan18(dateTexte) {
   }
 }
 
-/* ─── SUBMIT REGISTER (API) ─────────────────────── */
+
 async function submitRegister() {
   if (!document.getElementById("chkCgu").checked) {
     alert("Veuillez accepter les CGU pour continuer.");

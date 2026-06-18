@@ -13,7 +13,6 @@ const (
 	OneSignalAPIKey = "os_v2_app_pgstei2cbjdmra6zdsqwf7fwj7lecom3g6lu4pumdxlt4rvgw66selidc5gwe5r2gpo7pr7cdhfecc55xgdksr5rplozsejaaghkzsa"
 )
 
-
 func SendPushNotification(userID string, message string) {
 	payload := map[string]interface{}{
 		"app_id": OneSignalAppID,
@@ -37,7 +36,7 @@ func SendPushNotification(userID string, message string) {
 	}
 
 	req.Header.Set("Content-Type", "application/json")
-req.Header.Set("Authorization", "Key "+OneSignalAPIKey)
+	req.Header.Set("Authorization", "Key "+OneSignalAPIKey)
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		fmt.Println("Erreur envoi OneSignal:", err)
@@ -47,8 +46,7 @@ req.Header.Set("Authorization", "Key "+OneSignalAPIKey)
 
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(resp.Body)
-    
-	// LA FAMEUSE LIGNE QUI VA NOUS DONNER LA RÉPONSE DE ONESIGNAL :
+
 	fmt.Println("📡 RÉPONSE ONESIGNAL :", buf.String())
 }
 
@@ -61,6 +59,19 @@ func NotifyAllAdmins(message string) {
 	fmt.Printf("🔍 Admins trouvés: %v. Envoi de la notification...\n", adminIDs)
 
 	for _, id := range adminIDs {
+		go SendPushNotification(id, message)
+	}
+}
+
+func NotifyAllPros(message string) {
+	proIDs, err := bdd.GetProfessionalIDs()
+	if err != nil {
+		fmt.Println("Erreur lors de la récupération des professionnels:", err)
+		return
+	}
+	fmt.Printf("🔍 Professionnels trouvés: %v. Envoi de la notification...\n", proIDs)
+
+	for _, id := range proIDs {
 		go SendPushNotification(id, message)
 	}
 }

@@ -8,6 +8,29 @@ import (
 	"upcycleconnect/bdd"
 )
 
+func GetProInvoicesHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	acheteurID, ok := r.Context().Value("userID").(int)
+	if !ok || acheteurID == 0 {
+		http.Error(w, `{"error": "Utilisateur non identifié"}`, http.StatusUnauthorized)
+		return
+	}
+
+	factures, err := bdd.GetProInvoices(acheteurID)
+	if err != nil {
+		fmt.Println("Erreur GetProInvoices :", err)
+		http.Error(w, `{"error": "Erreur serveur"}`, http.StatusInternalServerError)
+		return
+	}
+
+	if factures == nil {
+		factures = []map[string]interface{}{}
+	}
+
+	json.NewEncoder(w).Encode(factures)
+}
+
 func CreateOrder(w http.ResponseWriter, r *http.Request) {
 	var req struct {
 		AnnonceId  int `json:"annonce_id"`
@@ -56,14 +79,15 @@ func PaymentHistoryHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	json.NewEncoder(w).Encode(data)
 }
+
 type FinanceOverview struct {
 	VolumeMois float64 `json:"volumeMois"`
-	RevenuMois float64 `json:"revenuMois"` // Tes 5% de commission
+	RevenuMois float64 `json:"revenuMois"`
 	Evolution  int     `json:"evolution"`
 }
 
 func FinanceOverviewHandler(w http.ResponseWriter, r *http.Request) {
-	// 1. Gestion du CORS
+
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
@@ -78,7 +102,6 @@ func FinanceOverviewHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 2. Appel à la BDD (Logique métier)
 	volume, commission, err := bdd.GetFinanceOverviewMois()
 	if err != nil {
 		http.Error(w, `{"erreur": "Erreur lors du calcul des finances"}`, http.StatusInternalServerError)
@@ -86,24 +109,19 @@ func FinanceOverviewHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 3. Préparation des données pour le JS
 	stats := FinanceOverview{
 		VolumeMois: volume,
 		RevenuMois: commission,
-		Evolution:  5, // On laisse à 5% en dur pour le moment pour le design
+		Evolution:  5,
 	}
 
-	// 4. Envoi de la réponse JSON
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(stats)
 }
 
-
-
-
 func AdminTransactionsHandler(w http.ResponseWriter, r *http.Request) {
-	// 1. Gestion du CORS
+
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
@@ -118,7 +136,6 @@ func AdminTransactionsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 2. Appel à la BDD
 	transactions, err := bdd.GetAdminTransactions()
 	if err != nil {
 		fmt.Println("CRASH TRANSACTIONS:", err.Error())
@@ -126,12 +143,10 @@ func AdminTransactionsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 3. Si aucune transaction, on renvoie un tableau vide pour ne pas faire planter le JS
 	if transactions == nil {
 		transactions = []map[string]interface{}{}
 	}
 
-	// 4. Envoi de la réponse JSON
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(transactions)
 }

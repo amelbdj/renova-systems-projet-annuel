@@ -25,12 +25,12 @@ function LoadDashboardData() {
             a.statut_validation &&
             a.statut_validation.toLowerCase() === "valide"
           ) {
-            totalPoidsKg += parseFloat(a.poids_kg) || 0; // Addition pour le KPI des déchets
+            totalPoidsKg += parseFloat(a.poids_kg) || 0; 
           } else if (
             a.statut_validation &&
             a.statut_validation.toLowerCase() === "en attente"
           ) {
-            aModerer++; // On compte pour l'alerte
+            aModerer++; 
           }
         });
       }
@@ -59,7 +59,7 @@ function LoadDashboardData() {
             e.statut_validation &&
             e.statut_validation.toLowerCase() === "en attente"
           ) {
-            aValider++; // On compte
+            aValider++; 
           }
         });
       }
@@ -84,7 +84,7 @@ function LoadDashboardData() {
         if (elBoxes)
           elBoxes.textContent = `${conteneurs.length} / ${totalCasiers}`;
 
-        // Astuce : On interroge l'API pour voir à l'intérieur de TOUS les conteneurs
+        
         let fetchPromises = conteneurs.map((c) =>
           fetch(`http://localhost:8081/api/admin/conteneur/${c.id}/boxes`, {
             headers: { Authorization: "Bearer " + tokenAdmin },
@@ -93,7 +93,7 @@ function LoadDashboardData() {
             .catch(() => []),
         );
 
-        // Quand on a scanné tous les casiers de France...
+        
         Promise.all(fetchPromises).then((results) => {
           let maintenanceCount = 0;
           results.forEach((boxArray) => {
@@ -111,11 +111,11 @@ function LoadDashboardData() {
             }
           });
 
-          // Mise à jour de l'alerte
+          
           if (elAlertMaint) {
             if (maintenanceCount === 0) {
               elAlertMaint.textContent = "0 Casier en maintenance";
-              elAlertMaint.style.color = "var(--teal)"; // Vert si tout va bien !
+              elAlertMaint.style.color = "var(--teal)"; 
             } else {
               elAlertMaint.textContent = `${maintenanceCount} Casiers en panne !`;
             }
@@ -133,7 +133,7 @@ function LoadDashboardData() {
       let artAValider = 0;
       if (articles) {
         articles.forEach((art) => {
-          // Attention, dans ton fichier articles.js, la variable s'appelle souvent "statut" tout court
+          
           if (art.statut && art.statut.toLowerCase() === "en attente") {
             artAValider++;
           }
@@ -144,10 +144,10 @@ function LoadDashboardData() {
       if (elAlertArt) {
         if (artAValider === 0) {
           elAlertArt.textContent = "0 Article en attente";
-          elAlertArt.style.color = "var(--txt-m)"; // Gris si tout est à jour
+          elAlertArt.style.color = "var(--txt-m)"; 
         } else {
           elAlertArt.textContent = `${artAValider} Articles à modérer`;
-          elAlertArt.style.color = "#2ecc71"; // Vert s'il y a de l'action
+          elAlertArt.style.color = "#2ecc71"; 
         }
       }
     })

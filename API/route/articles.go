@@ -6,9 +6,8 @@ import (
 	"upcycleconnect/auth"
 )
 
-// RoutesArticles : gestion des articles / news
 func RoutesArticles() {
-	// --- OPTIONS (pré-vol CORS) ---
+
 	http.HandleFunc("OPTIONS /admin/articles/validate/{id}", admin.ValidateArticle)
 	http.HandleFunc("OPTIONS /admin/articles/refuse/{id}", admin.RefuseArticle)
 	http.HandleFunc("OPTIONS /admin/articles/delete/{id}", admin.DeleteArticle)
@@ -18,7 +17,6 @@ func RoutesArticles() {
 	http.HandleFunc("OPTIONS /admin/articles/{id}", admin.GetArticleById)
 	http.HandleFunc("OPTIONS /admin/articles", admin.GetAllArticles)
 
-	// --- Vraies routes ---
 	http.HandleFunc("GET /admin/articles", admin.GetAllArticles)
 	http.HandleFunc("GET /admin/articles/salarie/{id}", auth.VerifyTokenMiddleware(admin.GetArticlesBySalarie))
 	http.HandleFunc("GET /admin/articles/{id}", admin.GetArticleById)

@@ -6,10 +6,10 @@ type Article struct {
 	NomAuteur    string `json:"nom_auteur"`
 	PrenomAuteur string `json:"prenom_auteur"`
 	Titre        string `json:"titre"`
-	Slug         string `json:"slug"` // Si tu as ajouté la colonne slug
+	Slug         string `json:"slug"`
 	Contenu      string `json:"contenu"`
 	ImageUrl     string `json:"image_url"`
-	Type         string `json:"type"`   // news, conseil, pedagogique
-	Statut       string `json:"statut"` // brouillon, valide, en attente, refuse
+	Type         string `json:"type"`
+	Statut       string `json:"statut"`
 	CreatedAt    string `json:"created_at"`
 }

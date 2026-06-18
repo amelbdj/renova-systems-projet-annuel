@@ -310,6 +310,9 @@ CREATE TABLE IF NOT EXISTS `evenement` (
   `format` varchar(20) DEFAULT NULL,
   `type` enum('evenement','formation') DEFAULT NULL,
   `lieu` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '0',
+  `prix` int DEFAULT '0',
+  `image_url` varchar(255) DEFAULT NULL,
+  `pdf_url` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_event` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

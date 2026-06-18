@@ -10,7 +10,7 @@ async function loadOneAnnonce() {
     return;
   }
 
-  // --- GESTION DU RETOUR DE PAIEMENT ---
+  
   if (paymentStatus === "success") {
     console.log("Paiement détecté, mise à jour du statut...");
     const buyerId = urlParams.get("buyer_id");
@@ -162,7 +162,7 @@ function renderPage(item) {
       </div>
     </div>`;
 
-  // On traduit le contenu qu'on vient d'injecter
+  
   if (typeof appliquerTraductions === "function") appliquerTraductions();
 
   const monUserId = parseInt(localStorage.getItem("userId"));

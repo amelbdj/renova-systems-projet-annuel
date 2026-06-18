@@ -1,5 +1,5 @@
 let mesActivites = [];
-let dateAffichee = new Date(); // Par défaut : aujourd'hui
+let dateAffichee = new Date(); 
 
 function initPlanningClient() {
   fetchActivitesClient();
@@ -99,7 +99,7 @@ function genererGrilleMois() {
     });
 
     if (activitesDuJour.length > 0) {
-      divJour.classList.add("has"); //point sur le calendrier
+      divJour.classList.add("has"); 
 
       activitesDuJour.forEach(function (ev) {
         let cssColor = "bl";
@@ -114,7 +114,7 @@ function genererGrilleMois() {
           displayTitle = "📦 À Déposer : " + ev.titre;
           metaTxt = ev.meta ? "Code : " + ev.meta : "Code à venir";
         } else if (ev.type === "box_retrait") {
-          cssColor = "gr"; // Vert
+          cssColor = "gr"; 
           displayTitle = "À Récupérer : " + ev.titre;
           metaTxt = ev.meta ? "Code : " + ev.meta : "Code à venir";
         }

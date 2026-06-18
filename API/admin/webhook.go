@@ -12,11 +12,9 @@ import (
 	"github.com/stripe/stripe-go/v81/webhook"
 )
 
-// Utilise bien le secret généré par ta commande "stripe listen"
 const WebhookSecret = "whsec_ca8df90af4b7eb3045da3e1ab058edeb4ea8597a2d49b88adec258b0037f4fbc"
 
 func StripeWebhookHandler(w http.ResponseWriter, r *http.Request) {
-
 
 	const MaxBodyBytes = int64(65536)
 	r.Body = http.MaxBytesReader(w, r.Body, MaxBodyBytes)
@@ -38,12 +36,11 @@ func StripeWebhookHandler(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println("SIGNATURE VALIDE Événement :", event.Type)
 
-	// Cas 1 : Mise à jour d'un compte Stripe Connect
 	if event.Type == "account.updated" {
 		var account stripe.Account
 		err := json.Unmarshal(event.Data.Raw, &account)
 		if err == nil && account.PayoutsEnabled {
-			// Mise à jour du statut de l'utilisateur dans la table 'utilisateur'
+
 			_, err := bdd.Db.Exec("UPDATE utilisateur SET stripe_verif_completed = 1 WHERE stripe_account_id = ?", account.ID)
 			if err != nil {
 				fmt.Println("ERREUR SQL (account.updated) :", err)
@@ -51,7 +48,6 @@ func StripeWebhookHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// Cas 2 : Succès d'un paiement (Checkout Session)
 	if event.Type == "checkout.session.completed" {
 		var session stripe.CheckoutSession
 		err := json.Unmarshal(event.Data.Raw, &session)
@@ -61,19 +57,16 @@ func StripeWebhookHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Récupération des données envoyées lors de la création de la session
 		idEventStr := session.Metadata["id_event"]
 		idUserStr := session.Metadata["id_user"]
 		idEvent, _ := strconv.Atoi(idEventStr)
 		idUser, _ := strconv.Atoi(idUserStr)
 
-		// Données financières
 		stripeID := session.ID
 		montantTotal := float64(session.AmountTotal) / 100.0
 
 		fmt.Printf("Paiement reçu ! User: %d, Event: %d, Montant: %.2f€\n", idUser, idEvent, montantTotal)
 
-		// Insertion dans la table 'inscription' 
 		_, err = bdd.Db.Exec("INSERT INTO inscription (id_user, id_event) VALUES (?, ?)", idUser, idEvent)
 		if err != nil {
 			fmt.Println("ERREUR SQL (Table inscription) :", err)
@@ -81,14 +74,13 @@ func StripeWebhookHandler(w http.ResponseWriter, r *http.Request) {
 			fmt.Println("Inscription enregistrée avec succès !")
 		}
 
-		// On commence par créer une commande dans la table 'order'
 		res, err := bdd.Db.Exec("INSERT INTO `order` (id_acheteur, id_annonce, montant_total, commission) VALUES (?, ?, ?, ?)",
-			idUser, idEvent, montantTotal, 0.0) // On utilise id_event comme id_annonce ici pour simplifier
+			idUser, idEvent, montantTotal, 0.0)
 
 		if err != nil {
-            fmt.Println("❌ ERREUR SQL (Table order) :", err)
+			fmt.Println("❌ ERREUR SQL (Table order) :", err)
 		} else {
-			// On récupère l'ID de la commande pour l'associer au paiement
+
 			lastID, _ := res.LastInsertId()
 
 			_, err = bdd.Db.Exec("INSERT INTO paiement(id_commande, stripe_id, statut) VALUES (?, ?, ?)",
@@ -100,6 +92,36 @@ func StripeWebhookHandler(w http.ResponseWriter, r *http.Request) {
 				fmt.Println("Paiement stocké en base de données !")
 			}
 		}
+	}
+
+	if event.Type == "customer.subscription.deleted" {
+		var subscription stripe.Subscription
+		err := json.Unmarshal(event.Data.Raw, &subscription)
+		if err != nil || subscription.Customer == nil {
+			fmt.Println("ERREUR JSON (subscription.deleted) :", err)
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		customerID := subscription.Customer.ID
+
+		var userID int
+		err = bdd.Db.QueryRow("SELECT id FROM utilisateur WHERE stripe_customer_id = ?", customerID).Scan(&userID)
+		if err != nil {
+			fmt.Println("Abonnement terminé : utilisateur introuvable pour", customerID, err)
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		_, err = bdd.Db.Exec("UPDATE utilisateur SET est_premium = 0 WHERE id = ?", userID)
+		if err != nil {
+			fmt.Println("ERREUR SQL (fin abonnement) :", err)
+		}
+
+		go SendPushNotification(
+			strconv.Itoa(userID),
+			"⏳ Votre abonnement Pro a pris fin. Renouvelez-le pour continuer à profiter de tous les avantages.",
+		)
 	}
 
 	w.WriteHeader(http.StatusOK)

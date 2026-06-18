@@ -86,7 +86,7 @@ function displayAnnonces(items) {
     grid.appendChild(card);
   });
 
-  // On (re)traduit les cartes qu'on vient d'injecter
+  
   if (typeof appliquerTraductions === "function") appliquerTraductions();
 }
 

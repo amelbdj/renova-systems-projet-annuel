@@ -1,12 +1,6 @@
-/* ═══════════════════════════════════════════════════════════════
-   UPCYCLECONNECT — Page d'accueil
-   Thème sombre "deep space blue" : glassmorphism, halos lumineux,
-   dégradés, glow. Syne (display) + Outfit (texte).
-═══════════════════════════════════════════════════════════════ */
 
-/* ─────────────────────────────────────────────────────
-   RESET & TOKENS
-───────────────────────────────────────────────────── */
+
+
 *,
 *::before,
 *::after {
@@ -19,19 +13,19 @@ html {
 }
 
 :root {
-  /* Fonds */
+  
   --bg: #05080f;
   --bg2: #090d1a;
   --bg3: #0d1223;
   --card: #0c1120;
   --card2: #101828;
 
-  /* Bordures bleutées translucides */
+  
   --b0: rgba(49, 115, 255, 0.08);
   --b1: rgba(49, 115, 255, 0.16);
   --b2: rgba(49, 115, 255, 0.32);
 
-  /* Accents */
+  
   --blue: #3173ff;
   --blue-l: #5b96ff;
   --blue-d: #1a50d4;
@@ -42,12 +36,12 @@ html {
   --red: #ff5c5c;
   --purple: #a67cff;
 
-  /* Texte */
+  
   --txt: #ccdcf5;
   --txt-m: #5a7899;
   --txt-d: #253650;
 
-  /* Rayons */
+  
   --r: 14px;
   --r2: 10px;
 
@@ -94,7 +88,7 @@ img {
   max-width: 100%;
 }
 
-/* Halos d'ambiance + grille subtile (couches fixes derrière tout) */
+
 body::before {
   content: "";
   position: fixed;
@@ -121,7 +115,7 @@ body::after {
   mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, #000 30%, transparent 75%);
 }
 
-/* Accessibilité : focus clavier visible */
+
 a:focus-visible,
 button:focus-visible {
   outline: 2px solid var(--blue-l);
@@ -129,9 +123,7 @@ button:focus-visible {
   border-radius: 4px;
 }
 
-/* ─────────────────────────────────────────────────────
-   LAYOUT
-───────────────────────────────────────────────────── */
+
 .wrapper {
   position: relative;
   z-index: 1;
@@ -150,7 +142,7 @@ button:focus-visible {
   padding: 0 28px;
 }
 
-/* En-tête de section */
+
 .sec-head {
   display: flex;
   align-items: flex-end;
@@ -223,9 +215,7 @@ button:focus-visible {
   transform: translateX(2px);
 }
 
-/* ─────────────────────────────────────────────────────
-   BOUTONS
-───────────────────────────────────────────────────── */
+
 .btn {
   display: inline-flex;
   align-items: center;
@@ -287,9 +277,7 @@ button:focus-visible {
   width: 100%;
 }
 
-/* ─────────────────────────────────────────────────────
-   TAGS / BADGES
-───────────────────────────────────────────────────── */
+
 .tag {
   display: inline-flex;
   align-items: center;
@@ -326,9 +314,7 @@ button:focus-visible {
   border: 1px solid rgba(166, 124, 255, 0.2);
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   NAVBAR
-═══════════════════════════════════════════════════════════════ */
+
 .navbar {
   position: fixed;
   top: 0;
@@ -356,7 +342,7 @@ button:focus-visible {
   gap: 28px;
 }
 
-/* Marque */
+
 .nav-brand {
   display: flex;
   align-items: center;
@@ -387,7 +373,7 @@ button:focus-visible {
   color: #fff;
 }
 
-/* Liens */
+
 .nav-links {
   display: flex;
   align-items: center;
@@ -411,7 +397,7 @@ button:focus-visible {
   background: rgba(49, 115, 255, 0.1);
 }
 
-/* Zone droite / auth */
+
 .nav-right {
   display: flex;
   align-items: center;
@@ -425,7 +411,7 @@ button:focus-visible {
   visibility: hidden;
 }
 
-/* Menu utilisateur */
+
 .nav-user-menu {
   display: none;
   position: relative;
@@ -517,7 +503,7 @@ button:focus-visible {
   background: rgba(255, 92, 92, 0.1);
 }
 
-/* Burger */
+
 .nav-burger {
   display: none;
   flex-direction: column;
@@ -546,7 +532,7 @@ button:focus-visible {
   transform: translateY(-6px) rotate(-45deg);
 }
 
-/* Menu mobile */
+
 .nav-mobile {
   display: none;
   position: fixed;
@@ -586,9 +572,7 @@ button:focus-visible {
   flex: 1;
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   HERO
-═══════════════════════════════════════════════════════════════ */
+
 .hero {
   position: relative;
   z-index: 1;
@@ -683,7 +667,7 @@ button:focus-visible {
   box-shadow: 0 0 9px var(--green);
 }
 
-/* Hero — visuel : cartes produits flottantes */
+
 .hero-visual {
   position: relative;
   height: 440px;
@@ -771,9 +755,7 @@ button:focus-visible {
   color: var(--blue-l);
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   STEPS — Comment ça marche
-═══════════════════════════════════════════════════════════════ */
+
 .steps-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -842,9 +824,7 @@ button:focus-visible {
   line-height: 1.6;
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   PRO SECTION
-═══════════════════════════════════════════════════════════════ */
+
 .pro-section {
   position: relative;
   z-index: 1;
@@ -979,9 +959,7 @@ button:focus-visible {
   background: rgba(0, 201, 122, 0.14);
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   CTA FINAL
-═══════════════════════════════════════════════════════════════ */
+
 .cta-final {
   position: relative;
   z-index: 1;
@@ -1032,9 +1010,7 @@ button:focus-visible {
   margin-bottom: 0;
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   FOOTER
-═══════════════════════════════════════════════════════════════ */
+
 .footer {
   position: relative;
   z-index: 1;
@@ -1124,9 +1100,7 @@ button:focus-visible {
   box-shadow: 0 0 8px var(--green);
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   RESPONSIVE
-═══════════════════════════════════════════════════════════════ */
+
 @media (max-width: 1024px) {
   .hero-inner {
     grid-template-columns: 1fr;
@@ -1196,7 +1170,7 @@ button:focus-visible {
   }
 }
 
-/* Respect des préférences de mouvement réduit */
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

@@ -18,8 +18,6 @@ import (
 
 const StripeSecretKey = "sk_test_51TNFHBHbaxF1KOTtH89RRHNJQSQXSPVtOHMJDHicr1LW4XYeY4ZC6nYWwzVbDvFUUI58YA7KlJs9BiUyP5zD4XU300gaAUPVpI"
 
-// const StripeSecretKey = "sk_test_51TNFHBHbaxF1KOTtH89RRHNJQSQXSPVtOHMJDHicr1LW4XYeY4ZC6nYWwzVbDvFUUI58YA7KlJs9BiUyP5zD4XU300gaAUPVpI"
-
 func ConnectToStripe(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
@@ -152,7 +150,6 @@ func PaymentAnnonce(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]string{"url": s.URL})
 }
 
-// Nouvelle route pour l'application Android
 func PaymentIntentMobile(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
@@ -183,7 +180,6 @@ func PaymentIntentMobile(w http.ResponseWriter, r *http.Request) {
 	unitAmount := int64(prix * 100)
 	commission := (unitAmount * 5) / 100
 
-	// Au lieu d'une session Web, on crée une intention de paiement silencieuse
 	params := &stripe.PaymentIntentParams{
 		Amount:               stripe.Int64(unitAmount),
 		Currency:             stripe.String(string(stripe.CurrencyEUR)),
@@ -192,7 +188,7 @@ func PaymentIntentMobile(w http.ResponseWriter, r *http.Request) {
 			Destination: stripe.String(stripeAccountIDSeller),
 		},
 		AutomaticPaymentMethods: &stripe.PaymentIntentAutomaticPaymentMethodsParams{
-			Enabled: stripe.Bool(true), // Nécessaire pour le SDK Android
+			Enabled: stripe.Bool(true),
 		},
 	}
 
@@ -202,7 +198,6 @@ func PaymentIntentMobile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// On renvoie le secret au téléphone Android !
 	json.NewEncoder(w).Encode(map[string]string{
 		"client_secret": pi.ClientSecret,
 	})
@@ -228,7 +223,6 @@ func CreateEventCheckoutSession(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 1. Récupération des informations de l'événement et du créateur
 	var titre string
 	var prix float64
 	var stripeAccountId string
@@ -243,12 +237,11 @@ func CreateEventCheckoutSession(w http.ResponseWriter, r *http.Request) {
 	}
 
 	stripe.Key = StripeSecretKey
-	// 2. Calculs (Stripe en centimes, Base de données en euros)
-	unitAmount := int64(prix * 100)
-	commissionCentimes := int64(float64(unitAmount) * 0.05) // 5% pour Stripe
-	commissionEuros := prix * 0.05                          // 5% pour la BDD
 
-	// 3. Création de la session Stripe
+	unitAmount := int64(prix * 100)
+	commissionCentimes := int64(float64(unitAmount) * 0.05)
+	commissionEuros := prix * 0.05
+
 	params := &stripe.CheckoutSessionParams{
 		PaymentMethodTypes: stripe.StringSlice([]string{"card"}),
 		LineItems: []*stripe.CheckoutSessionLineItemParams{
@@ -282,19 +275,16 @@ func CreateEventCheckoutSession(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 4. ÉTAPE BDD 1 : Création de la commande dans la table `order`
-	// Utilisation des backticks pour `order` car c'est un mot réservé en SQL
 	queryOrder := "INSERT INTO `order` (id_acheteur, id_annonce, montant_total, commission, date_commande) VALUES (?, ?, ?, ?, NOW())"
 	result, errOrder := bdd.Db.Exec(queryOrder, req.IdUser, req.IdEvent, prix, commissionEuros)
 
 	if errOrder != nil {
 		fmt.Printf("ERREUR INSERTION ORDER : %v\n", errOrder)
 	} else {
-		// On récupère l'ID généré pour cette nouvelle commande
+
 		idCommandeCreee, _ := result.LastInsertId()
 		fmt.Printf("Commande %d créée avec %.2f€ de commission !\n", idCommandeCreee, commissionEuros)
 
-		// 5. ÉTAPE BDD 2 : Liaison avec Stripe dans la table `paiement` (sans le "e")
 		queryPaiement := "INSERT INTO paiement (id_commande, stripe_id, statut) VALUES (?, ?, ?)"
 		_, errPaiement := bdd.Db.Exec(queryPaiement, idCommandeCreee, s.ID, "pending")
 		if errPaiement != nil {
@@ -304,7 +294,6 @@ func CreateEventCheckoutSession(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// 6. Réponse envoyée au front-end
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]string{"checkout_url": s.URL})
 }
@@ -328,7 +317,6 @@ func CreateProSubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 
 	stripe.Key = "sk_test_51TNFHBHbaxF1KOTtH89RRHNJQSQXSPVtOHMJDHicr1LW4XYeY4ZC6nYWwzVbDvFUUI58YA7KlJs9BiUyP5zD4XU300gaAUPVpI"
 
-	
 	prodParams := &stripe.ProductParams{
 		Name: stripe.String("Abonnement Premium Pro"),
 	}
@@ -341,7 +329,7 @@ func CreateProSubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 
 	priceParams := &stripe.PriceParams{
 		Product:    stripe.String(prod.ID),
-		UnitAmount: stripe.Int64(2500), // 25.00 EUR (en centimes)
+		UnitAmount: stripe.Int64(2500),
 		Currency:   stripe.String(string(stripe.CurrencyEUR)),
 		Recurring: &stripe.PriceRecurringParams{
 			Interval: stripe.String(string(stripe.PriceRecurringIntervalMonth)),
@@ -355,13 +343,13 @@ func CreateProSubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Println("✅ MAGIC SUCCESS! New Price ID auto-generated:", newPrice.ID)
-	
+
 	params := &stripe.CheckoutSessionParams{
 		PaymentMethodTypes: stripe.StringSlice([]string{"card"}),
 		Mode:               stripe.String(string(stripe.CheckoutSessionModeSubscription)),
 		LineItems: []*stripe.CheckoutSessionLineItemParams{
 			{
-				Price:    stripe.String(newPrice.ID), // We use the new ID directly!
+				Price:    stripe.String(newPrice.ID),
 				Quantity: stripe.Int64(1),
 			},
 		},
@@ -379,50 +367,3 @@ func CreateProSubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(map[string]string{"url": s.URL})
 }
-
-// func CreateProSubscriptionHandler(w http.ResponseWriter, r *http.Request) {
-// 	w.Header().Set("Access-Control-Allow-Origin", "*")
-// 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-// 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-// 	w.Header().Set("Content-Type", "application/json")
-
-// 	if r.Method == "OPTIONS" {
-// 		w.WriteHeader(http.StatusOK)
-// 		return
-// 	}
-
-// 	userID := r.URL.Query().Get("id")
-// 	if userID == "" {
-// 		http.Error(w, `{"error": "ID utilisateur manquant"}`, http.StatusBadRequest)
-// 		return
-// 	}
-
-// 	// 1. HARDCODE THE KEY DIRECTLY
-// 	stripe.Key = "sk_test_51TNFHBHbaxF1KOTtH89RRHNJQSQXSPVtOHMJDHicr1LW4XYeY4ZC6nYWwzVbDvFUUI58YA7KlJs9BiUyP5zD4XU300gaAUPVpI"
-
-// 	// 2. HARDCODE THE CLEAN PRICE ID
-// 	cleanPriceID := "price_1PQ1xFBbaxF1KOTt65zW0i4W"
-
-// 	params := &stripe.CheckoutSessionParams{
-// 		PaymentMethodTypes: stripe.StringSlice([]string{"card"}),
-// 		Mode:               stripe.String(string(stripe.CheckoutSessionModeSubscription)),
-// 		LineItems: []*stripe.CheckoutSessionLineItemParams{
-// 			{
-// 				Price:    stripe.String(cleanPriceID),
-// 				Quantity: stripe.Int64(1),
-// 			},
-// 		},
-// 		SuccessURL:        stripe.String("http://127.0.0.1:5500/Frontend/espPro.html?abo=success"),
-// 		CancelURL:         stripe.String("http://127.0.0.1:5500/Frontend/espPro.html?abo=cancel"),
-// 		ClientReferenceID: stripe.String(userID),
-// 	}
-
-// 	s, err := session.New(params)
-// 	if err != nil {
-// 		fmt.Println("Stripe Error:", err)
-// 		http.Error(w, `{"error": "Impossible de contacter Stripe"}`, http.StatusInternalServerError)
-// 		return
-// 	}
-
-// 	json.NewEncoder(w).Encode(map[string]string{"url": s.URL})
-// }

@@ -20,7 +20,7 @@
     />
   </head>
   <body>
-    <!-- Sélecteur de langue (boutons générés par translate.js) -->
+    
     <div id="wrapper" style="position:fixed; bottom:16px; right:16px; z-index:2000; display:flex; gap:6px;"></div>
 
     <nav class="topnav">
@@ -267,7 +267,7 @@
       </div>
     </div>
 
-    <!-- translate.js : moteur de traduction (data-i18n + mémoire de la langue) -->
+    
     <script src="./script/admin/translate.js"></script>
 
     <script>
@@ -338,9 +338,9 @@
           if (linkDash && user.role) {
             const role = user.role.toLowerCase();
             if (role.includes("salari")) {
-              linkDash.href = "../Frontend/salarie/salarie_dashboard.html"; // Remplace par le bon nom de fichier si besoin
+              linkDash.href = "../Frontend/salarie/salarie_dashboard.html"; 
             } else if (role.includes("admin")) {
-              linkDash.href = "admin_dashboard.html"; // Remplace par le bon nom de fichier si besoin
+              linkDash.href = "admin_dashboard.html"; 
             } else {
               linkDash.href = "espClient.html";
             }

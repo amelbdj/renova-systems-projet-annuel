@@ -1,11 +1,11 @@
 let monToken = localStorage.getItem("token");
 
-// VARIABLES GLOBALES POUR LA NAVIGATION
+
 let currentBoxId = null;
 let currentConteneurId = null;
 let currentConteneurNom = "";
 
-// GESTION CONTENEUR
+
 
 function GetConteneurs() {
   const container = document.getElementById("box-container");
@@ -83,13 +83,13 @@ function CreateConteneur() {
     return;
   }
 
-  // On fusionne l'adresse pour l'API
+  
   const adresseComplete = `${adresse}, ${cp} ${ville}`;
 
   const newConteneurData = {
     nom: nom,
     adresse: adresseComplete,
-    nombre_de_boxs: 0, // Nouveau conteneur = 0 casier au début
+    nombre_de_boxs: 0, 
   };
 
   fetch("http://localhost:8081/api/admin/conteneur/create", {
@@ -104,7 +104,7 @@ function CreateConteneur() {
       if (response.ok) {
         alert("Nouveau Conteneur déployé avec succès !");
         closeModal("NewConteneurModal");
-        GetConteneurs(); // Rafraîchit la page
+        GetConteneurs(); 
       } else {
         alert("Erreur lors du déploiement.");
       }
@@ -112,13 +112,13 @@ function CreateConteneur() {
     .catch((error) => console.error("Erreur de création:", error));
 }
 
-// GESTION CASIER (BOX)
+
 
 function GetBoxesForConteneur(conteneurId, nomConteneur, adresseConteneur) {
   const container = document.getElementById("box-container");
   const statContainer = document.getElementById("box-stats");
 
-  // On sauvegarde le conteneur actuel
+  
   currentConteneurId = conteneurId;
   currentConteneurNom = nomConteneur;
 
@@ -210,7 +210,7 @@ function GetBoxesForConteneur(conteneurId, nomConteneur, adresseConteneur) {
 }
 
 function openNewBoxModal(conteneurId) {
-  // On remplit le champ caché de la modale avec l'ID du conteneur
+  
   const hiddenInput = document.getElementById("current-conteneur-id");
   if (hiddenInput) hiddenInput.value = conteneurId;
 
@@ -236,7 +236,7 @@ function CreateBox(conteneurId) {
       if (response.ok) {
         alert("Nouveau casier ajouté !");
         closeModal("NewBoxModal");
-        // On rafraîchit l'affichage des casiers pour CE conteneur
+        
         GetBoxesForConteneur(currentConteneurId, currentConteneurNom, "");
       } else {
         alert("Erreur lors de l'ajout du casier.");
@@ -245,7 +245,7 @@ function CreateBox(conteneurId) {
     .catch((error) => console.error("Erreur:", error));
 }
 
-// ADD BOX
+
 
 function openBoxDetail(id, numero, status, localisation, conteneurId) {
   currentBoxId = id;
@@ -263,7 +263,7 @@ function openBoxDetail(id, numero, status, localisation, conteneurId) {
   if (modalLocation) modalLocation.textContent = localisation;
 
   const modal = document.getElementById("boxModal");
-  if (modal) modal.style.display = "flex"; // Adaptation à ton nouveau CSS
+  if (modal) modal.style.display = "flex"; 
 }
 
 function UpdateBoxStatusAPI() {
@@ -295,11 +295,11 @@ function UpdateBoxStatusAPI() {
     .catch((error) => console.error("Erreur:", error));
 }
 
-// Fonction générique pour fermer n'importe quelle modale (si elle n'est pas déjà dans user.js)
+
 function closeModal(modalId) {
   const modal = document.getElementById(modalId);
   if (modal) modal.style.display = "none";
 }
 
-// Initialisation au chargement de la page
+
 document.addEventListener("DOMContentLoaded", GetConteneurs);

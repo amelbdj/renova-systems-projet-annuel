@@ -6,7 +6,9 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 	"upcycleconnect/bdd"
 	"upcycleconnect/models"
@@ -101,7 +103,6 @@ func RefuseEvenement(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Evenement refusée avec succès")
 }
 
-// 🟢 NOUVELLE FONCTION CREATEEVENEMENT
 func CreateEvenement(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
@@ -114,7 +115,6 @@ func CreateEvenement(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println("hello from CreateEvenement (Multipart Mode)")
 
-	// 1. Lire le formulaire (Max 10 Mo)
 	err := r.ParseMultipartForm(10 << 20)
 	if err != nil {
 		http.Error(w, "Erreur lors de la lecture du formulaire", http.StatusBadRequest)
@@ -122,7 +122,6 @@ func CreateEvenement(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 2. Extraire les champs texte manuellement
 	var Evenement models.Evenement
 	Evenement.IdSalarie, _ = strconv.Atoi(r.FormValue("idSalarie"))
 	Evenement.Titre = r.FormValue("titre")
@@ -134,7 +133,16 @@ func CreateEvenement(w http.ResponseWriter, r *http.Request) {
 	Evenement.NbPlaces, _ = strconv.Atoi(r.FormValue("capacite"))
 	Evenement.Prix, _ = strconv.ParseFloat(r.FormValue("tarif"), 64)
 
-	// 3. Traiter le fichier image s'il existe
+	dateDebut, errDate := time.ParseInLocation("2006-01-02 15:04:05", Evenement.DateDebut, time.Local)
+	if errDate != nil {
+		http.Error(w, "Date de début invalide", http.StatusBadRequest)
+		return
+	}
+	if dateDebut.Before(time.Now()) {
+		http.Error(w, "Impossible de créer un événement à une date ou une heure déjà passée", http.StatusBadRequest)
+		return
+	}
+
 	file, handler, errFile := r.FormFile("image")
 	if errFile == nil {
 		defer file.Close()
@@ -152,7 +160,27 @@ func CreateEvenement(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// 4. Envoyer à la base de données
+	pdfFile, pdfHandler, errPdf := r.FormFile("pdf")
+	if errPdf == nil {
+		defer pdfFile.Close()
+		if strings.ToLower(filepath.Ext(pdfHandler.Filename)) != ".pdf" {
+			http.Error(w, "Le fichier de ressource doit être au format PDF", http.StatusBadRequest)
+			return
+		}
+		os.MkdirAll("./static/uploads/formations", os.ModePerm)
+		nomPdf := fmt.Sprintf("%d_%s", time.Now().Unix(), pdfHandler.Filename)
+		cheminPdf := "./static/uploads/formations/" + nomPdf
+
+		f, err := os.OpenFile(cheminPdf, os.O_WRONLY|os.O_CREATE, 0666)
+		if err == nil {
+			defer f.Close()
+			io.Copy(f, pdfFile)
+			Evenement.PdfUrl = "static/uploads/formations/" + nomPdf
+		} else {
+			fmt.Println("Erreur création fichier PDF :", err)
+		}
+	}
+
 	err = bdd.CreateEvenement(Evenement)
 	if err != nil {
 		http.Error(w, "erreur de création de l'Evenement", http.StatusInternalServerError)

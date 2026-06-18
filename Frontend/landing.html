@@ -19,7 +19,7 @@
     <link rel="stylesheet" href="../Frontend/style/landing.css" />
   </head>
   <body>
-    <!-- Sélecteur de langue (boutons générés par translate.js) -->
+    
     <div
       id="wrapper"
       style="
@@ -32,7 +32,7 @@
       "
     ></div>
 
-    <!-- ═══════════════ NAVBAR ═══════════════ -->
+    
     <nav
       class="navbar"
       id="navbar"
@@ -174,7 +174,7 @@
     </nav>
 
     <main>
-      <!-- ═══════════════ HERO ═══════════════ -->
+      
       <section class="hero">
         <div class="hero-inner">
           <div class="hero-left">
@@ -280,7 +280,7 @@
         </div>
       </section>
 
-      <!-- ═══════════════ COMMENT ÇA MARCHE ═══════════════ -->
+      
       <section class="section">
         <div class="section-inner">
           <div class="sec-head">
@@ -329,7 +329,7 @@
         </div>
       </section>
 
-      <!-- ═══════════════ SERVICES PRO ═══════════════ -->
+      
       <section class="pro-section">
         <div class="section-inner">
           <div class="pro-grid">
@@ -392,7 +392,7 @@
         </div>
       </section>
 
-      <!-- ═══════════════ CTA FINAL ═══════════════ -->
+      
       <section class="cta-final">
         <div class="cta-final-inner">
           <h2 class="cta-final-title" data-i18n="landing.cta.title">
@@ -420,7 +420,7 @@
       </section>
     </main>
 
-    <!-- ═══════════════ FOOTER ═══════════════ -->
+    
     <footer class="footer">
       <div class="footer-top">
         <div>
@@ -492,7 +492,7 @@
       </div>
     </footer>
 
-    <!-- translate.js : moteur de traduction (data-i18n + mémoire de la langue) -->
+    
     <script src="../Frontend/script/admin/translate.js"></script>
 
     <script>
@@ -508,7 +508,7 @@
         const userName = document.getElementById("nav-user-name");
         const mobileAuth = document.getElementById("nav-mobile-auth");
 
-        // État connecté
+        
         if (token) {
           registerBtn.style.display = "none";
           loginBtn.style.display = "none";
@@ -543,7 +543,7 @@
 
         wrapper.style.visibility = "visible";
 
-        // Ombre / fond au scroll
+        
         const nav = document.getElementById("navbar");
         window.addEventListener(
           "scroll",
@@ -553,7 +553,7 @@
           { passive: true },
         );
 
-        // Burger mobile
+        
         const burger = document.getElementById("nav-burger");
         const mobile = document.getElementById("nav-mobile");
         burger.addEventListener("click", () => {

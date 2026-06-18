@@ -10,7 +10,6 @@ import (
 func main() {
 	bdd.Db = bdd.NewDB()
 
-	// On enregistre toutes les routes, classées par thématique dans le dossier route/
 	route.RoutesAuth()
 	route.RoutesUsers()
 	route.RoutesCategories()

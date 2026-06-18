@@ -1,4 +1,4 @@
-/* ─── RESET ───────────────────────────────────────── */
+
 *,
 *::before,
 *::after {
@@ -27,7 +27,7 @@ textarea {
   border-radius: 3px;
 }
 
-/* ─── TOKENS ──────────────────────────────────────── */
+
 :root {
   --bg: #090600;
   --bg2: #0f0a00;
@@ -55,7 +55,7 @@ textarea {
   --r2: 9px;
 }
 
-/* ─── BODY + AMBIENT ──────────────────────────────── */
+
 body {
   font-family: "Outfit", sans-serif;
   background: var(--bg);
@@ -100,7 +100,7 @@ body::after {
   background-size: 48px 48px;
 }
 
-/* ─── TUTORIAL ────────────────────────────────────── */
+
 #tut {
   position: fixed;
   inset: 0;
@@ -253,7 +253,7 @@ body::after {
   color: var(--txt-d);
 }
 
-/* ─── BUTTONS ─────────────────────────────────────── */
+
 .btn {
   display: inline-flex;
   align-items: center;
@@ -317,7 +317,7 @@ body::after {
   justify-content: center;
 }
 
-/* ─── TOPNAV ──────────────────────────────────────── */
+
 .topnav {
   position: sticky;
   top: 0;
@@ -439,7 +439,7 @@ body::after {
   color: var(--or-l);
 }
 
-/* ─── WRAPPER ─────────────────────────────────────── */
+
 .wrapper {
   position: relative;
   z-index: 1;
@@ -448,7 +448,7 @@ body::after {
   padding: 0 28px;
 }
 
-/* ─── TAGS ────────────────────────────────────────── */
+
 .tag {
   display: inline-flex;
   align-items: center;
@@ -494,7 +494,7 @@ body::after {
   border: 1px solid var(--b0);
 }
 
-/* ─── CARD ────────────────────────────────────────── */
+
 .card {
   background: var(--card);
   border: 1px solid var(--b0);
@@ -531,7 +531,7 @@ body::after {
   padding: 16px;
 }
 
-/* ─── SECTION LABEL ───────────────────────────────── */
+
 .sec-label {
   display: flex;
   align-items: center;
@@ -590,7 +590,7 @@ body::after {
   background: linear-gradient(90deg, var(--b1), transparent);
 }
 
-/* ─── FORMS ───────────────────────────────────────── */
+
 .frow {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -645,7 +645,7 @@ select option {
   background: var(--bg3);
 }
 
-/* ─── ANIMATIONS ──────────────────────────────────── */
+
 .fu {
   animation: fadeUp 0.5s ease both;
 }
@@ -695,9 +695,7 @@ select option {
   }
 }
 
-/* ════════════════════════════════════════════════════
-   ① HERO + KPI
-════════════════════════════════════════════════════ */
+
 .hero {
   padding: 40px 0 36px;
   display: flex;
@@ -856,15 +854,13 @@ select option {
   }
 }
 
-/* ════════════════════════════════════════════════════
-   ② USER MANAGEMENT (CRUD)
-════════════════════════════════════════════════════ */
+
 .users-layout {
   display: grid;
   gap: 16px;
 }
 
-/* search + filter bar */
+
 .table-controls {
   display: flex;
   gap: 8px;
@@ -899,7 +895,7 @@ select option {
   box-shadow: none;
 }
 
-/* user table */
+
 .u-table {
   background: var(--card);
   border: 1px solid var(--b0);
@@ -908,10 +904,10 @@ select option {
   overflow: hidden;
 }
 
-/* NOUVELLE GRILLE À 8 COLONNES */
+
 .u-thead {
   display: grid;
-  /* Chk | Utilisateur | Rôle | Document | Statut | Score | ID | Actions */
+  
   grid-template-columns: 32px 2.5fr 120px 100px 140px 70px 60px 90px;
   gap: 10px;
   background: var(--bg3);
@@ -926,7 +922,7 @@ select option {
 
 .u-row {
   display: grid;
-  /* La même grille que thead */
+  
   grid-template-columns: 32px 2.5fr 120px 100px 140px 70px 60px 90px;
   gap: 10px;
   padding: 10px 14px;
@@ -979,7 +975,7 @@ select option {
   gap: 4px;
 }
 
-/* user detail panel */
+
 .user-detail {
   background: var(--card);
   border: 1px solid var(--b1);
@@ -1042,9 +1038,7 @@ select option {
   margin-top: 16px;
 }
 
-/* ════════════════════════════════════════════════════
-   ③ VALIDATIONS WORKFLOW
-════════════════════════════════════════════════════ */
+
 .valid-tabs {
   display: flex;
   gap: 6px;
@@ -1172,9 +1166,7 @@ select option {
   background: rgba(255, 152, 0, 0.16);
 }
 
-/* ════════════════════════════════════════════════════
-   ④ FINANCE
-════════════════════════════════════════════════════ */
+
 .finance-layout {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1284,9 +1276,7 @@ select option {
   color: var(--red);
 }
 
-/* ════════════════════════════════════════════════════
-   ⑤ LOGISTIQUE CONTENEURS
-════════════════════════════════════════════════════ */
+
 .logistics-layout {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1408,9 +1398,7 @@ select option {
   margin-top: 1px;
 }
 
-/* ════════════════════════════════════════════════════
-   ⑥ PDF / EXPORTS
-════════════════════════════════════════════════════ */
+
 .pdf-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -1451,7 +1439,7 @@ select option {
   justify-content: space-between;
 }
 
-/* ─── MODAL ───────────────────────────────────────── */
+
 .modal-bg {
   position: fixed;
   inset: 0;
@@ -1519,7 +1507,7 @@ select option {
   margin-bottom: 18px;
 }
 
-/* ─── FOOTER ──────────────────────────────────────── */
+
 footer {
   border-top: 1px solid var(--b0);
   padding: 24px 0 36px;
@@ -1566,7 +1554,7 @@ footer strong {
   width: 400px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 }
-/* ─── RESPONSIVE ──────────────────────────────────── */
+
 @media (max-width: 1024px) {
   .kpi-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -1580,7 +1568,7 @@ footer strong {
   .u-row {
     grid-template-columns: 32px 1.5fr 100px 80px 120px 80px;
   }
-  /* On cache l'ID et le Score sur petits écrans pour faire de la place */
+  
   .u-thead :nth-last-child(2),
   .u-row :nth-last-child(2),
   .u-thead :nth-last-child(3),
@@ -1613,7 +1601,7 @@ footer strong {
     padding: 28px 0 24px;
   }
 }
-/* --- CSS BENTO POUR LA PAGE FINANCE --- */
+
 .finance-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -1630,7 +1618,7 @@ footer strong {
   flex-direction: column;
 }
 
-/* Pour que le tableau prenne toute la largeur */
+
 .col-span-2 {
   grid-column: span 2;
 }
@@ -1641,14 +1629,14 @@ footer strong {
 .box-title {
   color: var(--txt, #fff);
   font-size: 1.2rem;
-  font-weight: 700; /* Garde juste le gras */
+  font-weight: 700; 
   margin-bottom: 20px;
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-/* Style du Tableau des transactions */
+
 .tx-table {
   width: 100%;
   border-collapse: collapse;
@@ -1665,7 +1653,7 @@ footer strong {
 
 .tx-table th {
   color: var(--txt-m, #94a3b8);
-  font-weight: 500; /* Poids de police standard pour les en-têtes */
+  font-weight: 500; 
   text-transform: uppercase;
   font-size: 12px;
 }

@@ -1,9 +1,54 @@
 if (!monToken || !userId) {
   window.location.href = "../login.html";
 }
+
 let tousMesEvenements = [];
-let dateAffichee = new Date(2026, 2, 1); // Mars 2026 (les mois JS commencent à 0)
+let lundiAffiche = getLundi(new Date());
 let dateSelectionnee = "";
+
+const moisNoms = [
+  "Janvier",
+  "Février",
+  "Mars",
+  "Avril",
+  "Mai",
+  "Juin",
+  "Juillet",
+  "Août",
+  "Septembre",
+  "Octobre",
+  "Novembre",
+  "Décembre",
+];
+const joursNoms = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"];
+const moisCourts = [
+  "Jan",
+  "Fév",
+  "Mars",
+  "Avr",
+  "Mai",
+  "Juin",
+  "Juil",
+  "Août",
+  "Sept",
+  "Oct",
+  "Nov",
+  "Déc",
+];
+
+function getLundi(d) {
+  const date = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const decalage = (date.getDay() + 6) % 7;
+  date.setDate(date.getDate() - decalage);
+  return date;
+}
+
+function formatDateIso(d) {
+  const annee = d.getFullYear();
+  const mois = String(d.getMonth() + 1).padStart(2, "0");
+  const jour = String(d.getDate()).padStart(2, "0");
+  return `${annee}-${mois}-${jour}`;
+}
 
 function parseDateSql(dateStr) {
   if (!dateStr) return { isoDate: "", time: "00:00" };
@@ -13,8 +58,8 @@ function parseDateSql(dateStr) {
 
   if (dateStr.includes(" a ")) {
     const parts = dateStr.split(" a ");
-    datePart = parts[0]; // "20/03/2026"
-    timePart = parts[1]; // "14:00"
+    datePart = parts[0];
+    timePart = parts[1];
   }
 
   if (datePart.includes("/")) {
@@ -33,15 +78,15 @@ function initPlanning() {
 
   if (btnPrev) {
     btnPrev.addEventListener("click", () => {
-      dateAffichee.setMonth(dateAffichee.getMonth() - 1);
-      genererJoursAvecEvenements();
+      lundiAffiche.setDate(lundiAffiche.getDate() - 7);
+      genererSemaine();
     });
   }
 
   if (btnNext) {
     btnNext.addEventListener("click", () => {
-      dateAffichee.setMonth(dateAffichee.getMonth() + 1);
-      genererJoursAvecEvenements();
+      lundiAffiche.setDate(lundiAffiche.getDate() + 7);
+      genererSemaine();
     });
   }
 
@@ -69,89 +114,71 @@ function fetchEvenements() {
         );
       });
 
-      genererJoursAvecEvenements();
+      genererSemaine();
     })
     .catch((err) => console.error("Erreur chargement:", err));
 }
 
-function genererJoursAvecEvenements() {
-  const moisNoms = [
-    "Janvier",
-    "Février",
-    "Mars",
-    "Avril",
-    "Mai",
-    "Juin",
-    "Juillet",
-    "Août",
-    "Septembre",
-    "Octobre",
-    "Novembre",
-    "Décembre",
-  ];
-  const joursNoms = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"]; // Dimanche est 0 en JS
-
-  const annee = dateAffichee.getFullYear();
-  const moisIndex = dateAffichee.getMonth();
-  const moisStr = String(moisIndex + 1).padStart(2, "0");
-
-  const titreMois = document.querySelector(".week-month");
-  if (titreMois) titreMois.textContent = `${moisNoms[moisIndex]} ${annee}`;
-
-  let datesDuMois = new Set();
-
-  tousMesEvenements.forEach((ev) => {
-    const dateEv = parseDateSql(ev.date_debut).isoDate;
-
-    if (dateEv.startsWith(`${annee}-${moisStr}`)) {
-      datesDuMois.add(dateEv);
-    }
-  });
-
-  const datesTriees = Array.from(datesDuMois).sort();
-
+function genererSemaine() {
   const conteneurJours = document.querySelector(".week-days");
   if (!conteneurJours) return;
   conteneurJours.innerHTML = "";
 
-  if (datesTriees.length === 0) {
-    conteneurJours.innerHTML = `<div style="color:var(--txt-d); padding:10px 20px; font-size:14px;">Aucun événement prévu en ${moisNoms[moisIndex]}.</div>`;
-
-    const timelineContainer = document.querySelector(".timeline");
-    if (timelineContainer) timelineContainer.innerHTML = "";
-
-    const titreTimeline = document.querySelector(".card-ht");
-    if (titreTimeline)
-      titreTimeline.innerHTML = `<div class="cht-i" style="background: rgba(240, 106, 170, 0.1)">🗓️</div> Mois vide`;
-
-    return;
+  const jours = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(lundiAffiche);
+    d.setDate(lundiAffiche.getDate() + i);
+    jours.push(d);
   }
 
-  if (!datesTriees.includes(dateSelectionnee)) {
-    dateSelectionnee = datesTriees[0];
+  const dernierJour = jours[6];
+  const titreMois = document.querySelector(".week-month");
+  if (titreMois) {
+    if (lundiAffiche.getMonth() === dernierJour.getMonth()) {
+      titreMois.textContent = `${lundiAffiche.getDate()} – ${dernierJour.getDate()} ${moisCourts[dernierJour.getMonth()]}`;
+    } else {
+      titreMois.textContent = `${lundiAffiche.getDate()} ${moisCourts[lundiAffiche.getMonth()]} – ${dernierJour.getDate()} ${moisCourts[dernierJour.getMonth()]}`;
+    }
   }
 
-  datesTriees.forEach((dateStr) => {
-    const anneeJour = parseInt(dateStr.substring(0, 4));
-    const moisJour = parseInt(dateStr.substring(5, 7)) - 1;
-    const jourDuMois = parseInt(dateStr.substring(8, 10));
+  const isoSemaine = jours.map((d) => formatDateIso(d));
+  const todayIso = formatDateIso(new Date());
 
-    const dateObj = new Date(anneeJour, moisJour, jourDuMois);
+  if (!isoSemaine.includes(dateSelectionnee)) {
+    if (isoSemaine.includes(todayIso)) {
+      dateSelectionnee = todayIso;
+    } else {
+      const premierAvecEvt = isoSemaine.find((iso) =>
+        tousMesEvenements.some(
+          (ev) => parseDateSql(ev.date_debut).isoDate === iso,
+        ),
+      );
+      dateSelectionnee = premierAvecEvt || isoSemaine[0];
+    }
+  }
+
+  jours.forEach((dateObj) => {
+    const dateStr = formatDateIso(dateObj);
     const nomJour = joursNoms[dateObj.getDay()];
+    const jourDuMois = dateObj.getDate();
+
+    const nbEvents = tousMesEvenements.filter(
+      (ev) => parseDateSql(ev.date_debut).isoDate === dateStr,
+    ).length;
 
     const jourDiv = document.createElement("div");
     jourDiv.className = "wday";
+    if (dateStr === dateSelectionnee) jourDiv.classList.add("today");
 
-    let dotHtml = `<div class="wdot" style="background: var(--vi)"></div>`;
-
-    if (dateStr === dateSelectionnee) {
-      jourDiv.classList.add("today");
+    let dotsHtml = "";
+    for (let k = 0; k < Math.min(nbEvents, 3); k++) {
+      dotsHtml += `<div class="wdot" style="background: var(--vi)"></div>`;
     }
 
     jourDiv.innerHTML = `
         <div class="wday-num">${jourDuMois}</div>
         <div class="wday-name">${nomJour}</div>
-        <div class="wday-dots">${dotHtml}</div>
+        <div class="wday-dots">${dotsHtml}</div>
     `;
 
     jourDiv.addEventListener("click", () => {
@@ -165,8 +192,8 @@ function genererJoursAvecEvenements() {
       const titreTimeline = document.querySelector(".card-ht");
       if (titreTimeline) {
         titreTimeline.innerHTML = `
-            <div class="cht-i" style="background: rgba(240, 106, 170, 0.1)">🗓️</div> 
-            ${nomJour} ${jourDuMois} ${moisNoms[moisIndex]} ${annee}
+            <div class="cht-i" style="background: rgba(240, 106, 170, 0.1)">🗓️</div>
+            ${nomJour} ${jourDuMois} ${moisNoms[dateObj.getMonth()]} ${dateObj.getFullYear()}
         `;
       }
 
@@ -176,9 +203,9 @@ function genererJoursAvecEvenements() {
     conteneurJours.appendChild(jourDiv);
   });
 
-  const premierJourCree = document.querySelector(".wday.today");
-  if (premierJourCree) {
-    premierJourCree.click();
+  const jourSelectionne = document.querySelector(".wday.today");
+  if (jourSelectionne) {
+    jourSelectionne.click();
   }
 }
 
@@ -197,6 +224,11 @@ function afficherTimeline(dateCible) {
   const timelineContainer = document.querySelector(".timeline");
   if (!timelineContainer) return;
   timelineContainer.innerHTML = "";
+
+  if (eventsDuJour.length === 0) {
+    timelineContainer.innerHTML = `<div style="color:var(--txt-d); padding:10px 0; font-size:14px;">Aucun événement ce jour-là.</div>`;
+    return;
+  }
 
   eventsDuJour.forEach((ev) => {
     const typeStr = ((ev.type || "") + " " + (ev.titre || "")).toLowerCase();
@@ -228,15 +260,6 @@ function afficherTimeline(dateCible) {
     `;
     timelineContainer.innerHTML += blocHTML;
   });
-
-  timelineContainer.innerHTML += `
-    <div class="tl-hour">
-        <div class="tl-time">17:00</div>
-        <div class="tl-col">
-            <div style="font-size: 12px; color: var(--txt-d); padding: 8px 0;">Fin de journée</div>
-        </div>
-    </div> 
-  `;
 }
 
 document.addEventListener("DOMContentLoaded", initPlanning);

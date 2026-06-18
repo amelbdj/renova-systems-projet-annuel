@@ -44,7 +44,7 @@ function chargerForum() {
     `;
       });
 
-      // On (re)traduit les sujets qu'on vient d'injecter
+      
       if (typeof appliquerTraductions === "function") appliquerTraductions();
     })
     .catch(function (error) {
@@ -93,7 +93,7 @@ function chargerMessagesSujet(idTopic) {
       );
       zone.innerHTML = "";
 
-      // 🛡️ BLINDAGE DES DONNÉES LOCALES CONTRE LE RETOUR NULL
+      
       if (messages === null || !messages) {
         messages = [];
       }

@@ -1,4 +1,4 @@
-/* ─── RESET ──────────────────────────────────── */
+
 *,
 *::before,
 *::after {
@@ -27,7 +27,7 @@ textarea {
   border-radius: 3px;
 }
 
-/* ─── TOKENS ──────────────────────────────────── */
+
 :root {
   --bg: #07050f;
   --bg2: #0b0818;
@@ -55,7 +55,7 @@ textarea {
   --r2: 10px;
 }
 
-/* ─── BODY + AMBIENT ──────────────────────────── */
+
 body {
   font-family: "Outfit", sans-serif;
   background: var(--bg);
@@ -100,7 +100,7 @@ body::after {
   background-size: 52px 52px;
 }
 
-/* ─── TUTORIAL OVERLAY ────────────────────────── */
+
 #tut {
   position: fixed;
   inset: 0;
@@ -253,7 +253,7 @@ body::after {
   color: var(--txt-d);
 }
 
-/* ─── BUTTONS ─────────────────────────────────── */
+
 .btn {
   display: inline-flex;
   align-items: center;
@@ -319,7 +319,7 @@ body::after {
   justify-content: center;
 }
 
-/* ─── TOPNAV ──────────────────────────────────── */
+
 .topnav {
   position: sticky;
   top: 0;
@@ -449,7 +449,7 @@ body::after {
   color: var(--txt-m);
 }
 
-/* ─── WRAPPER ─────────────────────────────────── */
+
 .wrapper {
   position: relative;
   z-index: 1;
@@ -458,7 +458,7 @@ body::after {
   padding: 0 28px;
 }
 
-/* ─── TAGS ────────────────────────────────────── */
+
 .tag {
   display: inline-flex;
   align-items: center;
@@ -504,7 +504,7 @@ body::after {
   border: 1px solid rgba(74, 144, 240, 0.2);
 }
 
-/* ─── CARD ────────────────────────────────────── */
+
 .card {
   background: var(--card);
   border: 1px solid var(--b0);
@@ -541,7 +541,7 @@ body::after {
   padding: 18px;
 }
 
-/* ─── SECTION LABEL ───────────────────────────── */
+
 .sec-label {
   display: flex;
   align-items: center;
@@ -593,7 +593,7 @@ body::after {
   background: linear-gradient(90deg, var(--b1), transparent);
 }
 
-/* ─── FORMS ───────────────────────────────────── */
+
 .frow {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -646,7 +646,7 @@ select option {
   background: var(--bg3);
 }
 
-/* ─── ANIMATIONS ──────────────────────────────── */
+
 .fu {
   animation: fadeUp 0.5s ease both;
 }
@@ -707,9 +707,7 @@ select option {
   }
 }
 
-/* ════════════════════════════════════════════════
-   ① HERO
-════════════════════════════════════════════════ */
+
 .hero {
   padding: 48px 0 40px;
   display: flex;
@@ -795,9 +793,7 @@ select option {
   margin-top: 4px;
 }
 
-/* ════════════════════════════════════════════════
-   ② GESTION ÉVÉNEMENTS / FORMATIONS
-════════════════════════════════════════════════ */
+
 .evt-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -925,9 +921,7 @@ select option {
   color: var(--txt-m);
 }
 
-/* ════════════════════════════════════════════════
-   ③ PLANNING
-════════════════════════════════════════════════ */
+
 .planning-layout {
   display: grid;
   grid-template-columns: auto 1fr;
@@ -935,7 +929,7 @@ select option {
   align-items: start;
 }
 
-/* week strip */
+
 .week-strip {
   display: flex;
   flex-direction: column;
@@ -1015,7 +1009,7 @@ select option {
   border-radius: 50%;
 }
 
-/* timeline */
+
 .timeline {
   display: flex;
   flex-direction: column;
@@ -1088,9 +1082,7 @@ select option {
   border-left-color: var(--amber);
 }
 
-/* ════════════════════════════════════════════════
-   ④ CONTENU — CONSEILS & NEWS
-════════════════════════════════════════════════ */
+
 .content-layout {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1172,9 +1164,7 @@ select option {
   color: var(--txt-m);
 }
 
-/* ════════════════════════════════════════════════
-   ⑤ MODÉRATION FORUM
-════════════════════════════════════════════════ */
+
 .forum-layout {
   display: grid;
   grid-template-columns: 1fr 340px;
@@ -1300,7 +1290,7 @@ select option {
   flex-shrink: 0;
 }
 
-/* forum stats */
+
 .forum-stats {
   display: flex;
   flex-direction: column;
@@ -1332,9 +1322,7 @@ select option {
   color: var(--txt-m);
 }
 
-/* ════════════════════════════════════════════════
-   MODAL
-════════════════════════════════════════════════ */
+
 .modal-bg {
   position: fixed;
   inset: 0;
@@ -1401,7 +1389,7 @@ select option {
   color: var(--txt-m);
   margin-bottom: 20px;
 }
-/* Force l'affichage au premier plan absolu */
+
 #postModal.open {
   display: flex !important;
   visibility: visible !important;
@@ -1409,7 +1397,7 @@ select option {
   z-index: 10000 !important;
 }
 
-/* On s'assure que toutes les modales partagent le même comportement */
+
 .modal-bg {
   position: fixed !important;
   inset: 0 !important;
@@ -1417,7 +1405,7 @@ select option {
   align-items: center;
   justify-content: center;
   transition: opacity 0.3s ease;
-  display: none; /* Caché par défaut */
+  display: none; 
 }
 
 ─── FOOTER ─────────────────────────────────── */ footer {
@@ -1431,7 +1419,7 @@ footer strong {
   color: var(--txt-m);
 }
 
-/* ─── RESPONSIVE ──────────────────────────────── */
+
 @media (max-width: 1000px) {
   .planning-layout {
     grid-template-columns: 1fr;

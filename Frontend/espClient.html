@@ -35,7 +35,7 @@
           allowLocalhostAsSecureOrigin: true,
           notifyButton: {
             enable: true,
-            // Cette ligne FORCE la cloche à rester affichée, même si tu es abonnée ou bloquée
+            
             displayPredicate: () => true,
           },
         });
@@ -48,9 +48,7 @@
     </script>
   </head>
   <body>
-    <!--
-   TUTORIAL OVERLAY
- -->
+    
     <div id="tut">
       <div class="tut-card">
         <div class="tut-head">
@@ -216,11 +214,9 @@
         </div>
       </div>
     </div>
-    <!-- MESSAGE RIE -->
+    
 
-    <!-- ══════════════════════════════════════════
-   TOPNAV
-══════════════════════════════════════════ -->
+    
     <nav class="topnav">
       <div class="nav-logo">
         <img
@@ -272,11 +268,9 @@
       </div>
     </nav>
 
-    <!-- ══════════════════════════════════════════
-   WRAPPER
-══════════════════════════════════════════ -->
+    
     <div class="wrapper">
-      <!-- HERO -->
+      
       <section class="hero fu">
         <div class="hero-left">
           <div class="hero-eyebrow">Espace Particuliers</div>
@@ -311,7 +305,7 @@
         </div>
       </section>
 
-      <!-- ══ ① ANNONCES ══════════════════════════ -->
+      
       <section class="ann-section" id="ann">
         <div class="sec-label fu">
           <div class="sec-num">1</div>
@@ -420,11 +414,11 @@
           </div>
         </div>
 
-        <!-- Dynamic grid filled by dashClient.js / loadMyAnnonces() -->
+        
         <div class="ann-grid fu fu1"></div>
       </section>
 
-      <!-- ══ ② CONTENEURS ════════════════════════ -->
+      
       <section class="cont-section" id="cont">
         <div class="sec-label fu">
           <div class="sec-num cyan">2</div>
@@ -433,7 +427,7 @@
           <div id="cont-stats"></div>
         </div>
 
-        <!-- Dynamic grid filled by dashClient.js / loadUserBoxes() -->
+        
         <div id="systeme-conteneurs" class="cont-layout fu"></div>
 
         <div
@@ -499,210 +493,11 @@
         </div>
       </section>
 
-      <!-- ══ ③ CATALOGUE ══════════════════════════
-      <section class="cat-section" id="cat">
-        <div class="sec-label fu">
-          <div class="sec-num purple">3</div>
-          <div class="sec-title-text">Catalogue</div>
-          <div class="sec-divider"></div>
-          <span class="tag t-purple" style="flex-shrink: 0"
-            >💳 Paiement Stripe</span
-          >
-        </div>
-        <div class="cat-filters fu">
-          <div class="fchip on" onclick="selF(this)">Tout</div>
-          <div class="fchip" onclick="selF(this)">
-            <i class="fa-solid fa-graduation-cap"></i> Formations
-          </div>
-          <div class="fchip" onclick="selF(this)">
-            <i class="fa-solid fa-hammer"></i> Ateliers
-          </div>
-          <div class="fchip" onclick="selF(this)">
-            <i class="fa-solid fa-calendar-days"></i> Événements
-          </div>
-          <div class="fchip" onclick="selF(this)">
-            <i class="fa-solid fa-tools"></i> Services
-          </div>
-        </div>
-        <div class="cat-grid fu fu1">
-          <div class="cat-card">
-            <div
-              class="cat-banner"
-              style="background: linear-gradient(135deg, #160f2a, #251840)"
-            >
-              <i class="fa-solid fa-paintbrush"></i>
-              <div class="cat-type-badge ctb-form">Formation</div>
-            </div>
-            <div class="cat-body">
-              <div class="cat-name">Atelier Upcycling Bois</div>
-              <div class="cat-desc">
-                Transformez palettes et chutes de bois en mobilier design.
-                Niveau débutant.
-              </div>
-              <div class="cat-meta">
-                <span class="tag t-purple">Sam 7 mars</span>
-                <span class="tag t-blue">10h – 13h</span>
-              </div>
-              <div class="cat-foot">
-                <div class="cat-price">35 €</div>
-                <button
-                  class="btn btn-p btn-sm"
-                  onclick="openPay('Atelier Upcycling Bois', '35')"
-                >
-                  Réserver →
-                </button>
-              </div>
-            </div>
-          </div>
-          <div class="cat-card">
-            <div
-              class="cat-banner"
-              style="background: linear-gradient(135deg, #051612, #0a2318)"
-            >
-              <i class="fa-brands fa-yarn"></i>
-              <div class="cat-type-badge ctb-form">Formation</div>
-            </div>
-            <div class="cat-body">
-              <div class="cat-name">Couture zéro déchet</div>
-              <div class="cat-desc">
-                Apprenez à coudre en réutilisant des chutes de tissu. Aiguille
-                et fil fournis.
-              </div>
-              <div class="cat-meta">
-                <span class="tag t-green">Dim 8 mars</span>
-                <span class="tag t-blue">14h30 – 16h30</span>
-              </div>
-              <div class="cat-foot">
-                <div class="cat-price">25 €</div>
-                <button
-                  class="btn btn-p btn-sm"
-                  onclick="openPay('Couture zéro déchet', '25')"
-                >
-                  Réserver <i class="fa-solid fa-calendar-plus"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-          <div class="cat-card">
-            <div
-              class="cat-banner"
-              style="background: linear-gradient(135deg, #0e1604, #182408)"
-            >
-              <i class="fa-solid fa-calendar-days"></i>
-              <div class="cat-type-badge ctb-event">Événement</div>
-            </div>
-            <div class="cat-body">
-              <div class="cat-name">Marché de la réutilisation</div>
-              <div class="cat-desc">
-                Grand marché communautaire. Échangez, vendez et rencontrez la
-                communauté.
-              </div>
-              <div class="cat-meta">
-                <span class="tag t-green">15 mars</span>
-                <span class="tag t-blue">10h – 17h</span>
-              </div>
-              <div class="cat-foot">
-                <div class="cat-price free">Gratuit</div>
-                <button
-                  class="btn btn-g btn-sm"
-                  onclick="openPay('Marché de la réutilisation', '0')"
-                >
-                  S'inscrire →
-                </button>
-              </div>
-            </div>
-          </div>
-          <div class="cat-card">
-            <div
-              class="cat-banner"
-              style="background: linear-gradient(135deg, #060d1e, #0c1530)"
-            >
-              <i class="fa-solid fa-print"></i>
-              <div class="cat-type-badge ctb-svc">Service</div>
-            </div>
-            <div class="cat-body">
-              <div class="cat-name">Impression 3D sur demande</div>
-              <div class="cat-desc">
-                Faites imprimer vos pièces en plastique recyclé. Délai 48h.
-              </div>
-              <div class="cat-meta">
-                <span class="tag t-blue">Sur commande</span>
-              </div>
-              <div class="cat-foot">
-                <div class="cat-price">À partir de 8 €</div>
-                <button
-                  class="btn btn-p btn-sm"
-                  onclick="openPay('Impression 3D', '8')"
-                >
-                  Commander →
-                </button>
-              </div>
-            </div>
-          </div>
-          <div class="cat-card">
-            <div
-              class="cat-banner"
-              style="background: linear-gradient(135deg, #191003, #281806)"
-            >
-              <i class="fa-solid fa-seedling"></i>
-              <div class="cat-type-badge ctb-event">Événement</div>
-            </div>
-            <div class="cat-body">
-              <div class="cat-name">Jardinage urbain</div>
-              <div class="cat-desc">
-                Créez votre potager en balcon avec des matériaux récupérés.
-                Graines offertes !
-              </div>
-              <div class="cat-meta">
-                <span class="tag t-amber">22 mars</span>
-                <span class="tag t-blue">9h – 12h</span>
-              </div>
-              <div class="cat-foot">
-                <div class="cat-price">18 €</div>
-                <button
-                  class="btn btn-p btn-sm"
-                  onclick="openPay('Jardinage urbain', '18')"
-                >
-                  Réserver →
-                </button>
-              </div>
-            </div>
-          </div>
-          <div class="cat-card">
-            <div
-              class="cat-banner"
-              style="background: linear-gradient(135deg, #130520, #200834)"
-            >
-              <i class="fa-solid fa-graduation-cap"></i>
-              <div class="cat-type-badge ctb-form">Formation</div>
-            </div>
-            <div class="cat-body">
-              <div class="cat-name">Peinture sur objets récup</div>
-              <div class="cat-desc">
-                Donnez une nouvelle vie à vos objets avec des techniques
-                créatives.
-              </div>
-              <div class="cat-meta">
-                <span class="tag t-purple">29 mars</span>
-                <span class="tag t-blue">14h – 17h</span>
-              </div>
-              <div class="cat-foot">
-                <div class="cat-price">30 €</div>
-                <button
-                  class="btn btn-p btn-sm"
-                  onclick="openPay('Peinture sur objets récup', '30')"
-                >
-                  Réserver →
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section> -->
+      
 
-      <!-- ══ ④ PLANNING + SCORE ═══════════════════ -->
+      
       <div class="bottom-row" id="plan">
-        <!-- PLANNING — your friend's dynamic version with changerMois() -->
+        
         <section>
           <div class="sec-label fu">
             <div class="sec-num amber">4</div>
@@ -760,7 +555,7 @@
           </div>
         </section>
 
-        <!-- ECO SCORE -->
+        
         <section id="score">
           <div class="sec-label fu">
             <div class="sec-num green">5</div>
@@ -868,7 +663,7 @@
         </div>
       </section>
     </div>
-    <!-- /wrapper -->
+    
 
     <footer>
       <div class="wrapper">
@@ -877,7 +672,7 @@
       </div>
     </footer>
 
-    <!-- ══ PAYMENT MODAL ══════════════════════ -->
+    
     <div class="modal-bg" id="payModal">
       <div class="modal" style="position: relative">
         <div class="modal-x" onclick="closePay()">✕</div>
@@ -914,7 +709,7 @@
       </div>
     </div>
 
-    <!-- ══ DEPOT MODAL ════════════════════════ -->
+    
     <div class="modal-bg" id="depotModal">
       <div class="modal" style="position: relative">
         <div class="modal-x" onclick="closeDepot()">✕</div>
@@ -945,7 +740,7 @@
         </button>
       </div>
     </div>
-    <!-- CHAT MODAL -->
+    
     <div
       id="chatModal"
       class="modal-bg"
@@ -1035,7 +830,7 @@
     </div>
 
     <script>
-      /* ── BARCODE ─────────────────────────────── */
+      
       function mkBarcode(el, n) {
         el.innerHTML = "";
         for (let i = 0; i < n; i++) {
@@ -1048,7 +843,7 @@
         }
       }
 
-      /* ── TUTORIAL ────────────────────────────── */
+      
       const ts = [
         {
           i: "👋",
@@ -1112,14 +907,14 @@
         }
       }
 
-      /* ── NAV SCROLL ──────────────────────────── */
+      
       function scroll2(id) {
         document
           .getElementById(id)
           ?.scrollIntoView({ behavior: "smooth", block: "start" });
       }
 
-      /* ── ANN FORM ────────────────────────────── */
+      
       function toggleAnnForm() {
         const f = document.getElementById("annForm");
         const open = f.style.display === "block";
@@ -1187,7 +982,7 @@
         }
       }
 
-      /* ── FILTER CHIPS ────────────────────────── */
+      
       function selF(el) {
         el.closest(".cat-filters")
           .querySelectorAll(".fchip")
@@ -1195,7 +990,7 @@
         el.classList.add("on");
       }
 
-      /* ── PAYMENT MODAL ───────────────────────── */
+      
       function openPay(name, price) {
         document.getElementById("payH").textContent = name;
         document.getElementById("payItem").textContent = name;
@@ -1211,7 +1006,7 @@
         alert(" Réservation confirme ! Vous recevrez un email Stripe.");
       }
 
-      /* ── DEPOT MODAL ─────────────────────────── */
+      
       const codes = ["K7P2", "3X9M", "WT4J", "8NB1", "QR5Z", "H2T7"];
       function openDepot(boxId) {
         document.getElementById("codeVal").textContent =

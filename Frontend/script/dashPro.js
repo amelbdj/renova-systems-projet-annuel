@@ -120,19 +120,19 @@ try {
     const btnPasserPremium = document.getElementById("btnPasserPremium");
     const btnPremiumActif = document.getElementById("btnPremiumActif");
     const planSection = document.getElementById("plan"); 
-    const premiumDashboard = document.getElementById("premiumDashboard"); // 👈 GRAB THE DASHBOARD
+    const premiumDashboard = document.getElementById("premiumDashboard"); 
 
     if (user.est_premium === 1 || user.est_premium === "1") {
       if (btnPasserPremium) btnPasserPremium.style.display = "none";
       if (btnPremiumActif) btnPremiumActif.style.display = "block"; 
       if (planSection) planSection.style.display = "none"; 
-      if (premiumDashboard) premiumDashboard.style.display = "block"; // 👈 SHOW DASHBOARD
+      if (premiumDashboard) premiumDashboard.style.display = "block"; 
       
     } else {
       if (btnPasserPremium) btnPasserPremium.style.display = "block"; 
       if (btnPremiumActif) btnPremiumActif.style.display = "none";
       if (planSection) planSection.style.display = "block"; 
-      if (premiumDashboard) premiumDashboard.style.display = "none"; // 👈 HIDE DASHBOARD
+      if (premiumDashboard) premiumDashboard.style.display = "none"; 
     }
     
   } catch (err) {

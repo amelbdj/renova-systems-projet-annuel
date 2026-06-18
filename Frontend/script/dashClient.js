@@ -156,28 +156,28 @@ function goToProfile() {
 
 async function loadAllUserBoxes() {
   const userId = localStorage.getItem("userId");
-  const grid = document.getElementById("systeme-conteneurs"); // On garde le même ID !
+  const grid = document.getElementById("systeme-conteneurs"); 
 
   if (!grid) return;
 
   try {
-    // 1. On lance les deux requêtes en même temps
+    
     const [resDeposits, resPickups] = await Promise.all([
       fetch(`http://localhost:8081/api/user/boxes?user_id=${userId}`),
       fetch(`http://localhost:8081/api/user/pickups/${userId}`),
     ]);
 
-    // On gère le cas où l'API renvoie "null" en mettant un tableau vide par défaut []
+    
     const deposits = (await resDeposits.json()) || [];
     const pickups = (await resPickups.json()) || [];
 
-    // 2. On combine les deux listes en leur ajoutant un tag pour les reconnaître
+    
     const allItems = [
       ...deposits.map((item) => ({ ...item, typeAction: "depot" })),
       ...pickups.map((item) => ({ ...item, typeAction: "recuperation" })),
     ];
 
-    // S'il n'a ni dépôt ni retrait à faire
+    
     if (allItems.length === 0) {
       grid.innerHTML = `
                 <div class="cont-card avail">
@@ -187,15 +187,15 @@ async function loadAllUserBoxes() {
       return;
     }
 
-    // 3. On affiche tout dans la même grille
+    
     grid.innerHTML = allItems
       .map((box) => {
-        // Variables qui changent selon la pastille
+        
         const isDepot = box.typeAction === "depot";
         const pastilleText = isDepot ? "DÉPÔT" : "RÉCUPÉRATION";
         const pastilleColor = isDepot
           ? "background-color: #f39c12;"
-          : "background-color: #27ae60;"; // Orange / Vert
+          : "background-color: #27ae60;"; 
         const statutAffichage = isDepot ? box.etat : box.statut_vente;
         const dateAffichage = isDepot
           ? `Réservé le ${new Date(box.date).toLocaleDateString()}`
@@ -256,7 +256,7 @@ async function loadAllUserBoxes() {
   }
 }
 
-// N'oublie pas de l'appeler au chargement de la page :
+
 window.addEventListener("DOMContentLoaded", loadAllUserBoxes);
 function togglePriceField() {
   const typeSelect = document.querySelector("#annForm select").value;
@@ -324,6 +324,6 @@ async function loadEcoScore() {
 }
 document.addEventListener("DOMContentLoaded", () => {
   loadMyAnnonces();
-  loadAllUserBoxes(); // 🟢 CORRECTION ICI (à remplacer en haut et en bas du fichier)
+  loadAllUserBoxes(); 
   loadEcoScore();
 });

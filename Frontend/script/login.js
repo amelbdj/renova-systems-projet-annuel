@@ -1,4 +1,4 @@
-/* ─── TOGGLE PASSWORD ─────────────────────── */
+
 function togglePwd(id, btn) {
   const inp = document.getElementById(id);
   if (!inp) return;
@@ -7,7 +7,7 @@ function togglePwd(id, btn) {
   btn.textContent = show ? "🔒" : "👁";
 }
 
-/* ─── VALIDATION HELPERS ──────────────────── */
+
 function validateEmail(inp) {
   const ok = /^[^@]+@[^@]+\.[^@]+$/.test(inp.value.trim());
   inp.classList.toggle("err", inp.value && !ok);
@@ -23,7 +23,7 @@ function validatePwdLogin(inp) {
   if (errEl) errEl.style.display = !ok && inp.value ? "block" : "none";
 }
 
-/* ─── SHOW SPACE SELECT ───────────────────── */
+
 function showSpaceSelect() {
   document.getElementById("loginSuccess").style.display = "none";
   document.getElementById("spaceSelect").style.display = "block";
@@ -32,7 +32,7 @@ function goSpace(name) {
   alert("🚀 Redirection vers l'Espace " + name + "…");
 }
 
-/* ─── FORGOT PASSWORD ─────────────────────── */
+
 function showForgot() {
   const email = document.getElementById("loginEmail").value.trim();
   if (email) {
@@ -45,12 +45,12 @@ function showForgot() {
   }
 }
 
-/* ─── SOCIAL LOGIN ────────────────────────── */
+
 function socialLogin(p) {
   alert("🔐 Authentification " + p + " — à connecter au back-end OAuth2.");
 }
 
-/* ─── SUBMIT LOGIN (API) ────────────────────────── */
+
 async function submitLogin() {
   let emailInfo = document.getElementById("loginEmail").value;
   let motDePasseInfo = document.getElementById("loginPwd").value;

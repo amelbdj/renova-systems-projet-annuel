@@ -8,7 +8,7 @@ import (
 	"strings"
 	"upcycleconnect/models"
 
-	"golang.org/x/crypto/bcrypt" //gestion hash mdp
+	"golang.org/x/crypto/bcrypt"
 )
 
 func LoginUser(email string, motDePasse string, ip string) (models.User, error) {
@@ -133,6 +133,25 @@ func DeletedUser(id int) error {
 		return fmt.Errorf("mise à jour échouée : %v", err)
 	}
 
+	return nil
+}
+
+func UpdateUserProfile(id int, nom string, prenom string, email string) error {
+	result, err := Db.Exec(
+		"UPDATE pa2026.utilisateur SET nom = ?, prenom = ?, email = ? WHERE id = ?",
+		nom, prenom, email, id,
+	)
+	if err != nil {
+		return fmt.Errorf("mise à jour du profil échouée : %v", err)
+	}
+
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rows == 0 {
+		return fmt.Errorf("aucun utilisateur trouvé avec l'id %d", id)
+	}
 	return nil
 }
 
@@ -282,7 +301,7 @@ func GetUserByName(query string, role string) ([]models.User, error) {
 	}
 }
 
-func ValidateUser(id int) (string, string, error) { // Retourne prenom, email, erreur
+func ValidateUser(id int) (string, string, error) {
 	_, err := Db.Exec(
 		"UPDATE pa2026.utilisateur SET validation = 'Validé' WHERE id = ?",
 		id,
@@ -300,7 +319,7 @@ func ValidateUser(id int) (string, string, error) { // Retourne prenom, email, e
 	return prenom, email, nil
 }
 
-func RefuseUser(id int, motif string) (string, string, error) { // On ajoute les retours string, string
+func RefuseUser(id int, motif string) (string, string, error) {
 	_, err := Db.Exec(
 		"UPDATE pa2026.utilisateur SET validation = 'Rejeté', motif_refus = ? WHERE id = ?",
 		motif,
@@ -311,7 +330,6 @@ func RefuseUser(id int, motif string) (string, string, error) { // On ajoute les
 		return "", "", fmt.Errorf("refuse user : %v", err.Error())
 	}
 
-	// 2. On récupère ses infos pour lui envoyer l'e-mail
 	var prenom, email string
 	err = Db.QueryRow("SELECT prenom, email FROM pa2026.utilisateur WHERE id = ?", id).Scan(&prenom, &email)
 	if err != nil {
@@ -320,9 +338,9 @@ func RefuseUser(id int, motif string) (string, string, error) { // On ajoute les
 
 	return prenom, email, nil
 }
-// Dans ton fichier bdd/documents.go (ou là où tu gères la BDD)
+
 func InsertDocument(userID string, typeDocument string, cheminFichier string) error {
-	// On insère le document avec le statut "En attente" par défaut
+
 	requeteSQL := `
 		INSERT INTO pa2026.documents_legaux (user_id, type_document, chemin_fichier, statut_document) 
 		VALUES (?, ?, ?, 'En attente')
@@ -388,18 +406,35 @@ func GetAllAdminIDs() ([]string, error) {
 	for rows.Next() {
 		var id int
 		if err := rows.Scan(&id); err == nil {
-			// On convertit direct en string pour OneSignal
+
 			adminIDs = append(adminIDs, strconv.Itoa(id))
 		}
 	}
 	return adminIDs, nil
 }
 
+func GetProfessionalIDs() ([]string, error) {
+	rows, err := Db.Query("SELECT id FROM pa2026.utilisateur WHERE siret IS NOT NULL AND siret != ''")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var ids []string
+	for rows.Next() {
+		var id int
+		if err := rows.Scan(&id); err == nil {
+			ids = append(ids, strconv.Itoa(id))
+		}
+	}
+	return ids, nil
+}
+
 func EnvoyerEmailValidation(emailDestinataire string, prenom string) error {
 	expediteur := "noreply@upcycleconnect.fr"
 	motDePasse := "voir avec ndoya"
 	serveurSMTP := "192.168.80.10"
-	port := "25" // verif avec ndoya
+	port := "25"
 
 	auth := smtp.PlainAuth("", expediteur, motDePasse, serveurSMTP)
 
@@ -430,13 +465,11 @@ func EnvoyerEmailValidation(emailDestinataire string, prenom string) error {
 	return nil
 }
 
-// Dans userReq.go (à la suite de ta fonction EnvoyerEmailValidation)
-
 func EnvoyerEmailRefus(emailDestinataire string, prenom string, motif string) {
 	expediteur := "noreply@upcycleconnect.fr"
 	motDePasse := "voir avec ndoya"
 	serveurSMTP := "192.168.80.10"
-	port := "25" // verif avec ndoya
+	port := "25"
 
 	auth := smtp.PlainAuth("", expediteur, motDePasse, serveurSMTP)
 

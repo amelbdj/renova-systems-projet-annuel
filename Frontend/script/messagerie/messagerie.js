@@ -103,14 +103,14 @@ function appendMessageToUI(texte, isMe) {
   container.innerHTML += bulle;
   container.scrollTop = container.scrollHeight;
 }
-// On récupère l'input
+
 const chatInput = document.getElementById("chat-input");
 
-// On attend que le DOM soit chargé
+
 document.addEventListener("DOMContentLoaded", () => {
   const chatInput = document.getElementById("chat-input");
 
-  // On vérifie que l'élément existe avant de mettre l'écouteur
+  
   if (chatInput) {
     chatInput.addEventListener("keypress", function (e) {
       if (e.key === "Enter") {
@@ -122,18 +122,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function loadMyMessages() {
   const userId = localStorage.getItem("userId");
-  // Utilise l'ID présent dans espClient.html ligne 146
+  
   const container = document.getElementById("conversations-list");
   const noMsg = document.getElementById("no-messages");
 
-  if (!container) return; // Sécurité si l'élément n'est pas trouvé
+  if (!container) return; 
 
   fetch(`http://localhost:8081/api/chat/conversations?userId=${userId}`, {
     headers: { Authorization: "Bearer " + localStorage.getItem("token") },
   })
     .then((res) => res.json())
     .then((data) => {
-      container.innerHTML = ""; // Vide le "Chargement..."
+      container.innerHTML = ""; 
 
       if (!data || data.length === 0) {
         if (noMsg) noMsg.style.display = "block";
@@ -144,7 +144,7 @@ function loadMyMessages() {
 
       data.forEach((conv) => {
         const div = document.createElement("div");
-        // Utilise la classe CSS que vous avez définie pour le dashboard
+        
         div.className = "conversation-item";
         div.style =
           "padding: 15px; background: var(--bg2); margin-bottom: 10px; border-radius: 8px; cursor: pointer; border: 1px solid var(--b0);";
@@ -156,7 +156,7 @@ function loadMyMessages() {
                 </div>
             `;
 
-        // Ouvre la modale de chat existante au clic
+        
         div.onclick = () => openChat(conv.annonce_id, conv.contact_id);
         container.appendChild(div);
       });
@@ -167,18 +167,18 @@ function loadMyMessages() {
     });
 }
 function showSection(sectionId) {
-  // 1. Cache toutes les parties du dashboard
+  
   const sections = document.querySelectorAll(
     ".hero, .ann-section, .cont-section, .cat-section, .bottom-row, .dashboard-section",
   );
   sections.forEach((s) => (s.style.display = "none"));
 
-  // 2. Affiche la section cible
+  
   const target = document.getElementById(sectionId);
   if (target) {
     target.style.display = "block";
 
-    // 3. Si c'est les messages, on charge les données
+    
     if (sectionId === "messages-section") {
       loadMyMessages();
     }
@@ -187,30 +187,30 @@ function showSection(sectionId) {
 function appendMessageToUI(texte, isMe) {
   const container = document.getElementById("chat-messages");
 
-  // On nettoie les messages de chargement ou les messages vides
+  
   const emptyMsg = document.getElementById("empty-chat");
   if (emptyMsg) emptyMsg.remove();
 
-  // Suppression du texte "Chargement..." s'il est présent
+  
   if (container.innerText.includes("Chargement")) {
     container.innerHTML = "";
   }
 
-  // 1. Création de la ligne (Row)
+  
   const messageRow = document.createElement("div");
-  // On ajoute la classe 'me' si c'est nous, sinon 'them'
+  
   messageRow.className = `message-row ${isMe ? "me" : "them"}`;
 
-  // 2. Création de la bulle
+  
   const bubble = document.createElement("div");
   bubble.className = "message-bubble";
   bubble.textContent = texte;
 
-  // 3. Assemblage
+  
   messageRow.appendChild(bubble);
   container.appendChild(messageRow);
 
-  // 4. Scroll automatique vers le bas avec animation
+  
   container.scrollTo({
     top: container.scrollHeight,
     behavior: "smooth",

@@ -64,11 +64,11 @@ async function loadUserProfile() {
       const role = user.role.toLowerCase();
 
       if (role.includes("salari")) {
-        linkDash.href = "salarie_dashboard.html"; // Ajuste le nom exact de ta page Salarié
+        linkDash.href = "salarie_dashboard.html"; 
       } else if (role.includes("admin")) {
-        linkDash.href = "admin.html"; // Ajuste le nom exact de ta page Admin
+        linkDash.href = "admin.html"; 
       } else {
-        linkDash.href = "espClient.html"; // Page par défaut (Particulier/Pro)
+        linkDash.href = "espClient.html"; 
       }
     }
 

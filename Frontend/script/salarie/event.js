@@ -1,17 +1,17 @@
-// =====================================================================
-// VARIABLES GLOBALES (Utilisation de "var" pour éviter les plantages)
-// =====================================================================
+
+
+
 var monToken = localStorage.getItem("token");
 var userId = localStorage.getItem("userId");
 
-// Redirection si non connecté
+
 if (!monToken || !userId) {
   window.location.href = "../login.html";
 }
 
-// =====================================================================
-// 1. OUVRIR ET FERMER LA FENÊTRE DE CRÉATION
-// =====================================================================
+
+
+
 function openNewEvt() {
   document.getElementById("evtModal").style.display = "flex";
 }
@@ -34,11 +34,24 @@ function resetEvtForm() {
   if (imageInput) {
     imageInput.value = "";
   }
+
+  var pdfInput = document.getElementById("evt-pdf");
+  if (pdfInput) {
+    pdfInput.value = "";
+  }
+  togglePdfField();
 }
 
-// =====================================================================
-// 2. CRÉER UN ÉVÉNEMENT (AVEC IMAGE)
-// =====================================================================
+function togglePdfField() {
+  var typeSelect = document.getElementById("evt-type");
+  var pdfGroup = document.getElementById("evt-pdf-group");
+  if (!typeSelect || !pdfGroup) return;
+  pdfGroup.style.display = typeSelect.value === "formation" ? "block" : "none";
+}
+
+
+
+
 function CreateEvent() {
   var titre = document.getElementById("evt-titre").value.trim();
   var type = document.getElementById("evt-type").value;
@@ -50,11 +63,21 @@ function CreateEvent() {
   var capacite = document.getElementById("evt-capacite").value;
   var tarif = document.getElementById("evt-tarif").value;
 
-  // L'image
+  
   var imageInput = document.getElementById("evt-image");
   var imageFile = null;
   if (imageInput && imageInput.files.length > 0) {
     imageFile = imageInput.files[0];
+  }
+
+  var pdfInput = document.getElementById("evt-pdf");
+  var pdfFile = null;
+  if (type === "formation" && pdfInput && pdfInput.files.length > 0) {
+    pdfFile = pdfInput.files[0];
+    if (!pdfFile.name.toLowerCase().endsWith(".pdf")) {
+      alert("Le support de formation doit être un fichier PDF.");
+      return;
+    }
   }
 
   if (!titre || !desc || !date) {
@@ -64,10 +87,18 @@ function CreateEvent() {
     return;
   }
 
+  var debut = new Date(date + "T" + (heureDebut || "00:00"));
+  if (isNaN(debut.getTime()) || debut < new Date()) {
+    alert(
+      "Impossible de créer un événement à une date ou une heure déjà passée.",
+    );
+    return;
+  }
+
   var datetimeDebut = date + " " + (heureDebut || "00:00") + ":00";
   var datetimeFin = date + " " + (heureFin || "00:00") + ":00";
 
-  // Utilisation de FormData pour envoyer le texte ET le fichier
+  
   var formData = new FormData();
   formData.append("idSalarie", userId);
   formData.append("titre", titre);
@@ -92,34 +123,40 @@ function CreateEvent() {
     formData.append("image", imageFile);
   }
 
+  if (pdfFile) {
+    formData.append("pdf", pdfFile);
+  }
+
   fetch("http://localhost:8081/admin/evenements/add", {
     method: "POST",
     headers: {
       Authorization: "Bearer " + monToken,
     },
-    body: formData, // Le navigateur gère le format tout seul !
+    body: formData, 
   })
     .then(function (reponse) {
-      if (!reponse.ok) {
-        throw new Error("Erreur lors de la création");
-      }
-      return reponse.text();
+      return reponse.text().then(function (txt) {
+        if (!reponse.ok) {
+          throw new Error(txt || "Erreur lors de la création");
+        }
+        return txt;
+      });
     })
     .then(function () {
       alert("Événement soumis avec succès. Il est en attente de validation.");
       closeEvt();
       resetEvtForm();
-      GetEvenements(); // On met à jour la liste
+      GetEvenements();
     })
     .catch(function (erreur) {
       console.log(erreur);
-      alert("Erreur lors de l'enregistrement de l'événement.");
+      alert(erreur.message || "Erreur lors de l'enregistrement de l'événement.");
     });
 }
 
-// =====================================================================
-// 3. AFFICHER LES ÉVÉNEMENTS DU SALARIÉ
-// =====================================================================
+
+
+
 function GetEvenements() {
   var conteneur = document.getElementById("event-grid");
   if (!conteneur) return;
@@ -144,7 +181,7 @@ function GetEvenements() {
       var statEvent = document.getElementById("stat-event");
       var statAttente = document.getElementById("stat-valide");
 
-      // On ne garde que les événements créés par ce salarié
+      
       var mesEvenements = [];
       for (var i = 0; i < evenements.length; i++) {
         if (
@@ -192,13 +229,21 @@ function GetEvenements() {
         var dateFormatee = evt.date_debut;
         var typeAffichage = evt.type || evt.format || "Événement";
 
-        // ----------------------------------------------------
-        // GESTION IMAGE VS BANNIÈRE BLEUE
-        // ----------------------------------------------------
+        var pdfLink = "";
+        if (evt.pdf_url && evt.pdf_url !== "") {
+          pdfLink =
+            "<a href='http://localhost:8081/" +
+            evt.pdf_url +
+            "' target='_blank' class='tag t-vi' style='text-decoration:none; margin-left:6px;'>📄 Support PDF</a>";
+        }
+
+        
+        
+        
         var topSectionHtml = "";
 
         if (evt.image_url && evt.image_url !== "") {
-          // IMAGE (Pas de bannière bleue)
+          
           topSectionHtml =
             `
         <div style="position: relative;">
@@ -217,7 +262,7 @@ function GetEvenements() {
           </div>
         </div>`;
         } else {
-          // PAS D'IMAGE (Bannière bleue avec calendrier)
+          
           topSectionHtml =
             `
         <div class="evt-banner" style="background:linear-gradient(135deg,#100820,#1c1040); margin: 0; border-radius: 12px 12px 0 0;">
@@ -249,7 +294,9 @@ function GetEvenements() {
           <div class="evt-meta" style="margin-top: 15px;">
             <span class="tag t-vi">📅 ` +
           dateFormatee +
-          `</span>
+          `</span>` +
+          pdfLink +
+          `
           </div>
           <div class="evt-foot" style="margin-top: 15px;">
             ` +
@@ -270,9 +317,9 @@ function GetEvenements() {
     });
 }
 
-// =====================================================================
-// 4. SUPPRIMER UN ÉVÉNEMENT
-// =====================================================================
+
+
+
 function DeleteEvenement(id) {
   if (!confirm("Êtes-vous sûr de vouloir annuler cet événement ?")) {
     return;
@@ -295,9 +342,9 @@ function DeleteEvenement(id) {
     });
 }
 
-// =====================================================================
-// LANCEMENT AU DÉMARRAGE
-// =====================================================================
+
+
+
 document.addEventListener("DOMContentLoaded", function () {
   GetEvenements();
 
@@ -306,4 +353,10 @@ document.addEventListener("DOMContentLoaded", function () {
     var today = new Date().toISOString().split("T")[0];
     dateInput.setAttribute("min", today);
   }
+
+  var typeSelect = document.getElementById("evt-type");
+  if (typeSelect) {
+    typeSelect.addEventListener("change", togglePdfField);
+  }
+  togglePdfField();
 });

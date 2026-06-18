@@ -9,8 +9,6 @@ import (
 func GetUserPlanning(userID int) ([]models.PlanningItem, error) {
 	planning := []models.PlanningItem{}
 
-	// events
-
 	rowsEv, err := Db.Query("SELECT evenement.id, evenement.titre, DATE_FORMAT(evenement.date_debut, '%d-%m-%Y'), evenement.lieu FROM evenement JOIN inscription ON evenement.id = inscription.id_event WHERE inscription.id_user = ?", userID)
 	if err == nil {
 		defer rowsEv.Close()
@@ -28,7 +26,6 @@ func GetUserPlanning(userID int) ([]models.PlanningItem, error) {
 		fmt.Println("🚨 ERREUR SQL Événements :", err)
 	}
 
-	// depot
 	lignesDepots, errDepot := Db.Query("SELECT d.id_depot, a.titre, d.date_depot, b.localisation, d.code_ouverture FROM depot_box d JOIN box_conteneur b ON d.id_box = b.id JOIN annonce a ON d.id_annonce = a.id WHERE a.id_user = ? AND d.date_depot IS NOT NULL", userID)
 	if errDepot == nil {
 		defer lignesDepots.Close()
@@ -48,8 +45,6 @@ func GetUserPlanning(userID int) ([]models.PlanningItem, error) {
 	} else {
 		fmt.Println("erreur dépôts :", errDepot)
 	}
-
-	// retrait
 
 	lignesRetraits, errRetrait := Db.Query(" SELECT d.id_depot, a.titre, DATE_FORMAT(d.date_retrait, '%d-%m-%Y'), b.localisation, d.code_ouverture FROM depot_box d JOIN box_conteneur b ON d.id_box = b.id JOIN annonce a ON d.id_annonce = a.id WHERE a.id_user = ? AND d.date_retrait IS NOT NULL", userID)
 	if errRetrait == nil {

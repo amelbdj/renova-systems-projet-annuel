@@ -6,9 +6,8 @@ import (
 	"upcycleconnect/auth"
 )
 
-// RoutesEvenements : gestion des événements (validation, inscription, checkout...)
 func RoutesEvenements() {
-	// --- OPTIONS (pré-vol CORS) ---
+
 	http.HandleFunc("OPTIONS /admin/evenements/validate/{id}", admin.ValidateEvenement)
 	http.HandleFunc("OPTIONS /admin/evenements/update/{id}", admin.UpdateEvenement)
 	http.HandleFunc("OPTIONS /admin/evenements/delete/{id}", admin.DeleteEvenement)
@@ -19,7 +18,6 @@ func RoutesEvenements() {
 	http.HandleFunc("OPTIONS /admin/evenements/desinscription", admin.DesinscriptionHandler)
 	http.HandleFunc("OPTIONS /api/web/checkout/evenement", admin.CreateEventCheckoutSession)
 
-	// --- Vraies routes ---
 	http.HandleFunc("GET /admin/evenements", auth.VerifyTokenMiddleware(admin.GetAllEvenements))
 	http.HandleFunc("POST /admin/evenements/add", auth.VerifyTokenMiddleware(admin.CreateEvenement))
 	http.HandleFunc("PUT /admin/evenements/{id}", auth.VerifyTokenMiddleware(admin.UpdateEvenement))

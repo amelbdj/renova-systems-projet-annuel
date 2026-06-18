@@ -54,7 +54,7 @@ function OpenEditModalAPI(id, nom, prenom, email, role) {
 function AfficherTableau(users) {
   const container = document.querySelector(".u-table");
 
-  // 🛡️ LE FAMEUX BOUCLIER : Si le tableau n'est pas sur la page, on arrête tout !
+  
   if (!container) return;
 
   const totalStat = document.getElementById("totalUser");
@@ -175,12 +175,12 @@ function GetUsers() {
     .catch((err) => console.error("Erreur GET Users:", err));
 }
 
-let currentUserIdToRefuse = null; // Variable temporaire pour stocker l'ID
+let currentUserIdToRefuse = null; 
 
 function RefuseUser(userId) {
-  currentUserIdToRefuse = userId; // On mémorise quel user on veut refuser
+  currentUserIdToRefuse = userId; 
   document.getElementById("modalRefus").style.display = "flex";
-  document.getElementById("motifTexte").value = ""; // On vide le texte
+  document.getElementById("motifTexte").value = ""; 
 }
 
 function ValidateUser(userId) {
@@ -222,7 +222,7 @@ function Search(query, role) {
   fetch(url, {
     method: "GET",
     headers: {
-      Authorization: "Bearer " + localStorage.getItem("token"), // 👈 C'est ce passe-partout qui manquait !
+      Authorization: "Bearer " + localStorage.getItem("token"), 
     },
   })
     .then((res) => {
@@ -306,9 +306,9 @@ function UpdateUser() {
 }
 
 function UpdateValidationCount() {
-  // 🟢 1. On récupère le token
+  
 
-  // 🟢 2. On prépare les options avec l'en-tête d'autorisation
+  
   const fetchOptions = {
     method: "GET",
     headers: {
@@ -317,7 +317,7 @@ function UpdateValidationCount() {
     },
   };
 
-  // 🟢 3. On passe fetchOptions en deuxième paramètre de tes fetch
+  
   Promise.all([
     fetch("http://localhost:8081/admin/annonces", fetchOptions).then((res) =>
       res.json(),
@@ -365,7 +365,7 @@ function FermerModaleRefus() {
 
 const btnConfirmerRefus = document.getElementById("btnConfirmerRefus");
 
-// 🛡️ LE BOUCLIER : On ne met le onclick que si le bouton existe sur la page !
+
 if (btnConfirmerRefus) {
   btnConfirmerRefus.onclick = function () {
     const raison = document.getElementById("motifTexte").value;
@@ -387,7 +387,7 @@ if (btnConfirmerRefus) {
       .then((data) => {
         console.log(data.message);
         FermerModaleRefus();
-        GetUsers(); // On rafraîchit le tableau instantanément
+        GetUsers(); 
       })
       .catch((err) => console.error("Erreur refus:", err));
   };
@@ -429,9 +429,9 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
-  // const role = localStorage.getItem("role");
+  
 
-  // if (role != "Administrateur") {
-  //   window.location.href = "403.html";
-  // }
+  
+  
+  
 });

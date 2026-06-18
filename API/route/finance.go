@@ -3,15 +3,17 @@ package route
 import (
 	"net/http"
 	"upcycleconnect/admin"
+	"upcycleconnect/auth"
 )
 
-// RoutesFinance : tableau de bord financier de l'admin
 func RoutesFinance() {
-	// --- OPTIONS (pré-vol CORS) ---
+
 	http.HandleFunc("OPTIONS /admin/finance/overview", admin.FinanceOverviewHandler)
 	http.HandleFunc("OPTIONS /admin/finance/transactions", admin.AdminTransactionsHandler)
+	http.HandleFunc("OPTIONS /api/pro/invoices", admin.GetProInvoicesHandler)
 
-	// --- Vraies routes ---
 	http.HandleFunc("GET /admin/finance/overview", admin.FinanceOverviewHandler)
 	http.HandleFunc("GET /admin/finance/transactions", admin.AdminTransactionsHandler)
+
+	http.HandleFunc("GET /api/pro/invoices", auth.VerifyTokenMiddleware(admin.GetProInvoicesHandler))
 }

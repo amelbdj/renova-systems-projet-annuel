@@ -19,7 +19,6 @@ const (
 var Db *sql.DB
 
 func NewDB() *sql.DB {
-	// charset=utf8mb4 : indispensable pour bien gérer les accents (é, à...) et les emojis
 	var sqlInfo = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true&charset=utf8mb4", user, pass, host, port, dbname)
 	conn, err := sql.Open(driver, sqlInfo)
 	if err != nil {

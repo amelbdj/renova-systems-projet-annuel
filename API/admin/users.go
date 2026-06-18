@@ -197,7 +197,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// ... après l'insertion du nouvel utilisateur ...inscrit
+
 	NotifyAllAdmins("👤 Un nouvel utilisateur s'est  sur ReNova !")
 
 	w.Header().Set("Content-Type", "application/json")
@@ -352,7 +352,7 @@ func GetUserByName(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		return
 	}
-	nameQuery := r.URL.Query().Get("name") // recup les valeurs de la query string(diff de path variable)
+	nameQuery := r.URL.Query().Get("name")
 	roleQuery := r.URL.Query().Get("role")
 
 	users, err := bdd.GetUserByName(nameQuery, roleQuery)
@@ -364,7 +364,6 @@ func GetUserByName(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(users)
 }
 
-// Dans users.go
 func ValidateUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
@@ -613,6 +612,44 @@ func UpdatePasswordHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]string{"message": "Mot de passe mis à jour avec succès !"})
 }
 
+func UpdateProfileHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	if r.Method != http.MethodPut && r.Method != http.MethodPost {
+		http.Error(w, `{"error": "Méthode non autorisée"}`, http.StatusMethodNotAllowed)
+		return
+	}
+
+	userID, ok := r.Context().Value("userID").(int)
+	if !ok || userID == 0 {
+		http.Error(w, `{"error": "Utilisateur non identifié"}`, http.StatusUnauthorized)
+		return
+	}
+
+	var input struct {
+		Nom    string `json:"nom"`
+		Prenom string `json:"prenom"`
+		Email  string `json:"email"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		http.Error(w, `{"error": "Données invalides"}`, http.StatusBadRequest)
+		return
+	}
+
+	if input.Nom == "" || input.Prenom == "" || input.Email == "" {
+		http.Error(w, `{"error": "Tous les champs sont obligatoires"}`, http.StatusBadRequest)
+		return
+	}
+
+	if err := bdd.UpdateUserProfile(userID, input.Nom, input.Prenom, input.Email); err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "%s"}`, err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{"message": "Profil mis à jour avec succès"})
+}
+
 func UpgradeToPremiumHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
@@ -624,17 +661,15 @@ func UpgradeToPremiumHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userID := r.URL.Query().Get("id")
-	sessionID := r.URL.Query().Get("session_id") // 🟢 Get the session ID from the URL
+	sessionID := r.URL.Query().Get("session_id")
 
 	if userID == "" || sessionID == "" {
 		http.Error(w, `{"error": "Missing parameters"}`, http.StatusBadRequest)
 		return
 	}
 
-	// 🟢 Hardcode your secret key so Go can talk to Stripe
 	stripe.Key = "sk_test_51TNFHBHbaxF1KOTtH89RRHNJQSQXSPVtOHMJDHicr1LW4XYeY4ZC6nYWwzVbDvFUUI58YA7KlJs9BiUyP5zD4XU300gaAUPVpI"
 
-	// Ask Stripe for the session details to get the Customer ID
 	s, err := session.Get(sessionID, nil)
 	if err != nil {
 		fmt.Println("Error fetching Stripe session:", err)
@@ -644,7 +679,6 @@ func UpgradeToPremiumHandler(w http.ResponseWriter, r *http.Request) {
 
 	customerID := s.Customer.ID
 
-	// 🟢 Update the database with BOTH premium status AND the Customer ID
 	query := "UPDATE utilisateur SET est_premium = 1, stripe_customer_id = ? WHERE id = ?"
 	_, dbErr := bdd.Db.Exec(query, customerID, userID)
 	if dbErr != nil {
@@ -669,7 +703,6 @@ func CustomerPortalHandler(w http.ResponseWriter, r *http.Request) {
 
 	userID := r.URL.Query().Get("id")
 
-	// Fetch their Customer ID from your database
 	var customerID string
 	err := bdd.Db.QueryRow("SELECT stripe_customer_id FROM utilisateur WHERE id = ?", userID).Scan(&customerID)
 
@@ -680,10 +713,9 @@ func CustomerPortalHandler(w http.ResponseWriter, r *http.Request) {
 
 	stripe.Key = "sk_test_51TNFHBHbaxF1KOTtH89RRHNJQSQXSPVtOHMJDHicr1LW4XYeY4ZC6nYWwzVbDvFUUI58YA7KlJs9BiUyP5zD4XU300gaAUPVpI"
 
-	// Create the portal session
 	params := &stripe.BillingPortalSessionParams{
 		Customer:  stripe.String(customerID),
-		ReturnURL: stripe.String("http://127.0.0.1:5500/renova-systems-projet-annuel/Frontend/espPro.html"), // Where they go when they click "Back"
+		ReturnURL: stripe.String("http://127.0.0.1:5500/renova-systems-projet-annuel/Frontend/espPro.html"),
 	}
 
 	ps, err := portalsession.New(params)
@@ -693,7 +725,6 @@ func CustomerPortalHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Send the portal URL to the frontend
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]string{"url": ps.URL})
 }
@@ -711,7 +742,6 @@ func SyncPremiumStatusHandler(w http.ResponseWriter, r *http.Request) {
 	userID := r.URL.Query().Get("id")
 	var customerID string
 
-	// 1. Récupérer le Stripe Customer ID
 	err := bdd.Db.QueryRow("SELECT stripe_customer_id FROM utilisateur WHERE id = ?", userID).Scan(&customerID)
 	if err != nil || customerID == "" {
 		http.Error(w, `{"error": "Aucun compte Stripe trouvé"}`, http.StatusNotFound)
@@ -720,7 +750,6 @@ func SyncPremiumStatusHandler(w http.ResponseWriter, r *http.Request) {
 
 	stripe.Key = "sk_test_51TNFHBHbaxF1KOTtH89RRHNJQSQXSPVtOHMJDHicr1LW4XYeY4ZC6nYWwzVbDvFUUI58YA7KlJs9BiUyP5zD4XU300gaAUPVpI"
 
-	// 2. Demander à Stripe si un abonnement "actif" existe pour ce client
 	params := &stripe.SubscriptionListParams{
 		Customer: stripe.String(customerID),
 		Status:   stripe.String("active"),
@@ -729,10 +758,9 @@ func SyncPremiumStatusHandler(w http.ResponseWriter, r *http.Request) {
 
 	estPremium := 0
 	if iter.Next() {
-		estPremium = 1 // On a trouvé un abonnement actif !
+		estPremium = 1
 	}
 
-	// 3. Mettre à jour la base de données avec la vraie réponse de Stripe
 	bdd.Db.Exec("UPDATE utilisateur SET est_premium = ? WHERE id = ?", estPremium, userID)
 
 	w.Header().Set("Content-Type", "application/json")

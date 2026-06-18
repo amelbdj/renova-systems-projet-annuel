@@ -1,15 +1,13 @@
-/* ─────────────────────────────────────────────────────
-   FORUM COMMUNAUTAIRE - CLEAN & ALIGNÉ
-───────────────────────────────────────────────────── */
 
-/* Container principal du forum pour espacer les sujets */
+
+
 .forum-container {
   display: flex;
   flex-direction: column;
-  gap: 16px; /* Espace propre entre les sujets */
+  gap: 16px; 
 }
 
-/* En-tête de la liste (Titre + Bouton) */
+
 .forum-main-header {
   display: flex;
   justify-content: space-between;
@@ -27,9 +25,9 @@
   margin: 0;
 }
 
-/* --- VUE 1 : Cartes des sujets --- */
+
 .sujet-card {
-  background: var(--card2); /* Fond légèrement éclairé pour se détacher */
+  background: var(--card2); 
   border: 1px solid var(--b1);
   border-radius: var(--r);
   padding: 20px 24px;
@@ -58,7 +56,7 @@
 }
 
 .sujet-card:hover {
-  border-color: var(--blue-l); /* Bordure qui s'illumine */
+  border-color: var(--blue-l); 
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
   background: var(--card);
@@ -71,7 +69,7 @@
 .sujet-header {
   display: flex;
   justify-content: space-between;
-  align-items: center; /* Alignement vertical parfait */
+  align-items: center; 
   gap: 15px;
 }
 
@@ -106,7 +104,7 @@
   font-weight: 500;
 }
 
-/* --- VUE 2 : Zone de messages --- */
+
 .sujet-actif-header {
   display: flex;
   align-items: center;
@@ -125,7 +123,7 @@
 }
 
 #zone-messages {
-  background: var(--bg2); /* Fond de la zone de chat plus sombre */
+  background: var(--bg2); 
   border: 1px solid var(--b1);
   border-radius: var(--r);
   padding: 20px;
@@ -133,13 +131,13 @@
   scrollbar-color: var(--b2) transparent;
   display: flex;
   flex-direction: column;
-  gap: 12px; /* Espace entre les messages */
+  gap: 12px; 
 }
 
 .msg-card {
   background: var(--card);
   border: 1px solid var(--b0);
-  border-left: 4px solid var(--blue); /* Ligne bleue caractéristique */
+  border-left: 4px solid var(--blue); 
   border-radius: 9px;
   padding: 16px 20px;
   transition: 0.15s;
@@ -172,7 +170,7 @@
   line-height: 1.6;
 }
 
-/* Le champ pour répondre */
+
 .chat-input-wrapper {
   display: flex;
   gap: 12px;
@@ -202,24 +200,22 @@
   background: var(--bg);
   box-shadow: 0 0 0 3px rgba(49, 115, 255, 0.1);
 }
-/* ─────────────────────────────────────────────────────
-   MODALE : NOUVEAU SUJET
-───────────────────────────────────────────────────── */
 
-/* L'arrière-plan de la modale (Overlay) */
+
+
 .modal-overlay {
-  display: none; /* Caché par défaut */
+  display: none; 
   position: fixed;
   inset: 0;
   background: rgba(5, 8, 15, 0.85);
-  backdrop-filter: blur(8px); /* Effet de flou sur le reste du site */
+  backdrop-filter: blur(8px); 
   z-index: 1000;
   justify-content: center;
   align-items: center;
   padding: 20px;
 }
 
-/* La carte à l'intérieur de la modale */
+
 .modal-card {
   background: var(--card);
   border: 1px solid var(--b2);
@@ -249,7 +245,7 @@
   margin-bottom: 25px;
 }
 
-/* Champs de saisie dans la modale */
+
 .modal-field {
   display: flex;
   flex-direction: column;
@@ -291,7 +287,7 @@
   resize: none;
 }
 
-/* Zone des boutons */
+
 .modal-actions {
   display: flex;
   justify-content: flex-end;

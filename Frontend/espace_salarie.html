@@ -19,16 +19,16 @@
   window.OneSignal = window.OneSignal || [];
   OneSignal.push(function() {
     OneSignal.init({
-      appId: "79a53223-420a-46c8-83d9-1ca162fcb64f", // L'ID que Faty a configuré
+      appId: "79a53223-420a-46c8-83d9-1ca162fcb64f", 
       safari_web_id: "",
       notifyButton: {
         enable: true,
       },
-      allowLocalhostAsSecureOrigin: true, // Très important pour tes tests en local
+      allowLocalhostAsSecureOrigin: true, 
     });
 
-    // On lie l'ID OneSignal à l'ID de ton utilisateur ReNova
-    const userId = localStorage.getItem("userId"); // Assure-toi de stocker l'ID au login
+    
+    const userId = localStorage.getItem("userId"); 
     if (userId) {
         OneSignal.login(userId); 
     }
@@ -36,9 +36,7 @@
 </script>
   </head>
   <body>
-    <!-- ════════════════════════════════════════
-   TUTORIAL OVERLAY
-════════════════════════════════════════ -->
+    
     <div id="tut">
       <div class="tut-card">
         <div class="tut-head">
@@ -217,9 +215,7 @@ timer
       </div>
     </div>
 
-    <!-- ════════════════════════════════════════
-   TOPNAV
-════════════════════════════════════════ -->
+    
     <nav class="topnav">
       <div class="nav-logo">
         <img
@@ -252,9 +248,7 @@ timer
       </div>
     </nav>
 
-    <!-- ════════════════════════════════════════
-   HERO
-════════════════════════════════════════ -->
+    
     <div class="wrapper">
       <section class="hero fu">
         <div class="hero-left">
@@ -306,9 +300,7 @@ timer
         </div>
       </section>
 
-      <!-- ════════════════════════════════════
-     ① ÉVÉNEMENTS & FORMATIONS
-  ════════════════════════════════════ -->
+      
       <section id="events" style="padding: 0 0 52px">
         <div class="sec-label fu">
           <div class="sec-num">1</div>
@@ -347,9 +339,7 @@ timer
         </div>
       </section>
 
-      <!-- ════════════════════════════════════
-     ② PLANNING SEMAINIER
-  ════════════════════════════════════ -->
+      
       <section id="planning" style="padding: 0 0 52px">
         <div class="sec-label fu">
           <div class="sec-num pink">2</div>
@@ -367,7 +357,7 @@ timer
           </button>
         </div>
         <div class="planning-layout fu fu1">
-          <!-- Week days strip -->
+          
           <div class="week-strip">
             <div class="week-header">
               <button id="btn-prev-month" class="btn btn-g btn-xs">←</button>
@@ -377,7 +367,7 @@ timer
             <div class="week-days"></div>
           </div>
 
-          <!-- Timeline -->
+          
           <div class="card">
             <div class="card-hd">
               <div class="card-ht">
@@ -482,9 +472,7 @@ timer
         </div>
       </section>
 
-      <!-- ════════════════════════════════════
-     ③ CONTENU — CONSEILS & NEWS
-  ════════════════════════════════════ -->
+      
       <section id="content" style="padding: 0 0 52px">
         <div class="sec-label fu">
           <div class="sec-num teal">3</div>
@@ -855,7 +843,7 @@ analytics
           </div>
         </div>
       </section>
-    <!-- /wrapper -->
+    
 
     <footer>
       <div class="wrapper">
@@ -864,9 +852,7 @@ analytics
       </div>
     </footer>
 
-    <!-- ════════════════════════════════════════
-   MODAL: NOUVEL ÉVÉNEMENT
-════════════════════════════════════════ -->
+    
     <div class="modal-bg" id="evtModal">
       <div class="modal">
         <div class="modal-x" onclick="closeEvt()">✕</div>
@@ -966,7 +952,7 @@ calendar_today
 
  
 
-    <!-- MODAL: NOUVEL ARTICLE -->
+    
     <div class="modal-bg" id="postModal">
       <div class="modal">
         <div class="modal-x" onclick="closePost()">✕</div>
@@ -1042,7 +1028,7 @@ publish
       </div>
     </div>
     <script>
-      /* ── TUTORIAL ─────────────────────────────── */
+      
       const ts = [
         {
           i: "🎓",
@@ -1104,7 +1090,7 @@ event
         }
       }
 
-      /* ── SCROLL ───────────────────────────────── */
+      
       function sc(id) {
         document
           .getElementById(id)
@@ -1118,7 +1104,7 @@ event
         document.getElementById("slotModal").classList.remove("open");
       }
 
-      /* ── MOD ACTIONS ──────────────────────────── */
+      
       function modAction(btn, action) {
         const item = btn.closest(".thread-item");
         item.style.transition = "opacity .3s, transform .3s";
@@ -1139,7 +1125,7 @@ event
         }, 300);
       }
 
-      /* ── FILTER ───────────────────────────────── */
+      
       function setFilter(type, btn) {
         document.querySelectorAll(".thread-item").forEach((t) => {
           if (type === "all") t.style.display = "";
@@ -1147,7 +1133,7 @@ event
         });
       }
 
-      /* ── CLOSE ON BG (Corrigé) ──────────────────────────── */
+      
     </script>
     <script src="script/salarie/article.js" defer></script>
     <script src="script/salarie/event.js" defer></script>

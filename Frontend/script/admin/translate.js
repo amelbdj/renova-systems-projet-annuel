@@ -1,9 +1,9 @@
 let currentTranslations = {};
 monToken = localStorage.getItem("token");
 function changerLangue(langue) {
-  localStorage.setItem("langue", langue); // On mémorise le choix pour toutes les pages
+  localStorage.setItem("langue", langue); 
   fetch(`http://localhost:8081/api/translations?lang=${langue}`, {
-    cache: "no-store", // on veut toujours les traductions à jour (sinon le navigateur garde l'ancienne version)
+    cache: "no-store", 
     headers: {
       Authorization: "Bearer " + monToken,
     },
@@ -50,7 +50,7 @@ function appliquerTraductions() {
   });
 }
 
-// Import d'une nouvelle langue à partir d'un fichier JSON
+
 function ImporterLangue() {
   const code = document
     .getElementById("input_lang_code")
@@ -59,7 +59,7 @@ function ImporterLangue() {
   const nom = document.getElementById("input_lang_name").value.trim();
   const fichierInput = document.getElementById("input_fichier_json");
 
-  // Petites vérifications avant d'envoyer
+  
   if (code === "" || nom === "") {
     alert("Merci de remplir le code ET le nom de la langue.");
     return;
@@ -72,11 +72,11 @@ function ImporterLangue() {
   const fichier = fichierInput.files[0];
   const lecteur = new FileReader();
 
-  // Cette fonction se lance UNE FOIS que le fichier est lu
+  
   lecteur.onload = function () {
     let contenuJson;
     try {
-      // On transforme le texte du fichier en objet JavaScript
+      
       contenuJson = JSON.parse(lecteur.result);
     } catch (e) {
       alert("❌ Le fichier n'est pas un JSON valide.");
@@ -105,7 +105,7 @@ function ImporterLangue() {
         document.getElementById("input_lang_name").value = "";
         fichierInput.value = "";
 
-        // 🌟 On met à jour les boutons de langue tout de suite !
+        
         GetLanguages();
       })
       .catch((err) => {
@@ -114,11 +114,11 @@ function ImporterLangue() {
       });
   };
 
-  // On lance la lecture du fichier (en texte)
+  
   lecteur.readAsText(fichier);
 }
 
-// Export d'une langue en fichier JSON (sert de modèle à traduire)
+
 function ExporterLangue(code) {
   fetch(`http://localhost:8081/api/translations?lang=${code}`, {
     headers: {
@@ -127,10 +127,10 @@ function ExporterLangue(code) {
   })
     .then((res) => res.json())
     .then((data) => {
-      // On transforme l'objet en texte JSON bien indenté
+      
       const texte = JSON.stringify(data, null, 2);
 
-      // On crée un fichier en mémoire et on déclenche le téléchargement
+      
       const blob = new Blob([texte], { type: "application/json" });
       const url = URL.createObjectURL(blob);
 
@@ -139,14 +139,14 @@ function ExporterLangue(code) {
       lien.download = code + ".json";
       lien.click();
 
-      URL.revokeObjectURL(url); // On nettoie
+      URL.revokeObjectURL(url); 
     })
     .catch((err) => console.error("Erreur export:", err));
 }
 
 const btnToggleForm = document.getElementById("btn-toggle-form");
 
-// 🛡️ SÉCURITÉ ICI : On vérifie si l'élément btn-toggle-form existe
+
 if (btnToggleForm) {
   btnToggleForm.addEventListener("click", function () {
     const formContainer = document.getElementById("form-container");
@@ -161,7 +161,7 @@ if (btnToggleForm) {
   });
 }
 
-// Affichage dynamique des boutons de langue
+
 function GetLanguages() {
   fetch("http://localhost:8081/api/languages", {
     headers: {
@@ -175,10 +175,10 @@ function GetLanguages() {
     .then((languages) => {
       const container = document.getElementById("wrapper");
 
-      // 🛡️ SÉCURITÉ ICI : On vérifie si le conteneur des boutons de langue existe
+      
       if (!container) return;
 
-      container.innerHTML = ""; // 🌟 CORRECTION : On vide le conteneur pour éviter de dupliquer les boutons
+      container.innerHTML = ""; 
 
       languages.forEach((lang) => {
         container.innerHTML += `
@@ -193,10 +193,10 @@ function GetLanguages() {
     });
 }
 
-// Initialisation au chargement de la page
+
 document.addEventListener("DOMContentLoaded", () => {
   GetLanguages();
-  // On reprend la langue choisie précédemment, sinon français par défaut
+  
   const langueSauvegardee = localStorage.getItem("langue") || "fr";
   changerLangue(langueSauvegardee);
 });

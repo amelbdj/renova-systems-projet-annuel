@@ -6,9 +6,8 @@ import (
 	"upcycleconnect/auth"
 )
 
-// RoutesAnnonces : gestion des annonces (validation, vente, paiement mobile...)
 func RoutesAnnonces() {
-	// --- OPTIONS (pré-vol CORS) ---
+
 	http.HandleFunc("OPTIONS /admin/annonces/validate/{id}", admin.ValidateAnnonce)
 	http.HandleFunc("OPTIONS /admin/annonces", admin.GetAllAnnonces)
 	http.HandleFunc("OPTIONS /admin/annonces/refuse/{id}", admin.RefuseAnnonce)
@@ -18,7 +17,6 @@ func RoutesAnnonces() {
 	http.HandleFunc("OPTIONS /api/annonces/vendre", admin.ConfirmPaymentAndOrder)
 	http.HandleFunc("OPTIONS /api/mobile/payment-intent", admin.PaymentIntentMobile)
 
-	// --- Vraies routes ---
 	http.HandleFunc("GET /admin/annonces", admin.GetAllAnnonces)
 	http.HandleFunc("PUT /admin/annonces/validate/{id}", auth.VerifyTokenMiddleware(admin.ValidateAnnonce))
 	http.HandleFunc("PUT /admin/annonces/refuse/{id}", auth.VerifyTokenMiddleware(admin.RefuseAnnonce))
@@ -30,5 +28,5 @@ func RoutesAnnonces() {
 	http.HandleFunc("GET /api/annonces/all", admin.GetValidatedAnnonces)
 	http.HandleFunc("GET /api/annonces", admin.GetOneAnnonce)
 	http.HandleFunc("POST /api/annonces/vendre", admin.ConfirmPaymentAndOrder)
-	http.HandleFunc("POST /api/mobile/payment-intent", admin.PaymentIntentMobile) // android payment intent
+	http.HandleFunc("POST /api/mobile/payment-intent", admin.PaymentIntentMobile)
 }

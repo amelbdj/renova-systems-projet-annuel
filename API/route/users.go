@@ -6,9 +6,8 @@ import (
 	"upcycleconnect/auth"
 )
 
-// RoutesUsers : toutes les routes liées aux utilisateurs (CRUD, validation, profil, mot de passe...)
 func RoutesUsers() {
-	// --- OPTIONS (pré-vol CORS) ---
+
 	http.HandleFunc("OPTIONS /admin/users/delete/{id}", admin.DeletedUser)
 	http.HandleFunc("OPTIONS /admin/users/add", admin.CreateUser)
 	http.HandleFunc("OPTIONS /admin/users/modify/{id}", admin.UpdateUser)
@@ -22,8 +21,8 @@ func RoutesUsers() {
 	http.HandleFunc("OPTIONS /user/profile", admin.GetUserById)
 	http.HandleFunc("OPTIONS /api/user/payment-history", admin.PaymentHistoryHandler)
 	http.HandleFunc("OPTIONS /api/user/update-password", admin.UpdatePasswordHandler)
+	http.HandleFunc("OPTIONS /api/user/profile", admin.UpdateProfileHandler)
 
-	// --- Vraies routes ---
 	http.HandleFunc("GET /admin/users", auth.VerifyTokenMiddleware(admin.GetAllUsers))
 	http.HandleFunc("POST /admin/users/add", auth.VerifyTokenMiddleware(admin.CreateUser))
 	http.HandleFunc("DELETE /admin/users/delete/{id}", auth.VerifyTokenMiddleware(admin.DeletedUser))
@@ -37,8 +36,8 @@ func RoutesUsers() {
 	http.HandleFunc("PUT /admin/users/ban/{id}", auth.VerifyTokenMiddleware(admin.BanUserHandler))
 	http.HandleFunc("GET /api/user/payment-history", admin.PaymentHistoryHandler)
 	http.HandleFunc("POST /api/user/update-password", auth.VerifyTokenMiddleware(admin.UpdatePasswordHandler))
+	http.HandleFunc("PUT /api/user/profile", auth.VerifyTokenMiddleware(admin.UpdateProfileHandler))
 
-	// Stats éco & achats de l'utilisateur
 	http.HandleFunc("/api/user/ecostats", admin.GetEcoStatsHandler)
 	http.HandleFunc("/api/user/stats", admin.GetEcoStatsHandler)
 	http.HandleFunc("/api/user/achats", admin.GetMyPurchases)

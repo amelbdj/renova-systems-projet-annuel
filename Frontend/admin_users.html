@@ -28,16 +28,16 @@
     <script>
       window.OneSignalDeferred = window.OneSignalDeferred || [];
       OneSignalDeferred.push(async function (OneSignal) {
-        // 1. Initialisation avec la nouvelle syntaxe
+        
         await OneSignal.init({
           appId: "79a53223-420a-46c8-83d9-1ca162fcb64f",
           notifyButton: {
             enable: true,
           },
-          // Note : on a retiré allowLocalhostAsSecureOrigin car c'est devenu inutile en v16
+          
         });
 
-        // 2. Connexion de l'utilisateur
+        
         const userId = localStorage.getItem("userId");
         if (userId) {
           await OneSignal.login(userId);
@@ -53,7 +53,7 @@
   <body
     style="display: flex; min-height: 100vh; margin: 0; background: var(--bg)"
   >
-    <!-- Sélecteur de langue (boutons générés par translate.js) -->
+    
     <div id="wrapper" style="position:fixed; bottom:16px; right:16px; z-index:2000; display:flex; gap:6px;"></div>
 
     <aside
@@ -83,7 +83,7 @@
         ReNova <em style="color: var(--or-l); font-style: normal">Admin</em>
       </div>
 
-      <!-- Navigation (En utilisant tes classes .nav-link existantes) -->
+      
       <nav style="display: flex; flex-direction: column; gap: 8px">
         <a
           href="admin_dashboard.html"

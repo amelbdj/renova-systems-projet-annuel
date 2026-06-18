@@ -41,7 +41,7 @@ function chargerArticles() {
 
         let typeArt = (art.type || "").toLowerCase();
 
-        // 🟢 GESTION DE L'IMAGE DANS LA CARTE
+        
         let imageHtml = `<div class="post-ico" style="background:rgba(48,212,192,.09)">📝</div>`;
         if (art.image_url && art.image_url !== "") {
           imageHtml = `<img src="http://localhost:8081/${art.image_url}" style="width: 50px; height: 50px; border-radius: 8px; object-fit: cover;">`;
@@ -106,7 +106,7 @@ function editerArticle(id) {
     );
 }
 
-// 🟢 FONCTIONS APPELÉES PAR LES BOUTONS HTML
+
 function sauvegarderBrouillon() {
   saveArticle("brouillon");
 }
@@ -129,7 +129,7 @@ function saveArticle(action) {
     return;
   }
 
-  // 🟢 UTILISATION DE FORMDATA POUR L'UPLOAD
+  
   const formData = new FormData();
   formData.append("id_salarie", userId);
   formData.append("titre", titre);
@@ -149,7 +149,7 @@ function saveArticle(action) {
     method: method,
     headers: {
       Authorization: "Bearer " + monToken,
-      // ⚠️ Pas de "Content-Type" avec FormData, le navigateur gère tout seul !
+      
     },
     body: formData,
   })
@@ -201,7 +201,7 @@ function closePost() {
     document.getElementById("post-type").value = "";
 
     const imageInput = document.getElementById("post-image");
-    if (imageInput) imageInput.value = ""; // 🟢 On vide l'image
+    if (imageInput) imageInput.value = ""; 
 
     const modalTitle = document.querySelector("#postModal .sec-title-text");
     if (modalTitle) modalTitle.textContent = "Rédiger un article";

@@ -4,7 +4,7 @@ const Auth = {
   getUserRole: () => localStorage.getItem("userRole"),
   isConnected: () => !!localStorage.getItem("token"),
 
-  // Pour se déconnecter proprement
+  
   logout: () => {
     localStorage.clear();
     window.location.href = "login.html";
@@ -25,7 +25,7 @@ function GetAnnonce() {
       return res.json();
     })
     .then((annonces) => {
-      // On vérifie l'ID et non le texte (qui va changer avec la trad)
+      
       const currentTabId = document.querySelector(".vtab.on").id;
       if (currentTabId !== "tout") container.innerHTML = "";
 
@@ -92,7 +92,7 @@ function GetAnnonce() {
         container.innerHTML = `<div style="padding:20px" data-i18n="backoffice.ads.no_ads">Aucune annonce en attente.</div>`;
       }
 
-      // On demande au script de traduire les nouveaux éléments fraîchement injectés
+      
       if (typeof appliquerTraductions === "function") {
         appliquerTraductions();
       }
@@ -108,7 +108,7 @@ function ValidateAnnonce(id) {
     },
   }).then(() => {
     GetAnnonce();
-    UpdateValidationCount(); // Met à jour le total rouge en haut
+    UpdateValidationCount(); 
   });
 }
 
