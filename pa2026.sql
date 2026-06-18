@@ -308,7 +308,7 @@ CREATE TABLE IF NOT EXISTS `evenement` (
   `nb_places` int DEFAULT NULL,
   `statut_validation` varchar(20) DEFAULT NULL,
   `format` varchar(20) DEFAULT NULL,
-  `type` enum('evenement','formation') DEFAULT NULL,
+  `type` enum('evenement','formation','atelier','reunion') DEFAULT NULL,
   `lieu` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '0',
   `prix` int DEFAULT '0',
   `image_url` varchar(255) DEFAULT NULL,
