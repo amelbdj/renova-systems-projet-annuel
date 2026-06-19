@@ -101,8 +101,14 @@ function chargerProfil() {
       .then((res) => res.json())
       .then((messages) => {
         if (!messages) messages = [];
-        
-        statForum.textContent = messages.length;
+
+        let nbSignales = 0;
+        for (let i = 0; i < messages.length; i++) {
+          if (messages[i].est_signale) {
+            nbSignales++;
+          }
+        }
+        statForum.textContent = nbSignales;
       })
       .catch((err) => console.error("Erreur stat forum:", err));
   }
