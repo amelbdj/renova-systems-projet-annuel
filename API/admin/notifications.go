@@ -5,8 +5,61 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"upcycleconnect/bdd"
 )
+
+func SendNotificationToAudience(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	var req struct {
+		Cible   string `json:"cible"`
+		Message string `json:"message"`
+	}
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		http.Error(w, `{"erreur":"données invalides"}`, http.StatusBadRequest)
+		return
+	}
+
+	if req.Message == "" {
+		http.Error(w, `{"erreur":"le message est vide"}`, http.StatusBadRequest)
+		return
+	}
+
+	var ids []string
+	if req.Cible == "particuliers" {
+		ids, _ = bdd.GetParticulierIDs()
+	} else if req.Cible == "pros" {
+		ids, _ = bdd.GetProfessionalIDs()
+	} else {
+		particuliers, _ := bdd.GetParticulierIDs()
+		pros, _ := bdd.GetProfessionalIDs()
+		ids = append(particuliers, pros...)
+	}
+
+	for _, id := range ids {
+		go SendPushNotification(id, req.Message)
+
+		idInt, errConv := strconv.Atoi(id)
+		if errConv == nil {
+			bdd.CreateNotification(idInt, req.Message)
+		}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"message": "Notification envoyée",
+		"nombre":  len(ids),
+	})
+}
 
 const (
 	OneSignalAppID  = "79a53223-420a-46c8-83d9-1ca162fcb64f"

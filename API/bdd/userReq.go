@@ -430,6 +430,31 @@ func GetProfessionalIDs() ([]string, error) {
 	return ids, nil
 }
 
+func GetParticulierIDs() ([]string, error) {
+	rows, err := Db.Query("SELECT id FROM pa2026.utilisateur WHERE role = 'Utilisateur'")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var ids []string
+	for rows.Next() {
+		var id int
+		if err := rows.Scan(&id); err == nil {
+			ids = append(ids, strconv.Itoa(id))
+		}
+	}
+	return ids, nil
+}
+
+func CreateNotification(idUser int, contenu string) error {
+	_, err := Db.Exec("INSERT INTO pa2026.notification (id_user, contenu, est_lu) VALUES (?, ?, 0)", idUser, contenu)
+	if err != nil {
+		return fmt.Errorf("création de la notification échouée : %v", err)
+	}
+	return nil
+}
+
 func EnvoyerEmailValidation(emailDestinataire string, prenom string) error {
 	expediteur := "noreply@upcycleconnect.fr"
 	motDePasse := "voir avec ndoya"
