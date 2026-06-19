@@ -1485,7 +1485,7 @@ footer strong {
   padding: 5px 0;
 }
 .cal-d {
-  aspect-ratio: 1;
+  min-height: 40px;
   display: flex;
   flex-direction: column;
   align-items: center;
