@@ -18,6 +18,12 @@ type Evenement struct {
 	DejaInscrit      bool    `json:"deja_inscrit"`
 	ImageUrl         string  `json:"image_url"`
 	PdfUrl           string  `json:"pdf_url"`
+	PlanCours        string  `json:"plan_cours"`
+}
+
+type Ressource struct {
+	Titre      string `json:"titre"`
+	UrlFichier string `json:"url_fichier"`
 }
 
 type Inscrit struct {

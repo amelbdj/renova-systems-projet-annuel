@@ -188,12 +188,18 @@ window.ouvrirDetailEvent = function (id) {
     (evt.description || "Pas de description.") +
     "</p>";
 
-  if (evt.pdf_url && evt.pdf_url !== "") {
+  if (evt.plan_cours && evt.plan_cours !== "") {
     html +=
-      "<p style='margin-top:12px;'><a href='http://localhost:8081/" +
-      evt.pdf_url +
-      "' target='_blank' style='color:#fff; background:var(--vi); padding:8px 14px; border-radius:6px; text-decoration:none;'>📄 Télécharger le support PDF</a></p>";
+      "<p style='margin-top:12px;'><strong>Plan du cours :</strong><br>" +
+      evt.plan_cours +
+      "</p>";
   }
+
+  html +=
+    "<div style='margin-top:14px;'>" +
+    "<strong>Ressources</strong>" +
+    "<div id='detail-ressources' style='margin-top:8px;'>Chargement...</div>" +
+    "</div>";
 
   html +=
     "<div style='margin-top:18px; border-top:1px solid var(--b0); padding-top:14px;'>" +
@@ -204,8 +210,49 @@ window.ouvrirDetailEvent = function (id) {
   document.getElementById("detail-body").innerHTML = html;
   document.getElementById("detailModal").style.display = "flex";
 
+  chargerRessources(evt.id);
   chargerInscrits(evt.id);
 };
+
+function chargerRessources(id) {
+  fetch("http://localhost:8081/admin/evenements/ressources/" + id, {
+    headers: {
+      Authorization: "Bearer " + monToken,
+    },
+  })
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (ressources) {
+      let zone = document.getElementById("detail-ressources");
+      if (!zone) return;
+
+      if (!ressources || ressources.length === 0) {
+        zone.innerHTML =
+          "<p style='color:var(--txt-d);'>Aucune ressource pour cette formation.</p>";
+        return;
+      }
+
+      let liste = "";
+      for (let i = 0; i < ressources.length; i++) {
+        liste +=
+          "<p style='margin:4px 0;'><a href='http://localhost:8081/" +
+          ressources[i].url_fichier +
+          "' target='_blank' style='color:#fff; background:var(--vi); padding:6px 12px; border-radius:6px; text-decoration:none;'>📄 " +
+          ressources[i].titre +
+          "</a></p>";
+      }
+      zone.innerHTML = liste;
+    })
+    .catch(function (error) {
+      let zone = document.getElementById("detail-ressources");
+      if (zone) {
+        zone.innerHTML =
+          "<p style='color:var(--txt-d);'>Erreur lors du chargement des ressources.</p>";
+      }
+      console.error(error);
+    });
+}
 
 function chargerInscrits(id) {
   fetch("http://localhost:8081/admin/evenements/inscrits/" + id, {

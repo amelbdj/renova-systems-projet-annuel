@@ -35,9 +35,17 @@ function resetEvtForm() {
     imageInput.value = "";
   }
 
-  var pdfInput = document.getElementById("evt-pdf");
-  if (pdfInput) {
-    pdfInput.value = "";
+  var planTexteInput = document.getElementById("evt-plan-texte");
+  if (planTexteInput) {
+    planTexteInput.value = "";
+  }
+  var planPdfInput = document.getElementById("evt-plan-pdf");
+  if (planPdfInput) {
+    planPdfInput.value = "";
+  }
+  var ressourcesInput = document.getElementById("evt-ressources");
+  if (ressourcesInput) {
+    ressourcesInput.value = "";
   }
   togglePdfField();
 }
@@ -70,13 +78,34 @@ function CreateEvent() {
     imageFile = imageInput.files[0];
   }
 
-  var pdfInput = document.getElementById("evt-pdf");
-  var pdfFile = null;
-  if (type === "formation" && pdfInput && pdfInput.files.length > 0) {
-    pdfFile = pdfInput.files[0];
-    if (!pdfFile.name.toLowerCase().endsWith(".pdf")) {
-      alert("Le support de formation doit être un fichier PDF.");
-      return;
+  var planTexte = "";
+  var planPdfFile = null;
+  var ressourcesFiles = [];
+  if (type === "formation") {
+    var planTexteInput = document.getElementById("evt-plan-texte");
+    if (planTexteInput) {
+      planTexte = planTexteInput.value.trim();
+    }
+
+    var planPdfInput = document.getElementById("evt-plan-pdf");
+    if (planPdfInput && planPdfInput.files.length > 0) {
+      planPdfFile = planPdfInput.files[0];
+      if (!planPdfFile.name.toLowerCase().endsWith(".pdf")) {
+        alert("Le plan du cours doit être un fichier PDF.");
+        return;
+      }
+    }
+
+    var ressourcesInput = document.getElementById("evt-ressources");
+    if (ressourcesInput && ressourcesInput.files.length > 0) {
+      for (var i = 0; i < ressourcesInput.files.length; i++) {
+        var fichier = ressourcesInput.files[i];
+        if (!fichier.name.toLowerCase().endsWith(".pdf")) {
+          alert("Les ressources doivent être des fichiers PDF.");
+          return;
+        }
+        ressourcesFiles.push(fichier);
+      }
     }
   }
 
@@ -123,8 +152,14 @@ function CreateEvent() {
     formData.append("image", imageFile);
   }
 
-  if (pdfFile) {
-    formData.append("pdf", pdfFile);
+  formData.append("plan_cours", planTexte);
+
+  if (planPdfFile) {
+    formData.append("plan_pdf", planPdfFile);
+  }
+
+  for (var j = 0; j < ressourcesFiles.length; j++) {
+    formData.append("ressources", ressourcesFiles[j]);
   }
 
   fetch("http://localhost:8081/admin/evenements/add", {

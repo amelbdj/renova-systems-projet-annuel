@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"mime/multipart"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -132,6 +133,7 @@ func CreateEvenement(w http.ResponseWriter, r *http.Request) {
 	Evenement.Lieu = r.FormValue("lieu")
 	Evenement.NbPlaces, _ = strconv.Atoi(r.FormValue("capacite"))
 	Evenement.Prix, _ = strconv.ParseFloat(r.FormValue("tarif"), 64)
+	Evenement.PlanCours = r.FormValue("plan_cours")
 
 	dateDebut, errDate := time.ParseInLocation("2006-01-02 15:04:05", Evenement.DateDebut, time.Local)
 	if errDate != nil {
@@ -160,27 +162,6 @@ func CreateEvenement(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	pdfFile, pdfHandler, errPdf := r.FormFile("pdf")
-	if errPdf == nil {
-		defer pdfFile.Close()
-		if strings.ToLower(filepath.Ext(pdfHandler.Filename)) != ".pdf" {
-			http.Error(w, "Le fichier de ressource doit être au format PDF", http.StatusBadRequest)
-			return
-		}
-		os.MkdirAll("./static/uploads/formations", os.ModePerm)
-		nomPdf := fmt.Sprintf("%d_%s", time.Now().Unix(), pdfHandler.Filename)
-		cheminPdf := "./static/uploads/formations/" + nomPdf
-
-		f, err := os.OpenFile(cheminPdf, os.O_WRONLY|os.O_CREATE, 0666)
-		if err == nil {
-			defer f.Close()
-			io.Copy(f, pdfFile)
-			Evenement.PdfUrl = "static/uploads/formations/" + nomPdf
-		} else {
-			fmt.Println("Erreur création fichier PDF :", err)
-		}
-	}
-
 	newId, err := bdd.CreateEvenement(Evenement)
 	if err != nil {
 		http.Error(w, "erreur de création de l'Evenement", http.StatusInternalServerError)
@@ -188,15 +169,53 @@ func CreateEvenement(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if Evenement.PdfUrl != "" {
-		errRes := bdd.CreateRessource(Evenement.IdSalarie, int(newId), Evenement.Titre, Evenement.PdfUrl)
-		if errRes != nil {
-			fmt.Println("erreur bdd.CreateRessource :", errRes)
+	planFile, planHandler, errPlan := r.FormFile("plan_pdf")
+	if errPlan == nil {
+		defer planFile.Close()
+		urlPlan, errSave := enregistrerPdf(planFile, planHandler)
+		if errSave == nil {
+			bdd.CreateRessource(Evenement.IdSalarie, int(newId), "Plan du cours", urlPlan)
+		} else {
+			fmt.Println("Erreur enregistrement plan PDF :", errSave)
+		}
+	}
+
+	if r.MultipartForm != nil {
+		fichiers := r.MultipartForm.File["ressources"]
+		for i := 0; i < len(fichiers); i++ {
+			f, errOpen := fichiers[i].Open()
+			if errOpen != nil {
+				continue
+			}
+			urlRes, errSave := enregistrerPdf(f, fichiers[i])
+			f.Close()
+			if errSave == nil {
+				bdd.CreateRessource(Evenement.IdSalarie, int(newId), fichiers[i].Filename, urlRes)
+			} else {
+				fmt.Println("Erreur enregistrement ressource PDF :", errSave)
+			}
 		}
 	}
 
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, "Evenement créée avec succès")
+}
+
+func enregistrerPdf(file multipart.File, handler *multipart.FileHeader) (string, error) {
+	if strings.ToLower(filepath.Ext(handler.Filename)) != ".pdf" {
+		return "", fmt.Errorf("le fichier doit être au format PDF")
+	}
+	os.MkdirAll("./static/uploads/formations", os.ModePerm)
+	nomFichier := fmt.Sprintf("%d_%s", time.Now().UnixNano(), handler.Filename)
+	cheminComplet := "./static/uploads/formations/" + nomFichier
+
+	f, err := os.OpenFile(cheminComplet, os.O_WRONLY|os.O_CREATE, 0666)
+	if err != nil {
+		return "", err
+	}
+	defer f.Close()
+	io.Copy(f, file)
+	return "static/uploads/formations/" + nomFichier, nil
 }
 
 func GetInscritsEvenement(w http.ResponseWriter, r *http.Request) {
@@ -223,6 +242,38 @@ func GetInscritsEvenement(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response, err := json.Marshal(inscrits)
+	if err != nil {
+		http.Error(w, "erreur de conversion", 500)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	fmt.Fprintf(w, "%s", response)
+}
+
+func GetRessourcesEvenement(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		http.Error(w, "id invalide", http.StatusBadRequest)
+		return
+	}
+
+	ressources, err := bdd.GetRessources(id)
+	if err != nil {
+		http.Error(w, "erreur de récupération des ressources", http.StatusInternalServerError)
+		fmt.Println("erreur", err)
+		return
+	}
+
+	response, err := json.Marshal(ressources)
 	if err != nil {
 		http.Error(w, "erreur de conversion", 500)
 		return
