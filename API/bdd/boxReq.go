@@ -423,14 +423,14 @@ func SimulateHardwareDeposit(pinCode string) error {
 	return nil
 }
 
-func SimulateHardwareWithdrawal(pinCode string) error {
+func SimulateHardwareWithdrawal(codeBarre string) error {
 	var histID int
 	var boxId int
 	var annonceId int
 
-	err := Db.QueryRow("SELECT id, conteneur_id, annonce_id FROM historique_conteneurs WHERE code_ouverture = ? AND date_retrait_effective IS NULL", pinCode).Scan(&histID, &boxId, &annonceId)
+	err := Db.QueryRow("SELECT id, conteneur_id, annonce_id FROM historique_conteneurs WHERE code_barre_recuperation = ? AND date_depot_effective IS NOT NULL AND date_retrait_effective IS NULL", codeBarre).Scan(&histID, &boxId, &annonceId)
 	if err != nil {
-		return errors.New("code PIN de retrait invalide ou objet déjà récupéré")
+		return errors.New("code-barre de retrait invalide, objet pas encore déposé ou déjà récupéré")
 	}
 
 	_, err = Db.Exec("UPDATE historique_conteneurs SET date_retrait_effective = NOW() WHERE id = ?", histID)
