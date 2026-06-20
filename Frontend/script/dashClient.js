@@ -226,18 +226,25 @@ async function loadAllUserBoxes() {
                 </div>
                 
                 <div class="cont-codes">
-                    <span class="ccode blue" style="${!isDepot ? "font-size: 1.1em; font-weight: bold;" : ""}">PIN : ${box.code_pin}</span>
-                    <span class="ccode purple">REF : ${box.barcode}</span>
+                    ${
+                      isDepot
+                        ? `<span class="ccode blue" style="font-size: 1.1em; font-weight: bold;">PIN de dépôt : ${box.code_pin}</span>`
+                        : `<span class="ccode purple" style="font-size: 1.1em; font-weight: bold;">Code-barre de retrait : ${box.barcode}</span>`
+                    }
                 </div>
                 
-                <div style="background:white; padding:8px; border-radius:4px; margin-top:12px; text-align:center;">
-                    <svg class="barcode-img" 
+                ${
+                  !isDepot
+                    ? `<div style="background:white; padding:8px; border-radius:4px; margin-top:12px; text-align:center;">
+                    <svg class="barcode-img"
                          jsbarcode-value="${box.barcode}"
                          jsbarcode-width="1.2"
                          jsbarcode-height="30"
                          jsbarcode-fontsize="10">
                     </svg>
-                </div>
+                </div>`
+                    : ""
+                }
 
                 <button class="btn btn-g btn-sm" style="margin-top: 12px; width:100%" onclick="window.print()">
                     <i class="fas fa-download"></i> ${btnText}
