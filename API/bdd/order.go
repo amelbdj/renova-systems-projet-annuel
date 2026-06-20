@@ -18,7 +18,7 @@ func CreateOrder(annonce models.Annonce, acheteurId int) (int, error) {
 
 	if StatutVente != "VENDU" {
 
-		res, err := Db.Exec("INSERT INTO pa2026.order (id_annonce, id_acheteur, montant_total, commission, date_commande) VALUES (?, ?, ?, ?, NOW())", annonce.Id, acheteurId, montant, commission)
+		res, err := Db.Exec("INSERT INTO pa2026.order (id_annonce, id_acheteur, montant_total, commission, date_commande, `type`) VALUES (?, ?, ?, ?, NOW(), 'annonce')", annonce.Id, acheteurId, montant, commission)
 		if err != nil {
 			return 0, fmt.Errorf("CreateOrder (Insert) : %s", err.Error())
 		}
@@ -133,15 +133,19 @@ func GetFinanceOverviewMois() (float64, float64, error) {
 func GetAdminTransactions() ([]map[string]interface{}, error) {
 
 	query := `
-        SELECT 
-            o.id_commande, 
-            o.date_commande, 
-            a.titre, 
-            o.montant_total, 
-            o.commission 
+        SELECT
+            o.id_commande,
+            o.date_commande,
+            COALESCE(a.titre, e.titre, 'Transaction') AS titre,
+            o.montant_total,
+            o.commission,
+            COALESCE(o.type, 'annonce') AS type,
+            COALESCE(p.statut, 'payé') AS statut
         FROM pa2026.order o
-        JOIN pa2026.annonce a ON o.id_annonce = a.id
-        ORDER BY o.date_commande DESC 
+        LEFT JOIN pa2026.annonce a ON o.type = 'annonce' AND o.id_annonce = a.id
+        LEFT JOIN pa2026.evenement e ON o.type = 'evenement' AND o.id_annonce = e.id
+        LEFT JOIN pa2026.paiement p ON p.id_commande = o.id_commande
+        ORDER BY o.date_commande DESC
         LIMIT 50`
 
 	rows, err := Db.Query(query)
@@ -158,8 +162,10 @@ func GetAdminTransactions() ([]map[string]interface{}, error) {
 		var titre string
 		var montant float64
 		var commission float64
+		var typeCommande string
+		var statut string
 
-		err := rows.Scan(&id, &date, &titre, &montant, &commission)
+		err := rows.Scan(&id, &date, &titre, &montant, &commission, &typeCommande, &statut)
 		if err != nil {
 			continue
 		}
@@ -170,6 +176,8 @@ func GetAdminTransactions() ([]map[string]interface{}, error) {
 			"titre":      titre,
 			"montant":    montant,
 			"commission": commission,
+			"type":       typeCommande,
+			"statut":     statut,
 		}
 		transactions = append(transactions, item)
 	}

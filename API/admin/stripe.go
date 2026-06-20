@@ -275,7 +275,7 @@ func CreateEventCheckoutSession(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	queryOrder := "INSERT INTO `order` (id_acheteur, id_annonce, montant_total, commission, date_commande) VALUES (?, ?, ?, ?, NOW())"
+	queryOrder := "INSERT INTO `order` (id_acheteur, id_annonce, montant_total, commission, date_commande, `type`) VALUES (?, ?, ?, ?, NOW(), 'evenement')"
 	result, errOrder := bdd.Db.Exec(queryOrder, req.IdUser, req.IdEvent, prix, commissionEuros)
 
 	if errOrder != nil {

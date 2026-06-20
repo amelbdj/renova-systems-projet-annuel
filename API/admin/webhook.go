@@ -74,7 +74,7 @@ func StripeWebhookHandler(w http.ResponseWriter, r *http.Request) {
 			fmt.Println("Inscription enregistrée avec succès !")
 		}
 
-		res, err := bdd.Db.Exec("INSERT INTO `order` (id_acheteur, id_annonce, montant_total, commission) VALUES (?, ?, ?, ?)",
+		res, err := bdd.Db.Exec("INSERT INTO `order` (id_acheteur, id_annonce, montant_total, commission, `type`) VALUES (?, ?, ?, ?, 'evenement')",
 			idUser, idEvent, montantTotal, 0.0)
 
 		if err != nil {

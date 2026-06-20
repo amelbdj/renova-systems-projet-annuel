@@ -64,14 +64,31 @@ function chargerTransactions() {
               minute: "2-digit",
             });
 
+          var typeLabel =
+            tx.type === "evenement" ? "Formation / Événement" : "Annonce";
+
+          var statut = (tx.statut || "").toLowerCase();
+          var statutTexte = tx.statut;
+          var statutCouleur = "#4ade80";
+          if (statut === "succeeded" || statut === "payé" || statut === "paid") {
+            statutTexte = "Payé";
+            statutCouleur = "#4ade80";
+          } else if (statut === "pending") {
+            statutTexte = "En attente";
+            statutCouleur = "#f5a623";
+          } else if (statut === "failed" || statut === "refunded") {
+            statutTexte = "Échoué";
+            statutCouleur = "#ef4444";
+          }
+
           const tr = document.createElement("tr");
           tr.innerHTML = `
                     <td style="color: var(--txt-m);">#${tx.id}</td>
                     <td>${dateStr}</td>
-                    <td style="font-weight: 700; color: white;">${tx.titre}</td>
+                    <td style="font-weight: 700; color: white;">${tx.titre}<br><span style="font-size:11px; color: var(--txt-m); font-weight:400;">${typeLabel}</span></td>
                     <td>${new Intl.NumberFormat("fr-FR").format(tx.montant)} €</td>
                     <td style="color: #4ade80; font-weight: bold;">+ ${new Intl.NumberFormat("fr-FR").format(tx.commission)} €</td>
-                    <td><span class="badge-stripe">Payé</span></td>
+                    <td><span class="badge-stripe" style="color:${statutCouleur};">${statutTexte}</span></td>
                 `;
           tbody.appendChild(tr);
         });
