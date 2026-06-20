@@ -73,16 +73,15 @@ func ConfirmDeposit(w http.ResponseWriter, r *http.Request) {
 		var acheteurID int
 		var titre string
 		var numBox string
-		var codeRetrait string
 
 		query := `
-			SELECT o.acheteur_id, a.titre, b.id, b.pin_code 
-			FROM box b
-			JOIN annonce a ON b.id_annonce = a.id
-			JOIN orders o ON o.annonce_id = a.id
-			WHERE b.pin_code = ? LIMIT 1
+			SELECT h.acheteur_id, a.titre, b.numero
+			FROM historique_conteneurs h
+			JOIN annonce a ON h.annonce_id = a.id
+			JOIN box b ON h.conteneur_id = b.id
+			WHERE h.code_ouverture = ? LIMIT 1
 		`
-		errInfo := bdd.Db.QueryRow(query, req.PinCode).Scan(&acheteurID, &titre, &numBox, &codeRetrait)
+		errInfo := bdd.Db.QueryRow(query, req.PinCode).Scan(&acheteurID, &titre, &numBox)
 
 		if errInfo == nil && acheteurID != 0 {
 			msg := fmt.Sprintf("🔓 Ton objet '%s' t'attend ! Tu peux le récupérer au Casier n°%s.", titre, numBox)

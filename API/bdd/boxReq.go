@@ -68,7 +68,7 @@ func ConfirmDeposit(pinCode string) error {
 		return err
 	}
 
-	_, err = Db.Exec("UPDATE annonce SET statut = 'EN BOX' WHERE id = ?", annonceId)
+	_, err = Db.Exec("UPDATE annonce SET statut_vente = 'EN BOX' WHERE id = ?", annonceId)
 	if err != nil {
 		return err
 	}
@@ -255,7 +255,7 @@ func GarbageCollectBox() error {
 			fmt.Printf("Erreur libération box %d: %v", boxId, err)
 		}
 
-		_, err = Db.Exec("UPDATE annonce SET statut = 'EN VENTE' WHERE id = ?", annonceId)
+		_, err = Db.Exec("UPDATE annonce SET statut_vente = 'EN VENTE' WHERE id = ?", annonceId)
 		if err != nil {
 			fmt.Printf("Erreur remise en vente annonce %d: %v", annonceId, err)
 		}
@@ -382,7 +382,7 @@ func CollectObject(pinCode string, professionnelId int) error {
 		return err
 	}
 
-	_, err = Db.Exec("UPDATE annonce SET statut = 'RECUPERE' WHERE id = ?", annonceId)
+	_, err = Db.Exec("UPDATE annonce SET statut_vente = 'RECUPERE' WHERE id = ?", annonceId)
 	if err != nil {
 		return err
 	}
