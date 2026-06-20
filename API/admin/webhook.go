@@ -74,23 +74,11 @@ func StripeWebhookHandler(w http.ResponseWriter, r *http.Request) {
 			fmt.Println("Inscription enregistrée avec succès !")
 		}
 
-		res, err := bdd.Db.Exec("INSERT INTO `order` (id_acheteur, id_annonce, montant_total, commission, `type`) VALUES (?, ?, ?, ?, 'evenement')",
-			idUser, idEvent, montantTotal, 0.0)
-
+		_, err = bdd.Db.Exec("UPDATE paiement SET statut = 'succeeded' WHERE stripe_id = ?", stripeID)
 		if err != nil {
-			fmt.Println("❌ ERREUR SQL (Table order) :", err)
+			fmt.Println("ERREUR SQL (MAJ paiement) :", err)
 		} else {
-
-			lastID, _ := res.LastInsertId()
-
-			_, err = bdd.Db.Exec("INSERT INTO paiement(id_commande, stripe_id, statut) VALUES (?, ?, ?)",
-				lastID, stripeID, "succeeded")
-
-			if err != nil {
-				fmt.Println("ERREUR SQL (Table paiement) :", err)
-			} else {
-				fmt.Println("Paiement stocké en base de données !")
-			}
+			fmt.Println("Paiement confirmé (succeeded) dans la base de données !")
 		}
 	}
 
