@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#0D0D0D"
+    android:padding="20dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="16dp">
+
+        <ImageButton
+            android:id="@+id/btn_back_article"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_back"
+            android:contentDescription="Retour"
+            app:tint="#FFFFFF" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Détail de l'article"
+            android:textColor="#66BB6A"
+            android:textSize="14sp"
+            android:fontFamily="sans-serif-medium"
+            android:textAllCaps="true"
+            android:layout_marginStart="4dp" />
+    </LinearLayout>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="24dp"
+        app:cardBackgroundColor="#1A1A1A"
+        app:strokeColor="#333333"
+        app:strokeWidth="1dp"
+        app:cardElevation="0dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <TextView
+                android:id="@+id/tv_detail_titre"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Titre de l'article"
+                android:textSize="24sp"
+                android:fontFamily="sans-serif-black"
+                android:textColor="#FFFFFF"
+                android:layout_marginBottom="16dp" />
+
+            <View
+                android:layout_width="50dp"
+                android:layout_height="2dp"
+                android:background="#66BB6A"
+                android:layout_marginBottom="20dp"/>
+
+            <TextView
+                android:id="@+id/tv_detail_contenu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Le contenu de l'article s'affichera ici..."
+                android:textSize="16sp"
+                android:lineSpacingExtra="4dp"
+                android:textColor="#DDDDDD" />
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+</LinearLayout>

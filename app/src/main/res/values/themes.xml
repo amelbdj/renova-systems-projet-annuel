@@ -1,0 +1,12 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Base.Theme.UpcycleConnectPro" parent="Theme.Material3.DayNight.NoActionBar">
+    </style>
+
+    <style name="Theme.UpcycleConnectPro" parent="Base.Theme.UpcycleConnectPro" />
+
+    <style name="CircleImage" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+</resources>

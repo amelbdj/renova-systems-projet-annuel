@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- Donne accès au dossier privé externe de l'app (où on écrit les factures PDF) -->
+    <external-files-path
+        name="factures"
+        path="." />
+</paths>
