@@ -3,6 +3,8 @@
 
 var monToken = localStorage.getItem("token");
 var userId = localStorage.getItem("userId");
+var mesEvenementsSalarie = [];
+var evtEnEdition = null;
 
 
 if (!monToken || !userId) {
@@ -13,6 +15,14 @@ if (!monToken || !userId) {
 
 
 function openNewEvt() {
+  evtEnEdition = null;
+  resetEvtForm();
+  var titreModale = document.querySelector(
+    '#evtModal [data-i18n="salarie.events.modal_title"]',
+  );
+  if (titreModale) titreModale.textContent = "Créer un événement";
+  var bouton = document.getElementById("evt-submit-btn");
+  if (bouton) bouton.textContent = "Soumettre pour validation ✓";
   document.getElementById("evtModal").style.display = "flex";
 }
 
@@ -192,6 +202,129 @@ function CreateEvent() {
 
 
 
+function parseDateEvt(str) {
+  var datePart = str || "";
+  var heure = "10:00";
+  if (datePart.indexOf(" a ") !== -1) {
+    var parts = datePart.split(" a ");
+    datePart = parts[0];
+    heure = parts[1];
+  }
+  var d = datePart.split("/");
+  var dateISO = "";
+  if (d.length === 3) {
+    dateISO = d[2] + "-" + d[1] + "-" + d[0];
+  }
+  return { date: dateISO, heure: heure };
+}
+
+function openEditEvt(id) {
+  var evt = null;
+  for (var i = 0; i < mesEvenementsSalarie.length; i++) {
+    if (mesEvenementsSalarie[i].id == id) {
+      evt = mesEvenementsSalarie[i];
+    }
+  }
+  if (!evt) return;
+  evtEnEdition = evt;
+
+  document.getElementById("evt-titre").value = evt.titre || "";
+  document.getElementById("evt-type").value = evt.type || "formation";
+  document.getElementById("evt-desc").value = evt.description || "";
+
+  var debut = parseDateEvt(evt.date_debut);
+  var fin = parseDateEvt(evt.date_fin);
+  document.getElementById("evt-date").value = debut.date;
+  document.getElementById("evt-heure-debut").value = debut.heure;
+  document.getElementById("evt-heure-fin").value = fin.heure;
+  document.getElementById("evt-lieu").value = evt.lieu || "";
+  document.getElementById("evt-capacite").value = evt.nb_places || "";
+  document.getElementById("evt-tarif").value = evt.prix || "";
+
+  var titreModale = document.querySelector(
+    '#evtModal [data-i18n="salarie.events.modal_title"]',
+  );
+  if (titreModale) titreModale.textContent = "Modifier l'événement";
+  var bouton = document.getElementById("evt-submit-btn");
+  if (bouton) bouton.textContent = "Enregistrer les modifications";
+
+  togglePdfField();
+  document.getElementById("evtModal").style.display = "flex";
+}
+
+function SaveEvent() {
+  if (evtEnEdition === null) {
+    CreateEvent();
+  } else {
+    UpdateEvent();
+  }
+}
+
+function UpdateEvent() {
+  var titre = document.getElementById("evt-titre").value.trim();
+  var type = document.getElementById("evt-type").value;
+  var desc = document.getElementById("evt-desc").value.trim();
+  var date = document.getElementById("evt-date").value;
+  var lieu = document.getElementById("evt-lieu").value.trim();
+  var heureDebut = document.getElementById("evt-heure-debut").value;
+  var heureFin = document.getElementById("evt-heure-fin").value;
+  var capacite = document.getElementById("evt-capacite").value;
+  var tarif = document.getElementById("evt-tarif").value;
+
+  if (!titre || !desc || !date) {
+    alert(
+      "Veuillez remplir les champs obligatoires : Titre, Description et Date.",
+    );
+    return;
+  }
+
+  var debut = new Date(date + "T" + (heureDebut || "00:00"));
+  if (isNaN(debut.getTime()) || debut < new Date()) {
+    alert(
+      "Impossible de mettre un événement à une date ou une heure déjà passée.",
+    );
+    return;
+  }
+
+  var data = {
+    titre: titre,
+    type: type,
+    description: desc,
+    date_debut: date + " " + (heureDebut || "00:00") + ":00",
+    date_fin: date + " " + (heureFin || "00:00") + ":00",
+    lieu: lieu,
+    format: evtEnEdition.format || "",
+    nb_places: capacite ? parseInt(capacite) : 0,
+    prix: tarif ? parseFloat(tarif) : 0,
+  };
+
+  fetch("http://localhost:8081/admin/evenements/" + evtEnEdition.id, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + monToken,
+    },
+    body: JSON.stringify(data),
+  })
+    .then(function (reponse) {
+      if (!reponse.ok) {
+        throw new Error("Erreur lors de la modification");
+      }
+      return reponse.text();
+    })
+    .then(function () {
+      alert("Événement modifié avec succès.");
+      evtEnEdition = null;
+      closeEvt();
+      resetEvtForm();
+      GetEvenements();
+    })
+    .catch(function (erreur) {
+      console.log(erreur);
+      alert("Erreur lors de la modification de l'événement.");
+    });
+}
+
 function GetEvenements() {
   var conteneur = document.getElementById("event-grid");
   if (!conteneur) return;
@@ -227,6 +360,7 @@ function GetEvenements() {
           mesEvenements.push(evenements[i]);
         }
       }
+      mesEvenementsSalarie = mesEvenements;
 
       if (mesEvenements.length === 0) {
         conteneur.innerHTML =
@@ -250,12 +384,18 @@ function GetEvenements() {
           counterValide++;
           statusBadge = "<div class='evt-status t-green'>✓ En ligne</div>";
           actionButtons =
+            "<button class='btn btn-g btn-xs' onclick='openEditEvt(" +
+            evt.id +
+            ")'>Éditer</button> " +
             "<button class='btn btn-danger btn-xs' onclick='DeleteEvenement(" +
             evt.id +
             ")'>Annuler</button>";
         } else {
           statusBadge = "<div class='evt-status t-amber'>⏳ En attente</div>";
           actionButtons =
+            "<button class='btn btn-g btn-xs' onclick='openEditEvt(" +
+            evt.id +
+            ")'>Éditer</button> " +
             "<button class='btn btn-danger btn-xs' onclick='DeleteEvenement(" +
             evt.id +
             ")'>Annuler</button>";

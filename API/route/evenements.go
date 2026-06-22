@@ -9,7 +9,7 @@ import (
 func RoutesEvenements() {
 
 	http.HandleFunc("OPTIONS /admin/evenements/validate/{id}", admin.ValidateEvenement)
-	http.HandleFunc("OPTIONS /admin/evenements/update/{id}", admin.UpdateEvenement)
+	http.HandleFunc("OPTIONS /admin/evenements/{id}", admin.UpdateEvenement)
 	http.HandleFunc("OPTIONS /admin/evenements/delete/{id}", admin.DeleteEvenement)
 	http.HandleFunc("OPTIONS /admin/evenements/refuse/{id}", admin.RefuseEvenement)
 	http.HandleFunc("OPTIONS /admin/evenements/add", admin.CreateEvenement)
