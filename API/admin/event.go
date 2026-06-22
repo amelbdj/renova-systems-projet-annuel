@@ -75,6 +75,16 @@ func ValidateEvenement(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("erreur", err)
 		return
 	}
+
+	var idSalarie int
+	var titre string
+	errInfo := bdd.Db.QueryRow("SELECT id_salarie, titre FROM evenement WHERE id = ?", id).Scan(&idSalarie, &titre)
+	if errInfo == nil && idSalarie != 0 {
+		msg := fmt.Sprintf("✅ Votre événement '%s' a été validé et est maintenant en ligne !", titre)
+		go SendPushNotification(strconv.Itoa(idSalarie), msg)
+		bdd.CreateNotification(idSalarie, msg)
+	}
+
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, "Evenement validée avec succès")
 }
@@ -100,6 +110,16 @@ func RefuseEvenement(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("erreur", err)
 		return
 	}
+
+	var idSalarie int
+	var titre string
+	errInfo := bdd.Db.QueryRow("SELECT id_salarie, titre FROM evenement WHERE id = ?", id).Scan(&idSalarie, &titre)
+	if errInfo == nil && idSalarie != 0 {
+		msg := fmt.Sprintf("❌ Votre événement '%s' a été refusé par un responsable.", titre)
+		go SendPushNotification(strconv.Itoa(idSalarie), msg)
+		bdd.CreateNotification(idSalarie, msg)
+	}
+
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, "Evenement refusée avec succès")
 }

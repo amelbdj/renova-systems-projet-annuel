@@ -234,15 +234,16 @@
         </div>
 
         <div class="fgroup" id="evt-pdf-group" style="margin-top: 15px">
-          <label>Plan du cours</label>
+          <label data-i18n="salarie.events.plan_label">Plan du cours</label>
           <textarea
             id="evt-plan-texte"
             placeholder="Décrivez le déroulé / programme du cours…"
+            data-i18n-placeholder="salarie.events.plan_ph"
             rows="3"
             style="width: 100%; resize: vertical"
           ></textarea>
 
-          <label style="margin-top: 12px; display: block">Plan du cours (PDF, optionnel)</label>
+          <label style="margin-top: 12px; display: block" data-i18n="salarie.events.plan_pdf_label">Plan du cours (PDF, optionnel)</label>
           <input
             type="file"
             id="evt-plan-pdf"
@@ -258,7 +259,7 @@
             "
           />
 
-          <label style="margin-top: 12px; display: block">Ressources PDF (plusieurs possibles)</label>
+          <label style="margin-top: 12px; display: block" data-i18n="salarie.events.resources_label">Ressources PDF (plusieurs possibles)</label>
           <input
             type="file"
             id="evt-ressources"
@@ -274,7 +275,7 @@
               border-radius: 8px;
             "
           />
-          <small style="color: var(--txt-m); font-size: 12px"
+          <small style="color: var(--txt-m); font-size: 12px" data-i18n="salarie.events.resources_hint"
             >Réservé aux formations · fichiers PDF uniquement.</small
           >
         </div>
