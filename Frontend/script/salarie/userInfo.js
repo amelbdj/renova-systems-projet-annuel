@@ -112,6 +112,87 @@ function chargerProfil() {
       })
       .catch((err) => console.error("Erreur stat forum:", err));
   }
+
+  chargerNotifications();
+}
+
+function chargerNotifications() {
+  var pastille = document.querySelector(".notif-dot");
+  if (!pastille) return;
+  var cloche = pastille.parentElement;
+
+  fetch("http://localhost:8081/admin/notifications/user/" + userId, {
+    headers: { Authorization: "Bearer " + monToken },
+  })
+    .then(function (res) {
+      return res.json();
+    })
+    .then(function (notifs) {
+      if (!notifs) notifs = [];
+
+      var nonLues = 0;
+      for (var i = 0; i < notifs.length; i++) {
+        if (notifs[i].est_lu == 0) {
+          nonLues++;
+        }
+      }
+
+      pastille.style.display = nonLues > 0 ? "block" : "none";
+
+      var panneau = document.getElementById("notif-panel");
+      if (!panneau) {
+        panneau = document.createElement("div");
+        panneau.id = "notif-panel";
+        panneau.style.cssText =
+          "display:none; position:fixed; top:64px; right:20px; width:320px; max-height:420px; overflow-y:auto; background:var(--bg2); border:1px solid var(--b0); border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.45); z-index:5000; padding:8px;";
+        document.body.appendChild(panneau);
+      }
+
+      var html =
+        "<div style='font-family:Syne,sans-serif; font-weight:700; padding:10px; color:var(--txt);'>Notifications</div>";
+      if (notifs.length === 0) {
+        html +=
+          "<div style='padding:14px; color:var(--txt-m); font-size:13px;'>Aucune notification.</div>";
+      } else {
+        for (var j = 0; j < notifs.length; j++) {
+          var fond =
+            notifs[j].est_lu == 0 ? "rgba(138,100,255,0.10)" : "transparent";
+          html +=
+            "<div style='padding:10px 12px; border-bottom:1px solid var(--b0); font-size:13px; color:var(--txt-m); background:" +
+            fond +
+            ";'>" +
+            notifs[j].contenu +
+            "</div>";
+        }
+      }
+      panneau.innerHTML = html;
+
+      cloche.style.cursor = "pointer";
+      cloche.onclick = function () {
+        if (panneau.style.display === "none") {
+          panneau.style.display = "block";
+          if (nonLues > 0) {
+            fetch(
+              "http://localhost:8081/admin/notifications/user/" +
+                userId +
+                "/read",
+              {
+                method: "POST",
+                headers: { Authorization: "Bearer " + monToken },
+              },
+            ).then(function () {
+              pastille.style.display = "none";
+              nonLues = 0;
+            });
+          }
+        } else {
+          panneau.style.display = "none";
+        }
+      };
+    })
+    .catch(function (err) {
+      console.error("Erreur notifications:", err);
+    });
 }
 
 function logout() {

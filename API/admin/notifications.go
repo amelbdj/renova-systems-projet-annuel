@@ -61,6 +61,61 @@ func SendNotificationToAudience(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+func GetUserNotifications(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		http.Error(w, "id invalide", http.StatusBadRequest)
+		return
+	}
+
+	notifs, err := bdd.GetNotifications(id)
+	if err != nil {
+		http.Error(w, "erreur de récupération des notifications", http.StatusInternalServerError)
+		fmt.Println("erreur", err)
+		return
+	}
+	if notifs == nil {
+		notifs = []map[string]interface{}{}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(notifs)
+}
+
+func MarkNotificationsRead(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		http.Error(w, "id invalide", http.StatusBadRequest)
+		return
+	}
+
+	err = bdd.MarkNotificationsRead(id)
+	if err != nil {
+		http.Error(w, "erreur de mise à jour", http.StatusInternalServerError)
+		fmt.Println("erreur", err)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+}
+
 const (
 	OneSignalAppID  = "79a53223-420a-46c8-83d9-1ca162fcb64f"
 	OneSignalAPIKey = "os_v2_app_pgstei2cbjdmra6zdsqwf7fwj7lecom3g6lu4pumdxlt4rvgw66selidc5gwe5r2gpo7pr7cdhfecc55xgdksr5rplozsejaaghkzsa"

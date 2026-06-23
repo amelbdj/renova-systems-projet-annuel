@@ -447,6 +447,38 @@ func GetParticulierIDs() ([]string, error) {
 	return ids, nil
 }
 
+func GetNotifications(idUser int) ([]map[string]interface{}, error) {
+	rows, err := Db.Query("SELECT id_notif, contenu, est_lu FROM pa2026.notification WHERE id_user = ? ORDER BY id_notif DESC LIMIT 30", idUser)
+	if err != nil {
+		return nil, fmt.Errorf("get notifications : %v", err.Error())
+	}
+	defer rows.Close()
+
+	var notifs []map[string]interface{}
+	for rows.Next() {
+		var id int
+		var contenu string
+		var estLu int
+		if err := rows.Scan(&id, &contenu, &estLu); err != nil {
+			continue
+		}
+		notifs = append(notifs, map[string]interface{}{
+			"id_notif": id,
+			"contenu":  contenu,
+			"est_lu":   estLu,
+		})
+	}
+	return notifs, nil
+}
+
+func MarkNotificationsRead(idUser int) error {
+	_, err := Db.Exec("UPDATE pa2026.notification SET est_lu = 1 WHERE id_user = ?", idUser)
+	if err != nil {
+		return fmt.Errorf("maj notifications echouee : %v", err)
+	}
+	return nil
+}
+
 func CreateNotification(idUser int, contenu string) error {
 	_, err := Db.Exec("INSERT INTO pa2026.notification (id_user, contenu, est_lu) VALUES (?, ?, 0)", idUser, contenu)
 	if err != nil {
