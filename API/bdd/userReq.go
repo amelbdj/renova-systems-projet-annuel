@@ -489,7 +489,7 @@ func CreateNotification(idUser int, contenu string) error {
 
 func EnvoyerEmailValidation(emailDestinataire string, prenom string) error {
 	expediteur := "noreply@upcycleconnect.fr"
-	motDePasse := "voir avec ndoya"
+	motDePasse := "#Projet2026"
 	serveurSMTP := "192.168.80.10"
 	port := "25"
 
@@ -524,7 +524,7 @@ func EnvoyerEmailValidation(emailDestinataire string, prenom string) error {
 
 func EnvoyerEmailRefus(emailDestinataire string, prenom string, motif string) {
 	expediteur := "noreply@upcycleconnect.fr"
-	motDePasse := "voir avec ndoya"
+	motDePasse := "#Projet2026"
 	serveurSMTP := "192.168.80.10"
 	port := "25"
 
