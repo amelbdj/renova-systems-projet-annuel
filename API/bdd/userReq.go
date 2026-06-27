@@ -559,3 +559,38 @@ func EnvoyerEmailRefus(emailDestinataire string, prenom string, motif string) {
 	}
 	fmt.Printf(" E-mail de refus envoyé avec succès à %s\n", emailDestinataire)
 }
+
+func EnvoyerEmailBannissement(emailDestinataire string, prenom string) {
+	expediteur := "noreply@upcycleconnect.fr"
+	motDePasse := "#Projet2026"
+	serveurSMTP := "192.168.80.10"
+	port := "25"
+
+	auth := smtp.PlainAuth("", expediteur, motDePasse, serveurSMTP)
+
+	sujet := "Subject: UpcycleConnect - Suspension de votre compte\n"
+	typeMIME := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
+	corpsMessage := fmt.Sprintf(`
+		<html>
+			<body style="font-family: Arial, sans-serif; color: #333;">
+				<h2>Bonjour %s,</h2>
+				<p>Nous vous informons que votre compte sur la plateforme <strong>UpcycleConnect</strong> a été <strong>suspendu</strong> par l'administration.</p>
+				<p>Cette décision fait suite au non-respect de nos conditions d'utilisation. Vous ne pouvez plus accéder à votre espace pour le moment.</p>
+				<p>Si vous pensez qu'il s'agit d'une erreur ou souhaitez contester cette décision, vous pouvez contacter notre équipe.</p>
+				<br>
+				<p>Cordialement,</p>
+				<p><em>L'équipe UpcycleConnect</em></p>
+			</body>
+		</html>
+	`, prenom)
+
+	messageComplet := []byte(sujet + typeMIME + corpsMessage)
+	adresseServeur := serveurSMTP + ":" + port
+
+	err := smtp.SendMail(adresseServeur, auth, expediteur, []string{emailDestinataire}, messageComplet)
+	if err != nil {
+		fmt.Printf("Erreur d'envoi d'e-mail de bannissement à %s : %v\n", emailDestinataire, err)
+		return
+	}
+	fmt.Printf(" E-mail de bannissement envoyé avec succès à %s\n", emailDestinataire)
+}

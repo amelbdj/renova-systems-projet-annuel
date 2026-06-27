@@ -554,10 +554,20 @@ func BanUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// On récupère l'utilisateur AVANT le bannissement pour avoir son email et son prénom
+	user, errUser := bdd.GetUserById(userId)
+
 	err = bdd.BanUser(userId)
 	if err != nil {
 		http.Error(w, "Erreur serveur lors du bannissement", http.StatusInternalServerError)
 		return
+	}
+
+	// On envoie l'email d'information (en arrière-plan, pour ne pas bloquer la réponse)
+	if errUser == nil && user.Email != "" {
+		go bdd.EnvoyerEmailBannissement(user.Email, user.Prenom)
+	} else {
+		fmt.Println("Bannissement : impossible d'envoyer l'email (utilisateur introuvable)")
 	}
 
 	w.WriteHeader(http.StatusOK)
