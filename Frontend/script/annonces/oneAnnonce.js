@@ -10,7 +10,6 @@ async function loadOneAnnonce() {
     return;
   }
 
-  // --- GESTION DU RETOUR DE PAIEMENT ---
   if (paymentStatus === "success") {
     console.log("Paiement détecté, mise à jour du statut...");
     const buyerId = urlParams.get("buyer_id");
@@ -21,7 +20,7 @@ async function loadOneAnnonce() {
         { method: "POST" },
       );
       if (res.ok) {
-        alert("🎉 Paiement réussi ! L'objet est maintenant à vous.");
+        alert(" Paiement réussi ! L'objet est maintenant à vous.");
         window.location.href = `oneAnnonce.html?id=${id}`;
       } else {
         console.error("Le serveur a renvoyé une erreur lors de la vente.");

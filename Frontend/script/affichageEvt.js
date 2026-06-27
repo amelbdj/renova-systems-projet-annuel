@@ -1,4 +1,4 @@
-// Variable globale pour empêcher le spam des boutons de paiement/inscription
+
 window.isProcessingPayment = false;
 
 function LancerRecherche() {
@@ -8,7 +8,7 @@ function LancerRecherche() {
 
 function chargerEvenementsClient(motCle = "") {
   const container = document.getElementById("liste-evenements");
-  if (!container) return; // Sécurité : on arrête si on n'est pas sur la bonne page
+  if (!container) return; 
 
   container.innerHTML =
     "<p style='color: var(--txt-m); text-align: center; grid-column: 1 / -1;'>Chargement des événements...</p>";
@@ -31,7 +31,6 @@ function chargerEvenementsClient(motCle = "") {
     .then((evenements) => {
       container.innerHTML = "";
 
-      // 🟢 AJOUT : On sauvegarde les données globalement pour la sécurité et la modale
       window.evenementData = evenements;
 
       if (!evenements || evenements.length === 0) {
@@ -61,7 +60,6 @@ function chargerEvenementsClient(motCle = "") {
 
           const idEvt = evt.id;
 
-          // 🟢 CORRECTION ICI : On ajoute http://localhost:8081/ devant le chemin de l'image
           const imageCover =
             evt.image_url && evt.image_url.trim() !== ""
               ? `http://localhost:8081/${evt.image_url}`
@@ -71,7 +69,6 @@ function chargerEvenementsClient(motCle = "") {
             (evt.description || "Pas de description.").substring(0, 100) +
             "...";
 
-          // 🟢 MODIFICATION : Gestion dynamique Inscription (Bleu) / Désinscription (Rouge)
           let boutonAction = evt.deja_inscrit
             ? `<span style="background-color: #ef4444; color: white; padding: 8px 15px; border-radius: 6px; font-weight: 600; font-size: 14px; margin-top: 10px; display: inline-block; cursor: pointer;" onclick="SeDesinscrire(${idEvt}); event.stopPropagation();">Se désinscrire ➔</span>`
             : `<span style="background-color: var(--blue); color: white; padding: 8px 15px; border-radius: 6px; font-weight: 600; font-size: 14px; margin-top: 10px; display: inline-block; cursor: pointer;" onclick="sinscrireEvenement(${idEvt}, ${evt.prix}); event.stopPropagation();">S'inscrire ➔</span>`;
@@ -99,7 +96,6 @@ function chargerEvenementsClient(motCle = "") {
     });
 }
 
-// --- FONCTION D'INSCRIPTION ULTRA-SÉCURISÉE ---
 function sinscrireEvenement(idEvent, prixEvent) {
   const idUser = localStorage.getItem("userId");
   const monToken = localStorage.getItem("token");
@@ -109,7 +105,6 @@ function sinscrireEvenement(idEvent, prixEvent) {
     return;
   }
 
-  // 🛡️ SÉCURITÉ 1 : Blocage si déjà inscrit dans les données locales
   if (window.evenementData) {
     const currentEvt = window.evenementData.find((e) => e.id === idEvent);
     if (currentEvt && currentEvt.deja_inscrit) {
@@ -118,11 +113,9 @@ function sinscrireEvenement(idEvent, prixEvent) {
     }
   }
 
-  // 🛡️ SÉCURITÉ 2 : Verrou anti-spam au clic
   if (window.isProcessingPayment) return;
   window.isProcessingPayment = true;
 
-  // SCÉNARIO 1 : L'ÉVÉNEMENT EST PAYANT (Prix > 0)
   if (prixEvent > 0) {
     fetch("http://localhost:8081/api/web/checkout/evenement", {
       method: "POST",
@@ -152,7 +145,6 @@ function sinscrireEvenement(idEvent, prixEvent) {
       });
   }
 
-  // SCÉNARIO 2 : L'ÉVÉNEMENT EST GRATUIT
   else {
     fetch("http://localhost:8081/admin/evenements/inscription", {
       method: "POST",
@@ -192,7 +184,6 @@ function OuvrirEvenement(id) {
   const evt = window.evenementData.find((a) => a.id === id);
   if (!evt) return;
 
-  // 🟢 CORRECTION ICI AUSSI : On ajoute le chemin absolu pour la modale
   const imageCover =
     evt.image_url && evt.image_url.trim() !== ""
       ? `http://localhost:8081/${evt.image_url}`
@@ -216,7 +207,6 @@ function OuvrirEvenement(id) {
 
 function FermerEvenement() {
   const modal = document.getElementById("articleModal");
-  // 🟢 SÉCURITÉ : On vérifie si la modale existe avant de toucher à son style
   if (modal) {
     modal.style.display = "none";
   }
@@ -258,7 +248,6 @@ function SeDesinscrire(idEvent) {
     .then(function (data) {
       alert("Succès : " + (data.message || "Désinscription validée"));
       FermerEvenement();
-      // On recharge la liste : le bouton redeviendra bleu automatiquement !
       chargerEvenementsClient();
     })
     .catch(function (errorMessage) {

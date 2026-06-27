@@ -64,14 +64,12 @@ function chargerArticlesClient(motCle = "") {
 
           const idArt = art.id;
 
-          // 🟢 CORRECTION ICI : Ajout de l'adresse du serveur pour les images des cartes
           let imageCover =
             "https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=500"; // Image par défaut
           if (art.image_url && art.image_url.trim() !== "") {
             imageCover = "http://localhost:8081/" + art.image_url;
           }
 
-          // Un petit résumé de 100 caractères
           const resume =
             art.contenu.length > 100
               ? art.contenu.substring(0, 100) + "..."
@@ -112,7 +110,6 @@ function OuvrirArticle(id) {
   const art = articlesData.find((a) => a.id === id);
   if (!art) return;
 
-  // 🟢 CORRECTION ICI AUSSI : Ajout de l'adresse du serveur pour la fenêtre modale
   let imageCover =
     "https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=500";
   if (art.image_url && art.image_url.trim() !== "") {

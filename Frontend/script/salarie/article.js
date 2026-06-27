@@ -106,7 +106,6 @@ function editerArticle(id) {
     );
 }
 
-// 🟢 FONCTIONS APPELÉES PAR LES BOUTONS HTML
 function sauvegarderBrouillon() {
   saveArticle("brouillon");
 }
@@ -129,7 +128,6 @@ function saveArticle(action) {
     return;
   }
 
-  // 🟢 UTILISATION DE FORMDATA POUR L'UPLOAD
   const formData = new FormData();
   formData.append("id_salarie", userId);
   formData.append("titre", titre);
@@ -149,7 +147,6 @@ function saveArticle(action) {
     method: method,
     headers: {
       Authorization: "Bearer " + monToken,
-      // ⚠️ Pas de "Content-Type" avec FormData, le navigateur gère tout seul !
     },
     body: formData,
   })

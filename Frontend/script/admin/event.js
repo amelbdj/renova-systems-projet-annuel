@@ -17,7 +17,7 @@ function GetEvent() {
       let htmlContent = "";
 
       events.forEach((event) => {
-        console.log("Événement:", event); // Log pour vérifier les données de l'événement
+        console.log("Événement:", event); 
 
         if (
           event.statut_validation &&
@@ -29,7 +29,6 @@ function GetEvent() {
             lieu = "";
           }
 
-          // 🛡️ CORRECTION DE LA DATE : On prend la date envoyée par Go directement
           let dateStr = event.date_debut ? event.date_debut : "Date inconnue";
 
           htmlContent += `
@@ -64,7 +63,6 @@ function GetEvent() {
         container.innerHTML = `<div style="padding:20px" data-i18n="backoffice.events.no_events">Aucun événement en attente.</div>`;
       }
 
-      // On relance la traduction sur ces nouveaux éléments HTML fraîchement injectés
       if (typeof appliquerTraductions === "function") {
         appliquerTraductions();
       }

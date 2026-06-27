@@ -1,4 +1,4 @@
-// On récupère les identifiants globaux au démarrage
+
 var monToken = localStorage.getItem("token");
 var userId = localStorage.getItem("userId");
 
@@ -8,7 +8,6 @@ function chargerProfil() {
     return;
   }
 
-  // 1. CHARGEMENT DES INFOS DU PROFIL
   fetch(`http://localhost:8081/admin/users/${userId}`, {
     headers: { Authorization: "Bearer " + monToken },
   })
@@ -29,7 +28,6 @@ function chargerProfil() {
     })
     .catch((err) => console.error("Erreur Profil:", err));
 
-  // 2. COMPTEUR DES ARTICLES (MES PUBLICATIONS)
   const statArticle = document.getElementById("stat-article");
   if (statArticle) {
     fetch(`http://localhost:8081/admin/articles/salarie/${userId}`, {
@@ -43,7 +41,6 @@ function chargerProfil() {
       .catch((err) => console.error("Erreur stat articles:", err));
   }
 
-  // 3. COMPTEURS DES ÉVÉNEMENTS (CRÉÉS & EN LIGNE)
   const statEvent = document.getElementById("stat-event");
   const statValide = document.getElementById("stat-valide");
   if (statEvent || statValide) {
@@ -54,7 +51,6 @@ function chargerProfil() {
       .then((evenements) => {
         if (!evenements) evenements = [];
 
-        // 🛡️ SÉCURITÉ ULTRA-LARGE : On attrape toutes les casquettes possibles de l'ID auteur
         const mesEvts = evenements.filter((e) => {
           const idAuteur =
             e.id_salarie ||
@@ -63,14 +59,11 @@ function chargerProfil() {
             e.idSalarie ||
             e.user_id ||
             e.IdUser;
-          // Sécurité de type : On transforme les deux côtés en Chaîne de texte pour éviter les conflits int/string
           return String(idAuteur) === String(userId);
         });
 
-        // Mise à jour du total des événements créés par le salarié
         if (statEvent) statEvent.textContent = mesEvts.length;
 
-        // Mise à jour du total des événements validés / en ligne
         if (statValide) {
           const enLigne = mesEvts.filter((evt) => {
             const statut = (
@@ -92,7 +85,6 @@ function chargerProfil() {
       .catch((err) => console.error("Erreur stat événements:", err));
   }
 
-  // 4. COMPTEUR DU FORUM (SUJETS MODÉRÉS)
   const statForum = document.getElementById("stat-forum");
   if (statForum) {
     fetch(`http://localhost:8081/admin/forum/messages`, {
@@ -101,7 +93,6 @@ function chargerProfil() {
       .then((res) => res.json())
       .then((messages) => {
         if (!messages) messages = [];
-        // On affiche le volume d'activité sur le forum (ou les messages totaux du flux)
         statForum.textContent = messages.length;
       })
       .catch((err) => console.error("Erreur stat forum:", err));
@@ -123,5 +114,4 @@ function goToProfile() {
 
   window.location.href = `../profil.html?id=${userId}`;
 }
-// Lancement au chargement du DOM
 document.addEventListener("DOMContentLoaded", chargerProfil);

@@ -56,10 +56,19 @@ function displayAnnonces(items) {
 
     const isFree = ann.prix <= 0 || ann.type === "don";
 
+    const isSponsored = ann.is_sponsored === true || ann.is_sponsored === 1 || ann.is_sponsored === "1";
+    let promoBadge = "";
+    if (isSponsored) {
+      promoBadge = '<span class="badge" style="background:rgba(166,124,255,.92);color:#fff">⭐ Sponsorisé</span>';
+    } else if (ann.plan_abo === "plus" || ann.plan_abo === "pro") {
+      promoBadge = '<span class="badge" style="background:rgba(58,142,255,.92);color:#fff">⚡ Prioritaire</span>';
+    }
+
     card.innerHTML = `
             <div class="card-thumb" style="${imgSrc ? `background: url('${imgSrc}') center/cover no-repeat;` : `background: var(--bg4);`}">
                 ${imgSrc ? "" : '<div style="font-size:3rem"><i class="fas fa-box"></i></div>'}
                 <div class="card-badges">
+                    ${promoBadge}
                     ${isFree ? '<span class="badge b-don">Don gratuit</span>' : '<span class="badge b-ven">Vente</span>'}
                 </div>
             </div>

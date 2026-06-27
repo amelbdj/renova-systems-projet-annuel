@@ -90,17 +90,16 @@ function openArticleModal(id) {
         • Rédigé par <b>${article.prenom_auteur || ""} ${article.nom_auteur || ""}</b>
       `;
 
-      // 🟢 GESTION DE L'IMAGE DANS L'ADMIN
       const imgElement = document.getElementById("modal-art-image");
-      const imageUrl = article.image_url || article.ImageUrl; // Tolérance pour la majuscule
+      const imageUrl = article.image_url || article.ImageUrl;
 
       if (imgElement) {
         if (imageUrl && imageUrl.trim() !== "") {
           imgElement.src = "http://localhost:8081/" + imageUrl;
-          imgElement.style.display = "block"; // On affiche l'image
+          imgElement.style.display = "block"; 
         } else {
           imgElement.src = "";
-          imgElement.style.display = "none"; // On la cache s'il n'y en a pas
+          imgElement.style.display = "none"; 
         }
       }
 

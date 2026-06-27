@@ -60,6 +60,12 @@ body::after{
   background-size:54px 54px;
 }
 
+.blurred {
+  filter: blur(5px);
+  pointer-events: none; /* Empêche de cliquer sur les boutons floutés */
+  user-select: none;    /* Empêche de sélectionner le texte flouté */
+  opacity: 0.7;
+}
 /* ─── TUTORIAL OVERLAY ───────────────────────────── */
 #tut{
   position:fixed;inset:0;z-index:9999;
@@ -316,6 +322,21 @@ select option{background:var(--bg3)}
   width:220px;height:220px;border-radius:50%;
   background:radial-gradient(circle,rgba(245,197,66,.1) 0%,transparent 65%);
 }
+.plan-card.plus{
+  background:linear-gradient(135deg,#04141a,#031f29);
+  border:1px solid rgba(58,142,255,.30);
+  box-shadow:0 0 40px rgba(58,142,255,.06);
+}
+.plan-card.pro{
+  background:linear-gradient(135deg,#120016,#1d0726);
+  border:1px solid rgba(166,124,255,.34);
+  box-shadow:0 0 40px rgba(166,124,255,.08);
+}
+.plan-card.pro::before{
+  content:'';position:absolute;right:-50px;top:-50px;
+  width:220px;height:220px;border-radius:50%;
+  background:radial-gradient(circle,rgba(166,124,255,.12) 0%,transparent 65%);
+}
 .plan-badge{
   display:inline-flex;align-items:center;gap:6px;
   padding:4px 12px;border-radius:100px;font-size:11px;font-weight:600;
@@ -323,6 +344,14 @@ select option{background:var(--bg3)}
 }
 .plan-badge.free   {background:rgba(0,210,180,.1);color:var(--teal-l);border:1px solid rgba(0,210,180,.2)}
 .plan-badge.premium{background:rgba(245,197,66,.15);color:var(--gold-l);border:1px solid rgba(245,197,66,.3)}
+.plan-badge.plus   {background:rgba(58,142,255,.15);color:#7fb2ff;border:1px solid rgba(58,142,255,.3)}
+.plan-badge.pro    {background:rgba(166,124,255,.15);color:#c4a7ff;border:1px solid rgba(166,124,255,.32)}
+.plan-feat .fi.ok3 {background:rgba(58,142,255,.15);color:#7fb2ff}
+.plan-feat .fi.ok4 {background:rgba(166,124,255,.18);color:#c4a7ff}
+.btn-plus{background:linear-gradient(135deg,#1c5fb8,#3a8eff);color:#fff;box-shadow:0 3px 14px rgba(58,142,255,.3)}
+.btn-plus:hover{transform:translateY(-1px);box-shadow:0 5px 20px rgba(58,142,255,.45)}
+.btn-pro{background:linear-gradient(135deg,#6a3fb8,#a67cff);color:#fff;box-shadow:0 3px 14px rgba(166,124,255,.3)}
+.btn-pro:hover{transform:translateY(-1px);box-shadow:0 5px 20px rgba(166,124,255,.45)}
 .plan-name{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;color:#fff;margin-bottom:4px}
 .plan-price{font-size:13px;color:var(--txt-m);margin-bottom:16px}
 .plan-price strong{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;color:#fff}

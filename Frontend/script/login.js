@@ -32,19 +32,6 @@ function goSpace(name) {
   alert("🚀 Redirection vers l'Espace " + name + "…");
 }
 
-/* ─── FORGOT PASSWORD ─────────────────────── */
-function showForgot() {
-  const email = document.getElementById("loginEmail").value.trim();
-  if (email) {
-    alert("📧 Un e-mail de réinitialisation a été envoyé à : " + email);
-  } else {
-    alert(
-      'Veuillez entrer votre adresse e-mail, puis cliquer sur "Mot de passe oublié".',
-    );
-    document.getElementById("loginEmail").focus();
-  }
-}
-
 /* ─── SOCIAL LOGIN ────────────────────────── */
 function socialLogin(p) {
   alert("🔐 Authentification " + p + " — à connecter au back-end OAuth2.");

@@ -246,6 +246,11 @@
             <button class="btn btn-v btn-sm" onclick="updatePassword()" style="margin-top: 10px;">
               Mettre à jour
             </button>
+            <div style="margin-top: 12px;">
+              <a href="reset-password.html" style="font-size: 12px; color: var(--txt-m); text-decoration: underline;">
+                Mot de passe oublié ?
+              </a>
+            </div>
           </div>
         </div>
       </div>
@@ -422,22 +427,36 @@
           const data = await response.json();
 
           if (!data || data.length === 0) {
-            historyList.innerHTML = `<div style="padding: 20px; color: var(--txt-m)">Aucune vente effectuée pour le moment.</div>`;
+            historyList.innerHTML = `<div style="padding: 20px; color: var(--txt-m)">Aucune transaction pour le moment.</div>`;
             return;
           }
 
           historyList.innerHTML = data
-            .map(
-              (item) => `
+            .map((item) => {
+              let libelle, couleur, signe;
+              if (item.type === "vente") {
+                libelle = "Vente — " + item.titre;
+                couleur = "var(--green)";
+                signe = "+";
+              } else if (item.type === "abonnement") {
+                libelle = item.titre; // ex : "Abonnement Pro"
+                couleur = "var(--red)";
+                signe = "-";
+              } else {
+                libelle = "Achat — " + item.titre;
+                couleur = "var(--red)";
+                signe = "-";
+              }
+              return `
                 <div style="display: flex; align-items: center; gap: 12px; padding: 13px 20px; border-bottom: 1px solid var(--b0);">
                     <div style="flex: 1">
-                        <div style="color: #fff">Vente — ${item.titre}</div>
+                        <div style="color: #fff">${libelle}</div>
                         <div style="font-size: 11px; color: var(--txt-m)">${new Date(item.date).toLocaleDateString("fr-FR")}</div>
                     </div>
-                    <div style="color: var(--green); font-weight: bold;">+${item.montant} €</div>
+                    <div style="color: ${couleur}; font-weight: bold;">${signe}${item.montant} €</div>
                 </div>
-            `,
-            )
+            `;
+            })
             .join("");
         } catch (err) {
           console.error("Erreur historique:", err);

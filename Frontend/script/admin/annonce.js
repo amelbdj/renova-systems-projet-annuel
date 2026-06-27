@@ -92,7 +92,6 @@ function GetAnnonce() {
         container.innerHTML = `<div style="padding:20px" data-i18n="backoffice.ads.no_ads">Aucune annonce en attente.</div>`;
       }
 
-      // On demande au script de traduire les nouveaux éléments fraîchement injectés
       if (typeof appliquerTraductions === "function") {
         appliquerTraductions();
       }
@@ -108,7 +107,7 @@ function ValidateAnnonce(id) {
     },
   }).then(() => {
     GetAnnonce();
-    UpdateValidationCount(); // Met à jour le total rouge en haut
+    UpdateValidationCount(); 
   });
 }
 

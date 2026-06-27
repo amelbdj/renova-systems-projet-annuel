@@ -1,6 +1,4 @@
-// =====================================================================
-// VARIABLES GLOBALES (Utilisation de "var" pour éviter les plantages)
-// =====================================================================
+
 var monToken = localStorage.getItem("token");
 var userId = localStorage.getItem("userId");
 
@@ -9,9 +7,6 @@ if (!monToken || !userId) {
   window.location.href = "../login.html";
 }
 
-// =====================================================================
-// 1. OUVRIR ET FERMER LA FENÊTRE DE CRÉATION
-// =====================================================================
 function openNewEvt() {
   document.getElementById("evtModal").style.display = "flex";
 }
@@ -36,9 +31,6 @@ function resetEvtForm() {
   }
 }
 
-// =====================================================================
-// 2. CRÉER UN ÉVÉNEMENT (AVEC IMAGE)
-// =====================================================================
 function CreateEvent() {
   var titre = document.getElementById("evt-titre").value.trim();
   var type = document.getElementById("evt-type").value;
@@ -67,7 +59,6 @@ function CreateEvent() {
   var datetimeDebut = date + " " + (heureDebut || "00:00") + ":00";
   var datetimeFin = date + " " + (heureFin || "00:00") + ":00";
 
-  // Utilisation de FormData pour envoyer le texte ET le fichier
   var formData = new FormData();
   formData.append("idSalarie", userId);
   formData.append("titre", titre);
@@ -117,9 +108,6 @@ function CreateEvent() {
     });
 }
 
-// =====================================================================
-// 3. AFFICHER LES ÉVÉNEMENTS DU SALARIÉ
-// =====================================================================
 function GetEvenements() {
   var conteneur = document.getElementById("event-grid");
   if (!conteneur) return;
@@ -144,7 +132,6 @@ function GetEvenements() {
       var statEvent = document.getElementById("stat-event");
       var statAttente = document.getElementById("stat-valide");
 
-      // On ne garde que les événements créés par ce salarié
       var mesEvenements = [];
       for (var i = 0; i < evenements.length; i++) {
         if (
@@ -192,13 +179,9 @@ function GetEvenements() {
         var dateFormatee = evt.date_debut;
         var typeAffichage = evt.type || evt.format || "Événement";
 
-        // ----------------------------------------------------
-        // GESTION IMAGE VS BANNIÈRE BLEUE
-        // ----------------------------------------------------
         var topSectionHtml = "";
 
         if (evt.image_url && evt.image_url !== "") {
-          // IMAGE (Pas de bannière bleue)
           topSectionHtml =
             `
         <div style="position: relative;">
@@ -217,7 +200,6 @@ function GetEvenements() {
           </div>
         </div>`;
         } else {
-          // PAS D'IMAGE (Bannière bleue avec calendrier)
           topSectionHtml =
             `
         <div class="evt-banner" style="background:linear-gradient(135deg,#100820,#1c1040); margin: 0; border-radius: 12px 12px 0 0;">
@@ -270,9 +252,6 @@ function GetEvenements() {
     });
 }
 
-// =====================================================================
-// 4. SUPPRIMER UN ÉVÉNEMENT
-// =====================================================================
 function DeleteEvenement(id) {
   if (!confirm("Êtes-vous sûr de vouloir annuler cet événement ?")) {
     return;
@@ -295,9 +274,6 @@ function DeleteEvenement(id) {
     });
 }
 
-// =====================================================================
-// LANCEMENT AU DÉMARRAGE
-// =====================================================================
 document.addEventListener("DOMContentLoaded", function () {
   GetEvenements();
 

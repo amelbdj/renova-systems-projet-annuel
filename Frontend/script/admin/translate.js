@@ -61,10 +61,9 @@ function LoadFormulaireTraduction() {
     .then((keys) => {
       const container = document.getElementById("dynamic-fields-container");
 
-      // 🛡️ SÉCURITÉ ICI : Si le conteneur n'existe pas sur la page actuelle, on arrête la fonction !
       if (!container) return;
 
-      container.innerHTML = ""; // On vide avant de remplir
+      container.innerHTML = ""; 
 
       keys.forEach((key) => {
         container.innerHTML += `
@@ -80,13 +79,10 @@ function LoadFormulaireTraduction() {
     });
 }
 
-// On lance le dessin du formulaire tout de suite
 LoadFormulaireTraduction();
 
-// Gestion de la soumission du formulaire d'ajout de langue
 const formAddLanguage = document.getElementById("form-add-language");
 
-// 🛡️ SÉCURITÉ ICI : On vérifie si l'élément form-add-language existe
 if (formAddLanguage) {
   formAddLanguage.addEventListener("submit", function (event) {
     event.preventDefault();
@@ -115,10 +111,9 @@ if (formAddLanguage) {
       .then((res) => {
         if (!res.ok) throw new Error("Erreur serveur");
 
-        alert("✅ La langue a été ajoutée avec succès !");
+        alert("La langue a été ajoutée avec succès !");
         document.getElementById("form-add-language").reset();
 
-        // 🌟 L'ASTUCE DE PRO : On met à jour les boutons en haut instantanément !
         GetLanguages();
       })
       .catch((err) => {
@@ -130,7 +125,6 @@ if (formAddLanguage) {
 
 const btnToggleForm = document.getElementById("btn-toggle-form");
 
-// 🛡️ SÉCURITÉ ICI : On vérifie si l'élément btn-toggle-form existe
 if (btnToggleForm) {
   btnToggleForm.addEventListener("click", function () {
     const formContainer = document.getElementById("form-container");
@@ -145,7 +139,6 @@ if (btnToggleForm) {
   });
 }
 
-// Affichage dynamique des boutons de langue
 function GetLanguages() {
   fetch("http://localhost:8081/api/languages", {
     headers: {
@@ -159,10 +152,9 @@ function GetLanguages() {
     .then((languages) => {
       const container = document.getElementById("wrapper");
 
-      // 🛡️ SÉCURITÉ ICI : On vérifie si le conteneur des boutons de langue existe
       if (!container) return;
 
-      container.innerHTML = ""; // 🌟 CORRECTION : On vide le conteneur pour éviter de dupliquer les boutons
+      container.innerHTML = ""; 
 
       languages.forEach((lang) => {
         container.innerHTML += `
@@ -177,8 +169,7 @@ function GetLanguages() {
     });
 }
 
-// Initialisation au chargement de la page
 document.addEventListener("DOMContentLoaded", () => {
   GetLanguages();
-  changerLangue("fr"); // On charge le français par défaut
+  changerLangue("fr"); 
 });
