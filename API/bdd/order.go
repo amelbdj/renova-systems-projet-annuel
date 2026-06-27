@@ -2,6 +2,7 @@ package bdd
 
 import (
 	"fmt"
+	"sort"
 	"upcycleconnect/models"
 )
 
@@ -36,37 +37,67 @@ func CreateOrder(annonce models.Annonce, acheteurId int) (int, error) {
     return int(orderId), nil
 }
 
-func PaymentHistory(userID int) ([]map[string]interface{}, error) {
-    // CORRECTION ICI AUSSI : Remplacement de o.annonce_id et o.montant par les vrais noms
-    query := `
-        SELECT 
-            o.montant_total, 
-            o.date_commande, 
-            a.titre 
-        FROM pa2026.order o
-        JOIN annonce a ON o.id_annonce = a.id
-        WHERE a.id_user = ?
-        ORDER BY o.date_commande DESC`
+func planNomEtPrix(idPlan int) (string, float64) {
+    switch idPlan {
+    case 2:
+        return "Plus", 45
+    case 3:
+        return "Pro", 99
+    default:
+        return "Premium", 25
+    }
+}
 
-    rows, err := Db.Query(query, userID)
+func PaymentHistory(userID int) ([]map[string]interface{}, error) {
+    var history []map[string]interface{}
+
+    achats, err := Db.Query("SELECT o.montant, o.date, a.titre FROM pa2026.`order` o JOIN annonce a ON o.annonce_id = a.id WHERE o.acheteur_id = ?", userID)
     if err != nil {
         return nil, err
     }
-    defer rows.Close()
-
-    var history []map[string]interface{}
-    for rows.Next() {
+    for achats.Next() {
         var montant float64
         var date, titre string
-        rows.Scan(&montant, &date, &titre)
-
-        item := map[string]interface{}{
-            "titre":   titre,
-            "montant": montant,
-            "date":    date,
-        }
-        history = append(history, item)
+        achats.Scan(&montant, &date, &titre)
+        history = append(history, map[string]interface{}{
+            "type": "achat", "titre": titre, "montant": montant, "date": date,
+        })
     }
+    achats.Close()
+
+    ventes, err := Db.Query("SELECT o.montant, o.date, a.titre FROM pa2026.`order` o JOIN annonce a ON o.annonce_id = a.id WHERE a.id_user = ?", userID)
+    if err != nil {
+        return nil, err
+    }
+    for ventes.Next() {
+        var montant float64
+        var date, titre string
+        ventes.Scan(&montant, &date, &titre)
+        history = append(history, map[string]interface{}{
+            "type": "vente", "titre": titre, "montant": montant, "date": date,
+        })
+    }
+    ventes.Close()
+
+    abos, err := Db.Query("SELECT id_plan, date_debut FROM abonnement WHERE id_user = ?", userID)
+    if err != nil {
+        return nil, err
+    }
+    for abos.Next() {
+        var idPlan int
+        var date string
+        abos.Scan(&idPlan, &date)
+        nom, montant := planNomEtPrix(idPlan)
+        history = append(history, map[string]interface{}{
+            "type": "abonnement", "titre": "Abonnement " + nom, "montant": montant, "date": date,
+        })
+    }
+    abos.Close()
+
+    sort.Slice(history, func(i, j int) bool {
+        return history[i]["date"].(string) > history[j]["date"].(string)
+    })
+
     return history, nil
 }
 

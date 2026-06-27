@@ -20,6 +20,30 @@ const StripeSecretKey = "sk_test_51TNFHBHbaxF1KOTtH89RRHNJQSQXSPVtOHMJDHicr1LW4X
 
 // const StripeSecretKey = "sk_test_51TNFHBHbaxF1KOTtH89RRHNJQSQXSPVtOHMJDHicr1LW4XYeY4ZC6nYWwzVbDvFUUI58YA7KlJs9BiUyP5zD4XU300gaAUPVpI"
 
+func getPlanInfo(plan string) (name string, amountCents int64, ok bool) {
+	switch planKey(plan) {
+	case "premium":
+		return "Abonnement Premium Pro", 2500, true
+	case "plus":
+		return "Abonnement Plus Pro", 4500, true
+	case "pro":
+		return "Abonnement Pro", 9900, true
+	default:
+		return "", 0, false
+	}
+}
+
+func planKey(plan string) string {
+	switch plan {
+	case "plus":
+		return "plus"
+	case "pro":
+		return "pro"
+	default:
+		return "premium"
+	}
+}
+
 func ConnectToStripe(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
@@ -333,6 +357,14 @@ func CreateProSubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	plan := r.URL.Query().Get("plan")
+	planName, planAmount, ok := getPlanInfo(plan)
+	if !ok {
+		http.Error(w, `{"error": "Plan inconnu"}`, http.StatusBadRequest)
+		return
+	}
+	plan = planKey(plan)
+
 	// 1. HARDCODED SECRET KEY
 	stripe.Key = "sk_test_51TNFHBHbaxF1KOTtH89RRHNJQSQXSPVtOHMJDHicr1LW4XYeY4ZC6nYWwzVbDvFUUI58YA7KlJs9BiUyP5zD4XU300gaAUPVpI"
 
@@ -340,7 +372,7 @@ func CreateProSubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 	// 🟢 MAGIC TRICK: AUTO-CREATE THE PRODUCT AND PRICE
 	// ---------------------------------------------------------
 	prodParams := &stripe.ProductParams{
-		Name: stripe.String("Abonnement Premium Pro"),
+		Name: stripe.String(planName),
 	}
 	prod, errProd := product.New(prodParams)
 	if errProd != nil {
@@ -351,7 +383,7 @@ func CreateProSubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 
 	priceParams := &stripe.PriceParams{
 		Product:    stripe.String(prod.ID),
-		UnitAmount: stripe.Int64(2500), // 25.00 EUR (en centimes)
+		UnitAmount: stripe.Int64(planAmount),
 		Currency:   stripe.String(string(stripe.CurrencyEUR)),
 		Recurring: &stripe.PriceRecurringParams{
 			Interval: stripe.String(string(stripe.PriceRecurringIntervalMonth)),
@@ -364,7 +396,7 @@ func CreateProSubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println("✅ MAGIC SUCCESS! New Price ID auto-generated:", newPrice.ID)
+	fmt.Println("price id works:", newPrice.ID)
 	// ---------------------------------------------------------
 
 	// 3. USE THE FRESHLY CREATED PRICE
@@ -377,10 +409,11 @@ func CreateProSubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 				Quantity: stripe.Int64(1),
 			},
 		},
-		SuccessURL:        stripe.String("http://127.0.0.1:5500/renova-systems-projet-annuel/Frontend/espPro.html?abo=success&session_id={CHECKOUT_SESSION_ID}"),
-		CancelURL:         stripe.String("http://127.0.0.1:5500/renova-systems-projet-annuel/Frontend/espPro.html?abo=cancel"),
+		SuccessURL:        stripe.String("http://127.0.0.1:5500/Frontend/espPro.html?abo=success&session_id={CHECKOUT_SESSION_ID}"),
+		CancelURL:         stripe.String("http://127.0.0.1:5500/Frontend/espPro.html?abo=cancel"),
 		ClientReferenceID: stripe.String(userID),
 	}
+	params.AddMetadata("plan", plan)
 
 	s, err := session.New(params)
 	if err != nil {

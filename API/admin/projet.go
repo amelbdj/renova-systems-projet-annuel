@@ -2,10 +2,12 @@ package admin
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"os"
 	"strconv"
+	"time"
 	"upcycleconnect/bdd"
 	"upcycleconnect/models"
 )
@@ -14,6 +16,23 @@ func corsHeaders(w http.ResponseWriter, methods string) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", methods+", OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+}
+
+func saveUpload(r *http.Request, field string) (string, bool) {
+	file, header, err := r.FormFile(field)
+	if err != nil {
+		return "", false
+	}
+	defer file.Close()
+
+	name := fmt.Sprintf("%d_%s", time.Now().UnixNano(), header.Filename)
+	out, err := os.Create("./uploads/" + name)
+	if err != nil {
+		return "", false
+	}
+	defer out.Close()
+	io.Copy(out, file)
+	return "/view-uploads/" + name, true
 }
 
 func CreateProjetHandler(w http.ResponseWriter, r *http.Request) {
@@ -36,20 +55,14 @@ func CreateProjetHandler(w http.ResponseWriter, r *http.Request) {
 		IdUser:      idUser,
 		Titre:       r.FormValue("titre"),
 		Description: r.FormValue("description"),
-		AvantDesc:   r.FormValue("avant_desc"),
-		ApresDesc:   r.FormValue("apres_desc"),
 		Statut:      statut,
 		Co2Evite:    co2,
 	}
-	file, header, err := r.FormFile("photo")
-	if err == nil {
-		defer file.Close()
-		out, err := os.Create("./uploads/" + header.Filename)
-		if err == nil {
-			defer out.Close()
-			io.Copy(out, file)
-			p.Photo = "/view-uploads/" + header.Filename
-		}
+	if url, ok := saveUpload(r, "photo_avant"); ok {
+		p.PhotoAvant = url
+	}
+	if url, ok := saveUpload(r, "photo_apres"); ok {
+		p.PhotoApres = url
 	}
 	if err := bdd.CreateProjet(p); err != nil {
 		http.Error(w, "Erreur création", http.StatusInternalServerError)
@@ -124,23 +137,19 @@ func UpdateProjetHandler(w http.ResponseWriter, r *http.Request) {
 		Id:          id,
 		Titre:       r.FormValue("titre"),
 		Description: r.FormValue("description"),
-		AvantDesc:   r.FormValue("avant_desc"),
-		ApresDesc:   r.FormValue("apres_desc"),
 		Statut:      statut,
 		Co2Evite:    co2,
 	}
 
-	file, header, err := r.FormFile("photo")
-	if err == nil {
-		defer file.Close()
-		out, err := os.Create("./uploads/" + header.Filename)
-		if err == nil {
-			defer out.Close()
-			io.Copy(out, file)
-			p.Photo = "/view-uploads/" + header.Filename
-		}
+	if url, ok := saveUpload(r, "photo_avant"); ok {
+		p.PhotoAvant = url
 	} else {
-		p.Photo = r.FormValue("old_photo")
+		p.PhotoAvant = r.FormValue("old_photo_avant")
+	}
+	if url, ok := saveUpload(r, "photo_apres"); ok {
+		p.PhotoApres = url
+	} else {
+		p.PhotoApres = r.FormValue("old_photo_apres")
 	}
 
 	if err := bdd.UpdateProjet(p); err != nil {

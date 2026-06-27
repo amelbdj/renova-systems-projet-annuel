@@ -7,9 +7,8 @@ type Projet struct {
 	Description string  `json:"description"`
 	Categorie   string  `json:"categorie"`
 	Statut      string  `json:"statut"`
-	AvantDesc   string  `json:"avant_desc"`
-	ApresDesc   string  `json:"apres_desc"`
+	PhotoAvant  string  `json:"photo_avant"`
+	PhotoApres  string  `json:"photo_apres"`
 	Co2Evite    float64 `json:"co2_evite"`
 	CreatedAt   string  `json:"created_at"`
-	Photo       string  `json:"photo"`
 }

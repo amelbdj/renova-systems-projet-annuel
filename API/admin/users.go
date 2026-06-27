@@ -613,6 +613,57 @@ func UpdatePasswordHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]string{"message": "Mot de passe mis à jour avec succès !"})
 }
 
+func ResetPasswordHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Content-Type", "application/json")
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	userID, ok := r.Context().Value("userID").(int)
+	if !ok || userID == 0 {
+		http.Error(w, `{"error": "Vous devez être connecté"}`, http.StatusUnauthorized)
+		return
+	}
+
+	var input struct {
+		Email       string `json:"email"`
+		NewPassword string `json:"new_password"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		http.Error(w, `{"error": "Données invalides"}`, http.StatusBadRequest)
+		return
+	}
+	if len(input.NewPassword) < 6 {
+		http.Error(w, `{"error": "Le mot de passe doit faire au moins 6 caractères"}`, http.StatusBadRequest)
+		return
+	}
+
+	var foundID int
+	if err := bdd.Db.QueryRow("SELECT id FROM pa2026.utilisateur WHERE id = ? AND email = ?", userID, input.Email).Scan(&foundID); err != nil {
+		http.Error(w, `{"error": "L'adresse e-mail ne correspond pas à votre compte"}`, http.StatusBadRequest)
+		return
+	}
+
+	newHashedPassword, err := bcrypt.GenerateFromPassword([]byte(input.NewPassword), 10)
+	if err != nil {
+		http.Error(w, `{"error": "Erreur lors du hachage"}`, http.StatusInternalServerError)
+		return
+	}
+	_, err = bdd.Db.Exec("UPDATE pa2026.utilisateur SET mot_de_passe = ? WHERE id = ?", string(newHashedPassword), userID)
+	if err != nil {
+		http.Error(w, `{"error": "Erreur de mise à jour en BDD"}`, http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{"message": "Mot de passe réinitialisé avec succès !"})
+}
+
 func UpgradeToPremiumHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
@@ -644,13 +695,46 @@ func UpgradeToPremiumHandler(w http.ResponseWriter, r *http.Request) {
 
 	customerID := s.Customer.ID
 
-	// 🟢 Update the database with BOTH premium status AND the Customer ID
-	query := "UPDATE utilisateur SET est_premium = 1, stripe_customer_id = ? WHERE id = ?"
-	_, dbErr := bdd.Db.Exec(query, customerID, userID)
+	plan := s.Metadata["plan"]
+	if plan != "plus" && plan != "pro" {
+		plan = "premium"
+	}
+
+	query := "UPDATE utilisateur SET est_premium = 1, plan_abo = ?, stripe_customer_id = ? WHERE id = ?"
+	_, dbErr := bdd.Db.Exec(query, plan, customerID, userID)
 	if dbErr != nil {
 		fmt.Println("Database error:", dbErr)
 		http.Error(w, `{"error": "Could not upgrade user"}`, http.StatusInternalServerError)
 		return
+	}
+
+	planId := 1
+	if plan == "plus" {
+		planId = 2
+	} else if plan == "pro" {
+		planId = 3
+	}
+	_, aboErr := bdd.Db.Exec("INSERT INTO abonnement (id_user, id_plan, date_debut, statut) VALUES (?, ?, NOW(), 'actif')", userID, planId)
+	if aboErr != nil {
+		fmt.Println("Erreur enregistrement abonnement (historique):", aboErr)
+	}
+
+	newSubID := ""
+	if s.Subscription != nil {
+		newSubID = s.Subscription.ID
+	}
+	listParams := &stripe.SubscriptionListParams{
+		Customer: stripe.String(customerID),
+		Status:   stripe.String("active"),
+	}
+	iter := subscription.List(listParams)
+	for iter.Next() {
+		sub := iter.Subscription()
+		if sub.ID != newSubID {
+			if _, cancelErr := subscription.Cancel(sub.ID, nil); cancelErr != nil {
+				fmt.Println("Impossible d'annuler l'ancien abonnement:", cancelErr)
+			}
+		}
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -693,9 +777,52 @@ func CustomerPortalHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Send the portal URL to the frontend
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]string{"url": ps.URL})
+}
+
+func CancelSubscriptionHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Content-Type", "application/json")
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	userID := r.URL.Query().Get("id")
+	var customerID string
+	err := bdd.Db.QueryRow("SELECT stripe_customer_id FROM utilisateur WHERE id = ?", userID).Scan(&customerID)
+	if err != nil || customerID == "" {
+		http.Error(w, `{"error": "Aucun compte Stripe trouvé"}`, http.StatusNotFound)
+		return
+	}
+
+	stripe.Key = "sk_test_51TNFHBHbaxF1KOTtH89RRHNJQSQXSPVtOHMJDHicr1LW4XYeY4ZC6nYWwzVbDvFUUI58YA7KlJs9BiUyP5zD4XU300gaAUPVpI"
+
+	listParams := &stripe.SubscriptionListParams{
+		Customer: stripe.String(customerID),
+		Status:   stripe.String("active"),
+	}
+	iter := subscription.List(listParams)
+	cancelled := 0
+	for iter.Next() {
+		sub := iter.Subscription()
+		if _, cancelErr := subscription.Cancel(sub.ID, nil); cancelErr != nil {
+			fmt.Println("Erreur annulation abonnement:", cancelErr)
+		} else {
+			cancelled++
+		}
+	}
+
+	bdd.Db.Exec("UPDATE utilisateur SET est_premium = 0, plan_abo = NULL WHERE id = ?", userID)
+
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"message":   "Abonnement résilié",
+		"cancelled": cancelled,
+	})
 }
 
 func SyncPremiumStatusHandler(w http.ResponseWriter, r *http.Request) {
@@ -733,7 +860,11 @@ func SyncPremiumStatusHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 3. Mettre à jour la base de données avec la vraie réponse de Stripe
-	bdd.Db.Exec("UPDATE utilisateur SET est_premium = ? WHERE id = ?", estPremium, userID)
+	if estPremium == 0 {
+		bdd.Db.Exec("UPDATE utilisateur SET est_premium = 0, plan_abo = NULL WHERE id = ?", userID)
+	} else {
+		bdd.Db.Exec("UPDATE utilisateur SET est_premium = 1 WHERE id = ?", userID)
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]int{"est_premium": estPremium})

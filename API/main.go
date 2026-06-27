@@ -105,6 +105,8 @@ func main() {
 	http.HandleFunc("OPTIONS /api/pro/upgrade", admin.UpgradeToPremiumHandler)
 	http.HandleFunc("POST /api/pro/portal", admin.CustomerPortalHandler)
 	http.HandleFunc("OPTIONS /api/pro/portal", admin.CustomerPortalHandler)
+	http.HandleFunc("POST /api/pro/cancel", admin.CancelSubscriptionHandler)
+	http.HandleFunc("OPTIONS /api/pro/cancel", admin.CancelSubscriptionHandler)
 	http.HandleFunc("GET /api/pro/sync", admin.SyncPremiumStatusHandler)
 	http.HandleFunc("OPTIONS /api/pro/sync", admin.SyncPremiumStatusHandler)
 
@@ -113,6 +115,8 @@ func main() {
 	http.Handle("/view-uploads/", http.StripPrefix("/view-uploads/", http.FileServer(http.Dir("./uploads"))))
 	http.HandleFunc("/auth/check-email", admin.VerifierEmail)
 	http.HandleFunc("/auth/inscription", admin.Inscription)
+	http.HandleFunc("POST /auth/reset-password", auth.VerifyTokenMiddleware(admin.ResetPasswordHandler))
+	http.HandleFunc("OPTIONS /auth/reset-password", admin.ResetPasswordHandler)
 	http.HandleFunc("/admin/login", admin.Login)
 	http.HandleFunc("/update-tutorial", admin.UpdateTutorialStatus)
 	http.HandleFunc("/api/user/ecostats", admin.GetEcoStatsHandler)
@@ -178,6 +182,8 @@ func main() {
 	http.HandleFunc("POST /api/payment-annonce", admin.PaymentAnnonce)
 	http.HandleFunc("POST /api/pro/subscribe", auth.VerifyTokenMiddleware(admin.CreateProSubscriptionHandler))
 	http.HandleFunc("OPTIONS /api/pro/subscribe", admin.CreateProSubscriptionHandler)
+	http.HandleFunc("POST /api/pro/annonces/sponsor", auth.VerifyTokenMiddleware(admin.ToggleSponsorHandler))
+	http.HandleFunc("OPTIONS /api/pro/annonces/sponsor", admin.ToggleSponsorHandler)
 
 	// boxes
 	http.HandleFunc("GET /api/user/boxes", admin.GetMyBoxes)

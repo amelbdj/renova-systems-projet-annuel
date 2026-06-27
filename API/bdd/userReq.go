@@ -169,7 +169,7 @@ func UpdateUserById(user models.User) error {
 func GetUserById(id int) (models.User, error) {
 	var user models.User
 
-	err := Db.QueryRow("SELECT id, nom, prenom, email, mot_de_passe, role, type_statut, nom_entreprise, siret, score, validation, stripe_account_id, stripe_verif_completed, est_premium, stripe_customer_id FROM pa2026.utilisateur WHERE id = ?", id).Scan(
+	err := Db.QueryRow("SELECT id, nom, prenom, email, mot_de_passe, role, type_statut, nom_entreprise, siret, score, validation, stripe_account_id, stripe_verif_completed, est_premium, stripe_customer_id, plan_abo FROM pa2026.utilisateur WHERE id = ?", id).Scan(
 		&user.Id, &user.Nom, &user.Prenom, &user.Email, &user.MotDePasse,
 		&user.Role, &user.TypeStatut, &user.NomEntreprise, &user.Siret,
 		&user.Score, &user.Validation,
@@ -177,6 +177,7 @@ func GetUserById(id int) (models.User, error) {
 		&user.StripeVerifCompleted,
 		&user.EstPremium,
 		&user.StripeCustomerId,
+		&user.PlanAbo,
 	)
 
 	if err != nil {

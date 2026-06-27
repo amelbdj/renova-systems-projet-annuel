@@ -269,9 +269,10 @@ func GetAnnoncesByUser(userID int) ([]models.Annonce, error) {
 
 	// 🟢 CORRECTION : On protège TOUTES les colonnes contre les valeurs NULL
 	query := `
-		SELECT id, titre, COALESCE(prix, 0), COALESCE(id_categorie, 0), 
-		       COALESCE(statut_vente, ''), COALESCE(statut_validation, ''), COALESCE(image, '') 
-		FROM pa2026.annonce 
+		SELECT id, titre, COALESCE(prix, 0), COALESCE(id_categorie, 0),
+		       COALESCE(statut_vente, ''), COALESCE(statut_validation, ''), COALESCE(image, ''),
+		       COALESCE(is_sponsored, 0)
+		FROM pa2026.annonce
 		WHERE id_user = ?`
 
 	rows, err := Db.Query(query, userID)
@@ -282,7 +283,7 @@ func GetAnnoncesByUser(userID int) ([]models.Annonce, error) {
 
 	for rows.Next() {
 		var Annonce models.Annonce
-		if err := rows.Scan(&Annonce.Id, &Annonce.Titre, &Annonce.Prix, &Annonce.IdCategorie, &Annonce.StatutVente, &Annonce.StatutValidation, &Annonce.Image); err != nil {
+		if err := rows.Scan(&Annonce.Id, &Annonce.Titre, &Annonce.Prix, &Annonce.IdCategorie, &Annonce.StatutVente, &Annonce.StatutValidation, &Annonce.Image, &Annonce.IsSponsored); err != nil {
 			return nil, err
 		}
 		list = append(list, Annonce)
@@ -294,21 +295,30 @@ func GetValidatedAnnonces(currentUserID int) ([]models.Annonce, error) {
     var Annonces []models.Annonce
 
     query := `
-        SELECT 
-        a.id, a.titre, a.description, a.type, a.prix, a.statut_validation, 
-        a.code_postal, a.ville, a.etat, a.poids, a.quantite, 
-        COALESCE(u.nom, ''), 
-        COALESCE(u.prenom, ''), 
-        COALESCE(c.libelle, ''), 
+        SELECT
+        a.id, a.titre, a.description, a.type, a.prix, a.statut_validation,
+        a.code_postal, a.ville, a.etat, a.poids, a.quantite,
+        COALESCE(u.nom, ''),
+        COALESCE(u.prenom, ''),
+        COALESCE(c.libelle, ''),
         COALESCE(a.image, ''),
-        a.statut_vente
+        a.statut_vente,
+        COALESCE(a.is_sponsored, 0),
+        COALESCE(u.plan_abo, '')
     FROM pa2026.annonce a
     LEFT JOIN pa2026.utilisateur u ON a.id_user = u.id
     LEFT JOIN pa2026.categorie c ON a.id_categorie = c.id
-    WHERE a.statut_validation = 'Validé' 
+    WHERE a.statut_validation = 'Validé'
     AND a.id_user != ?
-    -- LA CORRECTION EST ICI : on exige explicitement que l'annonce soit "En vente"
-    AND a.statut_vente = 'En vente'`
+    AND a.statut_vente = 'LIBRE'
+    ORDER BY
+        (COALESCE(a.is_sponsored, 0) = 1) DESC,
+        CASE COALESCE(u.plan_abo, '')
+            WHEN 'pro'  THEN 3
+            WHEN 'plus' THEN 2
+            ELSE 0
+        END DESC,
+        a.id DESC`
 
     rows, err := Db.Query(query, currentUserID)
     if err != nil {
@@ -322,6 +332,7 @@ func GetValidatedAnnonces(currentUserID int) ([]models.Annonce, error) {
             &a.Id, &a.Titre, &a.Description, &a.Type, &a.Prix, &a.StatutValidation,
             &a.CodePostal, &a.Ville, &a.Etat, &a.PoidsKg, &a.Quantite,
             &a.Nom, &a.Prenom, &a.Categorie, &a.Image, &a.StatutVente,
+            &a.IsSponsored, &a.PlanAbo,
         )
         if err != nil {
             return nil, fmt.Errorf("Erreur Scan: %v", err)
