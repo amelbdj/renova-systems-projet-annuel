@@ -8,7 +8,7 @@ import (
 	"strings"
 	"upcycleconnect/models"
 
-	"golang.org/x/crypto/bcrypt" //gestion hash mdp
+	"golang.org/x/crypto/bcrypt"
 )
 
 func LoginUser(email string, motDePasse string, ip string) (models.User, error) {
@@ -133,6 +133,25 @@ func DeletedUser(id int) error {
 		return fmt.Errorf("mise à jour échouée : %v", err)
 	}
 
+	return nil
+}
+
+func UpdateUserProfile(id int, nom string, prenom string, email string) error {
+	result, err := Db.Exec(
+		"UPDATE pa2026.utilisateur SET nom = ?, prenom = ?, email = ? WHERE id = ?",
+		nom, prenom, email, id,
+	)
+	if err != nil {
+		return fmt.Errorf("mise à jour du profil échouée : %v", err)
+	}
+
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rows == 0 {
+		return fmt.Errorf("aucun utilisateur trouvé avec l'id %d", id)
+	}
 	return nil
 }
 
@@ -283,7 +302,7 @@ func GetUserByName(query string, role string) ([]models.User, error) {
 	}
 }
 
-func ValidateUser(id int) (string, string, error) { // Retourne prenom, email, erreur
+func ValidateUser(id int) (string, string, error) {
 	_, err := Db.Exec(
 		"UPDATE pa2026.utilisateur SET validation = 'Validé' WHERE id = ?",
 		id,
@@ -301,7 +320,7 @@ func ValidateUser(id int) (string, string, error) { // Retourne prenom, email, e
 	return prenom, email, nil
 }
 
-func RefuseUser(id int, motif string) (string, string, error) { // On ajoute les retours string, string
+func RefuseUser(id int, motif string) (string, string, error) {
 	_, err := Db.Exec(
 		"UPDATE pa2026.utilisateur SET validation = 'Rejeté', motif_refus = ? WHERE id = ?",
 		motif,
@@ -312,7 +331,6 @@ func RefuseUser(id int, motif string) (string, string, error) { // On ajoute les
 		return "", "", fmt.Errorf("refuse user : %v", err.Error())
 	}
 
-	// 2. On récupère ses infos pour lui envoyer l'e-mail
 	var prenom, email string
 	err = Db.QueryRow("SELECT prenom, email FROM pa2026.utilisateur WHERE id = ?", id).Scan(&prenom, &email)
 	if err != nil {
@@ -324,7 +342,7 @@ func RefuseUser(id int, motif string) (string, string, error) { // On ajoute les
 
 // Dans ton fichier bdd/documents.go (ou là où tu gères la BDD)
 func InsertDocument(userID string, typeDocument string, cheminFichier string) error {
-	// On insère le document avec le statut "En attente" par défaut
+
 	requeteSQL := `
 		INSERT INTO pa2026.documents_legaux (user_id, type_document, chemin_fichier, statut_document) 
 		VALUES (?, ?, ?, 'En attente')
@@ -380,7 +398,6 @@ func BanUser(userId int) error {
 }
 
 func GetAllAdminIDs() ([]string, error) {
-
 	rows, err := Db.Query("SELECT id FROM pa2026.utilisateur WHERE role = 'Administrateur'")
 	if err != nil {
 		return nil, err
@@ -391,24 +408,97 @@ func GetAllAdminIDs() ([]string, error) {
 	for rows.Next() {
 		var id int
 		if err := rows.Scan(&id); err == nil {
-			// On convertit direct en string pour OneSignal
+
 			adminIDs = append(adminIDs, strconv.Itoa(id))
 		}
 	}
 	return adminIDs, nil
 }
 
+func GetProfessionalIDs() ([]string, error) {
+	rows, err := Db.Query("SELECT id FROM pa2026.utilisateur WHERE siret IS NOT NULL AND siret != ''")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var ids []string
+	for rows.Next() {
+		var id int
+		if err := rows.Scan(&id); err == nil {
+			ids = append(ids, strconv.Itoa(id))
+		}
+	}
+	return ids, nil
+}
+
+func GetParticulierIDs() ([]string, error) {
+	rows, err := Db.Query("SELECT id FROM pa2026.utilisateur WHERE role = 'Utilisateur'")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var ids []string
+	for rows.Next() {
+		var id int
+		if err := rows.Scan(&id); err == nil {
+			ids = append(ids, strconv.Itoa(id))
+		}
+	}
+	return ids, nil
+}
+
+func GetNotifications(idUser int) ([]map[string]interface{}, error) {
+	rows, err := Db.Query("SELECT id_notif, contenu, est_lu FROM pa2026.notification WHERE id_user = ? ORDER BY id_notif DESC LIMIT 30", idUser)
+	if err != nil {
+		return nil, fmt.Errorf("get notifications : %v", err.Error())
+	}
+	defer rows.Close()
+
+	var notifs []map[string]interface{}
+	for rows.Next() {
+		var id int
+		var contenu string
+		var estLu int
+		if err := rows.Scan(&id, &contenu, &estLu); err != nil {
+			continue
+		}
+		notifs = append(notifs, map[string]interface{}{
+			"id_notif": id,
+			"contenu":  contenu,
+			"est_lu":   estLu,
+		})
+	}
+	return notifs, nil
+}
+
+func MarkNotificationsRead(idUser int) error {
+	_, err := Db.Exec("UPDATE pa2026.notification SET est_lu = 1 WHERE id_user = ?", idUser)
+	if err != nil {
+		return fmt.Errorf("maj notifications echouee : %v", err)
+	}
+	return nil
+}
+
+func CreateNotification(idUser int, contenu string) error {
+	_, err := Db.Exec("INSERT INTO pa2026.notification (id_user, contenu, est_lu) VALUES (?, ?, 0)", idUser, contenu)
+	if err != nil {
+		return fmt.Errorf("création de la notification échouée : %v", err)
+	}
+	return nil
+}
+
 func EnvoyerEmailValidation(emailDestinataire string, prenom string) error {
 	expediteur := "noreply@upcycleconnect.fr"
-	motDePasse := "voir avec ndoya"
+	motDePasse := "#Projet2026"
 	serveurSMTP := "192.168.80.10"
-	port := "25" // verif avec ndoya
+	port := "25"
 
 	auth := smtp.PlainAuth("", expediteur, motDePasse, serveurSMTP)
 
 	sujet := "Subject: UpcycleConnect - Votre compte est validé ! 🎉\n"
 	typeMIME := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
-
 	corpsMessage := fmt.Sprintf(`
 		<html>
 			<body style="font-family: Arial, sans-serif; color: #333;">
@@ -426,7 +516,6 @@ func EnvoyerEmailValidation(emailDestinataire string, prenom string) error {
 
 	adresseServeur := serveurSMTP + ":" + port
 	err := smtp.SendMail(adresseServeur, auth, expediteur, []string{emailDestinataire}, messageComplet)
-
 	if err != nil {
 		return fmt.Errorf("erreur de connexion à hMailServer (192.168.80.10) : %v", err)
 	}
@@ -435,19 +524,16 @@ func EnvoyerEmailValidation(emailDestinataire string, prenom string) error {
 	return nil
 }
 
-// Dans userReq.go (à la suite de ta fonction EnvoyerEmailValidation)
-
 func EnvoyerEmailRefus(emailDestinataire string, prenom string, motif string) {
 	expediteur := "noreply@upcycleconnect.fr"
-	motDePasse := "voir avec ndoya"
+	motDePasse := "#Projet2026"
 	serveurSMTP := "192.168.80.10"
-	port := "25" // verif avec ndoya
+	port := "25"
 
 	auth := smtp.PlainAuth("", expediteur, motDePasse, serveurSMTP)
 
 	sujet := "Subject: UpcycleConnect - Information concernant votre inscription\n"
 	typeMIME := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
-
 	corpsMessage := fmt.Sprintf(`
 		<html>
 			<body style="font-family: Arial, sans-serif; color: #333;">
@@ -473,5 +559,40 @@ func EnvoyerEmailRefus(emailDestinataire string, prenom string, motif string) {
 		fmt.Printf("Erreur d'envoi d'e-mail de refus à %s : %v\n", emailDestinataire, err)
 		return
 	}
-	fmt.Printf("📧 E-mail de refus envoyé avec succès à %s\n", emailDestinataire)
+	fmt.Printf(" E-mail de refus envoyé avec succès à %s\n", emailDestinataire)
+}
+
+func EnvoyerEmailBannissement(emailDestinataire string, prenom string) {
+	expediteur := "noreply@upcycleconnect.fr"
+	motDePasse := "#Projet2026"
+	serveurSMTP := "192.168.80.10"
+	port := "25"
+
+	auth := smtp.PlainAuth("", expediteur, motDePasse, serveurSMTP)
+
+	sujet := "Subject: UpcycleConnect - Suspension de votre compte\n"
+	typeMIME := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
+	corpsMessage := fmt.Sprintf(`
+		<html>
+			<body style="font-family: Arial, sans-serif; color: #333;">
+				<h2>Bonjour %s,</h2>
+				<p>Nous vous informons que votre compte sur la plateforme <strong>UpcycleConnect</strong> a été <strong>suspendu</strong> par l'administration.</p>
+				<p>Cette décision fait suite au non-respect de nos conditions d'utilisation. Vous ne pouvez plus accéder à votre espace pour le moment.</p>
+				<p>Si vous pensez qu'il s'agit d'une erreur ou souhaitez contester cette décision, vous pouvez contacter notre équipe.</p>
+				<br>
+				<p>Cordialement,</p>
+				<p><em>L'équipe UpcycleConnect</em></p>
+			</body>
+		</html>
+	`, prenom)
+
+	messageComplet := []byte(sujet + typeMIME + corpsMessage)
+	adresseServeur := serveurSMTP + ":" + port
+
+	err := smtp.SendMail(adresseServeur, auth, expediteur, []string{emailDestinataire}, messageComplet)
+	if err != nil {
+		fmt.Printf("Erreur d'envoi d'e-mail de bannissement à %s : %v\n", emailDestinataire, err)
+		return
+	}
+	fmt.Printf(" E-mail de bannissement envoyé avec succès à %s\n", emailDestinataire)
 }

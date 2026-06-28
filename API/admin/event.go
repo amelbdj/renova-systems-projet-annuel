@@ -4,9 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"mime/multipart"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 	"upcycleconnect/bdd"
 	"upcycleconnect/models"
@@ -72,6 +75,16 @@ func ValidateEvenement(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("erreur", err)
 		return
 	}
+
+	var idSalarie int
+	var titre string
+	errInfo := bdd.Db.QueryRow("SELECT id_salarie, titre FROM evenement WHERE id = ?", id).Scan(&idSalarie, &titre)
+	if errInfo == nil && idSalarie != 0 {
+		msg := fmt.Sprintf("✅ Votre événement '%s' a été validé et est maintenant en ligne !", titre)
+		go SendPushNotification(strconv.Itoa(idSalarie), msg)
+		bdd.CreateNotification(idSalarie, msg)
+	}
+
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, "Evenement validée avec succès")
 }
@@ -97,11 +110,20 @@ func RefuseEvenement(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("erreur", err)
 		return
 	}
+
+	var idSalarie int
+	var titre string
+	errInfo := bdd.Db.QueryRow("SELECT id_salarie, titre FROM evenement WHERE id = ?", id).Scan(&idSalarie, &titre)
+	if errInfo == nil && idSalarie != 0 {
+		msg := fmt.Sprintf("❌ Votre événement '%s' a été refusé par un responsable.", titre)
+		go SendPushNotification(strconv.Itoa(idSalarie), msg)
+		bdd.CreateNotification(idSalarie, msg)
+	}
+
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, "Evenement refusée avec succès")
 }
 
-// 🟢 NOUVELLE FONCTION CREATEEVENEMENT
 func CreateEvenement(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
@@ -114,7 +136,6 @@ func CreateEvenement(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println("hello from CreateEvenement (Multipart Mode)")
 
-	// 1. Lire le formulaire (Max 10 Mo)
 	err := r.ParseMultipartForm(10 << 20)
 	if err != nil {
 		http.Error(w, "Erreur lors de la lecture du formulaire", http.StatusBadRequest)
@@ -122,7 +143,6 @@ func CreateEvenement(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 2. Extraire les champs texte manuellement
 	var Evenement models.Evenement
 	Evenement.IdSalarie, _ = strconv.Atoi(r.FormValue("idSalarie"))
 	Evenement.Titre = r.FormValue("titre")
@@ -133,8 +153,18 @@ func CreateEvenement(w http.ResponseWriter, r *http.Request) {
 	Evenement.Lieu = r.FormValue("lieu")
 	Evenement.NbPlaces, _ = strconv.Atoi(r.FormValue("capacite"))
 	Evenement.Prix, _ = strconv.ParseFloat(r.FormValue("tarif"), 64)
+	Evenement.PlanCours = r.FormValue("plan_cours")
 
-	// 3. Traiter le fichier image s'il existe
+	dateDebut, errDate := time.ParseInLocation("2006-01-02 15:04:05", Evenement.DateDebut, time.Local)
+	if errDate != nil {
+		http.Error(w, "Date de début invalide", http.StatusBadRequest)
+		return
+	}
+	if dateDebut.Before(time.Now()) {
+		http.Error(w, "Impossible de créer un événement à une date ou une heure déjà passée", http.StatusBadRequest)
+		return
+	}
+
 	file, handler, errFile := r.FormFile("image")
 	if errFile == nil {
 		defer file.Close()
@@ -152,15 +182,124 @@ func CreateEvenement(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// 4. Envoyer à la base de données
-	err = bdd.CreateEvenement(Evenement)
+	newId, err := bdd.CreateEvenement(Evenement)
 	if err != nil {
 		http.Error(w, "erreur de création de l'Evenement", http.StatusInternalServerError)
 		fmt.Println("erreur bdd.CreateEvenement :", err)
 		return
 	}
+
+	planFile, planHandler, errPlan := r.FormFile("plan_pdf")
+	if errPlan == nil {
+		defer planFile.Close()
+		urlPlan, errSave := enregistrerPdf(planFile, planHandler)
+		if errSave == nil {
+			bdd.CreateRessource(Evenement.IdSalarie, int(newId), "Plan du cours", urlPlan)
+		} else {
+			fmt.Println("Erreur enregistrement plan PDF :", errSave)
+		}
+	}
+
+	if r.MultipartForm != nil {
+		fichiers := r.MultipartForm.File["ressources"]
+		for i := 0; i < len(fichiers); i++ {
+			f, errOpen := fichiers[i].Open()
+			if errOpen != nil {
+				continue
+			}
+			urlRes, errSave := enregistrerPdf(f, fichiers[i])
+			f.Close()
+			if errSave == nil {
+				bdd.CreateRessource(Evenement.IdSalarie, int(newId), fichiers[i].Filename, urlRes)
+			} else {
+				fmt.Println("Erreur enregistrement ressource PDF :", errSave)
+			}
+		}
+	}
+
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, "Evenement créée avec succès")
+}
+
+func enregistrerPdf(file multipart.File, handler *multipart.FileHeader) (string, error) {
+	if strings.ToLower(filepath.Ext(handler.Filename)) != ".pdf" {
+		return "", fmt.Errorf("le fichier doit être au format PDF")
+	}
+	os.MkdirAll("./static/uploads/formations", os.ModePerm)
+	nomFichier := fmt.Sprintf("%d_%s", time.Now().UnixNano(), handler.Filename)
+	cheminComplet := "./static/uploads/formations/" + nomFichier
+
+	f, err := os.OpenFile(cheminComplet, os.O_WRONLY|os.O_CREATE, 0666)
+	if err != nil {
+		return "", err
+	}
+	defer f.Close()
+	io.Copy(f, file)
+	return "static/uploads/formations/" + nomFichier, nil
+}
+
+func GetInscritsEvenement(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		http.Error(w, "id invalide", http.StatusBadRequest)
+		return
+	}
+
+	inscrits, err := bdd.GetInscrits(id)
+	if err != nil {
+		http.Error(w, "erreur de récupération des inscrits", http.StatusInternalServerError)
+		fmt.Println("erreur", err)
+		return
+	}
+
+	response, err := json.Marshal(inscrits)
+	if err != nil {
+		http.Error(w, "erreur de conversion", 500)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	fmt.Fprintf(w, "%s", response)
+}
+
+func GetRessourcesEvenement(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		http.Error(w, "id invalide", http.StatusBadRequest)
+		return
+	}
+
+	ressources, err := bdd.GetRessources(id)
+	if err != nil {
+		http.Error(w, "erreur de récupération des ressources", http.StatusInternalServerError)
+		fmt.Println("erreur", err)
+		return
+	}
+
+	response, err := json.Marshal(ressources)
+	if err != nil {
+		http.Error(w, "erreur de conversion", 500)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	fmt.Fprintf(w, "%s", response)
 }
 
 func DeleteEvenement(w http.ResponseWriter, r *http.Request) {

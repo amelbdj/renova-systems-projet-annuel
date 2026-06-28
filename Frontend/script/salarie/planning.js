@@ -1,80 +1,74 @@
 if (!monToken || !userId) {
   window.location.href = "../login.html";
 }
-let tousMesEvenements = [];
-let dateAffichee = new Date(2026, 2, 1); // Mars 2026 (les mois JS commencent à 0)
-let dateSelectionnee = "";
 
-function parseDateSql(dateStr) {
-  if (!dateStr) return { isoDate: "", time: "00:00" };
+let mesEvenements = [];
+let dateAffichee = new Date();
 
-  let datePart = dateStr;
-  let timePart = "00:00";
-
-  if (dateStr.includes(" a ")) {
-    const parts = dateStr.split(" a ");
-    datePart = parts[0]; // "20/03/2026"
-    timePart = parts[1]; // "14:00"
-  }
-
-  if (datePart.includes("/")) {
-    const d = datePart.split("/");
-    if (d.length === 3) {
-      return { isoDate: `${d[2]}-${d[1]}-${d[0]}`, time: timePart };
-    }
-  }
-
-  return { isoDate: datePart.substring(0, 10), time: timePart };
+function initPlanningSalarie() {
+  fetchEvenementsSalarie();
 }
 
-function initPlanning() {
-  const btnPrev = document.getElementById("btn-prev-month");
-  const btnNext = document.getElementById("btn-next-month");
-
-  if (btnPrev) {
-    btnPrev.addEventListener("click", () => {
-      dateAffichee.setMonth(dateAffichee.getMonth() - 1);
-      genererJoursAvecEvenements();
-    });
-  }
-
-  if (btnNext) {
-    btnNext.addEventListener("click", () => {
-      dateAffichee.setMonth(dateAffichee.getMonth() + 1);
-      genererJoursAvecEvenements();
-    });
-  }
-
-  fetchEvenements();
-}
-
-function fetchEvenements() {
-  fetch(`http://localhost:8081/admin/evenements`, {
-    headers: { Authorization: "Bearer " + monToken },
+function fetchEvenementsSalarie() {
+  fetch(`${API_BASE_URL}/admin/evenements`, {
+    headers: {
+      Authorization: "Bearer " + monToken,
+    },
   })
-    .then((res) => {
-      if (!res.ok) throw new Error("Erreur réseau API");
-      return res.json();
+    .then(function (response) {
+      if (!response.ok) {
+        throw new Error("Erreur HTTP : " + response.status);
+      }
+      return response.json();
     })
-    .then((evenements) => {
-      if (!evenements) evenements = [];
+    .then(function (data) {
+      if (!data) data = [];
 
-      tousMesEvenements = evenements.filter((ev) => {
-        const statutEv = ev.statut_validation
+      mesEvenements = [];
+      for (let i = 0; i < data.length; i++) {
+        let ev = data[i];
+        let statut = ev.statut_validation
           ? ev.statut_validation.toLowerCase()
           : "";
-        return (
-          (statutEv === "valide" || statutEv === "en ligne") &&
-          (ev.idSalarie == userId || ev.id_salarie == userId)
-        );
-      });
+        let aMoi = ev.idSalarie == userId || ev.id_salarie == userId;
+        if ((statut === "valide" || statut === "en ligne") && aMoi) {
+          mesEvenements.push(ev);
+        }
+      }
 
-      genererJoursAvecEvenements();
+      genererGrilleMois();
     })
-    .catch((err) => console.error("Erreur chargement:", err));
+    .catch(function (error) {
+      console.error("Erreur lors du fetch :", error);
+    });
 }
 
-function genererJoursAvecEvenements() {
+window.changerMois = function (direction) {
+  dateAffichee.setMonth(dateAffichee.getMonth() + direction);
+  genererGrilleMois();
+};
+
+function getJourEvenement(ev) {
+  let datePart = ev.date_debut || "";
+  if (datePart.indexOf(" a ") !== -1) {
+    datePart = datePart.split(" a ")[0];
+  }
+  return datePart;
+}
+
+function getHeureEvenement(ev) {
+  let s = ev.date_debut || "";
+  if (s.indexOf(" a ") !== -1) {
+    return s.split(" a ")[1];
+  }
+  return "";
+}
+
+function genererGrilleMois() {
+  const grid = document.querySelector(".cal-grid");
+  const list = document.querySelector(".ev-list");
+  if (!grid || !list) return;
+
   const moisNoms = [
     "Janvier",
     "Février",
@@ -89,154 +83,222 @@ function genererJoursAvecEvenements() {
     "Novembre",
     "Décembre",
   ];
-  const joursNoms = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"]; // Dimanche est 0 en JS
+  const joursShort = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"];
 
-  const annee = dateAffichee.getFullYear();
   const moisIndex = dateAffichee.getMonth();
-  const moisStr = String(moisIndex + 1).padStart(2, "0");
+  const annee = dateAffichee.getFullYear();
 
-  const titreMois = document.querySelector(".week-month");
-  if (titreMois) titreMois.textContent = `${moisNoms[moisIndex]} ${annee}`;
-
-  let datesDuMois = new Set();
-
-  tousMesEvenements.forEach((ev) => {
-    const dateEv = parseDateSql(ev.date_debut).isoDate;
-
-    if (dateEv.startsWith(`${annee}-${moisStr}`)) {
-      datesDuMois.add(dateEv);
-    }
-  });
-
-  const datesTriees = Array.from(datesDuMois).sort();
-
-  const conteneurJours = document.querySelector(".week-days");
-  if (!conteneurJours) return;
-  conteneurJours.innerHTML = "";
-
-  if (datesTriees.length === 0) {
-    conteneurJours.innerHTML = `<div style="color:var(--txt-d); padding:10px 20px; font-size:14px;">Aucun événement prévu en ${moisNoms[moisIndex]}.</div>`;
-
-    const timelineContainer = document.querySelector(".timeline");
-    if (timelineContainer) timelineContainer.innerHTML = "";
-
-    const titreTimeline = document.querySelector(".card-ht");
-    if (titreTimeline)
-      titreTimeline.innerHTML = `<div class="cht-i" style="background: rgba(240, 106, 170, 0.1)">🗓️</div> Mois vide`;
-
-    return;
+  const labelMois = document.getElementById("labelCurrentMonth");
+  if (labelMois) {
+    labelMois.textContent = moisNoms[moisIndex] + " " + annee;
   }
 
-  if (!datesTriees.includes(dateSelectionnee)) {
-    dateSelectionnee = datesTriees[0];
+  while (grid.children.length > 7) {
+    grid.removeChild(grid.lastChild);
+  }
+  list.innerHTML = "";
+
+  let premierJour = new Date(annee, moisIndex, 1).getDay();
+  premierJour = premierJour === 0 ? 6 : premierJour - 1;
+  const nbJoursMois = new Date(annee, moisIndex + 1, 0).getDate();
+
+  for (let i = 0; i < premierJour; i++) {
+    const divEmpty = document.createElement("div");
+    divEmpty.className = "cal-d empty";
+    grid.appendChild(divEmpty);
   }
 
-  datesTriees.forEach((dateStr) => {
-    const anneeJour = parseInt(dateStr.substring(0, 4));
-    const moisJour = parseInt(dateStr.substring(5, 7)) - 1;
-    const jourDuMois = parseInt(dateStr.substring(8, 10));
+  for (let j = 1; j <= nbJoursMois; j++) {
+    const divJour = document.createElement("div");
+    divJour.className = "cal-d";
+    divJour.textContent = j;
 
-    const dateObj = new Date(anneeJour, moisJour, jourDuMois);
-    const nomJour = joursNoms[dateObj.getDay()];
+    const jourStr = String(j).padStart(2, "0");
+    const moisStr = String(moisIndex + 1).padStart(2, "0");
+    const dateKey = jourStr + "/" + moisStr + "/" + annee;
 
-    const jourDiv = document.createElement("div");
-    jourDiv.className = "wday";
-
-    let dotHtml = `<div class="wdot" style="background: var(--vi)"></div>`;
-
-    if (dateStr === dateSelectionnee) {
-      jourDiv.classList.add("today");
-    }
-
-    jourDiv.innerHTML = `
-        <div class="wday-num">${jourDuMois}</div>
-        <div class="wday-name">${nomJour}</div>
-        <div class="wday-dots">${dotHtml}</div>
-    `;
-
-    jourDiv.addEventListener("click", () => {
-      document
-        .querySelectorAll(".wday")
-        .forEach((j) => j.classList.remove("today"));
-      jourDiv.classList.add("today");
-
-      dateSelectionnee = dateStr;
-
-      const titreTimeline = document.querySelector(".card-ht");
-      if (titreTimeline) {
-        titreTimeline.innerHTML = `
-            <div class="cht-i" style="background: rgba(240, 106, 170, 0.1)">🗓️</div> 
-            ${nomJour} ${jourDuMois} ${moisNoms[moisIndex]} ${annee}
-        `;
-      }
-
-      afficherTimeline(dateSelectionnee);
+    const evenementsDuJour = mesEvenements.filter(function (ev) {
+      return getJourEvenement(ev) === dateKey;
     });
 
-    conteneurJours.appendChild(jourDiv);
-  });
+    if (evenementsDuJour.length > 0) {
+      divJour.classList.add("has");
 
-  const premierJourCree = document.querySelector(".wday.today");
-  if (premierJourCree) {
-    premierJourCree.click();
+      evenementsDuJour.forEach(function (ev) {
+        let cssColor = "bl";
+        let typeTxt = (ev.type || "").toLowerCase();
+        if (typeTxt === "formation") cssColor = "bl";
+        else if (typeTxt === "atelier") cssColor = "gr";
+        else if (typeTxt === "reunion") cssColor = "am";
+
+        const heure = getHeureEvenement(ev);
+        const lieuTxt = ev.lieu ? ev.lieu : "Lieu non précisé";
+        const dObj = new Date(annee, moisIndex, j);
+        const nomJour = joursShort[dObj.getDay()];
+
+        list.innerHTML += `
+                    <div class="ev ${cssColor}" onclick="ouvrirDetailEvent(${ev.id})" style="cursor: pointer;">
+                        <div class="ev-time">${nomJour} ${j}<br>${heure}</div>
+                        <div>
+                            <div class="ev-title">${ev.titre}</div>
+                            <div class="ev-meta">📍 ${lieuTxt} · <strong>${ev.type || "Événement"}</strong></div>
+                        </div>
+                    </div>
+                `;
+      });
+    }
+
+    grid.appendChild(divJour);
+  }
+
+  if (list.innerHTML === "") {
+    list.innerHTML =
+      '<div style="color:var(--txt-m); text-align:center; padding: 20px;">Aucune activité ce mois-ci.</div>';
   }
 }
 
-function afficherTimeline(dateCible) {
-  const eventsDuJour = tousMesEvenements.filter((ev) => {
-    const dateEv = parseDateSql(ev.date_debut).isoDate;
-    return dateEv === dateCible;
-  });
+window.ouvrirDetailEvent = function (id) {
+  let evt = null;
+  for (let i = 0; i < mesEvenements.length; i++) {
+    if (mesEvenements[i].id == id) {
+      evt = mesEvenements[i];
+    }
+  }
+  if (!evt) return;
 
-  eventsDuJour.sort((a, b) => {
-    const timeA = parseDateSql(a.date_debut).time;
-    const timeB = parseDateSql(b.date_debut).time;
-    return timeA.localeCompare(timeB);
-  });
+  document.getElementById("detail-titre").textContent = evt.titre;
 
-  const timelineContainer = document.querySelector(".timeline");
-  if (!timelineContainer) return;
-  timelineContainer.innerHTML = "";
+  let html = "";
+  html += "<p><strong>Type :</strong> " + (evt.type || "Événement") + "</p>";
+  html +=
+    "<p><strong>Statut :</strong> " + (evt.statut_validation || "") + "</p>";
+  html += "<p><strong>Début :</strong> " + (evt.date_debut || "") + "</p>";
+  html += "<p><strong>Fin :</strong> " + (evt.date_fin || "") + "</p>";
+  html +=
+    "<p><strong>Lieu :</strong> " +
+    (evt.lieu ? evt.lieu : "Non précisé") +
+    "</p>";
+  html += "<p><strong>Places :</strong> " + (evt.nb_places || 0) + "</p>";
+  html +=
+    "<p><strong>Tarif :</strong> " +
+    (evt.prix ? evt.prix + " €" : "Gratuit") +
+    "</p>";
+  html +=
+    "<p style='margin-top:12px;'>" +
+    (evt.description || "Pas de description.") +
+    "</p>";
 
-  eventsDuJour.forEach((ev) => {
-    const typeStr = ((ev.type || "") + " " + (ev.titre || "")).toLowerCase();
-    let colorClass = "vi";
+  if (evt.plan_cours && evt.plan_cours !== "") {
+    html +=
+      "<p style='margin-top:12px;'><strong>Plan du cours :</strong><br>" +
+      evt.plan_cours +
+      "</p>";
+  }
 
-    if (typeStr.includes("formation")) colorClass = "vi";
-    else if (typeStr.includes("réunion") || typeStr.includes("reunion"))
-      colorClass = "pink";
-    else if (typeStr.includes("atelier")) colorClass = "teal";
-    else if (typeStr.includes("admin")) colorClass = "amber";
+  html +=
+    "<div style='margin-top:14px;'>" +
+    "<strong>Ressources</strong>" +
+    "<div id='detail-ressources' style='margin-top:8px;'>Chargement...</div>" +
+    "</div>";
 
-    const lieuTxt = ev.lieu ? ` · ${ev.lieu}` : "";
+  html +=
+    "<div style='margin-top:18px; border-top:1px solid var(--b0); padding-top:14px;'>" +
+    "<strong>Personnes inscrites</strong>" +
+    "<div id='detail-inscrits' style='margin-top:8px;'>Chargement...</div>" +
+    "</div>";
 
-    const heureDebut = parseDateSql(ev.date_debut).time;
-    const heureFin = parseDateSql(ev.date_fin).time;
+  document.getElementById("detail-body").innerHTML = html;
+  document.getElementById("detailModal").style.display = "flex";
 
-    const blocHTML = `
-        <div class="tl-hour">
-            <div class="tl-time">${heureDebut}</div>
-            <div class="tl-col">
-                <div class="tl-event tl-ev ${colorClass}">
-                    <div class="tl-ev-title">${ev.titre}</div>
-                    <div class="tl-ev-meta">
-                        ${heureDebut} – ${heureFin}${lieuTxt}
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-    timelineContainer.innerHTML += blocHTML;
-  });
+  chargerRessources(evt.id);
+  chargerInscrits(evt.id);
+};
 
-  timelineContainer.innerHTML += `
-    <div class="tl-hour">
-        <div class="tl-time">17:00</div>
-        <div class="tl-col">
-            <div style="font-size: 12px; color: var(--txt-d); padding: 8px 0;">Fin de journée</div>
-        </div>
-    </div> 
-  `;
+function chargerRessources(id) {
+  fetch(`${API_BASE_URL}/admin/evenements/ressources/` + id, {
+    headers: {
+      Authorization: "Bearer " + monToken,
+    },
+  })
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (ressources) {
+      let zone = document.getElementById("detail-ressources");
+      if (!zone) return;
+
+      if (!ressources || ressources.length === 0) {
+        zone.innerHTML =
+          "<p style='color:var(--txt-d);'>Aucune ressource pour cette formation.</p>";
+        return;
+      }
+
+      let liste = "";
+      for (let i = 0; i < ressources.length; i++) {
+        liste +=
+          "<p style='margin:4px 0;'><a href='" +
+          API_BASE_URL + "/" + ressources[i].url_fichier +
+          "' target='_blank' style='color:#fff; background:var(--vi); padding:6px 12px; border-radius:6px; text-decoration:none;'>???? " +
+          ressources[i].titre +
+          "</a></p>";
+      }
+      zone.innerHTML = liste;
+    })
+    .catch(function (error) {
+      let zone = document.getElementById("detail-ressources");
+      if (zone) {
+        zone.innerHTML =
+          "<p style='color:var(--txt-d);'>Erreur lors du chargement des ressources.</p>";
+      }
+      console.error(error);
+    });
 }
 
-document.addEventListener("DOMContentLoaded", initPlanning);
+function chargerInscrits(id) {
+  fetch(`${API_BASE_URL}/admin/evenements/inscrits/` + id, {
+    headers: {
+      Authorization: "Bearer " + monToken,
+    },
+  })
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (inscrits) {
+      let zone = document.getElementById("detail-inscrits");
+      if (!zone) return;
+
+      if (!inscrits || inscrits.length === 0) {
+        zone.innerHTML =
+          "<p style='color:var(--txt-d);'>Aucune personne inscrite pour le moment.</p>";
+        return;
+      }
+
+      let liste = "<ul style='margin:0; padding-left:18px;'>";
+      for (let i = 0; i < inscrits.length; i++) {
+        liste +=
+          "<li>" +
+          inscrits[i].prenom +
+          " " +
+          inscrits[i].nom +
+          " — " +
+          inscrits[i].email +
+          "</li>";
+      }
+      liste += "</ul>";
+      zone.innerHTML = liste;
+    })
+    .catch(function (error) {
+      let zone = document.getElementById("detail-inscrits");
+      if (zone) {
+        zone.innerHTML =
+          "<p style='color:var(--txt-d);'>Erreur lors du chargement des inscrits.</p>";
+      }
+      console.error(error);
+    });
+}
+
+window.fermerDetailEvent = function () {
+  document.getElementById("detailModal").style.display = "none";
+};
+
+document.addEventListener("DOMContentLoaded", initPlanningSalarie);

@@ -176,7 +176,6 @@ func PaymentAnnonce(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]string{"url": s.URL})
 }
 
-// Nouvelle route pour l'application Android
 func PaymentIntentMobile(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
@@ -191,7 +190,6 @@ func PaymentIntentMobile(w http.ResponseWriter, r *http.Request) {
 	annonceID, _ := strconv.Atoi(r.URL.Query().Get("annonce_id"))
 	var prix float64
 	var stripeAccountIDSeller string
-
 	query := `
         SELECT a.prix, u.stripe_account_id 
         FROM pa2026.annonce a 
@@ -208,7 +206,6 @@ func PaymentIntentMobile(w http.ResponseWriter, r *http.Request) {
 	unitAmount := int64(prix * 100)
 	commission := (unitAmount * 5) / 100
 
-	// Au lieu d'une session Web, on crée une intention de paiement silencieuse
 	params := &stripe.PaymentIntentParams{
 		Amount:               stripe.Int64(unitAmount),
 		Currency:             stripe.String(string(stripe.CurrencyEUR)),
@@ -217,7 +214,7 @@ func PaymentIntentMobile(w http.ResponseWriter, r *http.Request) {
 			Destination: stripe.String(stripeAccountIDSeller),
 		},
 		AutomaticPaymentMethods: &stripe.PaymentIntentAutomaticPaymentMethodsParams{
-			Enabled: stripe.Bool(true), // Nécessaire pour le SDK Android
+			Enabled: stripe.Bool(true),
 		},
 	}
 
@@ -227,7 +224,6 @@ func PaymentIntentMobile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// On renvoie le secret au téléphone Android !
 	json.NewEncoder(w).Encode(map[string]string{
 		"client_secret": pi.ClientSecret,
 	})
@@ -253,17 +249,14 @@ func CreateEventCheckoutSession(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 1. Récupération des informations de l'événement et du créateur
 	var titre string
 	var prix float64
 	var stripeAccountId string
-
 	err := bdd.Db.QueryRow(`
 		SELECT e.titre, e.prix, u.stripe_account_id 
 		FROM evenement e 
 		JOIN utilisateur u ON e.id_salarie = u.id 
 		WHERE e.id = ?`, req.IdEvent).Scan(&titre, &prix, &stripeAccountId)
-
 	if err != nil {
 		http.Error(w, "Événement introuvable", http.StatusNotFound)
 		return
@@ -276,7 +269,6 @@ func CreateEventCheckoutSession(w http.ResponseWriter, r *http.Request) {
 	commissionCentimes := int64(float64(unitAmount) * 0.05) // 5% pour Stripe
 	commissionEuros := prix * 0.05                          // 5% pour la BDD
 
-	// 3. Création de la session Stripe
 	params := &stripe.CheckoutSessionParams{
 		PaymentMethodTypes: stripe.StringSlice([]string{"card"}),
 		LineItems: []*stripe.CheckoutSessionLineItemParams{
@@ -301,7 +293,6 @@ func CreateEventCheckoutSession(w http.ResponseWriter, r *http.Request) {
 		SuccessURL: stripe.String("http://localhost:8081/evenement.html?paiement=success"),
 		CancelURL:  stripe.String("http://localhost:8081/evenement.html?paiement=cancel"),
 	}
-
 	params.AddMetadata("id_event", strconv.Itoa(req.IdEvent))
 	params.AddMetadata("id_user", strconv.Itoa(req.IdUser))
 
@@ -320,13 +311,11 @@ func CreateEventCheckoutSession(w http.ResponseWriter, r *http.Request) {
 	if errOrder != nil {
 		fmt.Printf("ERREUR INSERTION ORDER : %v\n", errOrder)
 	} else {
-		// On récupère l'ID généré pour cette nouvelle commande
+
 		idCommandeCreee, _ := result.LastInsertId()
 		fmt.Printf("Commande %d créée avec %.2f€ de commission !\n", idCommandeCreee, commissionEuros)
 
-		// 5. ÉTAPE BDD 2 : Liaison avec Stripe dans la table `paiement` (sans le "e")
 		queryPaiement := "INSERT INTO paiement (id_commande, stripe_id, statut) VALUES (?, ?, ?)"
-
 		_, errPaiement := bdd.Db.Exec(queryPaiement, idCommandeCreee, s.ID, "pending")
 		if errPaiement != nil {
 			fmt.Printf("ERREUR INSERTION PAIMENT : %v\n", errPaiement)
@@ -335,7 +324,6 @@ func CreateEventCheckoutSession(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// 6. Réponse envoyée au front-end
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]string{"checkout_url": s.URL})
 }

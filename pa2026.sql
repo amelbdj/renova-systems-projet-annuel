@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS `annonce` (
   `id_box` int DEFAULT NULL,
   `photo_url` varchar(255) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `statut_vente` enum('EN VENTE','EN ATTENTE DEPOT','RESERVEE') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT 'EN VENTE',
+  `statut_vente` enum('EN VENTE','EN ATTENTE DEPOT','RESERVEE','EN BOX','EN ATTENTE DE RECUPERATION','RECUPERE','VENDU') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT 'EN VENTE',
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_annonce` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -308,8 +308,11 @@ CREATE TABLE IF NOT EXISTS `evenement` (
   `nb_places` int DEFAULT NULL,
   `statut_validation` varchar(20) DEFAULT NULL,
   `format` varchar(20) DEFAULT NULL,
-  `type` enum('evenement','formation') DEFAULT NULL,
+  `type` enum('evenement','formation','atelier','reunion') DEFAULT NULL,
   `lieu` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '0',
+  `prix` int DEFAULT '0',
+  `image_url` varchar(255) DEFAULT NULL,
+  `plan_cours` text,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_event` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -445,6 +448,25 @@ CREATE TABLE IF NOT EXISTS `notification` (
 -- --------------------------------------------------------
 
 --
+-- Structure de la table `order`
+--
+
+DROP TABLE IF EXISTS `order`;
+CREATE TABLE IF NOT EXISTS `order` (
+  `id_commande` bigint UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_acheteur` int DEFAULT NULL,
+  `id_annonce` int DEFAULT NULL,
+  `montant_total` decimal(10,2) DEFAULT NULL,
+  `commission` decimal(10,2) DEFAULT NULL,
+  `date_commande` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `type` varchar(20) DEFAULT 'annonce',
+  PRIMARY KEY (`id_commande`),
+  UNIQUE KEY `id_commande` (`id_commande`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Structure de la table `paiement`
 --
 
@@ -519,6 +541,7 @@ CREATE TABLE IF NOT EXISTS `ressource_pedagogique` (
   `id_salarie` int DEFAULT NULL,
   `titre` varchar(150) DEFAULT NULL,
   `url_fichier` varchar(255) DEFAULT NULL,
+  `id_event` int DEFAULT NULL,
   PRIMARY KEY (`id_ressource`),
   UNIQUE KEY `id_ressource` (`id_ressource`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

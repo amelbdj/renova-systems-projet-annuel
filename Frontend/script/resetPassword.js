@@ -50,7 +50,7 @@ async function submitReset() {
   }
 
   try {
-    const reponse = await fetch("http://localhost:8081/auth/reset-password", {
+    const reponse = await fetch(API_BASE_URL + "/auth/reset-password", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

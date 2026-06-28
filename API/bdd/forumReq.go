@@ -32,8 +32,8 @@ func GetForumMessages(filtre string) ([]models.MessageForum, error) {
 	for rows.Next() {
 		var msg models.MessageForum
 		err := rows.Scan(
-			&msg.IdMessage, &msg.IdTopic, &msg.IdUser, &msg.Contenu, 
-			&msg.EstModere, &msg.EstSignale, &msg.DateCreation, 
+			&msg.IdMessage, &msg.IdTopic, &msg.IdUser, &msg.Contenu,
+			&msg.EstModere, &msg.EstSignale, &msg.DateCreation,
 			&msg.NomAuteur, &msg.PrenomAuteur, &msg.TitreTopic,
 		)
 		if err != nil {
@@ -50,10 +50,10 @@ func ModerateForumMessage(idMessage int, action string) error {
 
 	switch action {
 	case "approuver":
-		// Si 'approuver' signifie qu'on le laisse visible, on peut simplement remettre est_signale à 0
+
 		requete = "UPDATE pa2026.message_forum SET est_modere = 0, est_signale = 0 WHERE id_message = ?"
 	case "masquer":
-		// Masquer passe le statut à 1 pour l'isoler des requêtes clients standard
+
 		requete = "UPDATE pa2026.message_forum SET est_modere = 1 WHERE id_message = ?"
 	default:
 		return fmt.Errorf("action de modération inconnue")
@@ -104,10 +104,10 @@ func GetAllTopics() ([]models.ForumTopic, error) {
 }
 
 func GetMessagesByTopicClient(topicId int) ([]models.MessageForum, error) {
-    // 🟢 RÈGLE DE SÉCURITÉ : Initialisation explicite sous forme de tableau vide pour éviter les retours null
-    messages := []models.MessageForum{}
 
-    rows, err := Db.Query(`
+	messages := []models.MessageForum{}
+
+	rows, err := Db.Query(`
         SELECT m.id_message, m.id_topic, m.id_user, m.contenu, m.est_modere, m.est_signale, 
                DATE_FORMAT(m.date_creation, '%d-%m-%Y à %H:%i'), 
                COALESCE(u.nom, 'Anonyme'), COALESCE(u.prenom, 'Utilisateur'), COALESCE(t.titre, 'Topic inconnu')
@@ -118,25 +118,25 @@ func GetMessagesByTopicClient(topicId int) ([]models.MessageForum, error) {
         ORDER BY m.date_creation ASC
     `, topicId)
 
-    if err != nil {
-        return nil, fmt.Errorf("erreur récupération messages du topic : %v", err)
-    }
-    defer rows.Close()
+	if err != nil {
+		return nil, fmt.Errorf("erreur récupération messages du topic : %v", err)
+	}
+	defer rows.Close()
 
-    for rows.Next() {
-        var msg models.MessageForum
-        err := rows.Scan(
-            &msg.IdMessage, &msg.IdTopic, &msg.IdUser, &msg.Contenu, 
-            &msg.EstModere, &msg.EstSignale, &msg.DateCreation, 
-            &msg.NomAuteur, &msg.PrenomAuteur, &msg.TitreTopic,
-        )
-        if err != nil {
-            return nil, fmt.Errorf("erreur scan message topic : %v", err)
-        }
-        messages = append(messages, msg)
-    }
+	for rows.Next() {
+		var msg models.MessageForum
+		err := rows.Scan(
+			&msg.IdMessage, &msg.IdTopic, &msg.IdUser, &msg.Contenu,
+			&msg.EstModere, &msg.EstSignale, &msg.DateCreation,
+			&msg.NomAuteur, &msg.PrenomAuteur, &msg.TitreTopic,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("erreur scan message topic : %v", err)
+		}
+		messages = append(messages, msg)
+	}
 
-    return messages, nil
+	return messages, nil
 }
 
 func AjouterMessageForum(topicId int, userId int, contenu string) error {

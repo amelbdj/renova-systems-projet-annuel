@@ -13,13 +13,13 @@ import (
 )
 
 func GetAllArticles(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Access-Control-Allow-Origin", "*")
-    w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
-    w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 	if r.Method == "OPTIONS" {
-        w.WriteHeader(http.StatusOK)
-        return
-    }
+		w.WriteHeader(http.StatusOK)
+		return
+	}
 
 	searchWord := r.URL.Query().Get("search")
 	articles, err := bdd.GetArticles(searchWord)
@@ -28,37 +28,37 @@ func GetAllArticles(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-    response, err := json.Marshal(articles)
-    if err != nil {
-        http.Error(w, "Erreur JSON", http.StatusInternalServerError)
-        return
-    }
+	response, err := json.Marshal(articles)
+	if err != nil {
+		http.Error(w, "Erreur JSON", http.StatusInternalServerError)
+		return
+	}
 
-    w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(http.StatusOK)
-    w.Write(response)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(response)
 }
 
 func GetArticlesBySalarie(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-    w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
-    w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 	if r.Method == "OPTIONS" {
-        w.WriteHeader(http.StatusOK)
-        return
-    }
+		w.WriteHeader(http.StatusOK)
+		return
+	}
 
-    salarieId, err := strconv.Atoi(r.PathValue("id"))
-    if err != nil {
-        http.Error(w, "ID invalide", http.StatusBadRequest)
-        return
-    }
+	salarieId, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		http.Error(w, "ID invalide", http.StatusBadRequest)
+		return
+	}
 
-    articles, err := bdd.GetArticlesBySalarie(salarieId)
+	articles, err := bdd.GetArticlesBySalarie(salarieId)
 	if err != nil {
 		http.Error(w, "Erreur serveur", http.StatusInternalServerError)
 		return
-	}	
+	}
 
 	if articles == nil {
 		articles = []models.Article{}
@@ -72,12 +72,12 @@ func GetArticlesBySalarie(w http.ResponseWriter, r *http.Request) {
 
 func DeleteArticle(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-    w.Header().Set("Access-Control-Allow-Methods", "DELETE, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Methods", "DELETE, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 	if r.Method == "OPTIONS" {
-        w.WriteHeader(http.StatusOK)
-        return 
-    }
+		w.WriteHeader(http.StatusOK)
+		return
+	}
 
 	articleId, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
@@ -90,7 +90,7 @@ func DeleteArticle(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Erreur serveur", http.StatusInternalServerError)
 		return
 	}
-	
+
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
 	fmt.Fprintln(w, `{"message":"article suppr"}`)
@@ -102,9 +102,9 @@ func ValidateArticle(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 	if r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
-		return 
+		return
 	}
-	
+
 	articleId, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
 		http.Error(w, "ID invalide", http.StatusBadRequest)
@@ -118,7 +118,7 @@ func ValidateArticle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if errGet == nil && article.IdSalarie != 0 { 
+	if errGet == nil && article.IdSalarie != 0 {
 		msg := fmt.Sprintf("✅ Super ! Ton article '%s' a été validé et publié.", article.Titre)
 		go SendPushNotification(strconv.Itoa(article.IdSalarie), msg)
 	}
@@ -130,19 +130,19 @@ func ValidateArticle(w http.ResponseWriter, r *http.Request) {
 
 func RefuseArticle(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-    w.Header().Set("Access-Control-Allow-Methods", "PUT, OPTIONS")
-    w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-    if r.Method == "OPTIONS" {
-        w.WriteHeader(http.StatusOK)
-        return 
-    }
+	w.Header().Set("Access-Control-Allow-Methods", "PUT, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
 
 	articleId, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
 		http.Error(w, "ID invalide", http.StatusBadRequest)
 		return
 	}
-	
+
 	err = bdd.RefuseArticle(articleId)
 	if err != nil {
 		http.Error(w, "Erreur refus", http.StatusInternalServerError)
@@ -156,12 +156,12 @@ func RefuseArticle(w http.ResponseWriter, r *http.Request) {
 
 func ModifyArticle(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-    w.Header().Set("Access-Control-Allow-Methods", "PUT, OPTIONS")
-    w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-    if r.Method == "OPTIONS" {
-        w.WriteHeader(http.StatusOK)
-        return 
-    }
+	w.Header().Set("Access-Control-Allow-Methods", "PUT, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
 
 	action := r.PathValue("action")
 	id, err := strconv.Atoi(r.PathValue("id"))
@@ -170,31 +170,30 @@ func ModifyArticle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-    // 🟢 LECTURE DU FORMULAIRE MULTIPART (Texte + Image)
-    errParse := r.ParseMultipartForm(10 << 20)
-    if errParse != nil {
-        http.Error(w, "Impossible de lire le formulaire", http.StatusBadRequest)
-        return
-    }
+	errParse := r.ParseMultipartForm(10 << 20)
+	if errParse != nil {
+		http.Error(w, "Impossible de lire le formulaire", http.StatusBadRequest)
+		return
+	}
 
-    titre := r.FormValue("titre")
-    contenu := r.FormValue("contenu")
-    articleType := r.FormValue("type")
+	titre := r.FormValue("titre")
+	contenu := r.FormValue("contenu")
+	articleType := r.FormValue("type")
 
-    imageUrl := ""
-    file, handler, errFile := r.FormFile("image")
-    if errFile == nil {
-        defer file.Close()
-        os.MkdirAll("./static/uploads/articles", os.ModePerm)
-        fileName := fmt.Sprintf("%d_%s", time.Now().Unix(), handler.Filename)
-        path := "./static/uploads/articles/" + fileName
-        f, errCreate := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, 0666)
-        if errCreate == nil {
-            defer f.Close()
-            io.Copy(f, file)
-            imageUrl = "static/uploads/articles/" + fileName
-        }
-    }
+	imageUrl := ""
+	file, handler, errFile := r.FormFile("image")
+	if errFile == nil {
+		defer file.Close()
+		os.MkdirAll("./static/uploads/articles", os.ModePerm)
+		fileName := fmt.Sprintf("%d_%s", time.Now().Unix(), handler.Filename)
+		path := "./static/uploads/articles/" + fileName
+		f, errCreate := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, 0666)
+		if errCreate == nil {
+			defer f.Close()
+			io.Copy(f, file)
+			imageUrl = "static/uploads/articles/" + fileName
+		}
+	}
 
 	err = bdd.ModifyArticle(id, titre, contenu, articleType, action, imageUrl)
 	if err != nil {
@@ -202,64 +201,62 @@ func ModifyArticle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-    w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(http.StatusOK)
-    w.Write([]byte(`{"message": "article modifié avec succès"}`))
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(`{"message": "article modifié avec succès"}`))
 }
 
 func CreateArticle(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-    w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-    w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-    if r.Method == "OPTIONS" {
-        w.WriteHeader(http.StatusOK)
-        return 
-    }
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
 
 	action := r.PathValue("action")
-    
-    // 🟢 LECTURE DU FORMULAIRE MULTIPART (Texte + Image)
-    err := r.ParseMultipartForm(10 << 20)
-    if err != nil {
-        http.Error(w, "Impossible de lire le formulaire", http.StatusBadRequest)
-        return
-    }
 
-    idSalarie, _ := strconv.Atoi(r.FormValue("id_salarie"))
-
-    article := models.Article{
-        IdSalarie: idSalarie,
-        Titre:     r.FormValue("titre"),
-        Contenu:   r.FormValue("contenu"),
-        Type:      r.FormValue("type"),
-    }
-
-    // 🟢 GESTION UPLOAD IMAGE
-    file, handler, errFile := r.FormFile("image")
-    if errFile == nil {
-        defer file.Close()
-        os.MkdirAll("./static/uploads/articles", os.ModePerm) // Créer dossier si besoin
-        fileName := fmt.Sprintf("%d_%s", time.Now().Unix(), handler.Filename)
-        path := "./static/uploads/articles/" + fileName
-        f, errCreate := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, 0666)
-        if errCreate == nil {
-            defer f.Close()
-            io.Copy(f, file)
-            article.ImageUrl = "static/uploads/articles/" + fileName
-        }
-    }
-
-    err = bdd.CreateArticle(article, action)
+	err := r.ParseMultipartForm(10 << 20)
 	if err != nil {
-        http.Error(w, err.Error(), http.StatusInternalServerError)
-        return
+		http.Error(w, "Impossible de lire le formulaire", http.StatusBadRequest)
+		return
+	}
+
+	idSalarie, _ := strconv.Atoi(r.FormValue("id_salarie"))
+
+	article := models.Article{
+		IdSalarie: idSalarie,
+		Titre:     r.FormValue("titre"),
+		Contenu:   r.FormValue("contenu"),
+		Type:      r.FormValue("type"),
+	}
+
+	file, handler, errFile := r.FormFile("image")
+	if errFile == nil {
+		defer file.Close()
+		os.MkdirAll("./static/uploads/articles", os.ModePerm)
+		fileName := fmt.Sprintf("%d_%s", time.Now().Unix(), handler.Filename)
+		path := "./static/uploads/articles/" + fileName
+		f, errCreate := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, 0666)
+		if errCreate == nil {
+			defer f.Close()
+			io.Copy(f, file)
+			article.ImageUrl = "static/uploads/articles/" + fileName
+		}
+	}
+
+	err = bdd.CreateArticle(article, action)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	NotifyAllAdmins("Un nouvel article attend votre relecture.")
-    
-    w.Header().Set("Content-Type", "application/json") 
-    w.WriteHeader(http.StatusCreated)
-    w.Write([]byte(`{"message": "article créé"}`))               
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	w.Write([]byte(`{"message": "article créé"}`))
 }
 
 func GetArticleById(w http.ResponseWriter, r *http.Request) {

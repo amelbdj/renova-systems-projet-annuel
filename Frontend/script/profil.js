@@ -43,7 +43,7 @@ async function loadUserProfile() {
   if (!userId) return;
 
   try {
-    const res = await fetch(`http://localhost:8081/user/profile?id=${userId}`, {
+    const res = await fetch(`${API_BASE_URL}/user/profile?id=${userId}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -64,11 +64,11 @@ async function loadUserProfile() {
       const role = user.role.toLowerCase();
 
       if (role.includes("salari")) {
-        linkDash.href = "salarie_dashboard.html"; // Ajuste le nom exact de ta page Salarié
+        linkDash.href = "salarie_dashboard.html"; 
       } else if (role.includes("admin")) {
-        linkDash.href = "admin.html"; // Ajuste le nom exact de ta page Admin
+        linkDash.href = "admin.html"; 
       } else {
-        linkDash.href = "espClient.html"; // Page par défaut (Particulier/Pro)
+        linkDash.href = "espClient.html"; 
       }
     }
 
@@ -100,7 +100,7 @@ async function stripeConnect() {
 
   try {
     const res = await fetch(
-      `http://localhost:8081/admin/connect-stripe?id=${userId}`,
+      `${API_BASE_URL}/admin/connect-stripe?id=${userId}`,
       {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },

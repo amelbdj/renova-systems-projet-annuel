@@ -10,7 +10,7 @@ func GetAnnonces() ([]models.Annonce, error) {
 
 	var Annonces []models.Annonce
 
-	rows, err := Db.Query("SELECT DATE_FORMAT(a.created_at, '%d-%m-%Y') as created_at, a.id, a.titre, a.description, a.type, a.prix, a.statut_validation, a.code_postal, a.ville, a.etat, a.poids, a.quantite, a.image, u.nom, u.prenom, c.libelle FROM pa2026.annonce a INNER JOIN pa2026.utilisateur u ON u.id = a.id_user INNER JOIN pa2026.categorie c ON c.id = a.id_categorie")
+	rows, err := Db.Query("SELECT DATE_FORMAT(a.created_at, '%d-%m-%Y') as created_at, a.id, a.titre, COALESCE(a.description, ''), COALESCE(a.type, ''), COALESCE(a.prix, 0), a.statut_validation, COALESCE(a.code_postal, ''), COALESCE(a.ville, ''), a.etat, COALESCE(a.poids_kg, 0), COALESCE(a.quantite, 1), COALESCE(a.image, ''), COALESCE(u.nom, ''), COALESCE(u.prenom, ''), COALESCE(c.libelle, '') FROM pa2026.annonce a INNER JOIN pa2026.utilisateur u ON u.id = a.id_user INNER JOIN pa2026.categorie c ON c.id = a.id_categorie")
 
 	if err != nil {
 		return nil, fmt.Errorf("get Annonces : %v", err.Error())
@@ -81,7 +81,7 @@ func RefuseAnnonce(annonceId int) error {
 
 func CreateAnnonce(annonce models.Annonce) error {
 	query := `INSERT INTO pa2026.annonce 
-              (titre, description, type, prix, code_postal, ville, etat, poids, quantite, id_user, id_categorie, image) 
+              (titre, description, type, prix, code_postal, ville, etat, poids_kg, quantite, id_user, id_categorie, image)
               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
 	_, err := Db.Exec(query,
@@ -116,7 +116,6 @@ func DeleteAnnonce(id int) error {
 
 	}
 
-	// sUPPRESSION
 	_, err = Db.Exec(
 		"DELETE FROM pa2026.annonce WHERE id = ?", id)
 	if err != nil {
@@ -144,7 +143,7 @@ func UpdateAnnonce(annonceId int, annonce models.Annonce) error {
 
 	if StatutVente != "EN ATTENTE DEPOT" {
 		_, err = Db.Exec(
-			"UPDATE pa2026.annonce SET titre = ?, description = ?, type = ?, prix = ?, code_postal = ?, ville = ?, etat = ?, poids = ?, quantite = ?, id_user = ?, id_categorie = ?, image = ? WHERE id = ?",
+			"UPDATE pa2026.annonce SET titre = ?, description = ?, type = ?, prix = ?, code_postal = ?, ville = ?, etat = ?, poids_kg = ?, quantite = ?, id_user = ?, id_categorie = ?, image = ? WHERE id = ?",
 			annonce.Titre,
 			annonce.Description,
 			annonce.Type,
@@ -173,7 +172,7 @@ func GetAnnonceByTitle(query string, filtre string) ([]models.Annonce, error) {
 	search := "%" + query + "%"
 	if filtre != "Tout" && filtre != "" {
 		var Annonces []models.Annonce
-		rows, err := Db.Query("SELECT id, titre, description, type, prix, statut_validation, code_postal, ville, etat, poids, quantite, nom, prenom, categorie FROM pa2026.annonce WHERE (UPPER(titre) LIKE ?) AND statut_validation = ?", search, filtre)
+		rows, err := Db.Query("SELECT id, titre, description, type, prix, statut_validation, code_postal, ville, etat, poids_kg, quantite, nom, prenom, categorie FROM pa2026.annonce WHERE (UPPER(titre) LIKE ?) AND statut_validation = ?", search, filtre)
 
 		if err != nil {
 			fmt.Println("Erreur lors de l'exécution de la requête : ", err)
@@ -203,7 +202,7 @@ func GetAnnonceByTitle(query string, filtre string) ([]models.Annonce, error) {
 	} else {
 		var Annonces []models.Annonce
 		search := "%" + query + "%"
-		rows, err := Db.Query("SELECT id, titre, description, type, prix, statut_validation, code_postal, ville, etat, poids, quantite, nom, prenom, categorie FROM pa2026.annonce WHERE UPPER(titre) LIKE ?", search)
+		rows, err := Db.Query("SELECT id, titre, description, type, prix, statut_validation, code_postal, ville, etat, poids_kg, quantite, nom, prenom, categorie FROM pa2026.annonce WHERE UPPER(titre) LIKE ?", search)
 
 		if err != nil {
 			return nil, fmt.Errorf("get Annonce by title : %v", err.Error())
@@ -237,9 +236,9 @@ func GetAnnonceById(id int) (models.Annonce, error) {
 	query := `
         SELECT 
          a.id, 
-         a.id_user, -- <-- AJOUTÉ ICI
+         a.id_user,
          a.titre, a.description, a.type, a.prix, a.statut_vente, a.statut_validation, 
-         a.code_postal, a.ville, a.etat, a.poids, a.quantite, 
+         a.code_postal, a.ville, a.etat, a.poids_kg, a.quantite,
          COALESCE(pa2026.utilisateur.nom, ''), 
          COALESCE(pa2026.utilisateur.prenom, ''), 
          COALESCE(pa2026.categorie.libelle, ''), 
@@ -267,7 +266,6 @@ func GetAnnonceById(id int) (models.Annonce, error) {
 func GetAnnoncesByUser(userID int) ([]models.Annonce, error) {
 	var list []models.Annonce
 
-	// 🟢 CORRECTION : On protège TOUTES les colonnes contre les valeurs NULL
 	query := `
 		SELECT id, titre, COALESCE(prix, 0), COALESCE(id_categorie, 0),
 		       COALESCE(statut_vente, ''), COALESCE(statut_validation, ''), COALESCE(image, ''),
@@ -292,7 +290,7 @@ func GetAnnoncesByUser(userID int) ([]models.Annonce, error) {
 }
 
 func GetValidatedAnnonces(currentUserID int) ([]models.Annonce, error) {
-    var Annonces []models.Annonce
+	var Annonces []models.Annonce
 
     query := `
         SELECT
@@ -320,11 +318,11 @@ func GetValidatedAnnonces(currentUserID int) ([]models.Annonce, error) {
         END DESC,
         a.id DESC`
 
-    rows, err := Db.Query(query, currentUserID)
-    if err != nil {
-        return nil, fmt.Errorf("Erreur Query: %v", err)
-    }
-    defer rows.Close()
+	rows, err := Db.Query(query, currentUserID)
+	if err != nil {
+		return nil, fmt.Errorf("Erreur Query: %v", err)
+	}
+	defer rows.Close()
 
     for rows.Next() {
         var a models.Annonce
@@ -355,7 +353,7 @@ func GetUserEcoStats(userID int) (map[string]interface{}, error) {
 	query := `
         SELECT 
             COUNT(id), 
-            COALESCE(SUM(poids), 0) 
+            COALESCE(SUM(poids_kg), 0)
         FROM annonce 
         WHERE id_user = ? AND statut_vente = 'RECUPERE'`
 
@@ -371,40 +369,40 @@ func GetUserEcoStats(userID int) (map[string]interface{}, error) {
 	}, nil
 }
 func GetUserPurchases(buyerID int) ([]map[string]interface{}, error) {
-    // On utilise des guillemets normaux (" ") pour pouvoir intégrer les backticks (`) autour du mot 'order'
-    query := "SELECT h.code_barre_recuperation, h.date_reservation, a.titre, b.numero, c.nom, c.adresse, b.statut " +
-             "FROM pa2026.`order` o " +
-             "JOIN pa2026.annonce a ON o.id_annonce = a.id " +
-             "JOIN pa2026.historique_conteneurs h ON h.annonce_id = a.id " +
-             "JOIN pa2026.box b ON h.conteneur_id = b.id " +
-             "JOIN pa2026.conteneur c ON b.id_conteneur = c.id " +
-             "WHERE o.id_acheteur = ? AND h.date_retrait_effective IS NULL"
 
-    rows, err := Db.Query(query, buyerID)
-    if err != nil {
-        return nil, err
-    }
-    defer rows.Close()
+	query := "SELECT h.code_barre_recuperation, h.date_reservation, a.titre, b.numero, c.nom, c.adresse, b.statut " +
+		"FROM pa2026.`order` o " +
+		"JOIN pa2026.annonce a ON o.id_annonce = a.id " +
+		"JOIN pa2026.historique_conteneurs h ON h.annonce_id = a.id " +
+		"JOIN pa2026.box b ON h.conteneur_id = b.id " +
+		"JOIN pa2026.conteneur c ON b.id_conteneur = c.id " +
+		"WHERE o.id_acheteur = ? AND h.date_retrait_effective IS NULL"
 
-    var achats []map[string]interface{}
-    for rows.Next() {
-        var barcode, date, titre, nomConteneur, adresse, etat string
-        var numBox int
-        
-        err := rows.Scan(&barcode, &date, &titre, &numBox, &nomConteneur, &adresse, &etat)
-        if err != nil {
-            continue
-        }
+	rows, err := Db.Query(query, buyerID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
 
-        res := map[string]interface{}{
-            "lieu":         nomConteneur + " - " + adresse,
-            "numero_box":   fmt.Sprintf("Casier n°%d", numBox),
-            "barcode":      barcode,
-            "objet":        titre,
-            "date":         date,
-            "etat":         etat,
-        }
-        achats = append(achats, res)
-    }
-    return achats, nil
+	var achats []map[string]interface{}
+	for rows.Next() {
+		var barcode, date, titre, nomConteneur, adresse, etat string
+		var numBox int
+
+		err := rows.Scan(&barcode, &date, &titre, &numBox, &nomConteneur, &adresse, &etat)
+		if err != nil {
+			continue
+		}
+
+		res := map[string]interface{}{
+			"lieu":       nomConteneur + " - " + adresse,
+			"numero_box": fmt.Sprintf("Casier n°%d", numBox),
+			"barcode":    barcode,
+			"objet":      titre,
+			"date":       date,
+			"etat":       etat,
+		}
+		achats = append(achats, res)
+	}
+	return achats, nil
 }

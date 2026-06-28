@@ -13,12 +13,12 @@ func GetAllCategories(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-	
+
 	if r.Method == "OPTIONS" {
-        w.WriteHeader(http.StatusOK)
-        return 
-    }
-	
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
 	fmt.Println("hello from GetAllCategories")
 
 	Categories, err := bdd.GetCategories()
@@ -44,11 +44,11 @@ func CreateCategorie(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 	fmt.Println("hello from CreateCategorie")
-	
+
 	if r.Method == "OPTIONS" {
-        w.WriteHeader(http.StatusOK)
-        return 
-    }
+		w.WriteHeader(http.StatusOK)
+		return
+	}
 	var CategorieDto models.Categorie
 
 	err := json.NewDecoder(r.Body).Decode(&CategorieDto)
@@ -74,13 +74,13 @@ func CreateCategorie(w http.ResponseWriter, r *http.Request) {
 
 func DeleteCategorie(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-	fmt.Println("hello from DeleteCategorie")	
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	fmt.Println("hello from DeleteCategorie")
 	if r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
 		return
-	}	
-idStr := r.PathValue("id")
+	}
+	idStr := r.PathValue("id")
 
 	id, err := strconv.Atoi(idStr)
 	if err != nil {

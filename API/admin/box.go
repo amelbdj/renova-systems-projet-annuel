@@ -8,11 +8,9 @@ import (
 	"upcycleconnect/bdd"
 )
 
-
-
 func ReserveBox(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS") // ⚠️ Ne pas oublier les méthodes
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
 	if r.Method == "OPTIONS" {
@@ -23,7 +21,7 @@ func ReserveBox(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		var req struct {
 			AnnonceId     int `json:"annonce_id"`
-			ConteneurId   int `json:"conteneur_id"` // L'ID du meuble !
+			ConteneurId   int `json:"conteneur_id"`
 			ParticulierId int `json:"particulier_id"`
 		}
 
@@ -72,22 +70,18 @@ func ConfirmDeposit(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// --- NOTIFICATION ACHETEUR ---
-		// On cherche à qui appartient cet objet et quel est le code pour l'ouvrir
 		var acheteurID int
 		var titre string
 		var numBox string
-		var codeRetrait string
 
-		// ⚠️ Adapte le nom de tes tables/colonnes si elles sont un peu différentes
 		query := `
-			SELECT o.acheteur_id, a.titre, b.id, b.pin_code 
-			FROM box b
-			JOIN annonce a ON b.id_annonce = a.id
-			JOIN orders o ON o.annonce_id = a.id
-			WHERE b.pin_code = ? LIMIT 1
+			SELECT h.acheteur_id, a.titre, b.numero
+			FROM historique_conteneurs h
+			JOIN annonce a ON h.annonce_id = a.id
+			JOIN box b ON h.conteneur_id = b.id
+			WHERE h.code_ouverture = ? LIMIT 1
 		`
-		errInfo := bdd.Db.QueryRow(query, req.PinCode).Scan(&acheteurID, &titre, &numBox, &codeRetrait)
+		errInfo := bdd.Db.QueryRow(query, req.PinCode).Scan(&acheteurID, &titre, &numBox)
 
 		if errInfo == nil && acheteurID != 0 {
 			msg := fmt.Sprintf("🔓 Ton objet '%s' t'attend ! Tu peux le récupérer au Casier n°%s.", titre, numBox)
@@ -95,7 +89,6 @@ func ConfirmDeposit(w http.ResponseWriter, r *http.Request) {
 		} else {
 			fmt.Println("Impossible de trouver l'acheteur pour lui envoyer la notif :", errInfo)
 		}
-		// -----------------------------
 
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, `{"message": "Dépôt validé, la box est verrouillée"}`)
@@ -105,7 +98,7 @@ func ConfirmDeposit(w http.ResponseWriter, r *http.Request) {
 
 func CollectObject(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS") // Souvent en POST pour envoyer des données JSON
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
 	if r.Method == "OPTIONS" {
@@ -137,10 +130,6 @@ func CollectObject(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-
-
-
-// Remplace  "GetAllBoxs"
 func GetConteneursAdmin(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("hello from GetConteneursAdmin")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -166,7 +155,6 @@ func GetConteneursAdmin(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Remplace  "CreateBox"
 func CreateConteneur(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
@@ -181,7 +169,7 @@ func CreateConteneur(w http.ResponseWriter, r *http.Request) {
 		var req struct {
 			Nom          string `json:"nom"`
 			Adresse      string `json:"adresse"`
-			NombreDeBoxs int    `json:"nombre_de_boxs"` // L'admin choisit combien de portes il y a dans ce meuble
+			NombreDeBoxs int    `json:"nombre_de_boxs"`
 		}
 
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -214,13 +202,12 @@ func GetBoxesForConteneurHandler(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == "GET" {
 		conteneurID := r.PathValue("id")
-		
+
 		if conteneurID == "" {
 			http.Error(w, "ID du conteneur manquant", http.StatusBadRequest)
 			return
 		}
 
-		// On appelle la fonction BDD qu'on vient de créer
 		boxes, err := bdd.GetBoxesByConteneurID(conteneurID)
 		if err != nil {
 			fmt.Println("Erreur BDD GetBoxesForConteneurHandler :", err)
@@ -228,7 +215,6 @@ func GetBoxesForConteneurHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// On envoie le tableau au JavaScript
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(boxes)
 		return
@@ -248,7 +234,7 @@ func AddSingleBoxHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		var req struct {
 			IDConteneur int    `json:"id_conteneur"`
-			Taille      string `json:"taille"` // "S", "M", ou "L"
+			Taille      string `json:"taille"`
 		}
 
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -309,80 +295,109 @@ func UpdateBoxStatusHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func SimulateWithdrawalHandler(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Access-Control-Allow-Origin", "*")
-    w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-    w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
-    if r.Method == "OPTIONS" {
-        w.WriteHeader(http.StatusOK)
-        return
-    }
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
 
-    if r.Method == "POST" {
-        var req struct {
-            Barcode string `json:"barcode"`
-        }
+	if r.Method == "POST" {
+		var req struct {
+			Barcode string `json:"barcode"`
+		}
 
-        if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-            http.Error(w, "Format de données invalide", http.StatusBadRequest)
-            return
-        }
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			http.Error(w, "Format de données invalide", http.StatusBadRequest)
+			return
+		}
 
-        if req.Barcode == "" {
-            http.Error(w, "Le code-barres est obligatoire", http.StatusBadRequest)
-            return
-        }
+		if req.Barcode == "" {
+			http.Error(w, "Le code-barres est obligatoire", http.StatusBadRequest)
+			return
+		}
 
-        err := bdd.SimulateHardwareWithdrawal(req.Barcode)
-        if err != nil {
-            fmt.Println("Erreur SimulateHardwareWithdrawal :", err)
-            http.Error(w, err.Error(), http.StatusNotFound)
-            return
-        }
+		err := bdd.SimulateHardwareWithdrawal(req.Barcode)
+		if err != nil {
+			fmt.Println("Erreur SimulateHardwareWithdrawal :", err)
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
+		}
 
-        w.WriteHeader(http.StatusOK)
-        fmt.Fprint(w, `{"message": "Signal IoT simulé avec succès ! Transaction clôturée et box libérée."}`)
-        return
-    }
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, `{"message": "Signal IoT simulé avec succès ! Transaction clôturée et box libérée."}`)
+		return
+	}
 }
 
 func SimulateDepositHandler(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Access-Control-Allow-Origin", "*")
-    w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-    w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
-    if r.Method == "OPTIONS" {
-        w.WriteHeader(http.StatusOK)
-        return
-    }
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
 
-    if r.Method == "POST" {
-        var req struct {
-            Pin string `json:"pin"` // Doit correspondre exactement au JSON envoyé par le JS
-        }
+	if r.Method == "POST" {
+		var req struct {
+			Pin string `json:"pin"`
+		}
 
-        if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-            http.Error(w, "Format de données invalide", http.StatusBadRequest)
-            return
-        }
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			http.Error(w, "Format de données invalide", http.StatusBadRequest)
+			return
+		}
 
-        if req.Pin == "" {
-            http.Error(w, "Le code PIN est obligatoire", http.StatusBadRequest)
-            return
-        }
+		if req.Pin == "" {
+			http.Error(w, "Le code PIN est obligatoire", http.StatusBadRequest)
+			return
+		}
 
-        // On appelle la fonction BDD mise à jour 
-        err := bdd.SimulateHardwareDeposit(req.Pin)
-        if err != nil {
-            fmt.Println("Erreur SimulateHardwareDeposit :", err)
-            http.Error(w, err.Error(), http.StatusNotFound)
-            return
-        }
+		err := bdd.SimulateHardwareDeposit(req.Pin)
+		if err != nil {
+			fmt.Println("Erreur SimulateHardwareDeposit :", err)
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
+		}
 
-        w.WriteHeader(http.StatusOK)
-        fmt.Fprint(w, `{"message": "Signal IoT simulé avec succès ! Objet déposé et disponible."}`)
-        return
-    }
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, `{"message": "Signal IoT simulé avec succès ! Objet déposé et disponible."}`)
+		return
+	}
+}
+
+func ValiderRetraitHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
+		return
+	}
+
+	codePin := r.URL.Query().Get("code_pin")
+	if codePin == "" {
+		http.Error(w, "Le code PIN est obligatoire", http.StatusBadRequest)
+		return
+	}
+
+	professionnelID, ok := r.Context().Value("userID").(int)
+	if !ok || professionnelID == 0 {
+		http.Error(w, "Professionnel non identifié", http.StatusUnauthorized)
+		return
+	}
+
+	err := bdd.CollectObject(codePin, professionnelID)
+	if err != nil {
+		fmt.Println("Erreur ValiderRetrait :", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprint(w, `{"status": "ok", "message": "Retrait validé : box libérée et transaction clôturée"}`)
 }
 
 func GetUserPickupsHandler(w http.ResponseWriter, r *http.Request) {
@@ -395,8 +410,6 @@ func GetUserPickupsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// ⚠️ Récupère l'ID de l'acheteur selon comment tu gères ton token/session
-	// Ici un exemple si tu le passes dans l'URL : /api/pickups/{id}
 	acheteurIDStr := r.PathValue("id")
 	acheteurID, err := strconv.Atoi(acheteurIDStr)
 	if err != nil {

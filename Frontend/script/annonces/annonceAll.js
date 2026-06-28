@@ -13,7 +13,7 @@ async function loadAllAnnonces() {
 
   try {
     const response = await fetch(
-      `http://localhost:8081/api/annonces/all?id=${userId}`,
+      `${API_BASE_URL}/api/annonces/all?id=${userId}`,
     );
     const data = await response.json();
 
@@ -29,7 +29,8 @@ async function loadAllAnnonces() {
   } catch (err) {
     console.error("Erreur chargement marketplace:", err);
     grid.innerHTML =
-      '<p style="color:var(--red); text-align:center; padding:50px;">Erreur de connexion au serveur.</p>';
+      '<p style="color:var(--red); text-align:center; padding:50px;" data-i18n="annonce.error.connection">Erreur de connexion au serveur.</p>';
+    if (typeof appliquerTraductions === "function") appliquerTraductions();
   }
 }
 
@@ -39,15 +40,16 @@ function displayAnnonces(items) {
 
   if (!items || items.length === 0) {
     grid.innerHTML =
-      '<div class="empty"><div class="empty-ico">🔍</div><div class="empty-title">Aucune annonce validée</div></div>';
+      '<div class="empty"><div class="empty-ico">🔍</div><div class="empty-title" data-i18n="annonce.empty.title">Aucune annonce validée</div></div>';
     document.getElementById("resultCount").textContent = "0";
+    if (typeof appliquerTraductions === "function") appliquerTraductions();
     return;
   }
 
   document.getElementById("resultCount").textContent = items.length;
 
   items.forEach((ann) => {
-    const imgSrc = ann.image ? `http://localhost:8081${ann.image}` : null;
+    const imgSrc = ann.image ? `${API_BASE_URL}${ann.image}` : null;
 
     const card = document.createElement("a");
     card.className = "listing-card fu";
@@ -68,12 +70,13 @@ function displayAnnonces(items) {
             <div class="card-thumb" style="${imgSrc ? `background: url('${imgSrc}') center/cover no-repeat;` : `background: var(--bg4);`}">
                 ${imgSrc ? "" : '<div style="font-size:3rem"><i class="fas fa-box"></i></div>'}
                 <div class="card-badges">
+                    ${isFree ? '<span class="badge b-don" data-i18n="annonce.type.donation">Don gratuit</span>' : '<span class="badge b-ven" data-i18n="annonce.type.sale">Vente</span>'}
                     ${promoBadge}
                     ${isFree ? '<span class="badge b-don">Don gratuit</span>' : '<span class="badge b-ven">Vente</span>'}
                 </div>
             </div>
             <div class="card-body">
-                <div class="card-cat">${ann.categorie || "Objet"}</div>
+                <div class="card-cat">${ann.categorie || '<span data-i18n="annonce.card.object">Objet</span>'}</div>
                 <div class="card-title">${ann.titre}</div>
                 <div class="card-desc">${ann.description}</div>
                 <div class="card-meta">
@@ -83,15 +86,18 @@ function displayAnnonces(items) {
                 </div>
                 <div class="card-foot">
                     <div>
-                        <div class="card-price ${isFree ? "free" : ""}">${isFree ? "Gratuit" : ann.prix + " €"}</div>
-                        <div class="card-price-sub">${ann.etat || "Bon état"}</div>
+                        <div class="card-price ${isFree ? "free" : ""}">${isFree ? '<span data-i18n="annonce.card.free">Gratuit</span>' : ann.prix + " €"}</div>
+                        <div class="card-price-sub">${ann.etat || '<span data-i18n="annonce.card.good_condition">Bon état</span>'}</div>
                     </div>
-                    <div class="card-arrow">Voir l'annonce →</div>
+                    <div class="card-arrow" data-i18n="annonce.card.see">Voir l'annonce →</div>
                 </div>
             </div>
         `;
     grid.appendChild(card);
   });
+
+  
+  if (typeof appliquerTraductions === "function") appliquerTraductions();
 }
 
 function filterListings() {

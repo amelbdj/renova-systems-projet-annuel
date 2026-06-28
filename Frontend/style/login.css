@@ -1,11 +1,11 @@
-/* ─── RESET ──────────────────────────────────── */
+
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
 button,input,select,textarea{font-family:inherit;font-size:inherit}
 ::-webkit-scrollbar{width:4px}
 ::-webkit-scrollbar-thumb{background:#1a1030;border-radius:3px}
 
-/* ─── TOKENS ─────────────────────────────────── */
+
 :root{
   --bg:      #06040e;
   --card:    #0d0a1e;
@@ -26,7 +26,7 @@ button,input,select,textarea{font-family:inherit;font-size:inherit}
   --r:       14px;
 }
 
-/* ─── BODY ───────────────────────────────────── */
+
 body{
   font-family:'Outfit',sans-serif;
   background:var(--bg);
@@ -38,7 +38,7 @@ body{
   overflow-x:hidden;
 }
 
-/* ─── AMBIENT ────────────────────────────────── */
+
 body::before{
   content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
   background:
@@ -46,20 +46,20 @@ body::before{
     radial-gradient(ellipse 50% 40% at 100% 100%,rgba(46,212,180,.09) 0%,transparent 55%),
     radial-gradient(ellipse 40% 35% at 60% 40%,  rgba(124,95,255,.06) 0%,transparent 60%);
 }
-/* dot matrix */
+
 body::after{
   content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
   background-image:radial-gradient(rgba(120,90,255,.12) 1px,transparent 1px);
   background-size:28px 28px;
 }
 
-/* ─── LAYOUT ─────────────────────────────────── */
+
 .split{
   position:relative;z-index:1;
   display:flex;width:100%;min-height:100vh;
 }
 
-/* ── LEFT PANEL ──────────────────────────────── */
+
 .left{
   flex:0 0 52%;
   background:linear-gradient(160deg,#0a0620 0%,#130d30 40%,#0e0828 100%);
@@ -74,7 +74,7 @@ body::after{
     radial-gradient(ellipse 80% 60% at 10% -10%,rgba(100,60,255,.18) 0%,transparent 55%),
     radial-gradient(ellipse 60% 50% at 90% 110%,rgba(46,212,180,.10) 0%,transparent 55%);
 }
-/* floating geometric shapes */
+
 .geo{position:absolute;pointer-events:none;opacity:.07}
 .geo1{width:340px;height:340px;border:1px solid var(--vi);border-radius:50%;right:-80px;top:-80px;animation:spin 40s linear infinite}
 .geo2{width:200px;height:200px;border:1px solid var(--teal);right:40px;bottom:120px;transform:rotate(22deg);animation:spin 28s linear infinite reverse}
@@ -117,7 +117,7 @@ body::after{
   margin-bottom:36px;
 }
 
-/* space cards */
+
 .space-pills{display:flex;flex-direction:column;gap:10px}
 .space-pill{
   display:flex;align-items:center;gap:14px;
@@ -142,7 +142,7 @@ body::after{
 }
 .left-footer strong{color:var(--txt-m)}
 
-/* ── RIGHT PANEL ─────────────────────────────── */
+
 .right{
   flex:1;
   display:flex;align-items:center;justify-content:center;
@@ -153,7 +153,7 @@ body::after{
   width:100%;max-width:440px;
 }
 
-/* tab switcher */
+
 .tab-bar{
   display:flex;background:var(--card2);border:1px solid var(--b0);
   border-radius:12px;padding:4px;margin-bottom:32px;
@@ -169,7 +169,7 @@ body::after{
   box-shadow:0 2px 12px rgba(124,95,255,.35);
 }
 
-/* form panels */
+
 .form-panel{display:none;animation:fadeIn .25s ease both}
 .form-panel.active{display:block}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
@@ -180,7 +180,7 @@ body::after{
 }
 .form-sub{font-size:13.5px;color:var(--txt-m);margin-bottom:28px;font-weight:300;line-height:1.6}
 
-/* inputs */
+
 .fgroup{margin-bottom:14px}
 .frow{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
 label{
@@ -216,7 +216,7 @@ input::placeholder{color:var(--txt-d)}
 }
 .pwd-toggle:hover{color:var(--txt)}
 
-/* role select */
+
 .role-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
 .role-card{
   padding:12px 14px;border-radius:10px;
@@ -229,13 +229,13 @@ input::placeholder{color:var(--txt-d)}
 .rc-name{font-size:12.5px;font-weight:600;color:#fff}
 .rc-desc{font-size:11px;color:var(--txt-m);margin-top:2px;line-height:1.35}
 
-/* strength bar */
+
 .strength-wrap{margin-top:7px}
 .strength-bar{height:3px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;margin-bottom:4px}
 .strength-fill{height:100%;border-radius:2px;transition:.3s}
 .strength-lbl{font-size:11px;color:var(--txt-m)}
 
-/* checkbox */
+
 .check-row{display:flex;gap:10px;align-items:flex-start;margin-bottom:14px}
 .check-row input[type=checkbox]{
   width:16px;height:16px;flex-shrink:0;margin-top:2px;
@@ -246,14 +246,14 @@ input::placeholder{color:var(--txt-d)}
 .check-row label a{color:var(--vi-l);text-decoration:none}
 .check-row label a:hover{text-decoration:underline}
 
-/* divider */
+
 .divider{
   display:flex;align-items:center;gap:12px;
   font-size:12px;color:var(--txt-d);margin:18px 0;
 }
 .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--b0)}
 
-/* social buttons */
+
 .social-row{display:flex;gap:10px;margin-bottom:0}
 .social-btn{
   flex:1;display:flex;align-items:center;justify-content:center;gap:8px;
@@ -264,7 +264,7 @@ input::placeholder{color:var(--txt-d)}
 .social-btn:hover{border-color:var(--b2);color:var(--txt)}
 .social-ico{font-size:16px}
 
-/* primary button */
+
 .btn-primary{
   width:100%;padding:13px;border-radius:10px;border:none;
   background:linear-gradient(135deg,var(--vi-d),var(--vi));
@@ -280,14 +280,14 @@ input::placeholder{color:var(--txt-d)}
 }
 .btn-primary:active{transform:translateY(0)}
 
-/* forgot */
+
 .forgot{
   text-align:right;margin-bottom:0;margin-top:-8px;
 }
 .forgot a{font-size:12px;color:var(--vi-l);text-decoration:none}
 .forgot a:hover{text-decoration:underline}
 
-/* switch prompt */
+
 .switch-prompt{
   text-align:center;margin-top:22px;
   font-size:13px;color:var(--txt-m);
@@ -295,7 +295,7 @@ input::placeholder{color:var(--txt-d)}
 .switch-prompt a{color:var(--vi-l);text-decoration:none;font-weight:500}
 .switch-prompt a:hover{text-decoration:underline}
 
-/* success state */
+
 .success-msg{
   display:none;text-align:center;padding:32px 16px;
   animation:fadeIn .4s ease both;
@@ -311,13 +311,13 @@ input::placeholder{color:var(--txt-d)}
 }
 .btn-ghost:hover{background:rgba(124,95,255,.08)}
 
-/* validation feedback */
+
 .field-err{font-size:11.5px;color:var(--red);margin-top:4px;display:none}
 .field-ok {font-size:11.5px;color:var(--green);margin-top:4px;display:none}
 input.err{border-color:rgba(240,88,88,.5)!important}
 input.ok {border-color:rgba(52,201,122,.4)!important}
 
-/* step indicator for inscription */
+
 .steps{display:flex;gap:8px;margin-bottom:24px}
 .step{
   flex:1;height:3px;border-radius:2px;
@@ -326,11 +326,11 @@ input.ok {border-color:rgba(52,201,122,.4)!important}
 .step.done{background:var(--green)}
 .step.active{background:var(--vi)}
 
-/* step panels */
+
 .step-panel{display:none}
 .step-panel.active{display:block;animation:fadeIn .25s ease both}
 
-/* ── MOBILE ───────────────────────────────────── */
+
 @media(max-width:860px){
   .split{flex-direction:column}
   .left{

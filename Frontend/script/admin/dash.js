@@ -1,7 +1,7 @@
 let tokenAdmin = localStorage.getItem("token");
 
 function LoadDashboardData() {
-  fetch("http://localhost:8081/admin/users", {
+  fetch(`${API_BASE_URL}/admin/users`, {
     headers: { Authorization: "Bearer " + tokenAdmin },
   })
     .then((res) => res.json())
@@ -11,7 +11,7 @@ function LoadDashboardData() {
     })
     .catch((err) => console.error("Erreur KPI Users:", err));
 
-  fetch("http://localhost:8081/admin/annonces", {
+  fetch(`${API_BASE_URL}/admin/annonces`, {
     headers: { Authorization: "Bearer " + tokenAdmin },
   })
     .then((res) => res.json())
@@ -26,11 +26,15 @@ function LoadDashboardData() {
             a.statut_validation.toLowerCase() === "valide"
           ) {
             totalPoidsKg += parseFloat(a.poids_kg) || 0;
+
+            totalPoidsKg += parseFloat(a.poids_kg) || 0;
+
+            totalPoidsKg += parseFloat(a.poids_kg) || 0;
           } else if (
             a.statut_validation &&
             a.statut_validation.toLowerCase() === "en attente"
           ) {
-            aModerer++; 
+            aModerer++;
           }
         });
       }
@@ -47,7 +51,7 @@ function LoadDashboardData() {
     })
     .catch((err) => console.error("Erreur KPI Annonces:", err));
 
-  fetch("http://localhost:8081/admin/evenements", {
+  fetch(`${API_BASE_URL}/admin/evenements`, {
     headers: { Authorization: "Bearer " + tokenAdmin },
   })
     .then((res) => res.json())
@@ -59,7 +63,7 @@ function LoadDashboardData() {
             e.statut_validation &&
             e.statut_validation.toLowerCase() === "en attente"
           ) {
-            aValider++; 
+            aValider++;
           }
         });
       }
@@ -69,7 +73,7 @@ function LoadDashboardData() {
     })
     .catch((err) => console.error("Erreur KPI Evènements:", err));
 
-  fetch("http://localhost:8081/api/admin/conteneurs", {
+  fetch(`${API_BASE_URL}/api/admin/conteneurs`, {
     headers: { Authorization: "Bearer " + tokenAdmin },
   })
     .then((res) => res.json())
@@ -85,7 +89,7 @@ function LoadDashboardData() {
           elBoxes.textContent = `${conteneurs.length} / ${totalCasiers}`;
 
         let fetchPromises = conteneurs.map((c) =>
-          fetch(`http://localhost:8081/api/admin/conteneur/${c.id}/boxes`, {
+          fetch(`${API_BASE_URL}/api/admin/conteneur/${c.id}/boxes`, {
             headers: { Authorization: "Bearer " + tokenAdmin },
           })
             .then((res) => res.json())
@@ -112,7 +116,7 @@ function LoadDashboardData() {
           if (elAlertMaint) {
             if (maintenanceCount === 0) {
               elAlertMaint.textContent = "0 Casier en maintenance";
-              elAlertMaint.style.color = "var(--teal)"; 
+              elAlertMaint.style.color = "var(--teal)";
             } else {
               elAlertMaint.textContent = `${maintenanceCount} Casiers en panne !`;
             }
@@ -122,7 +126,7 @@ function LoadDashboardData() {
     })
     .catch((err) => console.error("Erreur KPI Conteneurs:", err));
 
-  fetch("http://localhost:8081/admin/articles", {
+  fetch(`${API_BASE_URL}/admin/articles`, {
     headers: { Authorization: "Bearer " + tokenAdmin },
   })
     .then((res) => res.json())
@@ -140,10 +144,10 @@ function LoadDashboardData() {
       if (elAlertArt) {
         if (artAValider === 0) {
           elAlertArt.textContent = "0 Article en attente";
-          elAlertArt.style.color = "var(--txt-m)"; 
+          elAlertArt.style.color = "var(--txt-m)";
         } else {
           elAlertArt.textContent = `${artAValider} Articles à modérer`;
-          elAlertArt.style.color = "#2ecc71"; 
+          elAlertArt.style.color = "#2ecc71";
         }
       }
     })

@@ -7,7 +7,7 @@ type MessageForum struct {
 	Contenu      string `json:"contenu"`
 	EstModere    bool   `json:"est_modere"`
 	EstSignale   bool   `json:"est_signale"`
-	DateCreation string `json:"date_creation"` // Formaté en string pour le JSON
+	DateCreation string `json:"date_creation"`
 
 	TitreTopic   string `json:"titre_topic"`
 	NomAuteur    string `json:"nom_auteur"`

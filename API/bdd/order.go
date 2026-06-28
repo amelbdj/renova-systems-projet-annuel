@@ -7,103 +7,151 @@ import (
 )
 
 func CreateOrder(annonce models.Annonce, acheteurId int) (int, error) {
-    montant := annonce.Prix
-    commission := montant * 0.05
-    var StatutVente string
-    var orderId int64
+	montant := annonce.Prix
+	commission := montant * 0.05
+	var StatutVente string
+	var orderId int64
 
-    err := Db.QueryRow("SELECT statut_vente FROM pa2026.annonce WHERE id = ?", annonce.Id).Scan(&StatutVente)
-    if err != nil {
-        return 0, fmt.Errorf("CreateOrder (Select) : %s", err.Error())
-    }
+	err := Db.QueryRow("SELECT statut_vente FROM pa2026.annonce WHERE id = ?", annonce.Id).Scan(&StatutVente)
+	if err != nil {
+		return 0, fmt.Errorf("CreateOrder (Select) : %s", err.Error())
+	}
 
-    if StatutVente != "VENDU" {
-        // CORRECTION ICI : Utilisation stricte des noms de colonnes de ta capture d'écran
-        res, err := Db.Exec("INSERT INTO pa2026.order (id_annonce, id_acheteur, montant_total, commission, date_commande) VALUES (?, ?, ?, ?, NOW())", annonce.Id, acheteurId, montant, commission)
-        if err != nil {
-            return 0, fmt.Errorf("CreateOrder (Insert) : %s", err.Error())
-        }
+	if StatutVente != "VENDU" {
 
-        orderId, _ = res.LastInsertId()
+		res, err := Db.Exec("INSERT INTO pa2026.order (id_annonce, id_acheteur, montant_total, commission, date_commande, `type`) VALUES (?, ?, ?, ?, NOW(), 'annonce')", annonce.Id, acheteurId, montant, commission)
+		if err != nil {
+			return 0, fmt.Errorf("CreateOrder (Insert) : %s", err.Error())
+		}
 
-        _, err = Db.Exec("UPDATE pa2026.annonce SET statut_vente = 'VENDU' WHERE id = ?", annonce.Id)
-        if err != nil {
-            return 0, fmt.Errorf("CreateOrder (Update VENDU) : %s", err.Error())
-        }
-    } else {
-        return 0, fmt.Errorf("Cet objet a déjà été vendu")
-    }
+		orderId, _ = res.LastInsertId()
 
-    return int(orderId), nil
+		_, err = Db.Exec("UPDATE pa2026.annonce SET statut_vente = 'VENDU' WHERE id = ?", annonce.Id)
+		if err != nil {
+			return 0, fmt.Errorf("CreateOrder (Update VENDU) : %s", err.Error())
+		}
+	} else {
+		return 0, fmt.Errorf("Cet objet a déjà été vendu")
+	}
+
+	return int(orderId), nil
 }
 
 func planNomEtPrix(idPlan int) (string, float64) {
-    switch idPlan {
-    case 2:
-        return "Plus", 45
-    case 3:
-        return "Pro", 99
-    default:
-        return "Premium", 25
-    }
+	switch idPlan {
+	case 2:
+		return "Plus", 45
+	case 3:
+		return "Pro", 99
+	default:
+		return "Premium", 25
+	}
 }
 
 func PaymentHistory(userID int) ([]map[string]interface{}, error) {
-    var history []map[string]interface{}
+	var history []map[string]interface{}
 
-    achats, err := Db.Query("SELECT o.montant, o.date, a.titre FROM pa2026.`order` o JOIN annonce a ON o.annonce_id = a.id WHERE o.acheteur_id = ?", userID)
-    if err != nil {
-        return nil, err
-    }
-    for achats.Next() {
-        var montant float64
-        var date, titre string
-        achats.Scan(&montant, &date, &titre)
-        history = append(history, map[string]interface{}{
-            "type": "achat", "titre": titre, "montant": montant, "date": date,
-        })
-    }
-    achats.Close()
+	achats, err := Db.Query("SELECT o.montant, o.date, a.titre FROM pa2026.`order` o JOIN annonce a ON o.annonce_id = a.id WHERE o.acheteur_id = ?", userID)
+	if err != nil {
+		return nil, err
+	}
+	for achats.Next() {
+		var montant float64
+		var date, titre string
+		achats.Scan(&montant, &date, &titre)
+		history = append(history, map[string]interface{}{
+			"type": "achat", "titre": titre, "montant": montant, "date": date,
+		})
+	}
+	achats.Close()
 
-    ventes, err := Db.Query("SELECT o.montant, o.date, a.titre FROM pa2026.`order` o JOIN annonce a ON o.annonce_id = a.id WHERE a.id_user = ?", userID)
-    if err != nil {
-        return nil, err
-    }
-    for ventes.Next() {
-        var montant float64
-        var date, titre string
-        ventes.Scan(&montant, &date, &titre)
-        history = append(history, map[string]interface{}{
-            "type": "vente", "titre": titre, "montant": montant, "date": date,
-        })
-    }
-    ventes.Close()
+	ventes, err := Db.Query("SELECT o.montant, o.date, a.titre FROM pa2026.`order` o JOIN annonce a ON o.annonce_id = a.id WHERE a.id_user = ?", userID)
+	if err != nil {
+		return nil, err
+	}
+	for ventes.Next() {
+		var montant float64
+		var date, titre string
+		ventes.Scan(&montant, &date, &titre)
+		history = append(history, map[string]interface{}{
+			"type": "vente", "titre": titre, "montant": montant, "date": date,
+		})
+	}
+	ventes.Close()
 
-    abos, err := Db.Query("SELECT id_plan, date_debut FROM abonnement WHERE id_user = ?", userID)
-    if err != nil {
-        return nil, err
-    }
-    for abos.Next() {
-        var idPlan int
-        var date string
-        abos.Scan(&idPlan, &date)
-        nom, montant := planNomEtPrix(idPlan)
-        history = append(history, map[string]interface{}{
-            "type": "abonnement", "titre": "Abonnement " + nom, "montant": montant, "date": date,
-        })
-    }
-    abos.Close()
+	abos, err := Db.Query("SELECT id_plan, date_debut FROM abonnement WHERE id_user = ?", userID)
+	if err != nil {
+		return nil, err
+	}
+	for abos.Next() {
+		var idPlan int
+		var date string
+		abos.Scan(&idPlan, &date)
+		nom, montant := planNomEtPrix(idPlan)
+		history = append(history, map[string]interface{}{
+			"type": "abonnement", "titre": "Abonnement " + nom, "montant": montant, "date": date,
+		})
+	}
+	abos.Close()
 
-    sort.Slice(history, func(i, j int) bool {
-        return history[i]["date"].(string) > history[j]["date"].(string)
-    })
+	sort.Slice(history, func(i, j int) bool {
+		return history[i]["date"].(string) > history[j]["date"].(string)
+	})
 
-    return history, nil
+	return history, nil
 }
 
-// GetFinanceOverviewMois récupère le volume total et la commission du mois en cours
+func GetProInvoices(userID int) ([]map[string]interface{}, error) {
+	query := `
+        SELECT
+            o.id_commande,
+            o.date_commande,
+            COALESCE(a.titre, e.titre, 'Transaction') AS titre,
+            o.montant_total,
+            o.commission,
+            COALESCE(o.type, 'annonce') AS type
+        FROM pa2026.order o
+        LEFT JOIN pa2026.annonce a ON o.type = 'annonce' AND o.id_annonce = a.id
+        LEFT JOIN pa2026.evenement e ON o.type = 'evenement' AND o.id_annonce = e.id
+        WHERE o.id_acheteur = ?
+        ORDER BY o.date_commande DESC`
+
+	rows, err := Db.Query(query, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var factures []map[string]interface{}
+
+	for rows.Next() {
+		var id int
+		var date string
+		var titre string
+		var montant float64
+		var commission float64
+		var typeCommande string
+
+		err := rows.Scan(&id, &date, &titre, &montant, &commission, &typeCommande)
+		if err != nil {
+			continue
+		}
+
+		factures = append(factures, map[string]interface{}{
+			"id":         id,
+			"date":       date,
+			"titre":      titre,
+			"montant":    montant,
+			"commission": commission,
+			"type":       typeCommande,
+		})
+	}
+
+	return factures, nil
+}
+
 func GetFinanceOverviewMois() (float64, float64, error) {
-    query := `
+	query := `
         SELECT 
             COALESCE(SUM(montant_total), 0) AS total_volume,
             COALESCE(SUM(commission), 0) AS total_commission
@@ -111,61 +159,68 @@ func GetFinanceOverviewMois() (float64, float64, error) {
         WHERE MONTH(date_commande) = MONTH(CURRENT_DATE()) 
         AND YEAR(date_commande) = YEAR(CURRENT_DATE())`
 
-    var volume float64
-    var commission float64
+	var volume float64
+	var commission float64
 
-    err := Db.QueryRow(query).Scan(&volume, &commission)
-    if err != nil {
-        return 0, 0, fmt.Errorf("erreur SQL GetFinanceOverviewMois : %v", err)
-    }
+	err := Db.QueryRow(query).Scan(&volume, &commission)
+	if err != nil {
+		return 0, 0, fmt.Errorf("erreur SQL GetFinanceOverviewMois : %v", err)
+	}
 
-    return volume, commission, nil
+	return volume, commission, nil
 }
 
 func GetAdminTransactions() ([]map[string]interface{}, error) {
-    // On récupère les infos de l'order ET le titre de l'annonce
-    query := `
-        SELECT 
-            o.id_commande, 
-            o.date_commande, 
-            a.titre, 
-            o.montant_total, 
-            o.commission 
+
+	query := `
+        SELECT
+            o.id_commande,
+            o.date_commande,
+            COALESCE(a.titre, e.titre, 'Transaction') AS titre,
+            o.montant_total,
+            o.commission,
+            COALESCE(o.type, 'annonce') AS type,
+            COALESCE(p.statut, 'payé') AS statut
         FROM pa2026.order o
-        JOIN pa2026.annonce a ON o.id_annonce = a.id
-        ORDER BY o.date_commande DESC 
+        LEFT JOIN pa2026.annonce a ON o.type = 'annonce' AND o.id_annonce = a.id
+        LEFT JOIN pa2026.evenement e ON o.type = 'evenement' AND o.id_annonce = e.id
+        LEFT JOIN pa2026.paiement p ON p.id_commande = o.id_commande
+        ORDER BY o.date_commande DESC
         LIMIT 50`
 
-    rows, err := Db.Query(query)
-    if err != nil {
-        return nil, fmt.Errorf("Erreur SQL Transactions: %v", err)
-    }
-    defer rows.Close()
+	rows, err := Db.Query(query)
+	if err != nil {
+		return nil, fmt.Errorf("Erreur SQL Transactions: %v", err)
+	}
+	defer rows.Close()
 
-    var transactions []map[string]interface{}
-    
-    for rows.Next() {
-        var id int
-        var date string
-        var titre string
-        var montant float64
-        var commission float64
+	var transactions []map[string]interface{}
 
-        err := rows.Scan(&id, &date, &titre, &montant, &commission)
-        if err != nil {
-            continue // S'il y a une erreur sur une ligne, on passe à la suivante
-        }
+	for rows.Next() {
+		var id int
+		var date string
+		var titre string
+		var montant float64
+		var commission float64
+		var typeCommande string
+		var statut string
 
-        // On construit notre objet JSON
-        item := map[string]interface{}{
-            "id":         id,
-            "date":       date,
-            "titre":      titre,
-            "montant":    montant,
-            "commission": commission,
-        }
-        transactions = append(transactions, item)
-    }
-    
-    return transactions, nil
+		err := rows.Scan(&id, &date, &titre, &montant, &commission, &typeCommande, &statut)
+		if err != nil {
+			continue
+		}
+
+		item := map[string]interface{}{
+			"id":         id,
+			"date":       date,
+			"titre":      titre,
+			"montant":    montant,
+			"commission": commission,
+			"type":       typeCommande,
+			"statut":     statut,
+		}
+		transactions = append(transactions, item)
+	}
+
+	return transactions, nil
 }

@@ -1,4 +1,4 @@
-/* ─── RESET ──────────────────────────────────── */
+
 *,
 *::before,
 *::after {
@@ -27,7 +27,7 @@ textarea {
   border-radius: 3px;
 }
 
-/* ─── TOKENS ──────────────────────────────────── */
+
 :root {
   --bg: #07050f;
   --bg2: #0b0818;
@@ -55,7 +55,7 @@ textarea {
   --r2: 10px;
 }
 
-/* ─── BODY + AMBIENT ──────────────────────────── */
+
 body {
   font-family: "Outfit", sans-serif;
   background: var(--bg);
@@ -100,7 +100,7 @@ body::after {
   background-size: 52px 52px;
 }
 
-/* ─── TUTORIAL OVERLAY ────────────────────────── */
+
 #tut {
   position: fixed;
   inset: 0;
@@ -253,7 +253,7 @@ body::after {
   color: var(--txt-d);
 }
 
-/* ─── BUTTONS ─────────────────────────────────── */
+
 .btn {
   display: inline-flex;
   align-items: center;
@@ -319,7 +319,7 @@ body::after {
   justify-content: center;
 }
 
-/* ─── TOPNAV ──────────────────────────────────── */
+
 .topnav {
   position: sticky;
   top: 0;
@@ -449,7 +449,7 @@ body::after {
   color: var(--txt-m);
 }
 
-/* ─── WRAPPER ─────────────────────────────────── */
+
 .wrapper {
   position: relative;
   z-index: 1;
@@ -458,7 +458,7 @@ body::after {
   padding: 0 28px;
 }
 
-/* ─── TAGS ────────────────────────────────────── */
+
 .tag {
   display: inline-flex;
   align-items: center;
@@ -504,7 +504,7 @@ body::after {
   border: 1px solid rgba(74, 144, 240, 0.2);
 }
 
-/* ─── CARD ────────────────────────────────────── */
+
 .card {
   background: var(--card);
   border: 1px solid var(--b0);
@@ -541,7 +541,7 @@ body::after {
   padding: 18px;
 }
 
-/* ─── SECTION LABEL ───────────────────────────── */
+
 .sec-label {
   display: flex;
   align-items: center;
@@ -593,7 +593,7 @@ body::after {
   background: linear-gradient(90deg, var(--b1), transparent);
 }
 
-/* ─── FORMS ───────────────────────────────────── */
+
 .frow {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -646,7 +646,7 @@ select option {
   background: var(--bg3);
 }
 
-/* ─── ANIMATIONS ──────────────────────────────── */
+
 .fu {
   animation: fadeUp 0.5s ease both;
 }
@@ -707,9 +707,7 @@ select option {
   }
 }
 
-/* ════════════════════════════════════════════════
-   ① HERO
-════════════════════════════════════════════════ */
+
 .hero {
   padding: 48px 0 40px;
   display: flex;
@@ -795,9 +793,7 @@ select option {
   margin-top: 4px;
 }
 
-/* ════════════════════════════════════════════════
-   ② GESTION ÉVÉNEMENTS / FORMATIONS
-════════════════════════════════════════════════ */
+
 .evt-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -925,9 +921,7 @@ select option {
   color: var(--txt-m);
 }
 
-/* ════════════════════════════════════════════════
-   ③ PLANNING
-════════════════════════════════════════════════ */
+
 .planning-layout {
   display: grid;
   grid-template-columns: auto 1fr;
@@ -935,7 +929,7 @@ select option {
   align-items: start;
 }
 
-/* week strip */
+
 .week-strip {
   display: flex;
   flex-direction: column;
@@ -1015,7 +1009,7 @@ select option {
   border-radius: 50%;
 }
 
-/* timeline */
+
 .timeline {
   display: flex;
   flex-direction: column;
@@ -1088,9 +1082,7 @@ select option {
   border-left-color: var(--amber);
 }
 
-/* ════════════════════════════════════════════════
-   ④ CONTENU — CONSEILS & NEWS
-════════════════════════════════════════════════ */
+
 .content-layout {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1172,9 +1164,7 @@ select option {
   color: var(--txt-m);
 }
 
-/* ════════════════════════════════════════════════
-   ⑤ MODÉRATION FORUM
-════════════════════════════════════════════════ */
+
 .forum-layout {
   display: grid;
   grid-template-columns: 1fr 340px;
@@ -1300,7 +1290,7 @@ select option {
   flex-shrink: 0;
 }
 
-/* forum stats */
+
 .forum-stats {
   display: flex;
   flex-direction: column;
@@ -1332,9 +1322,7 @@ select option {
   color: var(--txt-m);
 }
 
-/* ════════════════════════════════════════════════
-   MODAL
-════════════════════════════════════════════════ */
+
 .modal-bg {
   position: fixed;
   inset: 0;
@@ -1401,7 +1389,7 @@ select option {
   color: var(--txt-m);
   margin-bottom: 20px;
 }
-/* Force l'affichage au premier plan absolu */
+
 #postModal.open {
   display: flex !important;
   visibility: visible !important;
@@ -1409,7 +1397,7 @@ select option {
   z-index: 10000 !important;
 }
 
-/* On s'assure que toutes les modales partagent le même comportement */
+
 .modal-bg {
   position: fixed !important;
   inset: 0 !important;
@@ -1417,7 +1405,7 @@ select option {
   align-items: center;
   justify-content: center;
   transition: opacity 0.3s ease;
-  display: none; /* Caché par défaut */
+  display: none; 
 }
 
 ─── FOOTER ─────────────────────────────────── */ footer {
@@ -1431,7 +1419,7 @@ footer strong {
   color: var(--txt-m);
 }
 
-/* ─── RESPONSIVE ──────────────────────────────── */
+
 @media (max-width: 1000px) {
   .planning-layout {
     grid-template-columns: 1fr;
@@ -1480,4 +1468,114 @@ footer strong {
   .topnav {
     padding: 0 16px;
   }
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+  margin-bottom: 16px;
+}
+.cal-dow {
+  text-align: center;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--txt-d);
+  padding: 5px 0;
+}
+.cal-d {
+  min-height: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.15s;
+  font-size: 12.5px;
+  color: var(--txt-m);
+  position: relative;
+}
+.cal-d:hover {
+  background: var(--glow);
+  color: var(--txt);
+}
+.cal-d.today {
+  background: var(--vi);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 2px 10px rgba(138, 100, 255, 0.4);
+}
+.cal-d.has {
+  color: var(--txt);
+}
+.cal-d.has::after {
+  content: "";
+  position: absolute;
+  bottom: 3px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--vi);
+}
+.cal-d.today.has::after {
+  background: #fff;
+}
+.cal-d.empty {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ev-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ev {
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+  padding: 11px 14px;
+  background: var(--bg3);
+  border: 1px solid var(--b0);
+  border-left: 3px solid;
+  border-radius: 9px;
+  transition: 0.15s;
+}
+.ev:hover {
+  border-top-color: var(--b1);
+  border-right-color: var(--b1);
+  border-bottom-color: var(--b1);
+}
+.ev.bl {
+  border-left-color: var(--blue);
+}
+.ev.gr {
+  border-left-color: var(--green);
+}
+.ev.am {
+  border-left-color: var(--amber);
+}
+.ev.pu {
+  border-left-color: var(--vi);
+}
+.ev-time {
+  font-size: 11px;
+  color: var(--txt-m);
+  min-width: 36px;
+  padding-top: 2px;
+  line-height: 1.4;
+}
+.ev-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 1px;
+}
+.ev-meta {
+  font-size: 11.5px;
+  color: var(--txt-m);
 }

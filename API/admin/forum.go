@@ -105,7 +105,7 @@ func GetForumsHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Erreur serveur", http.StatusInternalServerError)
 			return
 		}
-		
+
 		if topics == nil {
 			topics = []models.ForumTopic{}
 		}
@@ -164,7 +164,6 @@ func ForumClientMessagesHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// 🛡️ ACCORDÉON DE SÉCURITÉ CONTRE LE RETOUR NULL
 		if messages == nil {
 			messages = []models.MessageForum{}
 		}
@@ -177,7 +176,7 @@ func ForumClientMessagesHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		var req models.MessageForum
 		err := json.NewDecoder(r.Body).Decode(&req)
-		
+
 		if err != nil || req.Contenu == "" || req.IdTopic == 0 || req.IdUser == 0 {
 			http.Error(w, "Données invalides ou message vide", http.StatusBadRequest)
 			return

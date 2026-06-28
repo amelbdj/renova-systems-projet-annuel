@@ -1,4 +1,3 @@
-
 window.isProcessingPayment = false;
 
 function LancerRecherche() {
@@ -8,12 +7,13 @@ function LancerRecherche() {
 
 function chargerEvenementsClient(motCle = "") {
   const container = document.getElementById("liste-evenements");
-  if (!container) return; 
+  if (!container) return;
 
   container.innerHTML =
-    "<p style='color: var(--txt-m); text-align: center; grid-column: 1 / -1;'>Chargement des événements...</p>";
+    "<p style='color: var(--txt-m); text-align: center; grid-column: 1 / -1;' data-i18n=\"evenement.loading\">Chargement des événements...</p>";
+  if (typeof appliquerTraductions === "function") appliquerTraductions();
 
-  let url = `http://localhost:8081/admin/evenements`;
+  let url = `${API_BASE_URL}/admin/evenements`;
   if (motCle !== "") {
     url += `?search=${encodeURIComponent(motCle)}`;
   }
@@ -34,7 +34,8 @@ function chargerEvenementsClient(motCle = "") {
       window.evenementData = evenements;
 
       if (!evenements || evenements.length === 0) {
-        container.innerHTML = `<p style="color: var(--txt-m); text-align: center; grid-column: 1 / -1;">Aucun événement publié pour le moment.</p>`;
+        container.innerHTML = `<p style="color: var(--txt-m); text-align: center; grid-column: 1 / -1;" data-i18n="evenement.empty">Aucun événement publié pour le moment.</p>`;
+        if (typeof appliquerTraductions === "function") appliquerTraductions();
         return;
       }
 
@@ -43,7 +44,6 @@ function chargerEvenementsClient(motCle = "") {
       const maintenant = new Date();
 
       evenements.forEach((evt) => {
-        // --- CORRECTION DU FORMAT DE DATE ---
         let parts = evt.date_debut.split(" a ");
         let dateParts = parts[0].split("/");
         let timeParts = parts[1].split(":");
@@ -62,7 +62,7 @@ function chargerEvenementsClient(motCle = "") {
 
           const imageCover =
             evt.image_url && evt.image_url.trim() !== ""
-              ? `http://localhost:8081/${evt.image_url}`
+              ? `${API_BASE_URL}/${evt.image_url}`
               : "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=500";
 
           const resume =
@@ -70,8 +70,8 @@ function chargerEvenementsClient(motCle = "") {
             "...";
 
           let boutonAction = evt.deja_inscrit
-            ? `<span style="background-color: #ef4444; color: white; padding: 8px 15px; border-radius: 6px; font-weight: 600; font-size: 14px; margin-top: 10px; display: inline-block; cursor: pointer;" onclick="SeDesinscrire(${idEvt}); event.stopPropagation();">Se désinscrire ➔</span>`
-            : `<span style="background-color: var(--blue); color: white; padding: 8px 15px; border-radius: 6px; font-weight: 600; font-size: 14px; margin-top: 10px; display: inline-block; cursor: pointer;" onclick="sinscrireEvenement(${idEvt}, ${evt.prix}); event.stopPropagation();">S'inscrire ➔</span>`;
+            ? `<span style="background-color: #ef4444; color: white; padding: 8px 15px; border-radius: 6px; font-weight: 600; font-size: 14px; margin-top: 10px; display: inline-block; cursor: pointer;" onclick="SeDesinscrire(${idEvt}); event.stopPropagation();" data-i18n="evenement.unsubscribe">Se désinscrire ➔</span>`
+            : `<span style="background-color: var(--blue); color: white; padding: 8px 15px; border-radius: 6px; font-weight: 600; font-size: 14px; margin-top: 10px; display: inline-block; cursor: pointer;" onclick="sinscrireEvenement(${idEvt}, ${evt.prix}); event.stopPropagation();" data-i18n="evenement.subscribe">S'inscrire ➔</span>`;
 
           htmlContent += `
                 <div class="article-card" onclick="OuvrirEvenement(${idEvt})">
@@ -87,12 +87,16 @@ function chargerEvenementsClient(motCle = "") {
       });
       container.innerHTML =
         evenementsAffiches === 0
-          ? "<p>Aucun événement à venir.</p>"
+          ? '<p data-i18n="evenement.empty_upcoming">Aucun événement à venir.</p>'
           : htmlContent;
+
+      if (typeof appliquerTraductions === "function") appliquerTraductions();
     })
     .catch((err) => {
       console.error("Erreur :", err);
-      container.innerHTML = "<p>Erreur de connexion.</p>";
+      container.innerHTML =
+        '<p data-i18n="evenement.error">Erreur de connexion.</p>';
+      if (typeof appliquerTraductions === "function") appliquerTraductions();
     });
 }
 
@@ -101,14 +105,14 @@ function sinscrireEvenement(idEvent, prixEvent) {
   const monToken = localStorage.getItem("token");
 
   if (!idUser || idUser === "null") {
-    alert("Erreur : Vous devez être connecté pour vous inscrire.");
+    alert(t("evenement.login_required_sub"));
     return;
   }
 
   if (window.evenementData) {
     const currentEvt = window.evenementData.find((e) => e.id === idEvent);
     if (currentEvt && currentEvt.deja_inscrit) {
-      alert("⚠️ Vous êtes déjà inscrit à cet événement !");
+      alert(t("evenement.already_subscribed"));
       return;
     }
   }
@@ -117,7 +121,7 @@ function sinscrireEvenement(idEvent, prixEvent) {
   window.isProcessingPayment = true;
 
   if (prixEvent > 0) {
-    fetch("http://localhost:8081/api/web/checkout/evenement", {
+    fetch(API_BASE_URL + "/api/web/checkout/evenement", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -134,19 +138,17 @@ function sinscrireEvenement(idEvent, prixEvent) {
         if (data.checkout_url) {
           window.location.href = data.checkout_url;
         } else {
-          alert("Erreur lors de l'initialisation du paiement.");
+          alert(t("evenement.payment_init_error"));
           window.isProcessingPayment = false;
         }
       })
       .catch(function (error) {
         console.error("Erreur Stripe :", error);
-        alert("Impossible de contacter le serveur de paiement.");
+        alert(t("evenement.payment_server_error"));
         window.isProcessingPayment = false;
       });
-  }
-
-  else {
-    fetch("http://localhost:8081/admin/evenements/inscription", {
+  } else {
+    fetch(API_BASE_URL + "/admin/evenements/inscription", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -166,7 +168,7 @@ function sinscrireEvenement(idEvent, prixEvent) {
         });
       })
       .then(function (data) {
-        alert("Succès : Inscription validée à l'événement gratuit !");
+        alert(t("evenement.sub_success"));
         window.isProcessingPayment = false;
         FermerEvenement();
         LancerRecherche();
@@ -186,7 +188,7 @@ function OuvrirEvenement(id) {
 
   const imageCover =
     evt.image_url && evt.image_url.trim() !== ""
-      ? `http://localhost:8081/${evt.image_url}`
+      ? `${API_BASE_URL}/${evt.image_url}`
       : "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=500";
 
   document.getElementById("modalImage").src = imageCover;
@@ -196,25 +198,35 @@ function OuvrirEvenement(id) {
     `${evt.nomSalarie || ""} ${evt.prenomSalarie || ""}`.trim() ||
     "UpcycleConnect";
 
+  const tFn = typeof t === "function" ? t : (k) => k;
   document.getElementById("modalMeta").textContent =
-    `Animé par ${auteur} • Le ${evt.date_debut}`;
+    `${tFn("evenement.hosted_by")} ${auteur} • ${tFn("evenement.on")} ${evt.date_debut}`;
 
-  document.getElementById("modalContenu").innerHTML =
+  let contenuHtml =
     evt.description || "Pas de description disponible pour cet événement.";
+
+  if (evt.pdf_url && evt.pdf_url.trim() !== "") {
+    contenuHtml +=
+      `<div style="margin-top: 18px;">` +
+      `<a href=API_BASE_URL + "/${evt.pdf_url}" target="_blank" ` +
+      `style="display:inline-block; background-color: var(--blue); color:#fff; padding:10px 16px; border-radius:6px; font-weight:600; text-decoration:none;">` +
+      `📄 Télécharger le support (PDF)</a></div>`;
+  }
+
+  document.getElementById("modalContenu").innerHTML = contenuHtml;
 
   document.getElementById("articleModal").style.display = "flex";
 }
 
 function FermerEvenement() {
   const modal = document.getElementById("articleModal");
+
   if (modal) {
     modal.style.display = "none";
   }
 }
 function SeDesinscrire(idEvent) {
-  if (
-    !confirm("Voulez-vous vraiment annuler votre inscription à cet événement ?")
-  ) {
+  if (!confirm(t("evenement.unsub_confirm"))) {
     return;
   }
 
@@ -222,11 +234,11 @@ function SeDesinscrire(idEvent) {
   const monToken = localStorage.getItem("token");
 
   if (!idUser || idUser === "null") {
-    alert("Erreur : Vous devez être connecté pour faire cette action.");
+    alert(t("evenement.login_required_action"));
     return;
   }
 
-  fetch("http://localhost:8081/admin/evenements/desinscription", {
+  fetch(API_BASE_URL + "/admin/evenements/desinscription", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -248,6 +260,7 @@ function SeDesinscrire(idEvent) {
     .then(function (data) {
       alert("Succès : " + (data.message || "Désinscription validée"));
       FermerEvenement();
+
       chargerEvenementsClient();
     })
     .catch(function (errorMessage) {

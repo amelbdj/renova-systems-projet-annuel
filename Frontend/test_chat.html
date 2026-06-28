@@ -95,7 +95,7 @@
       let socket;
       let monId;
       let autreId;
-      const annonceId = 5; // On simule qu'on parle de l'annonce n°5
+      const annonceId = 5; 
 
       function connecter() {
         monId = document.getElementById("mon-id").value;
@@ -106,35 +106,35 @@
           return;
         }
 
-        // 🔌 1. ON SE CONNECTE AU WEBSOCKET GO
+        
         socket = new WebSocket(`ws://localhost:8081/ws/chat?userId=${monId}`);
 
-        // Quand la connexion réussit
+        
         socket.onopen = () => {
           afficherMessage("✅ Connecté au serveur !", "msg-autre", true);
           document.getElementById("input-msg").disabled = false;
           document.getElementById("btn-send").disabled = false;
         };
 
-        // 📩 2. QUAND ON REÇOIT UN MESSAGE DU SERVEUR
+        
         socket.onmessage = (event) => {
           const msg = JSON.parse(event.data);
           afficherMessage(msg.contenu, "msg-autre");
         };
 
-        // Si le serveur coupe
+        
         socket.onclose = () => {
           afficherMessage("❌ Déconnecté du serveur.", "msg-autre", true);
         };
       }
 
-      // 🚀 3. QUAND ON ENVOIE UN MESSAGE
+      
       function envoyerMessage() {
         const input = document.getElementById("input-msg");
         const texte = input.value.trim();
         if (!texte) return;
 
-        // On prépare l'objet exactement comme ton Modèle Go l'attend
+        
         const messageData = {
           annonce_id: annonceId,
           expediteur_id: parseInt(monId),
@@ -142,12 +142,12 @@
           contenu: texte,
         };
 
-        // On l'envoie dans le tuyau WebSocket
+        
         socket.send(JSON.stringify(messageData));
 
-        // On l'affiche sur notre propre écran
+        
         afficherMessage(texte, "msg-moi");
-        input.value = ""; // On vide la case
+        input.value = ""; 
       }
 
       function afficherMessage(texte, classeCss, isSystem = false) {
@@ -156,7 +156,7 @@
           ? 'style="font-size:12px; color:gray; text-align:center; float:none;"'
           : "";
         box.innerHTML += `<div class="msg ${classeCss}" ${style}>${texte}</div>`;
-        box.scrollTop = box.scrollHeight; // Scroll auto en bas
+        box.scrollTop = box.scrollHeight; 
       }
     </script>
   </body>

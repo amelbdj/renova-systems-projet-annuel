@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   loadMyAnnonces();
-  loadUserBoxes();
+  loadAllUserBoxes();
   loadEcoScore();
 });
 
@@ -41,7 +41,7 @@ async function loadMyAnnonces() {
 
   try {
     const response = await fetch(
-      `http://localhost:8081/mes-annonces?id=${userId}`,
+      `${API_BASE_URL}/mes-annonces?id=${userId}`,
     );
     const toutesAnnonces = await response.json();
 
@@ -63,7 +63,7 @@ async function loadMyAnnonces() {
     } else {
       annoncesActives.forEach((ann) => {
         console.log("Données de l'annonce:", ann);
-        const imgSrc = ann.image ? `http://localhost:8081${ann.image}` : null;
+        const imgSrc = ann.image ? `${API_BASE_URL}${ann.image}` : null;
         const card = document.createElement("div");
         card.className = "ann-card fu";
         const statusClass =
@@ -108,7 +108,7 @@ async function deleteAnnonce(id) {
   const token = localStorage.getItem("token");
   try {
     const response = await fetch(
-      `http://localhost:8081/admin/annonces/delete/${id}`,
+      `${API_BASE_URL}/admin/annonces/delete/${id}`,
       {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
@@ -156,28 +156,28 @@ function goToProfile() {
 
 async function loadAllUserBoxes() {
   const userId = localStorage.getItem("userId");
-  const grid = document.getElementById("systeme-conteneurs"); // On garde le même ID !
+  const grid = document.getElementById("systeme-conteneurs"); 
 
   if (!grid) return;
 
   try {
-    // 1. On lance les deux requêtes en même temps
+    
     const [resDeposits, resPickups] = await Promise.all([
-      fetch(`http://localhost:8081/api/user/boxes?user_id=${userId}`),
-      fetch(`http://localhost:8081/api/user/pickups/${userId}`),
+      fetch(`${API_BASE_URL}/api/user/boxes?user_id=${userId}`),
+      fetch(`${API_BASE_URL}/api/user/pickups/${userId}`),
     ]);
 
-    // On gère le cas où l'API renvoie "null" en mettant un tableau vide par défaut []
+    
     const deposits = (await resDeposits.json()) || [];
     const pickups = (await resPickups.json()) || [];
 
-    // 2. On combine les deux listes en leur ajoutant un tag pour les reconnaître
+    
     const allItems = [
       ...deposits.map((item) => ({ ...item, typeAction: "depot" })),
       ...pickups.map((item) => ({ ...item, typeAction: "recuperation" })),
     ];
 
-    // S'il n'a ni dépôt ni retrait à faire
+    
     if (allItems.length === 0) {
       grid.innerHTML = `
                 <div class="cont-card avail">
@@ -187,15 +187,15 @@ async function loadAllUserBoxes() {
       return;
     }
 
-    // 3. On affiche tout dans la même grille
+    
     grid.innerHTML = allItems
       .map((box) => {
-        // Variables qui changent selon la pastille
+        
         const isDepot = box.typeAction === "depot";
         const pastilleText = isDepot ? "DÉPÔT" : "RÉCUPÉRATION";
         const pastilleColor = isDepot
           ? "background-color: #f39c12;"
-          : "background-color: #27ae60;"; // Orange / Vert
+          : "background-color: #27ae60;"; 
         const statutAffichage = isDepot ? box.etat : box.statut_vente;
         const dateAffichage = isDepot
           ? `Réservé le ${new Date(box.date).toLocaleDateString()}`
@@ -226,18 +226,25 @@ async function loadAllUserBoxes() {
                 </div>
                 
                 <div class="cont-codes">
-                    <span class="ccode blue" style="${!isDepot ? "font-size: 1.1em; font-weight: bold;" : ""}">PIN : ${box.code_pin}</span>
-                    <span class="ccode purple">REF : ${box.barcode}</span>
+                    ${
+                      isDepot
+                        ? `<span class="ccode blue" style="font-size: 1.1em; font-weight: bold;">PIN de dépôt : ${box.code_pin}</span>`
+                        : `<span class="ccode purple" style="font-size: 1.1em; font-weight: bold;">Code-barre de retrait : ${box.barcode}</span>`
+                    }
                 </div>
                 
-                <div style="background:white; padding:8px; border-radius:4px; margin-top:12px; text-align:center;">
-                    <svg class="barcode-img" 
+                ${
+                  !isDepot
+                    ? `<div style="background:white; padding:8px; border-radius:4px; margin-top:12px; text-align:center;">
+                    <svg class="barcode-img"
                          jsbarcode-value="${box.barcode}"
                          jsbarcode-width="1.2"
                          jsbarcode-height="30"
                          jsbarcode-fontsize="10">
                     </svg>
-                </div>
+                </div>`
+                    : ""
+                }
 
                 <button class="btn btn-g btn-sm" style="margin-top: 12px; width:100%" onclick="window.print()">
                     <i class="fas fa-download"></i> ${btnText}
@@ -256,7 +263,7 @@ async function loadAllUserBoxes() {
   }
 }
 
-// N'oublie pas de l'appeler au chargement de la page :
+
 window.addEventListener("DOMContentLoaded", loadAllUserBoxes);
 function togglePriceField() {
   const typeSelect = document.querySelector("#annForm select").value;
@@ -279,7 +286,7 @@ async function loadEcoScore() {
 
   try {
     const response = await fetch(
-      "http://localhost:8081/api/user/stats?user_id=" + userId,
+      API_BASE_URL + "/api/user/stats?user_id=" + userId,
     );
     const stats = await response.json();
 
@@ -324,6 +331,6 @@ async function loadEcoScore() {
 }
 document.addEventListener("DOMContentLoaded", () => {
   loadMyAnnonces();
-  loadAllUserBoxes(); // 🟢 CORRECTION ICI (à remplacer en haut et en bas du fichier)
+  loadAllUserBoxes(); 
   loadEcoScore();
 });

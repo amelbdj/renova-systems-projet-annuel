@@ -21,24 +21,27 @@
     <title>Evenement</title>
   </head>
   <body>
+    
+    <div id="wrapper" style="position:fixed; bottom:16px; right:16px; z-index:2000; display:flex; gap:6px;"></div>
+
     <nav class="topnav">
       <div class="nav-logo">
         <img src="../Frontend/assets/logo renova.png" alt="ReNova" />
       </div>
       <div class="nav-links">
-        <a class="nav-link active">Accueil</a>
-        <a class="nav-link" href="../Frontend/espClient.html">Annonces</a>
-        <a class="nav-link" href="../Frontend/espClient.html">Conteneurs</a>
-        <a class="nav-link" href="../Frontend/espClient.html">Catalogue</a>
-        <a class="nav-link" href="../Frontend/espClient.html">Planning</a>
-        <a class="nav-link" href="../Frontend/espClient.html">Mon score</a>
-        <a class="nav-link" href="../Frontend/article.html">Article</a>
-        <a class="nav-link" href="../Frontend/evenement.html">Evenement</a>
-        <a class="nav-link" href="../Frontend/forum.html">Forum</a>
+        <a class="nav-link active" data-i18n="landing.nav.home">Accueil</a>
+        <a class="nav-link" href="../Frontend/espClient.html" data-i18n="annonce.nav.listings">Annonces</a>
+        <a class="nav-link" href="../Frontend/espClient.html" data-i18n="forum.nav.containers">Conteneurs</a>
+        <a class="nav-link" href="../Frontend/espClient.html" data-i18n="forum.nav.catalog">Catalogue</a>
+        <a class="nav-link" href="../Frontend/espClient.html" data-i18n="forum.nav.planning">Planning</a>
+        <a class="nav-link" href="../Frontend/espClient.html" data-i18n="forum.nav.score">Mon score</a>
+        <a class="nav-link" href="../Frontend/article.html" data-i18n="forum.nav.article">Article</a>
+        <a class="nav-link" href="../Frontend/evenement.html" data-i18n="forum.nav.event">Evenement</a>
+        <a class="nav-link" href="../Frontend/forum.html" data-i18n="forum.nav.forum">Forum</a>
       </div>
       <div class="nav-right">
         <button class="nav-link" onclick="showSection('messages-section')">
-          <i class="fas fa-envelope"></i> Mes Messages
+          <i class="fas fa-envelope"></i> <span data-i18n="forum.nav.messages">Mes Messages</span>
         </button>
         <div class="lang-btn">
           <span class="material-symbols-outlined"> public </span>Lang
@@ -60,7 +63,7 @@
           <div class="profile-ava">👤</div>
           <div>
             <div class="profile-name" id="navName">Your Name</div>
-            <div class="profile-role">Particulier</div>
+            <div class="profile-role" data-i18n="register.role.individual">Particulier</div>
           </div>
         </div>
       </div>
@@ -71,13 +74,14 @@
           type="text"
           id="searchInput"
           placeholder="Rechercher un événement..."
+          data-i18n-placeholder="evenement.search_ph"
         />
         <button type="button" class="btn" onclick="LancerRecherche()">
           <span class="material-symbols-outlined"> search </span>
         </button>
       </div>
 
-      <h2>Nos Événements</h2>
+      <h2 data-i18n="evenement.heading">Nos Événements</h2>
       <div id="liste-evenements" class="articles-grid"></div>
     </div>
 
@@ -90,9 +94,9 @@
         <h2
           style="font-family: &quot;Syne&quot;, sans-serif; color: var(--txt)"
         >
-          Mes Conversations
+          <span data-i18n="forum.my_conversations">Mes Conversations</span>
         </h2>
-        <p style="color: var(--txt-m)">Retrouvez ici tous vos échanges.</p>
+        <p style="color: var(--txt-m)" data-i18n="evenement.conv_sub">Retrouvez ici tous vos échanges.</p>
       </div>
 
       <div
@@ -103,7 +107,7 @@
           grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
         "
       >
-        <div class="loading-msg" style="color: var(--txt-m)">Chargement...</div>
+        <div class="loading-msg" style="color: var(--txt-m)" data-i18n="forum.loading_short">Chargement...</div>
       </div>
 
       <div
@@ -121,13 +125,13 @@
           class="fas fa-comments"
           style="font-size: 3rem; color: var(--b0); margin-bottom: 15px"
         ></i>
-        <p style="color: var(--txt-m)">Aucun message pour le moment.</p>
+        <p style="color: var(--txt-m)" data-i18n="article.no_messages">Aucun message pour le moment.</p>
       </div>
     </section>
 
-    <div id="evenementModal" class="modal-overlay" style="display: none">
+    <div id="articleModal" class="modal-overlay" style="display: none">
       <div class="modal-content">
-        <span class="close-btn" onclick="FermerArticle()">&times;</span>
+        <span class="close-btn" onclick="FermerEvenement()">&times;</span>
         <img
           id="modalImage"
           src=""
@@ -187,7 +191,7 @@
             align-items: center;
           "
         >
-          <h3 style="margin: 0; color: var(--txt); font-size: 16px">
+          <h3 style="margin: 0; color: var(--txt); font-size: 16px" data-i18n="forum.discussion">
             Discussion
           </h3>
           <span
@@ -224,6 +228,7 @@
             type="text"
             id="chat-input"
             placeholder="Écrivez un message..."
+            data-i18n-placeholder="evenement.chat_ph"
             style="
               flex: 1;
               padding: 10px;
@@ -253,22 +258,27 @@
     </div>
   </body>
 
+  
+  <script src="./script/config.js"></script>
+  <script src="../Frontend/script/admin/translate.js" defer></script>
   <script src="../Frontend/script/profil.js" defer></script>
   <script src="../Frontend/script/affichageEvt.js" defer></script>
   <script src="../Frontend/script/messagerie/messagerie.js" defer></script>
 
   <script>
     window.onload = function () {
-      // 1. On charge la liste des événements par défaut dès l'ouverture de la page
+      
       if (typeof chargerEvenementsClient === "function") {
         chargerEvenementsClient();
       }
 
-      // 2. On vérifie si l'utilisateur revient d'un paiement Stripe réussi
+      
       const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.get("paiement") === "success") {
         alert(
-          "🎉 Paiement validé ! Vous êtes officiellement inscrit à l'événement.",
+          typeof t === "function"
+            ? t("evenement.payment_success")
+            : "🎉 Paiement validé ! Vous êtes officiellement inscrit à l'événement.",
         );
         window.history.replaceState(
           {},

@@ -54,6 +54,7 @@ function OpenEditModalAPI(id, nom, prenom, email, role) {
 function AfficherTableau(users) {
   const container = document.querySelector(".u-table");
 
+
   if (!container) return;
 
   const totalStat = document.getElementById("totalUser");
@@ -95,7 +96,8 @@ function AfficherTableau(users) {
 
     let docContent = "";
     if (user.chemin_fichier) {
-      const fileUrl = `http://localhost:8081/view-uploads/${user.chemin_fichier.replace(/\\/g, "/").replace("uploads/", "")}`;
+      const filePath = user.chemin_fichier.replace(/\\/g, "/").replace("uploads/", "");
+      const fileUrl = `${API_BASE_URL}/view-uploads/${filePath}`;
       docContent = `
                 <button class="btn btn-xs btn-g" onclick="window.open('${fileUrl}', '_blank')">
                     <span class="material-symbols-outlined" style="font-size:16px;">description</span>
@@ -164,7 +166,7 @@ function AfficherTableau(users) {
 }
 
 function GetUsers() {
-  fetch("http://localhost:8081/admin/users", {
+  fetch(`${API_BASE_URL}/admin/users`, {
     headers: {
       Authorization: "Bearer " + monToken,
     },
@@ -174,16 +176,26 @@ function GetUsers() {
     .catch((err) => console.error("Erreur GET Users:", err));
 }
 
-let currentUserIdToRefuse = null; 
+let currentUserIdToRefuse = null;
 
 function RefuseUser(userId) {
+
   currentUserIdToRefuse = userId;
   document.getElementById("modalRefus").style.display = "flex";
   document.getElementById("motifTexte").value = "";
+
+  currentUserIdToRefuse = userId; 
+  document.getElementById("modalRefus").style.display = "flex";
+  document.getElementById("motifTexte").value = ""; 
+
+  currentUserIdToRefuse = userId;
+  document.getElementById("modalRefus").style.display = "flex";
+  document.getElementById("motifTexte").value = "";
+
 }
 
 function ValidateUser(userId) {
-  fetch(`http://localhost:8081/admin/users/validate/${userId}`, {
+  fetch(`${API_BASE_URL}/admin/users/validate/${userId}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -195,14 +207,14 @@ function ValidateUser(userId) {
     .catch((err) => console.error("Erreur GET Users:", err));
 }
 function GetUserByRole(role) {
-  fetch(`http://localhost:8081/admin/users/role/${role}`)
+  fetch(`${API_BASE_URL}/admin/users/role/${role}`)
     .then((res) => res.json())
     .then(AfficherTableau)
     .catch((err) => console.error("Erreur GET Role:", err));
 }
 
 function Search(query, role) {
-  let url = `http://localhost:8081/admin/users/search?name=${encodeURIComponent(query)}`;
+  let url = `${API_BASE_URL}/admin/users/search?name=${encodeURIComponent(query)}`;
 
   const roleAllText =
     t("backoffice.role.all") !== "backoffice.role.all"
@@ -221,7 +233,7 @@ function Search(query, role) {
   fetch(url, {
     method: "GET",
     headers: {
-      Authorization: "Bearer " + localStorage.getItem("token"), 
+      Authorization: "Bearer " + localStorage.getItem("token"),
     },
   })
     .then((res) => {
@@ -239,7 +251,7 @@ function Search(query, role) {
 
 function DeleteUser(userId) {
   if (confirm(t("backoffice.users.confirm_delete"))) {
-    fetch(`http://localhost:8081/admin/users/delete/${userId}`, {
+    fetch(`${API_BASE_URL}/admin/users/delete/${userId}`, {
       method: "DELETE",
       headers: {
         Authorization: "Bearer " + monToken,
@@ -260,7 +272,7 @@ function CreateUser() {
     return;
   }
 
-  fetch("http://localhost:8081/admin/users/add", {
+  fetch(`${API_BASE_URL}/admin/users/add`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -287,7 +299,7 @@ function UpdateUser() {
     role: document.getElementById("edit-role").value,
   };
 
-  fetch(`http://localhost:8081/admin/users/modify/${userId}`, {
+  fetch(`${API_BASE_URL}/admin/users/modify/${userId}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -314,11 +326,12 @@ function UpdateValidationCount() {
     },
   };
 
+
   Promise.all([
-    fetch("http://localhost:8081/admin/annonces", fetchOptions).then((res) =>
+    fetch(`${API_BASE_URL}/admin/annonces`, fetchOptions).then((res) =>
       res.json(),
     ),
-    fetch("http://localhost:8081/admin/evenements", fetchOptions).then((res) =>
+    fetch(`${API_BASE_URL}/admin/evenements`, fetchOptions).then((res) =>
       res.json(),
     ),
   ])
@@ -361,6 +374,7 @@ function FermerModaleRefus() {
 
 const btnConfirmerRefus = document.getElementById("btnConfirmerRefus");
 
+
 if (btnConfirmerRefus) {
   btnConfirmerRefus.onclick = function () {
     const raison = document.getElementById("motifTexte").value;
@@ -370,7 +384,7 @@ if (btnConfirmerRefus) {
       return;
     }
 
-    fetch(`http://localhost:8081/admin/users/refuse/${currentUserIdToRefuse}`, {
+    fetch(`${API_BASE_URL}/admin/users/refuse/${currentUserIdToRefuse}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -382,7 +396,7 @@ if (btnConfirmerRefus) {
       .then((data) => {
         console.log(data.message);
         FermerModaleRefus();
-        GetUsers(); 
+        GetUsers();
       })
       .catch((err) => console.error("Erreur refus:", err));
   };
@@ -424,9 +438,9 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
-  // const role = localStorage.getItem("role");
 
-  // if (role != "Administrateur") {
-  //   window.location.href = "403.html";
-  // }
+
+
+
+
 });

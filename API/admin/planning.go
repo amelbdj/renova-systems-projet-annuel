@@ -19,8 +19,7 @@ func GetUserPlanningHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-
-	idStr := r.URL.Query().Get("id") 
+	idStr := r.URL.Query().Get("id")
 	if idStr == "" {
 		http.Error(w, "ID utilisateur manquant", http.StatusBadRequest)
 		return
@@ -31,7 +30,6 @@ func GetUserPlanningHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "ID utilisateur invalide", http.StatusBadRequest)
 		return
 	}
-
 
 	planningData, err := bdd.GetUserPlanning(userID)
 	if err != nil {

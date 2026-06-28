@@ -1,4 +1,3 @@
-
 var monToken = localStorage.getItem("token");
 var userId = localStorage.getItem("userId");
 
@@ -8,7 +7,7 @@ function chargerProfil() {
     return;
   }
 
-  fetch(`http://localhost:8081/admin/users/${userId}`, {
+  fetch(`${API_BASE_URL}/admin/users/${userId}`, {
     headers: { Authorization: "Bearer " + monToken },
   })
     .then((res) => {
@@ -30,7 +29,7 @@ function chargerProfil() {
 
   const statArticle = document.getElementById("stat-article");
   if (statArticle) {
-    fetch(`http://localhost:8081/admin/articles/salarie/${userId}`, {
+    fetch(`${API_BASE_URL}/admin/articles/salarie/${userId}`, {
       headers: { Authorization: "Bearer " + monToken },
     })
       .then((res) => res.json())
@@ -44,7 +43,7 @@ function chargerProfil() {
   const statEvent = document.getElementById("stat-event");
   const statValide = document.getElementById("stat-valide");
   if (statEvent || statValide) {
-    fetch(`http://localhost:8081/admin/evenements`, {
+    fetch(`${API_BASE_URL}/admin/evenements`, {
       headers: { Authorization: "Bearer " + monToken },
     })
       .then((res) => res.json())
@@ -59,6 +58,7 @@ function chargerProfil() {
             e.idSalarie ||
             e.user_id ||
             e.IdUser;
+
           return String(idAuteur) === String(userId);
         });
 
@@ -87,16 +87,103 @@ function chargerProfil() {
 
   const statForum = document.getElementById("stat-forum");
   if (statForum) {
-    fetch(`http://localhost:8081/admin/forum/messages`, {
+    fetch(`${API_BASE_URL}/admin/forum/messages`, {
       headers: { Authorization: "Bearer " + monToken },
     })
       .then((res) => res.json())
       .then((messages) => {
         if (!messages) messages = [];
+
+        let nbSignales = 0;
+        for (let i = 0; i < messages.length; i++) {
+          if (messages[i].est_signale) {
+            nbSignales++;
+          }
+        }
+        statForum.textContent = nbSignales;
         statForum.textContent = messages.length;
       })
       .catch((err) => console.error("Erreur stat forum:", err));
   }
+
+  chargerNotifications();
+}
+
+function chargerNotifications() {
+  var pastille = document.querySelector(".notif-dot");
+  if (!pastille) return;
+  var cloche = pastille.parentElement;
+
+  fetch(`${API_BASE_URL}/admin/notifications/user/` + userId, {
+    headers: { Authorization: "Bearer " + monToken },
+  })
+    .then(function (res) {
+      return res.json();
+    })
+    .then(function (notifs) {
+      if (!notifs) notifs = [];
+
+      var nonLues = 0;
+      for (var i = 0; i < notifs.length; i++) {
+        if (notifs[i].est_lu == 0) {
+          nonLues++;
+        }
+      }
+
+      pastille.style.display = nonLues > 0 ? "block" : "none";
+
+      var panneau = document.getElementById("notif-panel");
+      if (!panneau) {
+        panneau = document.createElement("div");
+        panneau.id = "notif-panel";
+        panneau.style.cssText =
+          "display:none; position:fixed; top:64px; right:20px; width:320px; max-height:420px; overflow-y:auto; background:var(--bg2); border:1px solid var(--b0); border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.45); z-index:5000; padding:8px;";
+        document.body.appendChild(panneau);
+      }
+
+      var html =
+        "<div style='font-family:Syne,sans-serif; font-weight:700; padding:10px; color:var(--txt);'>Notifications</div>";
+      if (notifs.length === 0) {
+        html +=
+          "<div style='padding:14px; color:var(--txt-m); font-size:13px;'>Aucune notification.</div>";
+      } else {
+        for (var j = 0; j < notifs.length; j++) {
+          var fond =
+            notifs[j].est_lu == 0 ? "rgba(138,100,255,0.10)" : "transparent";
+          html +=
+            "<div style='padding:10px 12px; border-bottom:1px solid var(--b0); font-size:13px; color:var(--txt-m); background:" +
+            fond +
+            ";'>" +
+            notifs[j].contenu +
+            "</div>";
+        }
+      }
+      panneau.innerHTML = html;
+
+      cloche.style.cursor = "pointer";
+      cloche.onclick = function () {
+        if (panneau.style.display === "none") {
+          panneau.style.display = "block";
+          if (nonLues > 0) {
+            fetch(
+              `${API_BASE_URL}/admin/notifications/user/` + userId + "/read",
+              {
+                method: "POST",
+                headers: { Authorization: "Bearer " + monToken },
+              },
+            ).then(function () {
+              pastille.style.display = "none";
+              nonLues = 0;
+            });
+          }
+        } else {
+          panneau.style.display = "none";
+        }
+      };
+    })
+    .catch(function (err) {
+      console.error("Erreur notifications:", err);
+    });
 }
 
 function logout() {
@@ -114,4 +201,5 @@ function goToProfile() {
 
   window.location.href = `../profil.html?id=${userId}`;
 }
+
 document.addEventListener("DOMContentLoaded", chargerProfil);

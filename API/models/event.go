@@ -8,13 +8,27 @@ type Evenement struct {
 	DateFin          string  `json:"date_fin"`
 	NbPlaces         int     `json:"nb_places"`
 	StatutValidation string  `json:"statut_validation"`
-	Format           string  `json:"format"` // En ligne ou Présentiel
+	Format           string  `json:"format"`
 	NomSalarie       string  `json:"nomSalarie"`
 	PrenomSalarie    string  `json:"prenomSalarie"`
 	Lieu             string  `json:"lieu"`
 	Type             string  `json:"type"`
-	IdSalarie        int     `json:"idSalarie"` // ID du salarié qui a créé l'événement
+	IdSalarie        int     `json:"idSalarie"`
 	Prix             float64 `json:"prix"`
 	DejaInscrit      bool    `json:"deja_inscrit"`
-	ImageUrl string `json:"image_url"`
+	ImageUrl         string  `json:"image_url"`
+	PdfUrl           string  `json:"pdf_url"`
+	PlanCours        string  `json:"plan_cours"`
+}
+
+type Ressource struct {
+	Titre      string `json:"titre"`
+	UrlFichier string `json:"url_fichier"`
+}
+
+type Inscrit struct {
+	Nom             string `json:"nom"`
+	Prenom          string `json:"prenom"`
+	Email           string `json:"email"`
+	DateInscription string `json:"date_inscription"`
 }

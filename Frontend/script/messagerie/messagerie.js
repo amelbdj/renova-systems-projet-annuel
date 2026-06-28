@@ -14,7 +14,7 @@ function openChat(annonceId, destinataireId) {
   document.getElementById("chatModal").style.display = "flex";
 
   fetch(
-    `http://localhost:8081/api/chat/history?annonce_id=${currentChatAnnonceId}&user1=${monUserId}&user2=${currentChatDestinataireId}`,
+    `${API_BASE_URL}/api/chat/history?annonce_id=${currentChatAnnonceId}&user1=${monUserId}&user2=${currentChatDestinataireId}`,
     {
       headers: { Authorization: "Bearer " + localStorage.getItem("token") },
     },
@@ -49,7 +49,7 @@ function openChat(annonceId, destinataireId) {
 function connectWebSocket(monUserId) {
   if (chatSocket) chatSocket.close();
 
-  chatSocket = new WebSocket(`ws://localhost:8081/ws/chat?userId=${monUserId}`);
+  chatSocket = new WebSocket(`${WS_BASE_URL}/ws/chat?userId=${monUserId}`);
 
   chatSocket.onmessage = function (event) {
     const msg = JSON.parse(event.data);
@@ -119,18 +119,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function loadMyMessages() {
   const userId = localStorage.getItem("userId");
-  // Utilise l'ID présent dans espClient.html ligne 146
+
   const container = document.getElementById("conversations-list");
   const noMsg = document.getElementById("no-messages");
 
-  if (!container) return; 
+  if (!container) return;
 
-  fetch(`http://localhost:8081/api/chat/conversations?userId=${userId}`, {
+  fetch(`${API_BASE_URL}/api/chat/conversations?userId=${userId}`, {
     headers: { Authorization: "Bearer " + localStorage.getItem("token") },
   })
     .then((res) => res.json())
     .then((data) => {
-      container.innerHTML = ""; 
+      container.innerHTML = "";
 
       if (!data || data.length === 0) {
         if (noMsg) noMsg.style.display = "block";

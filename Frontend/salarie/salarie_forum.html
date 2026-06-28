@@ -14,19 +14,26 @@
     />
     <link rel="stylesheet" href="../style/salarie.css" />
 
+    <script src="../script/auth_guard.js?v=5"></script>
+    <script>
+      checkSession("Salari?");
+    </script>
     <title>Modération du Forum - Espace Salarié</title>
   </head>
   <body>
+
+    <div id="wrapper" style="position:fixed; bottom:16px; right:16px; z-index:2000; display:flex; gap:6px;"></div>
+
     <nav class="topnav">
       <div class="nav-logo">
         <img src="ton_logo.jpg" alt="ReNova" />
       </div>
       <div class="nav-links">
-        <a href="salarie_dashboard.html" class="nav-link">Accueil</a>
-        <a href="salarie_events.html" class="nav-link active">Événements</a>
-        <a href="salarie_planning.html" class="nav-link">Planning</a>
-        <a href="salarie_content.html" class="nav-link">Conseils & News</a>
-        <a href="salarie_forum.html" class="nav-link">Modération</a>
+        <a href="salarie_dashboard.html" class="nav-link" data-i18n="landing.nav.home">Accueil</a>
+        <a href="salarie_events.html" class="nav-link active" data-i18n="landing.nav.events">Événements</a>
+        <a href="salarie_planning.html" class="nav-link" data-i18n="forum.nav.planning">Planning</a>
+        <a href="salarie_content.html" class="nav-link" data-i18n="salarie.nav.content">Conseils & News</a>
+        <a href="salarie_forum.html" class="nav-link" data-i18n="salarie.nav.moderation">Modération</a>
       </div>
       <div class="nav-right">
         <div class="lang-btn">
@@ -60,22 +67,22 @@
           <div class="sec-num amber">
             <span class="material-symbols-outlined">shield</span>
           </div>
-          <div class="sec-title-text">Modération du Forum</div>
+          <div class="sec-title-text" data-i18n="salarie.mod.title">Modération du Forum</div>
           <div class="sec-divider"></div>
         </div>
 
         <div style="margin-bottom: 20px; display: flex; gap: 10px">
-          <button class="btn btn-xs btn-g" onclick="setFilter('all', this)">
+          <button class="btn btn-xs btn-g" onclick="setFilter('all', this)" data-i18n="salarie.mod.all_messages">
             Tous les messages
           </button>
-          <button class="btn btn-xs" onclick="setFilter('flag', this)">
+          <button class="btn btn-xs" onclick="setFilter('flag', this)" data-i18n="salarie.mod.flags_only">
             🚩 Signalements uniquement
           </button>
         </div>
 
         <div class="forum-layout">
           <div class="thread-list" id="forum-thread-list">
-            <div class="loading-msg" style="color: var(--txt-m)">
+            <div class="loading-msg" style="color: var(--txt-m)" data-i18n="salarie.mod.loading">
               Chargement des messages...
             </div>
           </div>
@@ -86,7 +93,7 @@
                 <div class="fstat-ico">💬</div>
                 <div class="fstat-val" id="stat-messages">0</div>
               </div>
-              <div class="fstat-lbl">Messages cette semaine</div>
+              <div class="fstat-lbl" data-i18n="salarie.mod.messages_week">Messages cette semaine</div>
             </div>
 
             <div class="fstat">
@@ -94,7 +101,7 @@
                 <div class="fstat-ico">👥</div>
                 <div class="fstat-val" id="stat-membres">0</div>
               </div>
-              <div class="fstat-lbl">Membres actifs</div>
+              <div class="fstat-lbl" data-i18n="salarie.mod.active_members">Membres actifs</div>
             </div>
 
             <div
@@ -114,7 +121,7 @@
                   0
                 </div>
               </div>
-              <div class="fstat-lbl" style="color: var(--red)">
+              <div class="fstat-lbl" style="color: var(--red)" data-i18n="salarie.mod.pending_flags">
                 Signalements en attente
               </div>
             </div>
@@ -123,7 +130,10 @@
       </div>
     </div>
 
-    <script src="../script/salarie/userInfo.js" defer></script>
+
+    <script src="../script/admin/translate.js" defer></script>
+    <script src="../script/config.js"></script>
+  <script src="../script/salarie/userInfo.js" defer></script>
     <script src="../script/salarie/forum.js" defer></script>
   </body>
 </html>

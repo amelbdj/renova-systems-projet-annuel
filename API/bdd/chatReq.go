@@ -4,7 +4,6 @@ import (
 	"upcycleconnect/models"
 )
 
-// SaveMessage enregistre un nouveau message en base
 func SaveMessage(msg models.Message) error {
 	query := `INSERT INTO pa2026.message (annonce_id, expediteur_id, destinataire_id, contenu) 
               VALUES (?, ?, ?, ?)`
@@ -12,7 +11,6 @@ func SaveMessage(msg models.Message) error {
 	return err
 }
 
-// GetConversation récupère l'historique entre deux personnes pour une annonce précise
 func GetConversation(annonceID, user1, user2 int) ([]models.Message, error) {
 	var messages []models.Message
 	query := `SELECT id, annonce_id, expediteur_id, destinataire_id, contenu, lu, date_envoi 
@@ -38,9 +36,8 @@ func GetConversation(annonceID, user1, user2 int) ([]models.Message, error) {
 	return messages, nil
 }
 
-// GetUserConversations récupère la liste des derniers contacts (pour le Dashboard)
 func GetUserConversations(userID int) ([]map[string]interface{}, error) {
-    query := `
+	query := `
         SELECT DISTINCT 
             CASE WHEN expediteur_id = ? THEN destinataire_id ELSE expediteur_id END as contact_id,
             u.nom, u.prenom, a.titre as annonce_titre, a.id as annonce_id
@@ -49,25 +46,25 @@ func GetUserConversations(userID int) ([]map[string]interface{}, error) {
         JOIN pa2026.annonce a ON a.id = m.annonce_id
         WHERE m.expediteur_id = ? OR m.destinataire_id = ?
     `
-    rows, err := Db.Query(query, userID, userID, userID, userID)
-    if err != nil {
-        return nil, err
-    }
-    defer rows.Close()
+	rows, err := Db.Query(query, userID, userID, userID, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
 
-    var results []map[string]interface{}
-    for rows.Next() {
-        var contactID, annonceID int
-        var nom, prenom, titre string
-        rows.Scan(&contactID, &nom, &prenom, &titre, &annonceID)
-        
-        results = append(results, map[string]interface{}{
-            "contact_id":    contactID,
-            "nom":           nom,
-            "prenom":        prenom,
-            "annonce_id":    annonceID,
-            "annonce_titre": titre,
-        })
-    }
-    return results, nil
+	var results []map[string]interface{}
+	for rows.Next() {
+		var contactID, annonceID int
+		var nom, prenom, titre string
+		rows.Scan(&contactID, &nom, &prenom, &titre, &annonceID)
+
+		results = append(results, map[string]interface{}{
+			"contact_id":    contactID,
+			"nom":           nom,
+			"prenom":        prenom,
+			"annonce_id":    annonceID,
+			"annonce_titre": titre,
+		})
+	}
+	return results, nil
 }

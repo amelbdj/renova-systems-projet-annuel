@@ -12,14 +12,14 @@ const (
 	host   = "localhost"
 	port   = 3306
 	user   = "root"
-	pass   = ""
+	pass   = "root"
 	dbname = "pa2026"
 )
 
 var Db *sql.DB
 
 func NewDB() *sql.DB {
-	var sqlInfo = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true", user, pass, host, port, dbname)
+	var sqlInfo = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true&charset=utf8mb4", user, pass, host, port, dbname)
 	conn, err := sql.Open(driver, sqlInfo)
 	if err != nil {
 		panic(err.Error())

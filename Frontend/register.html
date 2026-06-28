@@ -10,6 +10,9 @@
 </head>
 <body>
 
+
+<div id="wrapper" style="position:absolute; top:12px; right:16px; z-index:10; display:flex; gap:6px;"></div>
+
 <div class="split">
 
   <div class="left">
@@ -23,14 +26,14 @@
       </div>
 
       <div class="left-hero">
-        <div class="left-eyebrow">Rejoignez-nous</div>
-        <h1 class="left-title">Ensemble,<br>changeons<br><em>le monde</em></h1>
-        <p class="left-desc">
+        <div class="left-eyebrow" data-i18n="register.left.eyebrow">Rejoignez-nous</div>
+        <h1 class="left-title" data-i18n="register.left.title">Ensemble,<br>changeons<br><em>le monde</em></h1>
+        <p class="left-desc" data-i18n="register.left.desc">
           Créez votre compte en 3 étapes simples et accédez immédiatement à tous les services de la plateforme ReNova.
         </p>
       </div>
 
-      <div class="left-footer">
+      <div class="left-footer" data-i18n="register.left.footer">
         <strong>ReNova Systems</strong> — Software · Infrastructure · Security · Cloud<br>
         © 2026 · Tous droits réservés
       </div>
@@ -41,8 +44,8 @@
     <div class="auth-box">
 
       <div class="form-panel active" id="panelReg">
-        <div class="form-title">Créer un compte ✨</div>
-        <div class="form-sub">Rejoignez la communauté ReNova — c'est gratuit.</div>
+        <div class="form-title" data-i18n="register.form.title">Créer un compte ✨</div>
+        <div class="form-sub" data-i18n="register.form.sub">Rejoignez la communauté ReNova — c'est gratuit.</div>
 
         <div class="steps">
           <div class="step active" id="s1"></div>
@@ -51,140 +54,140 @@
         </div>
 
         <div class="step-panel active" id="sp1">
-          <div style="font-size:12px;color:var(--txt-m);margin-bottom:16px;letter-spacing:.04em;text-transform:uppercase;font-weight:500">Étape 1 — Identité</div>
+          <div style="font-size:12px;color:var(--txt-m);margin-bottom:16px;letter-spacing:.04em;text-transform:uppercase;font-weight:500" data-i18n="register.step1.label">Étape 1 — Identité</div>
           <div class="frow">
             <div class="fgroup" style="margin-bottom:0">
-              <label>Prénom <span class="req">*</span></label>
-              <input type="text" id="rFirstName" placeholder="Jean" oninput="validateName(this)">
-              <div class="field-err" id="rFirstNameErr">Prénom requis.</div>
+              <label><span data-i18n="register.form.firstname_label">Prénom</span> <span class="req">*</span></label>
+              <input type="text" id="rFirstName" placeholder="Jean" data-i18n-placeholder="register.form.firstname_ph" oninput="validateName(this)">
+              <div class="field-err" id="rFirstNameErr" data-i18n="register.form.firstname_err">Prénom requis.</div>
             </div>
             <div class="fgroup" style="margin-bottom:0">
-              <label>Nom <span class="req">*</span></label>
-              <input type="text" id="rLastName" placeholder="Dupont" oninput="validateName(this)">
-              <div class="field-err" id="rLastNameErr">Nom requis.</div>
+              <label><span data-i18n="register.form.lastname_label">Nom</span> <span class="req">*</span></label>
+              <input type="text" id="rLastName" placeholder="Dupont" data-i18n-placeholder="register.form.lastname_ph" oninput="validateName(this)">
+              <div class="field-err" id="rLastNameErr" data-i18n="register.form.lastname_err">Nom requis.</div>
             </div>
           </div>
           <div style="margin-top:14px"></div>
           <div class="fgroup">
-            <label>Adresse e-mail <span class="req">*</span></label>
+            <label><span data-i18n="register.form.email_label">Adresse e-mail</span> <span class="req">*</span></label>
             <div class="input-wrap has-prefix">
               <span class="prefix">✉️</span>
-              <input type="email" id="rEmail" placeholder="votre@email.com" oninput="validateEmail(this)">
+              <input type="email" id="rEmail" placeholder="votre@email.com" data-i18n-placeholder="register.form.email_ph" oninput="validateEmail(this)">
             </div>
-            <div class="field-err" id="rEmailErr">Adresse e-mail invalide.</div>
+            <div class="field-err" id="rEmailErr" data-i18n="register.form.email_err">Adresse e-mail invalide.</div>
           </div>
           <div class="fgroup">
-            <label>Mot de passe <span class="req">*</span></label>
+            <label><span data-i18n="register.form.pwd_label">Mot de passe</span> <span class="req">*</span></label>
             <div class="password-wrap">
-              <input type="password" id="rPwd" placeholder="8 caractères minimum" oninput="checkStrength(this)">
+              <input type="password" id="rPwd" placeholder="8 caractères minimum" data-i18n-placeholder="register.form.pwd_ph" oninput="checkStrength(this)">
               <button class="pwd-toggle" onclick="togglePwd('rPwd',this)" type="button">👁</button>
             </div>
             <div class="strength-wrap">
               <div class="strength-bar"><div class="strength-fill" id="sBar" style="width:0%;background:var(--red)"></div></div>
-              <div class="strength-lbl" id="sLbl">Force du mot de passe</div>
+              <div class="strength-lbl" id="sLbl" data-i18n="register.form.pwd_strength">Force du mot de passe</div>
             </div>
           </div>
           <div class="fgroup">
-            <label>Confirmer le mot de passe <span class="req">*</span></label>
+            <label><span data-i18n="register.form.pwd2_label">Confirmer le mot de passe</span> <span class="req">*</span></label>
             <div class="password-wrap">
               <input type="password" id="rPwd2" placeholder="••••••••" oninput="validateConfirm(this)">
               <button class="pwd-toggle" onclick="togglePwd('rPwd2',this)" type="button">👁</button>
             </div>
-            <div class="field-err" id="rPwd2Err">Les mots de passe ne correspondent pas.</div>
-            <div class="field-ok"  id="rPwd2Ok">✓ Mots de passe identiques.</div>
+            <div class="field-err" id="rPwd2Err" data-i18n="register.form.pwd2_err">Les mots de passe ne correspondent pas.</div>
+            <div class="field-ok"  id="rPwd2Ok" data-i18n="register.form.pwd2_ok">✓ Mots de passe identiques.</div>
           </div>
-          <button class="btn-primary" onclick="goStep(2)">Continuer →</button>
+          <button class="btn-primary" onclick="goStep(2)" data-i18n="register.form.continue">Continuer →</button>
         </div>
 
         <div class="step-panel" id="sp2">
-  <div style="font-size:12px;color:var(--txt-m);margin-bottom:16px;letter-spacing:.04em;text-transform:uppercase;font-weight:500">Étape 2 — Votre profil</div>
-  
+  <div style="font-size:12px;color:var(--txt-m);margin-bottom:16px;letter-spacing:.04em;text-transform:uppercase;font-weight:500" data-i18n="register.step2.label">Étape 2 — Votre profil</div>
+
   <div class="role-grid">
     <div class="role-card" id="role-part" onclick="selectRole(this,'part')">
       <div class="rc-ico">🏠</div>
-      <div class="rc-name">Particulier</div>
+      <div class="rc-name" data-i18n="register.role.individual">Particulier</div>
     </div>
     <div class="role-card" id="role-pro" onclick="selectRole(this,'pro')">
       <div class="rc-ico">🔨</div>
-      <div class="rc-name">Professionnel</div>
+      <div class="rc-name" data-i18n="register.role.pro">Professionnel</div>
     </div>
     <div class="role-card" id="role-sal" onclick="selectRole(this,'sal')">
       <div class="rc-ico">🎓</div>
-      <div class="rc-name">Salarié ReNova</div>
+      <div class="rc-name" data-i18n="register.role.employee">Salarié ReNova</div>
     </div>
     <div class="role-card" id="role-adm" onclick="selectRole(this,'adm')">
       <div class="rc-ico">⚙️</div>
-      <div class="rc-name">Administrateur</div>
+      <div class="rc-name" data-i18n="register.role.admin">Administrateur</div>
     </div>
   </div>
 
   <div id="partFields" style="display:none; margin-bottom:14px;">
     <div class="fgroup">
-      <label>Date de naissance (18 ans minimum) <span class="req">*</span></label>
+      <label><span data-i18n="register.part.dob_label">Date de naissance (18 ans minimum)</span> <span class="req">*</span></label>
       <input type="date" id="partDob">
     </div>
   </div>
 
   <div id="proFields" style="display:none; margin-bottom:14px">
     <div class="fgroup" style="margin-bottom:10px">
-      <label>Nom de l'entreprise <span class="req">*</span></label>
-      <input type="text" id="proName" placeholder="ex : Atelier Morin">
+      <label><span data-i18n="register.pro.name_label">Nom de l'entreprise</span> <span class="req">*</span></label>
+      <input type="text" id="proName" placeholder="ex : Atelier Morin" data-i18n-placeholder="register.pro.name_ph">
     </div>
     <div class="frow">
-      <div><label>SIRET</label><input type="text" id="proSiret" placeholder="14 chiffres"></div>
+      <div><label data-i18n="register.pro.siret_label">SIRET</label><input type="text" id="proSiret" placeholder="14 chiffres" data-i18n-placeholder="register.pro.siret_ph"></div>
       <div>
-        <label>Activité</label>
+        <label data-i18n="register.pro.activity_label">Activité</label>
         <select id="proActivity">
-          <option value="Menuiserie">Menuiserie</option>
-          <option value="Couture">Couture</option>
-          <option value="Autre">Autre</option>
+          <option value="Menuiserie" data-i18n="register.pro.activity_carpentry">Menuiserie</option>
+          <option value="Couture" data-i18n="register.pro.activity_sewing">Couture</option>
+          <option value="Autre" data-i18n="register.pro.activity_other">Autre</option>
         </select>
       </div>
     </div>
   </div>
 
   <div style="display:flex;gap:10px; margin-top: 20px;">
-    <button class="btn-ghost" style="flex:0 0 auto;padding:11px 20px" onclick="goStep(1)">← Retour</button>
-    <button class="btn-primary" style="flex:1" onclick="goStep(3)">Continuer →</button>
+    <button class="btn-ghost" style="flex:0 0 auto;padding:11px 20px" onclick="goStep(1)" data-i18n="register.form.back">← Retour</button>
+    <button class="btn-primary" style="flex:1" onclick="goStep(3)" data-i18n="register.form.continue">Continuer →</button>
   </div>
 </div>
 
         <div class="step-panel" id="sp3">
-          <div style="font-size:12px;color:var(--txt-m);margin-bottom:16px;letter-spacing:.04em;text-transform:uppercase;font-weight:500">Étape 3 — Finaliser</div>
+          <div style="font-size:12px;color:var(--txt-m);margin-bottom:16px;letter-spacing:.04em;text-transform:uppercase;font-weight:500" data-i18n="register.step3.label">Étape 3 — Finaliser</div>
 
           <div style="background:rgba(124,95,255,.06);border:1px solid var(--b1);border-radius:12px;padding:16px;margin-bottom:18px">
-            <div style="font-size:12px;color:var(--txt-m);margin-bottom:10px;font-weight:500;text-transform:uppercase;letter-spacing:.04em">Récapitulatif</div>
+            <div style="font-size:12px;color:var(--txt-m);margin-bottom:10px;font-weight:500;text-transform:uppercase;letter-spacing:.04em" data-i18n="register.summary.title">Récapitulatif</div>
             <div style="display:flex;flex-direction:column;gap:7px;font-size:13px">
-              <div style="display:flex;justify-content:space-between"><span style="color:var(--txt-m)">Nom</span><span id="sumName" style="color:#fff;font-weight:500">—</span></div>
-              <div style="display:flex;justify-content:space-between"><span style="color:var(--txt-m)">E-mail</span><span id="sumEmail" style="color:#fff;font-weight:500">—</span></div>
-              <div style="display:flex;justify-content:space-between"><span style="color:var(--txt-m)">Profil</span><span id="sumRole"  style="color:var(--vi-l);font-weight:500">Particulier</span></div>
+              <div style="display:flex;justify-content:space-between"><span style="color:var(--txt-m)" data-i18n="register.summary.name">Nom</span><span id="sumName" style="color:#fff;font-weight:500">—</span></div>
+              <div style="display:flex;justify-content:space-between"><span style="color:var(--txt-m)" data-i18n="register.summary.email">E-mail</span><span id="sumEmail" style="color:#fff;font-weight:500">—</span></div>
+              <div style="display:flex;justify-content:space-between"><span style="color:var(--txt-m)" data-i18n="register.summary.role">Profil</span><span id="sumRole"  style="color:var(--vi-l);font-weight:500" data-i18n="register.role.individual">Particulier</span></div>
             </div>
           </div>
 
           <div class="check-row">
             <input type="checkbox" id="chkCgu">
-            <label for="chkCgu">J'accepte les <a href="#">CGU</a>.<span class="req"> *</span></label>
+            <label for="chkCgu"><span data-i18n="register.form.cgu">J'accepte les <a href="#">CGU</a>.</span><span class="req"> *</span></label>
           </div>
 
           <div style="display:flex;gap:10px">
-            <button class="btn-ghost" style="flex:0 0 auto;padding:11px 20px" onclick="goStep(2)">← Retour</button>
-            <button class="btn-primary" style="flex:1" onclick="submitRegister()">Créer mon compte ✓</button>
+            <button class="btn-ghost" style="flex:0 0 auto;padding:11px 20px" onclick="goStep(2)" data-i18n="register.form.back">← Retour</button>
+            <button class="btn-primary" style="flex:1" onclick="submitRegister()" data-i18n="register.form.submit">Créer mon compte ✓</button>
           </div>
         </div>
 
         <div class="switch-prompt">
-          Déjà inscrit ? <a href="login.html">Se connecter →</a>
+          <span data-i18n="register.form.already">Déjà inscrit ?</span> <a href="login.html" data-i18n="register.form.login_link">Se connecter →</a>
         </div>
       </div>
 
       <div id="regSuccess" class="success-msg">
         <div class="success-ico">🎉</div>
-        <div class="success-title">Compte créé avec succès !</div>
-        <div class="success-desc">
+        <div class="success-title" data-i18n="register.success.title">Compte créé avec succès !</div>
+        <div class="success-desc" data-i18n="register.success.desc">
           Un e-mail de confirmation vous a été envoyé.<br>
           Cliquez sur le lien pour activer votre compte.
         </div>
-        <button class="btn-ghost" onclick="window.location.href='login.html'">
+        <button class="btn-ghost" onclick="window.location.href='login.html'" data-i18n="register.success.goto_login">
           Aller à la connexion →
         </button>
       </div>
@@ -194,6 +197,9 @@
 
 </div>
 
+
+  <script src="./script/config.js"></script>
+<script src="./script/admin/translate.js"></script>
 <script src="./script/register.js"></script>
 </body>
 </html>

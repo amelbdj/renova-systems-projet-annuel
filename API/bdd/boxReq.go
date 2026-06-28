@@ -11,13 +11,11 @@ import (
 func ReserveBox(annonceId int, conteneurId int, vendeurId int) error {
 	var boxId int
 
-	// 1. On cherche une box libre
 	err := Db.QueryRow("SELECT id FROM box WHERE id_conteneur = ? AND statut = 'libre' LIMIT 1", conteneurId).Scan(&boxId)
 	if err != nil {
 		return errors.New("aucun casier n'est disponible dans ce conteneur")
 	}
 
-	// 2. On cherche qui a acheté cette annonce
 	var acheteurId int
 	err = Db.QueryRow("SELECT id_acheteur FROM `order` WHERE id_annonce = ? ORDER BY date_commande DESC LIMIT 1", annonceId).Scan(&acheteurId)
 	if err != nil {
@@ -27,13 +25,12 @@ func ReserveBox(annonceId int, conteneurId int, vendeurId int) error {
 	pinCode := generateRandomPIN()
 	barcode := fmt.Sprintf("UC-%d-%d", annonceId, boxId)
 
-	// 3. 🟢 ON UTILISE TES NOUVELLES COLONNES : vendeur_id et acheteur_id
 	_, err = Db.Exec(`
 		INSERT INTO historique_conteneurs 
 		(conteneur_id, annonce_id, vendeur_id, acheteur_id, code_ouverture, code_barre_recuperation, date_reservation) 
-		VALUES (?, ?, ?, ?, ?, ?, NOW())`, 
+		VALUES (?, ?, ?, ?, ?, ?, NOW())`,
 		boxId, annonceId, vendeurId, acheteurId, pinCode, barcode)
-	
+
 	if err != nil {
 		return err
 	}
@@ -52,35 +49,32 @@ func ReserveBox(annonceId int, conteneurId int, vendeurId int) error {
 }
 
 func ConfirmDeposit(pinCode string) error {
-    var histId int
-    var boxId int
-    var annonceId int
+	var histId int
+	var boxId int
+	var annonceId int
 
-    // CORRECTION : On lit depuis conteneur_id
-    err := Db.QueryRow("SELECT id, conteneur_id, annonce_id FROM historique_conteneurs WHERE code_ouverture = ? AND date_depot_effective IS NULL", pinCode).Scan(&histId, &boxId, &annonceId)
-    if err != nil {
-        return errors.New("code PIN invalide, expiré ou déjà utilisé")
-    }
+	err := Db.QueryRow("SELECT id, conteneur_id, annonce_id FROM historique_conteneurs WHERE code_ouverture = ? AND date_depot_effective IS NULL", pinCode).Scan(&histId, &boxId, &annonceId)
+	if err != nil {
+		return errors.New("code PIN invalide, expiré ou déjà utilisé")
+	}
 
-    _, err = Db.Exec("UPDATE historique_conteneurs SET date_depot_effective = NOW() WHERE id = ?", histId)
-    if err != nil {
-        return err
-    }
+	_, err = Db.Exec("UPDATE historique_conteneurs SET date_depot_effective = NOW() WHERE id = ?", histId)
+	if err != nil {
+		return err
+	}
 
-    _, err = Db.Exec("UPDATE box SET statut = 'occupee' WHERE id = ?", boxId)
-    if err != nil {
-        return err
-    }
+	_, err = Db.Exec("UPDATE box SET statut = 'occupee' WHERE id = ?", boxId)
+	if err != nil {
+		return err
+	}
 
-    _, err = Db.Exec("UPDATE annonce SET statut = 'EN BOX' WHERE id = ?", annonceId)
-    if err != nil {
-        return err
-    }
+	_, err = Db.Exec("UPDATE annonce SET statut_vente = 'EN BOX' WHERE id = ?", annonceId)
+	if err != nil {
+		return err
+	}
 
-    return nil
+	return nil
 }
-
-
 
 func GetUserReservations(userID int) ([]map[string]interface{}, error) {
 	query := `
@@ -97,7 +91,7 @@ func GetUserReservations(userID int) ([]map[string]interface{}, error) {
 		JOIN annonce a ON h.annonce_id = a.id
 		JOIN box b ON h.conteneur_id = b.id
 		JOIN conteneur c ON b.id_conteneur = c.id
-		WHERE h.vendeur_id = ? AND h.date_depot_effective IS NULL` // 🟢 CORRECTION ICI : vendeur_id
+		WHERE h.vendeur_id = ? AND h.date_depot_effective IS NULL`
 
 	rows, err := Db.Query(query, userID)
 	if err != nil {
@@ -109,20 +103,20 @@ func GetUserReservations(userID int) ([]map[string]interface{}, error) {
 	for rows.Next() {
 		var code, barcode, date, titre, nomConteneur, adresse, etat string
 		var numBox int
-		
+
 		err := rows.Scan(&code, &barcode, &date, &titre, &numBox, &nomConteneur, &adresse, &etat)
 		if err != nil {
 			continue
 		}
 
 		res := map[string]interface{}{
-			"lieu":         nomConteneur + " - " + adresse,
-			"numero_box":   fmt.Sprintf("Casier n°%d", numBox),
-			"code_pin":     code,
-			"barcode":      barcode,
-			"objet":        titre,
-			"date":         date,
-			"etat":         etat,
+			"lieu":       nomConteneur + " - " + adresse,
+			"numero_box": fmt.Sprintf("Casier n°%d", numBox),
+			"code_pin":   code,
+			"barcode":    barcode,
+			"objet":      titre,
+			"date":       date,
+			"etat":       etat,
 		}
 		reservations = append(reservations, res)
 	}
@@ -130,7 +124,7 @@ func GetUserReservations(userID int) ([]map[string]interface{}, error) {
 }
 
 func GetUserPickups(acheteurID int) ([]map[string]interface{}, error) {
-	// On cherche les casiers où le dépôt a été fait, mais pas encore le retrait
+
 	query := `
 		SELECT 
 			h.code_ouverture, 
@@ -159,7 +153,7 @@ func GetUserPickups(acheteurID int) ([]map[string]interface{}, error) {
 	for rows.Next() {
 		var codePIN, barcode, dateDepot, titre, nomConteneur, adresse, statutVente string
 		var numBox int
-		
+
 		err := rows.Scan(&codePIN, &barcode, &dateDepot, &titre, &numBox, &nomConteneur, &adresse, &statutVente)
 		if err != nil {
 			continue
@@ -168,11 +162,13 @@ func GetUserPickups(acheteurID int) ([]map[string]interface{}, error) {
 		pickup := map[string]interface{}{
 			"lieu":         nomConteneur + " - " + adresse,
 			"numero_box":   fmt.Sprintf("Casier n°%d", numBox),
-			"code_pin":     codePIN,      // L'acheteur a besoin de ça pour déverrouiller !
+			"code_pin":     codePIN,
 			"barcode":      barcode,
 			"objet":        titre,
 			"date_depot":   dateDepot,
-			"statut_vente": statutVente,  // "EN ATTENTE DE RECUPERATION"
+			"statut_vente": statutVente,
+			"date":         dateDepot,
+			"etat":         statutVente,
 		}
 		pickups = append(pickups, pickup)
 	}
@@ -180,288 +176,277 @@ func GetUserPickups(acheteurID int) ([]map[string]interface{}, error) {
 }
 
 func GetConteneursAdmin() ([]models.ConteneurAvecStats, error) {
-    var conteneurs []models.ConteneurAvecStats
+	var conteneurs []models.ConteneurAvecStats
 
-    query := `
+	query := `
         SELECT c.id, c.nom, c.adresse, COUNT(b.id) as total_boxes 
         FROM conteneur c 
         LEFT JOIN box b ON c.id = b.id_conteneur 
         GROUP BY c.id`
 
-    rows, err := Db.Query(query)
-    if err != nil {
-        return nil, fmt.Errorf("erreur GetConteneursAdmin : %v", err)
-    }
-    defer rows.Close()
+	rows, err := Db.Query(query)
+	if err != nil {
+		return nil, fmt.Errorf("erreur GetConteneursAdmin : %v", err)
+	}
+	defer rows.Close()
 
-    for rows.Next() {
-        var c models.ConteneurAvecStats
-        err := rows.Scan(&c.Id, &c.Nom, &c.Adresse, &c.TotalBoxes)
-        if err != nil {
-            return nil, fmt.Errorf("erreur scan : %v", err)
-        }
-        conteneurs = append(conteneurs, c)
-    }
-    return conteneurs, nil
+	for rows.Next() {
+		var c models.ConteneurAvecStats
+		err := rows.Scan(&c.Id, &c.Nom, &c.Adresse, &c.TotalBoxes)
+		if err != nil {
+			return nil, fmt.Errorf("erreur scan : %v", err)
+		}
+		conteneurs = append(conteneurs, c)
+	}
+	return conteneurs, nil
 }
 
 func generateRandomPIN() string {
-    n, _ := rand.Int(rand.Reader, big.NewInt(1000000))
-    return fmt.Sprintf("%06d", n)
+	n, _ := rand.Int(rand.Reader, big.NewInt(1000000))
+	return fmt.Sprintf("%06d", n)
 }
 
 func CalculateAndAddScore(annonceId int, professionnelId int) error {
-    var poids float64
-    var materiau string
-    var particulierId int
+	var poids float64
+	var materiau string
+	var particulierId int
 
-    // On utilise id_user comme dans tes autres requêtes liées aux annonces
-    err := Db.QueryRow("SELECT poids, type_materiau, id_user FROM annonce WHERE id = ?", annonceId).Scan(&poids, &materiau, &particulierId)
-    if err != nil {
-        return err
-    }
+	err := Db.QueryRow("SELECT poids_kg, id_user FROM pa2026.annonce WHERE id = ?", annonceId).Scan(&poids, &particulierId)
+	if err != nil {
+		return err
+	}
 
-    coefficients := map[string]float64{
-        "textile":   15.0,
-        "metal":     10.0,
-        "bois":      5.0,
-        "plastique": 8.0,
-        "autre":     3.0,
-    }
+	coefficients := map[string]float64{
+		"textile":   15.0,
+		"metal":     10.0,
+		"bois":      5.0,
+		"plastique": 8.0,
+		"autre":     3.0,
+	}
 
-    coef, exists := coefficients[materiau]
-    if !exists {
-        coef = coefficients["autre"]
-    }
+	coef, exists := coefficients[materiau]
+	if !exists {
+		coef = coefficients["autre"]
+	}
 
-    gainScore := poids * coef
-    _, err = Db.Exec("UPDATE users SET score = score + ? WHERE id = ?", gainScore, particulierId)
-    return err
+	gainScore := poids * coef
+	_, err = Db.Exec("UPDATE pa2026.utilisateur SET score = score + ? WHERE id = ?", gainScore, particulierId)
+	return err
 }
 
-func GarbageCollectBox() error { 
-    // CORRECTION : On utilise conteneur_id et annonce_id
-    rows, err := Db.Query("SELECT annonce_id, conteneur_id FROM historique_conteneurs WHERE date_reservation < NOW() - INTERVAL 2 DAY AND date_depot_effective IS NULL")
-    if err != nil {
-        return fmt.Errorf("Cleanup (select): %v", err)
-    }
-    defer rows.Close()
+func GarbageCollectBox() error {
 
-    for rows.Next() {
-        var annonceId int
-        var boxId int
-        err := rows.Scan(&annonceId, &boxId)
-        if err != nil {
-            continue
-        }
+	rows, err := Db.Query("SELECT annonce_id, conteneur_id FROM historique_conteneurs WHERE date_reservation < NOW() - INTERVAL 2 DAY AND date_depot_effective IS NULL")
+	if err != nil {
+		return fmt.Errorf("Cleanup (select): %v", err)
+	}
+	defer rows.Close()
 
-        _, err = Db.Exec("UPDATE box SET statut = 'libre', code_secret = NULL WHERE id = ?", boxId)
-        if err != nil {
-            fmt.Printf("Erreur libération box %d: %v", boxId, err)
-        }
+	for rows.Next() {
+		var annonceId int
+		var boxId int
+		err := rows.Scan(&annonceId, &boxId)
+		if err != nil {
+			continue
+		}
 
-        _, err = Db.Exec("UPDATE annonce SET statut = 'EN VENTE' WHERE id = ?", annonceId)
-        if err != nil {
-            fmt.Printf("Erreur remise en vente annonce %d: %v", annonceId, err)
-        }
+		_, err = Db.Exec("UPDATE box SET statut = 'libre', code_secret = NULL WHERE id = ?", boxId)
+		if err != nil {
+			fmt.Printf("Erreur libération box %d: %v", boxId, err)
+		}
 
-        _, err = Db.Exec("UPDATE historique_conteneurs SET date_reservation = NULL WHERE annonce_id = ? AND date_depot_effective IS NULL", annonceId)
+		_, err = Db.Exec("UPDATE annonce SET statut_vente = 'EN VENTE' WHERE id = ?", annonceId)
+		if err != nil {
+			fmt.Printf("Erreur remise en vente annonce %d: %v", annonceId, err)
+		}
 
-        fmt.Printf("Nettoyage réussi pour l'annonce %d (Box %d libéré)\n", annonceId, boxId)
-    }
+		_, err = Db.Exec("UPDATE historique_conteneurs SET date_reservation = NULL WHERE annonce_id = ? AND date_depot_effective IS NULL", annonceId)
 
-    return nil
+		fmt.Printf("Nettoyage réussi pour l'annonce %d (Box %d libéré)\n", annonceId, boxId)
+	}
+
+	return nil
 }
 
 func CreateConteneurAvecBox(nom string, adresse string, nombreDeBoxs int) error {
 
-    res, err := Db.Exec("INSERT INTO conteneur (nom, adresse) VALUES (?, ?)", nom, adresse)
-    if err != nil {
-        return fmt.Errorf("erreur insert conteneur: %v", err)
-    }
+	res, err := Db.Exec("INSERT INTO conteneur (nom, adresse) VALUES (?, ?)", nom, adresse)
+	if err != nil {
+		return fmt.Errorf("erreur insert conteneur: %v", err)
+	}
 
-    conteneurID, err := res.LastInsertId()
-    if err != nil {
-        return fmt.Errorf("erreur récupération ID: %v", err)
-    }
+	conteneurID, err := res.LastInsertId()
+	if err != nil {
+		return fmt.Errorf("erreur récupération ID: %v", err)
+	}
 
-    for i := 1; i <= nombreDeBoxs; i++ {
-        _, err := Db.Exec(
-            "INSERT INTO box (id_conteneur, numero, taille, statut) VALUES (?, ?, ?, ?)",
-            conteneurID, i, "M", "libre",
-        )
-        
-        if err != nil {
-            return fmt.Errorf("erreur insert box n°%d: %v", i, err)
-        }
-    }
+	for i := 1; i <= nombreDeBoxs; i++ {
+		_, err := Db.Exec(
+			"INSERT INTO box (id_conteneur, numero, taille, statut) VALUES (?, ?, ?, ?)",
+			conteneurID, i, "M", "libre",
+		)
 
-    return nil
+		if err != nil {
+			return fmt.Errorf("erreur insert box n°%d: %v", i, err)
+		}
+	}
+
+	return nil
 }
 
 func GetBoxesByConteneurID(conteneurID string) ([]models.Box, error) {
-    var boxes []models.Box
+	var boxes []models.Box
 
-    rows, err := Db.Query(`SELECT id, id_conteneur, numero, taille, statut, code_secret 
+	rows, err := Db.Query(`SELECT id, id_conteneur, numero, taille, statut, code_secret 
               FROM box 
               WHERE id_conteneur = ? 
               ORDER BY numero ASC`, conteneurID)
-    if err != nil {
-        return nil, fmt.Errorf("erreur requête GetBoxes: %v", err)
-    }
-    defer rows.Close()
+	if err != nil {
+		return nil, fmt.Errorf("erreur requête GetBoxes: %v", err)
+	}
+	defer rows.Close()
 
-    for rows.Next() {
-        var b models.Box
+	for rows.Next() {
+		var b models.Box
 
-        err := rows.Scan(
-            &b.Id,
-            &b.IdConteneur, 
-            &b.Numero,
-            &b.Taille,
-            &b.Statut,
-            &b.CodeSecret,
-        )
+		err := rows.Scan(
+			&b.Id,
+			&b.IdConteneur,
+			&b.Numero,
+			&b.Taille,
+			&b.Statut,
+			&b.CodeSecret,
+		)
 
-        if err != nil {
-            return nil, fmt.Errorf("erreur scan box: %v", err)
-        }
+		if err != nil {
+			return nil, fmt.Errorf("erreur scan box: %v", err)
+		}
 
-        boxes = append(boxes, b)
-    }
+		boxes = append(boxes, b)
+	}
 
-    if err = rows.Err(); err != nil {
-        return nil, fmt.Errorf("erreur itération boxes: %v", err)
-    }
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("erreur itération boxes: %v", err)
+	}
 
-    if boxes == nil {
-        boxes = []models.Box{}
-    }
+	if boxes == nil {
+		boxes = []models.Box{}
+	}
 
-    return boxes, nil
+	return boxes, nil
 }
 
 func AddSingleBoxToConteneur(conteneurID int, taille string) error {
-    var maxNumero *int
-    err := Db.QueryRow("SELECT MAX(numero) FROM box WHERE id_conteneur = ?", conteneurID).Scan(&maxNumero)
-    
-    if err != nil {
-        return fmt.Errorf("erreur recherche max numero: %v", err)
-    }
+	var maxNumero *int
+	err := Db.QueryRow("SELECT MAX(numero) FROM box WHERE id_conteneur = ?", conteneurID).Scan(&maxNumero)
 
-    nouveauNumero := 1
-    if maxNumero != nil {
-        nouveauNumero = *maxNumero + 1
-    }
+	if err != nil {
+		return fmt.Errorf("erreur recherche max numero: %v", err)
+	}
 
-    _, err = Db.Exec(
-        "INSERT INTO box (id_conteneur, numero, taille, statut) VALUES (?, ?, ?, 'libre')",
-        conteneurID, nouveauNumero, taille,
-    )
+	nouveauNumero := 1
+	if maxNumero != nil {
+		nouveauNumero = *maxNumero + 1
+	}
 
-    return err
+	_, err = Db.Exec(
+		"INSERT INTO box (id_conteneur, numero, taille, statut) VALUES (?, ?, ?, 'libre')",
+		conteneurID, nouveauNumero, taille,
+	)
+
+	return err
 }
 
 func UpdateBoxStatus(boxID int, statut string) error {
-    _, err := Db.Exec("UPDATE box SET statut = ? WHERE id = ?", statut, boxID)
-    return err
+	_, err := Db.Exec("UPDATE box SET statut = ? WHERE id = ?", statut, boxID)
+	return err
 }
 
 func CollectObject(pinCode string, professionnelId int) error {
-    var histID int
-    var boxId int
-    var annonceId int
+	var histID int
+	var boxId int
+	var annonceId int
 
-    // CORRECTION : On cherche par code_ouverture (le code PIN à 6 chiffres)
-    err := Db.QueryRow("SELECT id, conteneur_id, annonce_id FROM historique_conteneurs WHERE code_ouverture = ? AND date_retrait_effective IS NULL", pinCode).Scan(&histID, &boxId, &annonceId)
-    if err != nil {
-        return errors.New("code PIN de retrait invalide ou objet déjà récupéré")
-    }
+	err := Db.QueryRow("SELECT id, conteneur_id, annonce_id FROM historique_conteneurs WHERE code_ouverture = ? AND date_retrait_effective IS NULL", pinCode).Scan(&histID, &boxId, &annonceId)
+	if err != nil {
+		return errors.New("code PIN de retrait invalide ou objet déjà récupéré")
+	}
 
-    _, err = Db.Exec("UPDATE historique_conteneurs SET date_retrait_effective = NOW(), professionnel_id = ? WHERE id = ?", professionnelId, histID)
-    if err != nil {
-        return err
-    }
+	_, err = Db.Exec("UPDATE historique_conteneurs SET date_retrait_effective = NOW(), professionnel_id = ? WHERE id = ?", professionnelId, histID)
+	if err != nil {
+		return err
+	}
 
-    _, err = Db.Exec("UPDATE box SET statut = 'libre', code_secret = NULL WHERE id = ?", boxId)
-    if err != nil {
-        return err
-    }
+	_, err = Db.Exec("UPDATE box SET statut = 'libre', code_secret = NULL WHERE id = ?", boxId)
+	if err != nil {
+		return err
+	}
 
-    _, err = Db.Exec("UPDATE annonce SET statut = 'RECUPERE' WHERE id = ?", annonceId)
-    if err != nil {
-        return err
-    }
+	_, err = Db.Exec("UPDATE annonce SET statut_vente = 'RECUPERE' WHERE id = ?", annonceId)
+	if err != nil {
+		return err
+	}
 
-    err = CalculateAndAddScore(annonceId, professionnelId)
-    if err != nil {
-        fmt.Println("Erreur lors du calcul du score :", err)
-    }
+	err = CalculateAndAddScore(annonceId, professionnelId)
+	if err != nil {
+		fmt.Println("Erreur lors du calcul du score :", err)
+	}
 
-    return nil
+	return nil
 }
 
 func SimulateHardwareDeposit(pinCode string) error {
-    var histID int
-    var boxId int
-    var annonceId int
+	var histID int
+	var boxId int
+	var annonceId int
 
-    // 1. On cherche la réservation liée à ce code PIN de dépôt
-    err := Db.QueryRow("SELECT id, conteneur_id, annonce_id FROM historique_conteneurs WHERE code_ouverture = ? AND date_depot_effective IS NULL", pinCode).Scan(&histID, &boxId, &annonceId)
-    if err != nil {
-        return errors.New("code PIN invalide ou objet déjà déposé")
-    }
+	err := Db.QueryRow("SELECT id, conteneur_id, annonce_id FROM historique_conteneurs WHERE code_ouverture = ? AND date_depot_effective IS NULL", pinCode).Scan(&histID, &boxId, &annonceId)
+	if err != nil {
+		return errors.New("code PIN invalide ou objet déjà déposé")
+	}
 
-    // 2. On valide le dépôt dans l'historique
-    _, err = Db.Exec("UPDATE historique_conteneurs SET date_depot_effective = NOW() WHERE id = ?", histID)
-    if err != nil {
-        return err
-    }
+	_, err = Db.Exec("UPDATE historique_conteneurs SET date_depot_effective = NOW() WHERE id = ?", histID)
+	if err != nil {
+		return err
+	}
 
-    // 3. On verrouille la Box (statut -> 'occupee')
-    _, err = Db.Exec("UPDATE box SET statut = 'occupee' WHERE id = ?", boxId)
-    if err != nil {
-        return err
-    }
+	_, err = Db.Exec("UPDATE box SET statut = 'occupee' WHERE id = ?", boxId)
+	if err != nil {
+		return err
+	}
 
-    // 4. L'annonce est en box, prête pour le catalogue (ENUM SQL: 'EN VENTE' ou garde sa logique)
-    _, err = Db.Exec("UPDATE annonce SET statut_vente = 'EN ATTENTE DE RECUPERATION' WHERE id = ?", annonceId)
-    if err != nil {
-        return err
-    }
+	_, err = Db.Exec("UPDATE annonce SET statut_vente = 'EN ATTENTE DE RECUPERATION' WHERE id = ?", annonceId)
+	if err != nil {
+		return err
+	}
 
-    return nil
+	return nil
 }
 
-func SimulateHardwareWithdrawal(pinCode string) error {
-    var histID int
-    var boxId int
-    var annonceId int
+func SimulateHardwareWithdrawal(codeBarre string) error {
+	var histID int
+	var boxId int
+	var annonceId int
 
-    // 1. On cherche la réservation via le code PIN (code_ouverture)
-    err := Db.QueryRow("SELECT id, conteneur_id, annonce_id FROM historique_conteneurs WHERE code_ouverture = ? AND date_retrait_effective IS NULL", pinCode).Scan(&histID, &boxId, &annonceId)
-    if err != nil {
-        return errors.New("code PIN de retrait invalide ou objet déjà récupéré")
-    }
+	err := Db.QueryRow("SELECT id, conteneur_id, annonce_id FROM historique_conteneurs WHERE code_barre_recuperation = ? AND date_depot_effective IS NOT NULL AND date_retrait_effective IS NULL", codeBarre).Scan(&histID, &boxId, &annonceId)
+	if err != nil {
+		return errors.New("code-barre de retrait invalide, objet pas encore déposé ou déjà récupéré")
+	}
 
-    // 2. On clôture l'historique (date de retrait)
-    _, err = Db.Exec("UPDATE historique_conteneurs SET date_retrait_effective = NOW() WHERE id = ?", histID)
-    if err != nil {
-        return err
-    }
+	_, err = Db.Exec("UPDATE historique_conteneurs SET date_retrait_effective = NOW() WHERE id = ?", histID)
+	if err != nil {
+		return err
+	}
 
-    // 3. On libère la Box (statut -> 'libre', code_secret -> NULL)
-    _, err = Db.Exec("UPDATE box SET statut = 'libre', code_secret = NULL WHERE id = ?", boxId)
-    if err != nil {
-        return err
-    }
+	_, err = Db.Exec("UPDATE box SET statut = 'libre', code_secret = NULL WHERE id = ?", boxId)
+	if err != nil {
+		return err
+	}
 
-    // 4. L'annonce passe en statut 'VENDU' (qui fait partie de ton ENUM SQL officiel)
-    _, err = Db.Exec("UPDATE annonce SET statut_vente = 'VENDU' WHERE id = ?", annonceId)
-    if err != nil {
-        return err
-    }
+	_, err = Db.Exec("UPDATE annonce SET statut_vente = 'VENDU' WHERE id = ?", annonceId)
+	if err != nil {
+		return err
+	}
 
-    return nil
+	return nil
 }
-

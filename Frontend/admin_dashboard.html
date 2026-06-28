@@ -28,7 +28,7 @@
     <script>
       window.OneSignalDeferred = window.OneSignalDeferred || [];
       OneSignalDeferred.push(async function (OneSignal) {
-        // 1. Initialisation unique
+
         await OneSignal.init({
           appId: "79a53223-420a-46c8-83d9-1ca162fcb64f",
           safari_web_id:
@@ -36,19 +36,19 @@
           allowLocalhostAsSecureOrigin: true,
           notifyButton: {
             enable: true,
-            displayPredicate: () => true, // Force l'affichage de la cloche
+            displayPredicate: () => true,
           },
         });
 
-        // 2. Demande de permission au navigateur (comme Fati l'avait fait)
+
         await OneSignal.Notifications.requestPermission();
 
-        // 3. Connexion de l'Admin avec son ID
+
         const userId = localStorage.getItem("userId");
         if (userId) {
           await OneSignal.login(userId);
 
-          // Logs de debug pour vérifier que tout marche
+
           console.log("✅ Admin connecté à OneSignal avec l'ID :", userId);
           console.log(
             "Permission accordée ? :",
@@ -61,11 +61,13 @@
         }
       });
     </script>
-  </head>
+      <script src="../Frontend/script/config.js"></script>
+</head>
   <body
     style="display: flex; min-height: 100vh; margin: 0; background: var(--bg)"
   >
-    <!-- 1. LA SIDEBAR (MENU LATÉRAL) -->
+    <div id="wrapper" style="position:fixed; bottom:16px; right:16px; z-index:2000; display:flex; gap:6px;"></div>
+
     <aside
       style="
         width: 260px;
@@ -93,7 +95,7 @@
         ReNova <em style="color: var(--or-l); font-style: normal">Admin</em>
       </div>
 
-      <!-- Navigation (En utilisant tes classes .nav-link existantes) -->
+
       <nav style="display: flex; flex-direction: column; gap: 8px">
         <a
           href="admin_dashboard.html"
@@ -108,7 +110,7 @@
           <span class="material-symbols-outlined" style="font-size: 20px"
             >dashboard</span
           >
-          Vue d'ensemble
+          <span data-i18n="backoffice.sidebar.overview">Vue d'ensemble</span>
         </a>
         <a
           href="admin_users.html"
@@ -123,7 +125,7 @@
           <span class="material-symbols-outlined" style="font-size: 20px"
             >group</span
           >
-          Utilisateurs
+          <span data-i18n="backoffice.sidebar.users">Utilisateurs</span>
         </a>
         <a
           href="admin_validations.html"
@@ -138,7 +140,7 @@
           <span class="material-symbols-outlined" style="font-size: 20px"
             >check_circle</span
           >
-          Validations
+          <span data-i18n="backoffice.sidebar.validations">Validations</span>
           <span
             class="tag t-red"
             style="margin-left: auto; font-size: 10px; padding: 2px 6px"
@@ -158,7 +160,7 @@
           <span class="material-symbols-outlined" style="font-size: 20px"
             >inventory_2</span
           >
-          Logistique & Box
+          <span data-i18n="backoffice.sidebar.logistics">Logistique & Box</span>
         </a>
         <a
           href="admin_finances.html"
@@ -173,11 +175,11 @@
           <span class="material-symbols-outlined" style="font-size: 20px"
             >account_balance</span
           >
-          Finances
+          <span data-i18n="backoffice.sidebar.finances">Finances</span>
         </a>
       </nav>
 
-      <!-- Bouton déconnexion en bas -->
+
       <button
         class="btn btn-o btn-full"
         style="margin-top: auto"
@@ -186,35 +188,35 @@
         <span class="material-symbols-outlined" style="font-size: 18px"
           >logout</span
         >
-        Déconnexion
+        <span data-i18n="backoffice.sidebar.logout">Déconnexion</span>
       </button>
     </aside>
 
-    <!-- 2. LE CONTENU PRINCIPAL -->
+
     <main style="flex: 1; padding: 40px; overflow-y: auto">
-      <!-- Hero / Titre -->
+
       <section class="hero fu" style="padding-top: 0">
         <div class="hero-left">
-          <div class="hero-eyebrow">Tableau de bord</div>
-          <h1 class="hero-title">Vue d'ensemble <em>ReNova</em></h1>
-          <p class="hero-desc">
+          <div class="hero-eyebrow" data-i18n="backoffice.dash.eyebrow">Tableau de bord</div>
+          <h1 class="hero-title" data-i18n="backoffice.dash.title">Vue d'ensemble <em>ReNova</em></h1>
+          <p class="hero-desc" data-i18n="backoffice.dash.desc">
             Bienvenue Sylvain. Voici un résumé en temps réel de l'activité de la
             plateforme.
           </p>
         </div>
       </section>
 
-      <!-- Les 4 KPIs -->
+
       <div class="kpi-grid fu fu1">
         <div class="kpi" style="--kc: rgba(46, 204, 113, 0.08)">
           <div class="kpi-top">
             <div class="kpi-ico" style="background: rgba(46, 204, 113, 0.1)">
               <span class="material-symbols-outlined"> group </span>
             </div>
-            <div class="kpi-delta up">En direct</div>
+            <div class="kpi-delta up" data-i18n="backoffice.dash.live">En direct</div>
           </div>
           <div class="kpi-val" id="dash-users">...</div>
-          <div class="kpi-lbl">Utilisateurs actifs</div>
+          <div class="kpi-lbl" data-i18n="backoffice.dash.kpi_users">Utilisateurs actifs</div>
         </div>
 
         <div class="kpi" style="--kc: rgba(74, 144, 240, 0.08)">
@@ -225,7 +227,7 @@
             <div class="kpi-delta up" id="rev-mois-pourcentage">+...%</div>
           </div>
           <div class="kpi-val" id="rev-mois-montant">... €</div>
-          <div class="kpi-lbl">Revenus du mois</div>
+          <div class="kpi-lbl" data-i18n="backoffice.dash.kpi_revenue">Revenus du mois</div>
         </div>
 
         <div class="kpi" style="--kc: rgba(255, 152, 0, 0.1)">
@@ -233,12 +235,12 @@
             <div class="kpi-ico" style="background: rgba(255, 152, 0, 0.12)">
               <span class="material-symbols-outlined"> inventory_2 </span>
             </div>
-            <div class="kpi-delta neu">Réseau</div>
+            <div class="kpi-delta neu" data-i18n="backoffice.dash.network">Réseau</div>
           </div>
           <div class="kpi-val" id="dash-boxes" style="color: var(--or-l)">
             ...
           </div>
-          <div class="kpi-lbl">Conteneurs / Casiers</div>
+          <div class="kpi-lbl" data-i18n="backoffice.dash.kpi_containers">Conteneurs / Casiers</div>
         </div>
 
         <div class="kpi" style="--kc: rgba(0, 212, 232, 0.08)">
@@ -246,25 +248,25 @@
             <div class="kpi-ico" style="background: rgba(0, 212, 232, 0.1)">
               <span class="material-symbols-outlined"> recycling </span>
             </div>
-            <div class="kpi-delta up">Validés</div>
+            <div class="kpi-delta up" data-i18n="backoffice.dash.validated">Validés</div>
           </div>
           <div class="kpi-val" id="dash-waste" style="color: var(--cyan)">
             ...
           </div>
-          <div class="kpi-lbl">Déchets sauvés (Global)</div>
+          <div class="kpi-lbl" data-i18n="backoffice.dash.kpi_waste">Déchets sauvés (Global)</div>
         </div>
       </div>
 
-      <!-- Grille : Alertes à gauche, Activité à droite -->
+
       <div class="frow fu fu2" style="gap: 20px; align-items: start">
-        <!-- CENTRE D'ALERTES -->
+
         <div class="card">
           <div class="card-hd">
             <div class="card-ht">
               <div class="cht-i" style="background: rgba(240, 80, 80, 0.1)">
                 🚨
               </div>
-              Centre d'actions requises
+              <span data-i18n="backoffice.dash.actions_center">Centre d'actions requises</span>
             </div>
           </div>
           <div
@@ -289,11 +291,12 @@
                 >
                   Analyse réseau...
                 </div>
-                <div class="tx-date">Casiers nécessitant une intervention</div>
+                <div class="tx-date" data-i18n="backoffice.dash.alert_lockers">Casiers nécessitant une intervention</div>
               </div>
               <button
                 class="btn btn-xs btn-red"
                 onclick="window.location.href = 'admin_conteneurs.html'"
+                data-i18n="backoffice.dash.see_arrow"
               >
                 Voir →
               </button>
@@ -311,11 +314,12 @@
                 >
                   Chargement...
                 </div>
-                <div class="tx-date">Soumises par les utilisateurs</div>
+                <div class="tx-date" data-i18n="backoffice.dash.submitted_users">Soumises par les utilisateurs</div>
               </div>
               <button
                 class="btn btn-xs btn-o"
                 onclick="window.location.href = 'admin_validations.html'"
+                data-i18n="backoffice.dash.moderate"
               >
                 Modérer
               </button>
@@ -333,12 +337,13 @@
                 >
                   Chargement...
                 </div>
-                <div class="tx-date">Proposés par les salariés</div>
+                <div class="tx-date" data-i18n="backoffice.dash.proposed_staff">Proposés par les salariés</div>
               </div>
               <button
                 class="btn btn-xs btn-g"
                 style="color: var(--purple)"
                 onclick="window.location.href = 'admin_validations.html'"
+                data-i18n="backoffice.dash.see_short"
               >
                 Voir
               </button>
@@ -351,11 +356,12 @@
                 <div class="tx-name" id="alert-articles" style="color: #2ecc71">
                   Chargement...
                 </div>
-                <div class="tx-date">Articles rédigés par l'équipe</div>
+                <div class="tx-date" data-i18n="backoffice.dash.articles_team">Articles rédigés par l'équipe</div>
               </div>
               <button
                 class="btn btn-xs btn-o"
                 onclick="window.location.href = 'admin_validations.html'"
+                data-i18n="backoffice.dash.read"
               >
                 Lire
               </button>
@@ -363,14 +369,14 @@
           </div>
         </div>
 
-        <!-- ACTIVITÉ RÉCENTE -->
+
         <div class="card">
           <div class="card-hd">
             <div class="card-ht">
               <div class="cht-i" style="background: rgba(74, 144, 240, 0.1)">
                 <span class="material-symbols-outlined"> bolt </span>
               </div>
-              Activité récente
+              <span data-i18n="backoffice.dash.recent_activity">Activité récente</span>
             </div>
           </div>
           <div class="card-bd tx-list">
@@ -379,7 +385,7 @@
                 <span class="material-symbols-outlined"> credit_card </span>
               </div>
               <div class="tx-info">
-                <div class="tx-name">Abonnement Premium (Pro)</div>
+                <div class="tx-name" data-i18n="backoffice.dash.act_premium">Abonnement Premium (Pro)</div>
                 <div class="tx-date">Il y a 10 minutes par Atelier Bois</div>
               </div>
               <div class="tx-amt in">+ 30,00 €</div>
@@ -390,7 +396,7 @@
                 <span class="material-symbols-outlined"> person </span>
               </div>
               <div class="tx-info">
-                <div class="tx-name">Nouvelle inscription</div>
+                <div class="tx-name" data-i18n="backoffice.dash.act_signup">Nouvelle inscription</div>
                 <div class="tx-date">Il y a 45 minutes - Particulier</div>
               </div>
               <div class="tx-amt" style="font-size: 12px; color: var(--txt-m)">
@@ -403,7 +409,7 @@
                 <span class="material-symbols-outlined"> event </span>
               </div>
               <div class="tx-info">
-                <div class="tx-name">Dépôt en conteneur réussi</div>
+                <div class="tx-name" data-i18n="backoffice.dash.act_deposit">Dépôt en conteneur réussi</div>
                 <div class="tx-date">Il y a 2 heures - Box 12 (Montreuil)</div>
               </div>
               <div class="tx-amt" style="font-size: 12px; color: var(--txt-m)">
@@ -412,10 +418,61 @@
             </div>
           </div>
         </div>
+
+        <div class="card">
+          <div class="card-hd">
+            <div class="card-ht">
+              <div class="cht-i" style="background: rgba(138, 100, 255, 0.1)">
+                <span class="material-symbols-outlined"> campaign </span>
+              </div>
+              <span>Envoyer une notification</span>
+            </div>
+          </div>
+          <div class="card-bd">
+            <label
+              style="
+                display: block;
+                margin-bottom: 6px;
+                color: var(--txt-m);
+                font-size: 13px;
+              "
+              >Destinataires</label
+            >
+            <select id="notif-cible" style="width: 100%; margin-bottom: 12px">
+              <option value="particuliers">Particuliers</option>
+              <option value="pros">Professionnels</option>
+              <option value="tous">Tous</option>
+            </select>
+
+            <label
+              style="
+                display: block;
+                margin-bottom: 6px;
+                color: var(--txt-m);
+                font-size: 13px;
+              "
+              >Message</label
+            >
+            <textarea
+              id="notif-message"
+              rows="3"
+              placeholder="Votre message…"
+              style="width: 100%; resize: vertical; margin-bottom: 12px"
+            ></textarea>
+
+            <button class="btn btn-v btn-full" onclick="EnvoyerNotification()">
+              Envoyer
+            </button>
+            <div id="notif-feedback" style="margin-top: 10px; font-size: 13px"></div>
+          </div>
+        </div>
       </div>
     </main>
-    <script src="script/admin/dash.js"></script>
-    <script src="script/admin/user.js"></script>
-    <script src="script/admin/finance.js"></script>
+
+    <script src="../Frontend/script/admin/translate.js"></script>
+    <script src="../Frontend/script/admin/dash.js"></script>
+    <script src="../Frontend/script/admin/user.js"></script>
+    <script src="../Frontend/script/admin/finance.js"></script>
+    <script src="../Frontend/script/admin/notification.js"></script>
   </body>
 </html>

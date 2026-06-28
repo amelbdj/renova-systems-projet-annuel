@@ -19,7 +19,20 @@
     <link rel="stylesheet" href="../Frontend/style/apropos.css" />
   </head>
   <body>
-    <!-- ═══════════════ NAVBAR ═══════════════ -->
+    
+    <div
+      id="wrapper"
+      style="
+        position: fixed;
+        bottom: 16px;
+        right: 16px;
+        z-index: 1000;
+        display: flex;
+        gap: 6px;
+      "
+    ></div>
+
+    
     <nav
       class="navbar"
       id="navbar"
@@ -33,21 +46,22 @@
         </a>
 
         <div class="nav-links">
-          <a href="/annonces" class="nav-link">Marché</a>
-          <a href="/evenements" class="nav-link">Événements</a>
-          <a href="/conseils" class="nav-link">Conseils</a>
-          <a href="/forum" class="nav-link">Forum</a>
+          <a href="/annonces" class="nav-link" data-i18n="landing.nav.market">Marché</a>
+          <a href="/evenements" class="nav-link" data-i18n="landing.nav.events">Événements</a>
+          <a href="/conseils" class="nav-link" data-i18n="landing.nav.advice">Conseils</a>
+          <a href="/forum" class="nav-link" data-i18n="landing.nav.forum">Forum</a>
         </div>
 
         <div class="nav-right">
           <div class="auth-wrapper" id="auth-wrapper">
-            <a href="login.html" class="btn btn-g btn-sm" id="nav-login-btn"
+            <a href="login.html" class="btn btn-g btn-sm" id="nav-login-btn" data-i18n="landing.nav.login"
               >Connexion</a
             >
             <a
               href="register.html"
               class="btn btn-p btn-sm"
               id="nav-register-btn"
+              data-i18n="landing.nav.register"
               >Inscription</a
             >
 
@@ -88,10 +102,10 @@
                 </svg>
               </button>
               <div id="nav-user-dropdown" class="nav-user-dropdown">
-                <a href="/particulier/profile">Mon espace</a>
-                <a href="/particulier/annonces/create">Déposer une annonce</a>
-                <a href="/particulier/profile#score">Mon Upcycling Score</a>
-                <button id="nav-logout-btn">Déconnexion</button>
+                <a href="/particulier/profile" data-i18n="landing.nav.my_space">Mon espace</a>
+                <a href="/particulier/annonces/create" data-i18n="landing.nav.post_ad">Déposer une annonce</a>
+                <a href="/particulier/profile#score" data-i18n="landing.nav.my_score">Mon Upcycling Score</a>
+                <button id="nav-logout-btn" data-i18n="landing.nav.logout">Déconnexion</button>
               </div>
             </div>
           </div>
@@ -108,21 +122,21 @@
       </div>
 
       <div class="nav-mobile" id="nav-mobile">
-        <a href="landing.html">Marché</a>
-        <a href="evenement.html">Événements</a>
-        <a href="article.html">Conseils</a>
-        <a href="forum.html">Forum</a>
-        <a href="login.html">Services Pro</a>
-        <a href="a-propos.html">À propos</a>
+        <a href="landing.html" data-i18n="landing.nav.market">Marché</a>
+        <a href="evenement.html" data-i18n="landing.nav.events">Événements</a>
+        <a href="article.html" data-i18n="landing.nav.advice">Conseils</a>
+        <a href="forum.html" data-i18n="landing.nav.forum">Forum</a>
+        <a href="login.html" data-i18n="landing.nav.services_pro">Services Pro</a>
+        <a href="a-propos.html" data-i18n="landing.nav.about">À propos</a>
         <div class="nav-mobile-auth" id="nav-mobile-auth">
-          <a href="login.html" class="btn btn-g btn-sm">Connexion</a>
-          <a href="register.html" class="btn btn-p btn-sm">Inscription</a>
+          <a href="login.html" class="btn btn-g btn-sm" data-i18n="landing.nav.login">Connexion</a>
+          <a href="register.html" class="btn btn-p btn-sm" data-i18n="landing.nav.register">Inscription</a>
         </div>
       </div>
     </nav>
 
     <main>
-      <!-- ═══════════════ HERO ═══════════════ -->
+      
       <section class="hero">
         <div
           class="hero-inner"
@@ -133,8 +147,8 @@
           "
         >
           <div class="hero-left" style="max-width: 820px">
-            <p class="hero-eyebrow">Notre histoire</p>
-            <h1 class="hero-title">
+            <p class="hero-eyebrow" data-i18n="apropos.hero.eyebrow">Notre histoire</p>
+            <h1 class="hero-title" data-i18n="apropos.hero.title">
               Moins de déchets, <em>plus de liens.</em>
             </h1>
             <p
@@ -145,6 +159,7 @@
                 margin-right: auto;
                 font-size: 17px;
               "
+              data-i18n="apropos.hero.desc"
             >
               UpcycleConnect est née d'une conviction simple : un objet qui ne
               sert plus à quelqu'un peut transformer le quotidien d'un autre.
@@ -155,23 +170,23 @@
         </div>
       </section>
 
-      <!-- ═══════════════ MISSION ═══════════════ -->
+      
       <section class="section">
         <div class="section-inner">
           <div class="mission-grid">
             <div class="mission-text">
-              <span class="sec-eyebrow">Notre mission</span>
-              <h2 class="sec-heading" style="margin-bottom: 20px">
+              <span class="sec-eyebrow" data-i18n="apropos.mission.eyebrow">Notre mission</span>
+              <h2 class="sec-heading" style="margin-bottom: 20px" data-i18n="apropos.mission.heading">
                 Donner une seconde vie, à grande échelle
               </h2>
-              <p>
+              <p data-i18n="apropos.mission.p1">
                 Chaque année, des tonnes de matériaux et d'objets en bon état
                 finissent à la déchèterie, faute d'avoir trouvé preneur.
                 <strong>Notre rôle, c'est de créer le lien manquant</strong>
                 entre celles et ceux qui donnent, vendent, réparent et
                 réinventent.
               </p>
-              <p>
+              <p data-i18n="apropos.mission.p2">
                 En connectant particuliers et artisans autour de l'upcycling,
                 nous voulons rendre le réemploi
                 <strong>aussi simple qu'un achat neuf</strong> — tout en gardant
@@ -179,31 +194,31 @@
                 territoires.
               </p>
               <div class="hero-actions" style="margin-top: 8px">
-                <a href="/register" class="btn btn-p"
+                <a href="/register" class="btn btn-p" data-i18n="apropos.mission.cta_join"
                   >Rejoindre la communauté</a
                 >
-                <a href="/annonces" class="btn btn-g">Explorer le marché</a>
+                <a href="/annonces" class="btn btn-g" data-i18n="apropos.mission.cta_explore">Explorer le marché</a>
               </div>
             </div>
             <div class="mission-visual">
-              <p class="mission-quote">
+              <p class="mission-quote" data-i18n="apropos.mission.quote">
                 « Rien ne se perd, <em>tout se transforme</em> — il suffisait
                 d'une plateforme pour le rendre possible. »
               </p>
-              <p class="mission-sign">— L'équipe UpcycleConnect</p>
+              <p class="mission-sign" data-i18n="apropos.mission.sign">— L'équipe UpcycleConnect</p>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- ═══════════════ VALEURS ═══════════════ -->
+      
       <section class="section">
         <div class="section-inner">
           <div class="sec-head center">
             <div>
-              <span class="sec-eyebrow green">Ce qui nous guide</span>
-              <h2 class="sec-heading">Nos valeurs</h2>
-              <p class="sec-sub">
+              <span class="sec-eyebrow green" data-i18n="apropos.values.eyebrow">Ce qui nous guide</span>
+              <h2 class="sec-heading" data-i18n="apropos.values.heading">Nos valeurs</h2>
+              <p class="sec-sub" data-i18n="apropos.values.sub">
                 Quatre principes qui orientent chacune de nos décisions, du
                 produit à la communauté.
               </p>
@@ -227,8 +242,8 @@
                   />
                 </svg>
               </div>
-              <h3 class="value-title">Durabilité</h3>
-              <p class="value-desc">
+              <h3 class="value-title" data-i18n="apropos.values.durability_title">Durabilité</h3>
+              <p class="value-desc" data-i18n="apropos.values.durability_desc">
                 Prolonger la vie des objets avant tout. Chaque échange évite une
                 ressource gaspillée.
               </p>
@@ -249,8 +264,8 @@
                   />
                 </svg>
               </div>
-              <h3 class="value-title">Communauté</h3>
-              <p class="value-desc">
+              <h3 class="value-title" data-i18n="apropos.values.community_title">Communauté</h3>
+              <p class="value-desc" data-i18n="apropos.values.community_desc">
                 Des particuliers et des artisans qui s'entraident, partagent et
                 créent du lien local.
               </p>
@@ -276,8 +291,8 @@
                   />
                 </svg>
               </div>
-              <h3 class="value-title">Transparence</h3>
-              <p class="value-desc">
+              <h3 class="value-title" data-i18n="apropos.values.transparency_title">Transparence</h3>
+              <p class="value-desc" data-i18n="apropos.values.transparency_desc">
                 Annonces vérifiées, profils clairs, échanges de confiance. Rien
                 à cacher.
               </p>
@@ -303,8 +318,8 @@
                   />
                 </svg>
               </div>
-              <h3 class="value-title">Proximité</h3>
-              <p class="value-desc">
+              <h3 class="value-title" data-i18n="apropos.values.proximity_title">Proximité</h3>
+              <p class="value-desc" data-i18n="apropos.values.proximity_desc">
                 Le circuit court d'abord : on privilégie les échanges près de
                 chez vous.
               </p>
@@ -313,13 +328,13 @@
         </div>
       </section>
 
-      <!-- ═══════════════ HISTOIRE ═══════════════ -->
+      
       <section class="section">
         <div class="section-inner">
           <div class="sec-head center">
             <div>
-              <span class="sec-eyebrow cyan">Le chemin parcouru</span>
-              <h2 class="sec-heading">Notre histoire</h2>
+              <span class="sec-eyebrow cyan" data-i18n="apropos.history.eyebrow">Le chemin parcouru</span>
+              <h2 class="sec-heading" data-i18n="apropos.history.heading">Notre histoire</h2>
             </div>
           </div>
 
@@ -327,8 +342,8 @@
             <div class="tl-item">
               <span class="tl-dot" aria-hidden="true"></span>
               <p class="tl-year">2024</p>
-              <h3 class="tl-title">L'idée</h3>
-              <p class="tl-desc">
+              <h3 class="tl-title" data-i18n="apropos.history.y1_title">L'idée</h3>
+              <p class="tl-desc" data-i18n="apropos.history.y1_desc">
                 Un constat partagé : trop d'objets en bon état partent à la
                 benne alors qu'ils pourraient resservir. On esquisse les
                 premières maquettes.
@@ -337,8 +352,8 @@
             <div class="tl-item">
               <span class="tl-dot" aria-hidden="true"></span>
               <p class="tl-year">2025</p>
-              <h3 class="tl-title">Les premiers pas</h3>
-              <p class="tl-desc">
+              <h3 class="tl-title" data-i18n="apropos.history.y2_title">Les premiers pas</h3>
+              <p class="tl-desc" data-i18n="apropos.history.y2_desc">
                 Lancement d'une bêta avec une poignée d'artisans et de
                 particuliers engagés. On affine la plateforme à leurs côtés,
                 échange après échange.
@@ -347,8 +362,8 @@
             <div class="tl-item">
               <span class="tl-dot" aria-hidden="true"></span>
               <p class="tl-year">2026</p>
-              <h3 class="tl-title">L'ouverture</h3>
-              <p class="tl-desc">
+              <h3 class="tl-title" data-i18n="apropos.history.y3_title">L'ouverture</h3>
+              <p class="tl-desc" data-i18n="apropos.history.y3_desc">
                 UpcycleConnect s'ouvre au public et fédère une communauté
                 grandissante autour du réemploi et de l'upcycling.
               </p>
@@ -357,14 +372,14 @@
         </div>
       </section>
 
-      <!-- ═══════════════ ÉQUIPE ═══════════════ -->
+      
       <section class="section">
         <div class="section-inner">
           <div class="sec-head center">
             <div>
-              <span class="sec-eyebrow">Les visages derrière le projet</span>
-              <h2 class="sec-heading">L'équipe</h2>
-              <p class="sec-sub">
+              <span class="sec-eyebrow" data-i18n="apropos.team.eyebrow">Les visages derrière le projet</span>
+              <h2 class="sec-heading" data-i18n="apropos.team.heading">L'équipe</h2>
+              <p class="sec-sub" data-i18n="apropos.team.sub">
                 Une petite équipe pluridisciplinaire, animée par la même envie
                 de réduire le gaspillage.
               </p>
@@ -375,30 +390,30 @@
             <div class="team-card">
               <div class="team-ava g1" aria-hidden="true">FM</div>
               <p class="team-name">Faty M.</p>
-              <p class="team-role">Cofondatrice &amp; CEO</p>
+              <p class="team-role" data-i18n="apropos.team.role_ceo">Cofondatrice &amp; CEO</p>
             </div>
             <div class="team-card">
               <div class="team-ava g2" aria-hidden="true">ND</div>
               <p class="team-name">Ndoya D.</p>
-              <p class="team-role">Cofondateur &amp; CTO</p>
+              <p class="team-role" data-i18n="apropos.team.role_cto">Cofondateur &amp; CTO</p>
             </div>
 
             <div class="team-card">
               <div class="team-ava g4" aria-hidden="true">AB</div>
               <p class="team-name">Amel B.</p>
-              <p class="team-role">Design &amp; Produit</p>
+              <p class="team-role" data-i18n="apropos.team.role_design">Design &amp; Produit</p>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- ═══════════════ ENGAGEMENTS ═══════════════ -->
+      
       <section class="section">
         <div class="section-inner">
           <div class="sec-head center">
             <div>
-              <span class="sec-eyebrow green">Nos engagements</span>
-              <h2 class="sec-heading">Des principes, pas des promesses</h2>
+              <span class="sec-eyebrow green" data-i18n="apropos.commit.eyebrow">Nos engagements</span>
+              <h2 class="sec-heading" data-i18n="apropos.commit.heading">Des principes, pas des promesses</h2>
             </div>
           </div>
 
@@ -420,8 +435,8 @@
                 </svg>
               </div>
               <div>
-                <h3 class="commit-title">Annonces vérifiées</h3>
-                <p class="commit-desc">
+                <h3 class="commit-title" data-i18n="apropos.commit.c1_title">Annonces vérifiées</h3>
+                <p class="commit-desc" data-i18n="apropos.commit.c1_desc">
                   Chaque dépôt est contrôlé par notre équipe avant publication.
                 </p>
               </div>
@@ -443,8 +458,8 @@
                 </svg>
               </div>
               <div>
-                <h3 class="commit-title">Le don reste gratuit</h3>
-                <p class="commit-desc">
+                <h3 class="commit-title" data-i18n="apropos.commit.c2_title">Le don reste gratuit</h3>
+                <p class="commit-desc" data-i18n="apropos.commit.c2_desc">
                   Aucune commission sur les objets donnés. Donner ne coûtera
                   jamais rien.
                 </p>
@@ -472,8 +487,8 @@
                 </svg>
               </div>
               <div>
-                <h3 class="commit-title">Circuit court</h3>
-                <p class="commit-desc">
+                <h3 class="commit-title" data-i18n="apropos.commit.c3_title">Circuit court</h3>
+                <p class="commit-desc" data-i18n="apropos.commit.c3_desc">
                   Des échanges locaux, en main propre, pour limiter l'empreinte
                   du transport.
                 </p>
@@ -483,19 +498,19 @@
         </div>
       </section>
 
-      <!-- ═══════════════ CTA FINAL ═══════════════ -->
+      
       <section class="cta-final">
         <div class="cta-final-inner">
-          <h2 class="cta-final-title">
+          <h2 class="cta-final-title" data-i18n="apropos.cta.title">
             Envie de <em>faire partie</em> de l'aventure ?
           </h2>
-          <p class="cta-final-sub">
+          <p class="cta-final-sub" data-i18n="apropos.cta.sub">
             Rejoignez une communauté qui transforme ses objets — et ses
             habitudes. C'est gratuit.
           </p>
           <div class="hero-actions">
-            <a href="register.html" class="btn btn-p btn-lg">Créer un compte</a>
-            <a href="login.html" class="btn btn-g btn-lg"
+            <a href="register.html" class="btn btn-p btn-lg" data-i18n="apropos.cta.register">Créer un compte</a>
+            <a href="login.html" class="btn btn-g btn-lg" data-i18n="apropos.cta.pro"
               >Découvrir les offres Pro</a
             >
           </div>
@@ -503,7 +518,7 @@
       </section>
     </main>
 
-    <!-- ═══════════════ FOOTER ═══════════════ -->
+    
     <footer class="footer">
       <div class="footer-top">
         <div>
@@ -511,47 +526,51 @@
             <span class="nav-brand-logo" aria-hidden="true"></span>
             <span class="footer-brand-name">UpcycleConnect</span>
           </div>
-          <p class="footer-desc">
+          <p class="footer-desc" data-i18n="landing.footer.desc">
             Réduire les déchets, valoriser les matériaux, connecter les
             communautés.
           </p>
         </div>
         <nav class="footer-col" aria-label="Plateforme">
-          <p class="footer-col-title">Plateforme</p>
+          <p class="footer-col-title" data-i18n="landing.footer.platform_title">Plateforme</p>
           <ul>
-            <li><a href="annonceAll.html">Marché</a></li>
-            <li><a href="evenement.html">Événements</a></li>
-            <li><a href="article.html">Conseils</a></li>
-            <li><a href="forum.html">Forum</a></li>
+            <li><a href="annonceAll.html" data-i18n="landing.nav.market">Marché</a></li>
+            <li><a href="evenement.html" data-i18n="landing.nav.events">Événements</a></li>
+            <li><a href="article.html" data-i18n="landing.nav.advice">Conseils</a></li>
+            <li><a href="forum.html" data-i18n="landing.nav.forum">Forum</a></li>
           </ul>
         </nav>
         <nav class="footer-col" aria-label="Entreprise">
-          <p class="footer-col-title">Entreprise</p>
+          <p class="footer-col-title" data-i18n="landing.footer.company_title">Entreprise</p>
           <ul>
-            <li><a href="landing.html">Accueil</a></li>
-            <li><a href="login.html">Services Pro</a></li>
+            <li><a href="landing.html" data-i18n="landing.nav.home">Accueil</a></li>
+            <li><a href="login.html" data-i18n="landing.nav.services_pro">Services Pro</a></li>
           </ul>
         </nav>
         <nav class="footer-col" aria-label="Légal">
-          <p class="footer-col-title">Légal</p>
+          <p class="footer-col-title" data-i18n="landing.footer.legal_title">Légal</p>
           <ul>
-            <li><a href="cgu.html">CGU</a></li>
-            <li><a href="rgpd.html">RGPD</a></li>
+            <li><a href="cgu.html" data-i18n="landing.footer.cgu">CGU</a></li>
+            <li><a href="rgpd.html" data-i18n="landing.footer.rgpd">RGPD</a></li>
           </ul>
         </nav>
       </div>
       <div class="footer-bottom">
         <div class="footer-bottom-inner">
-          <p class="footer-copy">
+          <p class="footer-copy" data-i18n="landing.footer.copy">
             © 2026 UpcycleConnect — Digital Worm Mission 1
           </p>
           <p class="footer-made">
-            <span class="dot" aria-hidden="true"></span> Économie circulaire en
-            action
+            <span class="dot" aria-hidden="true"></span>
+            <span data-i18n="landing.footer.made">Économie circulaire en action</span>
           </p>
         </div>
       </div>
     </footer>
+
+    
+  <script src="./script/config.js"></script>
+    <script src="../Frontend/script/admin/translate.js"></script>
 
     <script>
       document.addEventListener("DOMContentLoaded", () => {

@@ -19,24 +19,27 @@
     <title>Articles</title>
   </head>
   <body>
+    
+    <div id="wrapper" style="position:fixed; bottom:16px; right:16px; z-index:2000; display:flex; gap:6px;"></div>
+
     <nav class="topnav">
       <div class="nav-logo">
         <img src="../Frontend/assets/logo renova.png" alt="ReNova" />
       </div>
       <div class="nav-links">
-        <a class="nav-link active">Accueil</a>
-        <a class="nav-link" href="../Frontend/espClient.html">Annonces</a>
-        <a class="nav-link" href="../Frontend/espClient.html">Conteneurs</a>
-        <a class="nav-link" href="../Frontend/espClient.html">Catalogue</a>
-        <a class="nav-link" href="../Frontend/espClient.html">Planning</a>
-        <a class="nav-link" href="../Frontend/espClient.html">Mon score</a>
-        <a class="nav-link" href="../Frontend/article.html">Article</a>
-        <a class="nav-link" href="../Frontend/evenement.html">Evenement</a>
-        <a class="nav-link" href="../Frontend/forum.html">Forum</a>
+        <a class="nav-link active" data-i18n="landing.nav.home">Accueil</a>
+        <a class="nav-link" href="../Frontend/espClient.html" data-i18n="annonce.nav.listings">Annonces</a>
+        <a class="nav-link" href="../Frontend/espClient.html" data-i18n="forum.nav.containers">Conteneurs</a>
+        <a class="nav-link" href="../Frontend/espClient.html" data-i18n="forum.nav.catalog">Catalogue</a>
+        <a class="nav-link" href="../Frontend/espClient.html" data-i18n="forum.nav.planning">Planning</a>
+        <a class="nav-link" href="../Frontend/espClient.html" data-i18n="forum.nav.score">Mon score</a>
+        <a class="nav-link" href="../Frontend/article.html" data-i18n="forum.nav.article">Article</a>
+        <a class="nav-link" href="../Frontend/evenement.html" data-i18n="forum.nav.event">Evenement</a>
+        <a class="nav-link" href="../Frontend/forum.html" data-i18n="forum.nav.forum">Forum</a>
       </div>
       <div class="nav-right">
         <button class="nav-link" onclick="showSection('messages-section')">
-          <i class="fas fa-envelope"></i> Mes Messages
+          <i class="fas fa-envelope"></i> <span data-i18n="forum.nav.messages">Mes Messages</span>
         </button>
         <div class="lang-btn">
           <span class="material-symbols-outlined"> public </span>Lang
@@ -56,7 +59,7 @@
           <div class="profile-ava">👤</div>
           <div>
             <div class="profile-name" id="navName">Your Name</div>
-            <div class="profile-role">Particulier</div>
+            <div class="profile-role" data-i18n="register.role.individual">Particulier</div>
           </div>
         </div>
       </div>
@@ -68,12 +71,13 @@
           type="text"
           id="searchInput"
           placeholder="Rechercher un article, un événement..."
+          data-i18n-placeholder="article.search_ph"
         />
         <button type="button" class="btn" onclick="LancerRecherche()">
           <span class="material-symbols-outlined"> search </span>
         </button>
       </div>
-      <h2>Nos Actualités & Astuces</h2>
+      <h2 data-i18n="article.heading">Nos Actualités & Astuces</h2>
       <div id="liste-articles" class="articles-grid"></div>
     </div>
 
@@ -83,13 +87,13 @@
       style="display: none; padding: 20px"
     >
       <div class="section-header" style="margin-bottom: 25px">
-        <h2>Mes Conversations</h2>
+        <h2 data-i18n="forum.my_conversations">Mes Conversations</h2>
       </div>
       <div id="conversations-list" style="display: grid; gap: 15px">
-        <div class="loading-msg">Chargement...</div>
+        <div class="loading-msg" data-i18n="forum.loading_short">Chargement...</div>
       </div>
       <div id="no-messages" style="display: none; text-align: center">
-        <p>Aucun message pour le moment.</p>
+        <p data-i18n="article.no_messages">Aucun message pour le moment.</p>
       </div>
     </section>
 
@@ -143,7 +147,7 @@
             justify-content: space-between;
           "
         >
-          <h3>Discussion</h3>
+          <h3 data-i18n="forum.discussion">Discussion</h3>
           <span onclick="closeChat()" style="cursor: pointer">&times;</span>
         </div>
         <div
@@ -151,12 +155,15 @@
           style="flex: 1; overflow-y: auto; padding: 15px"
         ></div>
         <div style="padding: 15px; display: flex; gap: 10px">
-          <input type="text" id="chat-input" placeholder="Écrivez..." />
-          <button onclick="sendChatMessage()">Envoyer</button>
+          <input type="text" id="chat-input" placeholder="Écrivez..." data-i18n-placeholder="article.chat_ph" />
+          <button onclick="sendChatMessage()" data-i18n="forum.send">Envoyer</button>
         </div>
       </div>
     </div>
   </body>
+  
+  <script src="./script/config.js"></script>
+  <script src="../Frontend/script/admin/translate.js" defer></script>
   <script src="../Frontend/script/affichageArt.js" defer></script>
   <script src="../Frontend/script/profil.js" defer></script>
   <script src="../Frontend/script/affichageEvt.js" defer></script>

@@ -39,10 +39,14 @@
         }
       });
     </script>
-  </head>
+      <script src="../Frontend/script/config.js"></script>
+</head>
   <body
     style="display: flex; min-height: 100vh; margin: 0; background: var(--bg)"
   >
+
+    <div id="wrapper" style="position:fixed; bottom:16px; right:16px; z-index:2000; display:flex; gap:6px;"></div>
+
     <aside
       style="
         width: 260px;
@@ -84,7 +88,7 @@
           <span class="material-symbols-outlined" style="font-size: 20px"
             >dashboard</span
           >
-          Vue d'ensemble
+          <span data-i18n="backoffice.sidebar.overview">Vue d'ensemble</span>
         </a>
         <a
           href="admin_users.html"
@@ -99,7 +103,7 @@
           <span class="material-symbols-outlined" style="font-size: 20px"
             >group</span
           >
-          Utilisateurs
+          <span data-i18n="backoffice.sidebar.users">Utilisateurs</span>
         </a>
         <a
           href="admin_validations.html"
@@ -114,7 +118,7 @@
           <span class="material-symbols-outlined" style="font-size: 20px"
             >check_circle</span
           >
-          Validations
+          <span data-i18n="backoffice.sidebar.validations">Validations</span>
           <span
             class="tag t-red"
             style="margin-left: auto; font-size: 10px; padding: 2px 6px"
@@ -134,7 +138,7 @@
           <span class="material-symbols-outlined" style="font-size: 20px"
             >inventory_2</span
           >
-          Logistique & Box
+          <span data-i18n="backoffice.sidebar.logistics">Logistique & Box</span>
         </a>
         <a
           href="admin_finances.html"
@@ -149,7 +153,7 @@
           <span class="material-symbols-outlined" style="font-size: 20px"
             >account_balance</span
           >
-          Finances
+          <span data-i18n="backoffice.sidebar.finances">Finances</span>
         </a>
       </nav>
       <button
@@ -160,24 +164,24 @@
         <span class="material-symbols-outlined" style="font-size: 18px"
           >logout</span
         >
-        Déconnexion
+        <span data-i18n="backoffice.sidebar.logout">Déconnexion</span>
       </button>
     </aside>
 
     <main style="flex: 1; padding: 40px">
-      <h1 class="hero-title">Centre de <em>Validation</em></h1>
+      <h1 class="hero-title" data-i18n="backoffice.validations.title">Centre de <em>Validation</em></h1>
 
       <div class="vtabs" style="margin: 30px 0">
-        <button id="tout" class="vtab on" onclick="setVtab(this, 'all')">
+        <button id="tout" class="vtab on" onclick="setVtab(this, 'all')" data-i18n="backoffice.validations.tab_all">
           Tout voir
         </button>
-        <button id="ann" class="vtab" onclick="setVtab(this, 'ann')">
+        <button id="ann" class="vtab" onclick="setVtab(this, 'ann')" data-i18n="backoffice.validations.tab_ads">
           Annonces
         </button>
-        <button id="evt" class="vtab" onclick="setVtab(this, 'evt')">
+        <button id="evt" class="vtab" onclick="setVtab(this, 'evt')" data-i18n="backoffice.validations.tab_events">
           Événements
         </button>
-        <button id="con" class="vtab" onclick="setVtab(this, 'con')">
+        <button id="con" class="vtab" onclick="setVtab(this, 'con')" data-i18n="backoffice.validations.tab_content">
           Contenus / Articles
         </button>
       </div>
@@ -190,13 +194,14 @@
 
           <div class="modal-h">
             <span class="material-symbols-outlined">article</span>
-            <span id="modal-art-title">Chargement du titre...</span>
+            <span id="modal-art-title" data-i18n="backoffice.validations.loading_title">Chargement du titre...</span>
           </div>
 
           <div
             class="modal-sub"
             id="modal-art-meta"
             style="margin-bottom: 20px"
+            data-i18n="backoffice.validations.loading_meta"
           >
             Détails de l'auteur...
           </div>
@@ -230,6 +235,7 @@
               margin-bottom: 25px;
               background: var(--bg2);
             "
+            data-i18n="backoffice.validations.loading_content"
           >
             Chargement du contenu...
           </div>
@@ -243,10 +249,10 @@
               padding-top: 20px;
             "
           >
-            <button id="btn-modal-refuser" class="btn btn-red">
+            <button id="btn-modal-refuser" class="btn btn-red" data-i18n="backoffice.validations.refuse">
               ✕ Refuser
             </button>
-            <button id="btn-modal-valider" class="btn btn-g">
+            <button id="btn-modal-valider" class="btn btn-g" data-i18n="backoffice.validations.validate_pub">
               ✓ Valider la publication
             </button>
           </div>

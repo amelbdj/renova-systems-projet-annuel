@@ -197,7 +197,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// ... après l'insertion du nouvel utilisateur ...inscrit
+
 	NotifyAllAdmins("👤 Un nouvel utilisateur s'est  sur ReNova !")
 
 	w.Header().Set("Content-Type", "application/json")
@@ -277,6 +277,47 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func UpdateProfileHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "PUT, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Content-Type", "application/json")
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	var user models.User
+	err := json.NewDecoder(r.Body).Decode(&user)
+	if err != nil {
+		http.Error(w, `{"error":"Donnees invalides"}`, http.StatusBadRequest)
+		return
+	}
+
+	if user.Id == 0 {
+		idContext, ok := r.Context().Value("userID").(int)
+		if ok {
+			user.Id = idContext
+		}
+	}
+
+	if user.Id == 0 || user.Nom == "" || user.Prenom == "" || user.Email == "" {
+		http.Error(w, `{"error":"Champs obligatoires manquants"}`, http.StatusBadRequest)
+		return
+	}
+
+	err = bdd.UpdateUserProfile(user.Id, user.Nom, user.Prenom, user.Email)
+	if err != nil {
+		http.Error(w, `{"error":"Erreur lors de la mise a jour"}`, http.StatusInternalServerError)
+		return
+	}
+
+	json.NewEncoder(w).Encode(map[string]string{
+		"message": "Profil mis a jour",
+	})
+}
+
 func GetUserById(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
@@ -352,7 +393,7 @@ func GetUserByName(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		return
 	}
-	nameQuery := r.URL.Query().Get("name") // recup les valeurs de la query string(diff de path variable)
+	nameQuery := r.URL.Query().Get("name")
 	roleQuery := r.URL.Query().Get("role")
 
 	users, err := bdd.GetUserByName(nameQuery, roleQuery)
@@ -364,7 +405,6 @@ func GetUserByName(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(users)
 }
 
-// Dans users.go
 func ValidateUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
@@ -555,10 +595,20 @@ func BanUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// On récupère l'utilisateur AVANT le bannissement pour avoir son email et son prénom
+	user, errUser := bdd.GetUserById(userId)
+
 	err = bdd.BanUser(userId)
 	if err != nil {
 		http.Error(w, "Erreur serveur lors du bannissement", http.StatusInternalServerError)
 		return
+	}
+
+	// On envoie l'email d'information (en arrière-plan, pour ne pas bloquer la réponse)
+	if errUser == nil && user.Email != "" {
+		go bdd.EnvoyerEmailBannissement(user.Email, user.Prenom)
+	} else {
+		fmt.Println("Bannissement : impossible d'envoyer l'email (utilisateur introuvable)")
 	}
 
 	w.WriteHeader(http.StatusOK)
