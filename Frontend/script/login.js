@@ -1,4 +1,3 @@
-
 function togglePwd(id, btn) {
   const inp = document.getElementById(id);
   if (!inp) return;
@@ -6,7 +5,6 @@ function togglePwd(id, btn) {
   inp.type = show ? "text" : "password";
   btn.textContent = show ? "🔒" : "👁";
 }
-
 
 function validateEmail(inp) {
   const ok = /^[^@]+@[^@]+\.[^@]+$/.test(inp.value.trim());
@@ -23,7 +21,6 @@ function validatePwdLogin(inp) {
   if (errEl) errEl.style.display = !ok && inp.value ? "block" : "none";
 }
 
-
 function showSpaceSelect() {
   document.getElementById("loginSuccess").style.display = "none";
   document.getElementById("spaceSelect").style.display = "block";
@@ -31,7 +28,6 @@ function showSpaceSelect() {
 function goSpace(name) {
   alert("🚀 Redirection vers l'Espace " + name + "…");
 }
-
 
 function showForgot() {
   const email = document.getElementById("loginEmail").value.trim();
@@ -45,11 +41,9 @@ function showForgot() {
   }
 }
 
-
 function socialLogin(p) {
   alert("🔐 Authentification " + p + " — à connecter au back-end OAuth2.");
 }
-
 
 async function submitLogin() {
   let emailInfo = document.getElementById("loginEmail").value;
@@ -66,7 +60,7 @@ async function submitLogin() {
   };
 
   try {
-    let reponse = await fetch("http://localhost:8081/admin/login", {
+    let reponse = await fetch(API_BASE_URL + "/admin/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

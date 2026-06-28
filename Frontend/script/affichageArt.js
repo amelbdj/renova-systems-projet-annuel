@@ -26,7 +26,7 @@ function chargerArticlesClient(motCle = "") {
     "<p style='color: var(--txt-m); text-align: center; grid-column: 1 / -1;' data-i18n=\"article.loading\">Chargement des articles...</p>";
   if (typeof appliquerTraductions === "function") appliquerTraductions();
 
-  let url = `http://localhost:8081/admin/articles`;
+  let url = `${API_BASE_URL}/admin/articles`;
 
   if (motCle !== "") {
     url += `?search=${encodeURIComponent(motCle)}`;
@@ -66,14 +66,12 @@ function chargerArticlesClient(motCle = "") {
 
           const idArt = art.id;
 
-          
           let imageCover =
-            "https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=500"; 
+            "https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=500";
           if (art.image_url && art.image_url.trim() !== "") {
-            imageCover = "http://localhost:8081/" + art.image_url;
+            imageCover = API_BASE_URL + "/" + art.image_url;
           }
 
-          
           const resume =
             art.contenu.length > 100
               ? art.contenu.substring(0, 100) + "..."
@@ -103,7 +101,6 @@ function chargerArticlesClient(motCle = "") {
         container.innerHTML = htmlContent;
       }
 
-      
       if (typeof appliquerTraductions === "function") appliquerTraductions();
     })
     .catch((err) => {
@@ -118,11 +115,10 @@ function OuvrirArticle(id) {
   const art = articlesData.find((a) => a.id === id);
   if (!art) return;
 
-  
   let imageCover =
     "https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=500";
   if (art.image_url && art.image_url.trim() !== "") {
-    imageCover = "http://localhost:8081/" + art.image_url;
+    imageCover = API_BASE_URL + "/" + art.image_url;
   }
 
   document.getElementById("modalImage").src = imageCover;

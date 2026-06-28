@@ -10,7 +10,7 @@ func GetAnnonces() ([]models.Annonce, error) {
 
 	var Annonces []models.Annonce
 
-	rows, err := Db.Query("SELECT DATE_FORMAT(a.created_at, '%d-%m-%Y') as created_at, a.id, a.titre, a.description, a.type, a.prix, a.statut_validation, a.code_postal, a.ville, a.etat, a.poids_kg, a.quantite, a.image, u.nom, u.prenom, c.libelle FROM pa2026.annonce a INNER JOIN pa2026.utilisateur u ON u.id = a.id_user INNER JOIN pa2026.categorie c ON c.id = a.id_categorie")
+	rows, err := Db.Query("SELECT DATE_FORMAT(a.created_at, '%d-%m-%Y') as created_at, a.id, a.titre, COALESCE(a.description, ''), COALESCE(a.type, ''), COALESCE(a.prix, 0), a.statut_validation, COALESCE(a.code_postal, ''), COALESCE(a.ville, ''), a.etat, COALESCE(a.poids_kg, 0), COALESCE(a.quantite, 1), COALESCE(a.image, ''), COALESCE(u.nom, ''), COALESCE(u.prenom, ''), COALESCE(c.libelle, '') FROM pa2026.annonce a INNER JOIN pa2026.utilisateur u ON u.id = a.id_user INNER JOIN pa2026.categorie c ON c.id = a.id_categorie")
 
 	if err != nil {
 		return nil, fmt.Errorf("get Annonces : %v", err.Error())
@@ -267,9 +267,10 @@ func GetAnnoncesByUser(userID int) ([]models.Annonce, error) {
 	var list []models.Annonce
 
 	query := `
-		SELECT id, titre, COALESCE(prix, 0), COALESCE(id_categorie, 0), 
-		       COALESCE(statut_vente, ''), COALESCE(statut_validation, ''), COALESCE(image, '') 
-		FROM pa2026.annonce 
+		SELECT id, titre, COALESCE(prix, 0), COALESCE(id_categorie, 0),
+		       COALESCE(statut_vente, ''), COALESCE(statut_validation, ''), COALESCE(image, ''),
+		       COALESCE(is_sponsored, 0)
+		FROM pa2026.annonce
 		WHERE id_user = ?`
 
 	rows, err := Db.Query(query, userID)
@@ -280,7 +281,7 @@ func GetAnnoncesByUser(userID int) ([]models.Annonce, error) {
 
 	for rows.Next() {
 		var Annonce models.Annonce
-		if err := rows.Scan(&Annonce.Id, &Annonce.Titre, &Annonce.Prix, &Annonce.IdCategorie, &Annonce.StatutVente, &Annonce.StatutValidation, &Annonce.Image); err != nil {
+		if err := rows.Scan(&Annonce.Id, &Annonce.Titre, &Annonce.Prix, &Annonce.IdCategorie, &Annonce.StatutVente, &Annonce.StatutValidation, &Annonce.Image, &Annonce.IsSponsored); err != nil {
 			return nil, err
 		}
 		list = append(list, Annonce)
@@ -291,22 +292,31 @@ func GetAnnoncesByUser(userID int) ([]models.Annonce, error) {
 func GetValidatedAnnonces(currentUserID int) ([]models.Annonce, error) {
 	var Annonces []models.Annonce
 
-	query := `
-        SELECT 
-        a.id, a.titre, a.description, a.type, a.prix, a.statut_validation, 
-        a.code_postal, a.ville, a.etat, a.poids_kg, a.quantite,
-        COALESCE(u.nom, ''), 
-        COALESCE(u.prenom, ''), 
-        COALESCE(c.libelle, ''), 
+    query := `
+        SELECT
+        a.id, a.titre, a.description, a.type, a.prix, a.statut_validation,
+        a.code_postal, a.ville, a.etat, a.poids, a.quantite,
+        COALESCE(u.nom, ''),
+        COALESCE(u.prenom, ''),
+        COALESCE(c.libelle, ''),
         COALESCE(a.image, ''),
-        a.statut_vente
+        a.statut_vente,
+        COALESCE(a.is_sponsored, 0),
+        COALESCE(u.plan_abo, '')
     FROM pa2026.annonce a
     LEFT JOIN pa2026.utilisateur u ON a.id_user = u.id
     LEFT JOIN pa2026.categorie c ON a.id_categorie = c.id
-    WHERE a.statut_validation = 'Validé' 
+    WHERE a.statut_validation = 'Validé'
     AND a.id_user != ?
-    -- LA CORRECTION EST ICI : on exige explicitement que l'annonce soit "En vente"
-    AND a.statut_vente = 'En vente'`
+    AND a.statut_vente = 'LIBRE'
+    ORDER BY
+        (COALESCE(a.is_sponsored, 0) = 1) DESC,
+        CASE COALESCE(u.plan_abo, '')
+            WHEN 'pro'  THEN 3
+            WHEN 'plus' THEN 2
+            ELSE 0
+        END DESC,
+        a.id DESC`
 
 	rows, err := Db.Query(query, currentUserID)
 	if err != nil {
@@ -314,19 +324,20 @@ func GetValidatedAnnonces(currentUserID int) ([]models.Annonce, error) {
 	}
 	defer rows.Close()
 
-	for rows.Next() {
-		var a models.Annonce
-		err := rows.Scan(
-			&a.Id, &a.Titre, &a.Description, &a.Type, &a.Prix, &a.StatutValidation,
-			&a.CodePostal, &a.Ville, &a.Etat, &a.PoidsKg, &a.Quantite,
-			&a.Nom, &a.Prenom, &a.Categorie, &a.Image, &a.StatutVente,
-		)
-		if err != nil {
-			return nil, fmt.Errorf("Erreur Scan: %v", err)
-		}
-		Annonces = append(Annonces, a)
-	}
-	return Annonces, nil
+    for rows.Next() {
+        var a models.Annonce
+        err := rows.Scan(
+            &a.Id, &a.Titre, &a.Description, &a.Type, &a.Prix, &a.StatutValidation,
+            &a.CodePostal, &a.Ville, &a.Etat, &a.PoidsKg, &a.Quantite,
+            &a.Nom, &a.Prenom, &a.Categorie, &a.Image, &a.StatutVente,
+            &a.IsSponsored, &a.PlanAbo,
+        )
+        if err != nil {
+            return nil, fmt.Errorf("Erreur Scan: %v", err)
+        }
+        Annonces = append(Annonces, a)
+    }
+    return Annonces, nil
 }
 
 func GetUserEcoStats(userID int) (map[string]interface{}, error) {

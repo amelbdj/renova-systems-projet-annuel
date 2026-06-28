@@ -10,18 +10,21 @@ async function loadOneAnnonce() {
     return;
   }
 
-  
   if (paymentStatus === "success") {
     console.log("Paiement détecté, mise à jour du statut...");
     const buyerId = urlParams.get("buyer_id");
 
     try {
       const res = await fetch(
-        `http://localhost:8081/api/annonces/vendre?id=${id}&buyer_id=${buyerId}`,
+        `${API_BASE_URL}/api/annonces/vendre?id=${id}&buyer_id=${buyerId}`,
         { method: "POST" },
       );
       if (res.ok) {
-        alert(t("oneAnnonce.payment_success"));
+        if (typeof t === "function") {
+          alert(t("oneAnnonce.payment_success"));
+        } else {
+          alert("Paiement reussi ! L'objet est maintenant a vous.");
+        }
         window.location.href = `oneAnnonce.html?id=${id}`;
       } else {
         console.error("Le serveur a renvoyé une erreur lors de la vente.");
@@ -32,7 +35,7 @@ async function loadOneAnnonce() {
   }
 
   try {
-    const response = await fetch(`http://localhost:8081/api/annonces?id=${id}`);
+    const response = await fetch(`${API_BASE_URL}/api/annonces?id=${id}`);
     if (!response.ok) throw new Error("404");
 
     const ann = await response.json();
@@ -55,7 +58,7 @@ async function openCheckout(type) {
   if (type === "buy") {
     try {
       const response = await fetch(
-        `http://localhost:8081/api/payment-annonce?annonce_id=${currentItem.id}&buyer_id=${buyerId}`,
+        `${API_BASE_URL}/api/payment-annonce?annonce_id=${currentItem.id}&buyer_id=${buyerId}`,
         { method: "POST" },
       );
 
@@ -77,7 +80,7 @@ async function openCheckout(type) {
 
     try {
       const response = await fetch(
-        `http://localhost:8081/api/annonces/vendre?id=${currentItem.id}&buyer_id=${buyerId}`,
+        `${API_BASE_URL}/api/annonces/vendre?id=${currentItem.id}&buyer_id=${buyerId}`,
         { method: "POST" },
       );
 
@@ -100,7 +103,7 @@ function renderPage(item) {
     item.statut_vente === "EN ATTENTE DEPOT" ||
     item.statut_vente === "EN BOX";
   const isFree = item.prix <= 0 || item.type.toLowerCase() === "don";
-  const imgSrc = item.image ? `http://localhost:8081${item.image}` : null;
+  const imgSrc = item.image ? `${API_BASE_URL}${item.image}` : null;
 
   document.getElementById("bcCat").textContent = item.categorie || "Objet";
   document.getElementById("bcTitle").textContent = item.titre;

@@ -43,7 +43,7 @@ async function loadUserProfile() {
   if (!userId) return;
 
   try {
-    const res = await fetch(`http://localhost:8081/user/profile?id=${userId}`, {
+    const res = await fetch(`${API_BASE_URL}/user/profile?id=${userId}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -100,7 +100,7 @@ async function stripeConnect() {
 
   try {
     const res = await fetch(
-      `http://localhost:8081/admin/connect-stripe?id=${userId}`,
+      `${API_BASE_URL}/admin/connect-stripe?id=${userId}`,
       {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },

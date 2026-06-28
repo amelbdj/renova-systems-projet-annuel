@@ -13,7 +13,7 @@ async function loadAllAnnonces() {
 
   try {
     const response = await fetch(
-      `http://localhost:8081/api/annonces/all?id=${userId}`,
+      `${API_BASE_URL}/api/annonces/all?id=${userId}`,
     );
     const data = await response.json();
 
@@ -49,7 +49,7 @@ function displayAnnonces(items) {
   document.getElementById("resultCount").textContent = items.length;
 
   items.forEach((ann) => {
-    const imgSrc = ann.image ? `http://localhost:8081${ann.image}` : null;
+    const imgSrc = ann.image ? `${API_BASE_URL}${ann.image}` : null;
 
     const card = document.createElement("a");
     card.className = "listing-card fu";
@@ -58,11 +58,21 @@ function displayAnnonces(items) {
 
     const isFree = ann.prix <= 0 || ann.type === "don";
 
+    const isSponsored = ann.is_sponsored === true || ann.is_sponsored === 1 || ann.is_sponsored === "1";
+    let promoBadge = "";
+    if (isSponsored) {
+      promoBadge = '<span class="badge" style="background:rgba(166,124,255,.92);color:#fff">⭐ Sponsorisé</span>';
+    } else if (ann.plan_abo === "plus" || ann.plan_abo === "pro") {
+      promoBadge = '<span class="badge" style="background:rgba(58,142,255,.92);color:#fff">⚡ Prioritaire</span>';
+    }
+
     card.innerHTML = `
             <div class="card-thumb" style="${imgSrc ? `background: url('${imgSrc}') center/cover no-repeat;` : `background: var(--bg4);`}">
                 ${imgSrc ? "" : '<div style="font-size:3rem"><i class="fas fa-box"></i></div>'}
                 <div class="card-badges">
                     ${isFree ? '<span class="badge b-don" data-i18n="annonce.type.donation">Don gratuit</span>' : '<span class="badge b-ven" data-i18n="annonce.type.sale">Vente</span>'}
+                    ${promoBadge}
+                    ${isFree ? '<span class="badge b-don">Don gratuit</span>' : '<span class="badge b-ven">Vente</span>'}
                 </div>
             </div>
             <div class="card-body">

@@ -179,9 +179,19 @@ function GetUsers() {
 let currentUserIdToRefuse = null;
 
 function RefuseUser(userId) {
+
   currentUserIdToRefuse = userId;
   document.getElementById("modalRefus").style.display = "flex";
   document.getElementById("motifTexte").value = "";
+
+  currentUserIdToRefuse = userId; 
+  document.getElementById("modalRefus").style.display = "flex";
+  document.getElementById("motifTexte").value = ""; 
+
+  currentUserIdToRefuse = userId;
+  document.getElementById("modalRefus").style.display = "flex";
+  document.getElementById("motifTexte").value = "";
+
 }
 
 function ValidateUser(userId) {
@@ -307,8 +317,6 @@ function UpdateUser() {
 }
 
 function UpdateValidationCount() {
-
-
 
   const fetchOptions = {
     method: "GET",

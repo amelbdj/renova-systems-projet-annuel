@@ -29,7 +29,6 @@ function GetEvent() {
             lieu = "";
           }
 
-
           let dateStr = event.date_debut ? event.date_debut : "Date inconnue";
 
           htmlContent += `
@@ -63,7 +62,6 @@ function GetEvent() {
       } else if (!container.innerHTML) {
         container.innerHTML = `<div style="padding:20px" data-i18n="backoffice.events.no_events">Aucun événement en attente.</div>`;
       }
-
 
       if (typeof appliquerTraductions === "function") {
         appliquerTraductions();

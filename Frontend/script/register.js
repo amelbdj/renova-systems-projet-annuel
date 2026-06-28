@@ -201,7 +201,7 @@ async function submitRegister() {
   }
 
   try {
-    let reponse = await fetch("http://localhost:8081/auth/inscription", {
+    let reponse = await fetch(API_BASE_URL + "/auth/inscription", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(infosAEnvoyer),

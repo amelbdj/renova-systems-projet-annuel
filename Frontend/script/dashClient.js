@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   loadMyAnnonces();
-  loadUserBoxes();
+  loadAllUserBoxes();
   loadEcoScore();
 });
 
@@ -41,7 +41,7 @@ async function loadMyAnnonces() {
 
   try {
     const response = await fetch(
-      `http://localhost:8081/mes-annonces?id=${userId}`,
+      `${API_BASE_URL}/mes-annonces?id=${userId}`,
     );
     const toutesAnnonces = await response.json();
 
@@ -63,7 +63,7 @@ async function loadMyAnnonces() {
     } else {
       annoncesActives.forEach((ann) => {
         console.log("Données de l'annonce:", ann);
-        const imgSrc = ann.image ? `http://localhost:8081${ann.image}` : null;
+        const imgSrc = ann.image ? `${API_BASE_URL}${ann.image}` : null;
         const card = document.createElement("div");
         card.className = "ann-card fu";
         const statusClass =
@@ -108,7 +108,7 @@ async function deleteAnnonce(id) {
   const token = localStorage.getItem("token");
   try {
     const response = await fetch(
-      `http://localhost:8081/admin/annonces/delete/${id}`,
+      `${API_BASE_URL}/admin/annonces/delete/${id}`,
       {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
@@ -163,8 +163,8 @@ async function loadAllUserBoxes() {
   try {
     
     const [resDeposits, resPickups] = await Promise.all([
-      fetch(`http://localhost:8081/api/user/boxes?user_id=${userId}`),
-      fetch(`http://localhost:8081/api/user/pickups/${userId}`),
+      fetch(`${API_BASE_URL}/api/user/boxes?user_id=${userId}`),
+      fetch(`${API_BASE_URL}/api/user/pickups/${userId}`),
     ]);
 
     
@@ -286,7 +286,7 @@ async function loadEcoScore() {
 
   try {
     const response = await fetch(
-      "http://localhost:8081/api/user/stats?user_id=" + userId,
+      API_BASE_URL + "/api/user/stats?user_id=" + userId,
     );
     const stats = await response.json();
 

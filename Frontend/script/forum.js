@@ -11,7 +11,7 @@ function chargerForum() {
 
   container.innerHTML = "<p>Chargement du forum...</p>";
 
-  fetch("http://localhost:8081/user/forums", {
+  fetch(API_BASE_URL + "/user/forums", {
     headers: { Authorization: "Bearer " + token },
   })
     .then(function (response) {
@@ -79,7 +79,7 @@ function chargerMessagesSujet(idTopic) {
   const zone = document.getElementById("zone-messages");
   zone.innerHTML = "<p>Chargement...</p>";
 
-  fetch("http://localhost:8081/user/forums/messages?topic_id=" + idTopic, {
+  fetch(API_BASE_URL + "/user/forums/messages?topic_id=" + idTopic, {
     headers: { Authorization: "Bearer " + token },
   })
     .then(function (res) {
@@ -147,7 +147,7 @@ window.envoyerMessage = function () {
     contenu: texte,
   };
 
-  fetch("http://localhost:8081/user/forums/messages", {
+  fetch(API_BASE_URL + "/user/forums/messages", {
     method: "POST",
     headers: {
       Authorization: "Bearer " + token,
@@ -193,7 +193,7 @@ window.validerNouveauSujet = function () {
     message: message,
   };
 
-  fetch("http://localhost:8081/user/forums", {
+  fetch(API_BASE_URL + "/user/forums", {
     method: "POST",
     headers: {
       Authorization: "Bearer " + token,

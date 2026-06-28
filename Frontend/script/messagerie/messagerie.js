@@ -14,7 +14,7 @@ function openChat(annonceId, destinataireId) {
   document.getElementById("chatModal").style.display = "flex";
 
   fetch(
-    `http://localhost:8081/api/chat/history?annonce_id=${currentChatAnnonceId}&user1=${monUserId}&user2=${currentChatDestinataireId}`,
+    `${API_BASE_URL}/api/chat/history?annonce_id=${currentChatAnnonceId}&user1=${monUserId}&user2=${currentChatDestinataireId}`,
     {
       headers: { Authorization: "Bearer " + localStorage.getItem("token") },
     },
@@ -49,7 +49,7 @@ function openChat(annonceId, destinataireId) {
 function connectWebSocket(monUserId) {
   if (chatSocket) chatSocket.close();
 
-  chatSocket = new WebSocket(`ws://localhost:8081/ws/chat?userId=${monUserId}`);
+  chatSocket = new WebSocket(`${WS_BASE_URL}/ws/chat?userId=${monUserId}`);
 
   chatSocket.onmessage = function (event) {
     const msg = JSON.parse(event.data);
@@ -103,14 +103,11 @@ function appendMessageToUI(texte, isMe) {
   container.innerHTML += bulle;
   container.scrollTop = container.scrollHeight;
 }
-
 const chatInput = document.getElementById("chat-input");
-
 
 document.addEventListener("DOMContentLoaded", () => {
   const chatInput = document.getElementById("chat-input");
 
-  
   if (chatInput) {
     chatInput.addEventListener("keypress", function (e) {
       if (e.key === "Enter") {
@@ -122,18 +119,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function loadMyMessages() {
   const userId = localStorage.getItem("userId");
-  
+
   const container = document.getElementById("conversations-list");
   const noMsg = document.getElementById("no-messages");
 
-  if (!container) return; 
+  if (!container) return;
 
-  fetch(`http://localhost:8081/api/chat/conversations?userId=${userId}`, {
+  fetch(`${API_BASE_URL}/api/chat/conversations?userId=${userId}`, {
     headers: { Authorization: "Bearer " + localStorage.getItem("token") },
   })
     .then((res) => res.json())
     .then((data) => {
-      container.innerHTML = ""; 
+      container.innerHTML = "";
 
       if (!data || data.length === 0) {
         if (noMsg) noMsg.style.display = "block";
@@ -144,7 +141,6 @@ function loadMyMessages() {
 
       data.forEach((conv) => {
         const div = document.createElement("div");
-        
         div.className = "conversation-item";
         div.style =
           "padding: 15px; background: var(--bg2); margin-bottom: 10px; border-radius: 8px; cursor: pointer; border: 1px solid var(--b0);";
@@ -156,7 +152,6 @@ function loadMyMessages() {
                 </div>
             `;
 
-        
         div.onclick = () => openChat(conv.annonce_id, conv.contact_id);
         container.appendChild(div);
       });
@@ -167,18 +162,15 @@ function loadMyMessages() {
     });
 }
 function showSection(sectionId) {
-  
   const sections = document.querySelectorAll(
     ".hero, .ann-section, .cont-section, .cat-section, .bottom-row, .dashboard-section",
   );
   sections.forEach((s) => (s.style.display = "none"));
 
-  
   const target = document.getElementById(sectionId);
   if (target) {
     target.style.display = "block";
 
-    
     if (sectionId === "messages-section") {
       loadMyMessages();
     }
@@ -187,30 +179,23 @@ function showSection(sectionId) {
 function appendMessageToUI(texte, isMe) {
   const container = document.getElementById("chat-messages");
 
-  
   const emptyMsg = document.getElementById("empty-chat");
   if (emptyMsg) emptyMsg.remove();
 
-  
   if (container.innerText.includes("Chargement")) {
     container.innerHTML = "";
   }
 
-  
   const messageRow = document.createElement("div");
-  
   messageRow.className = `message-row ${isMe ? "me" : "them"}`;
 
-  
   const bubble = document.createElement("div");
   bubble.className = "message-bubble";
   bubble.textContent = texte;
 
-  
   messageRow.appendChild(bubble);
   container.appendChild(messageRow);
 
-  
   container.scrollTo({
     top: container.scrollHeight,
     behavior: "smooth",

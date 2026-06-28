@@ -2,6 +2,7 @@ package bdd
 
 import (
 	"fmt"
+	"sort"
 	"upcycleconnect/models"
 )
 
@@ -36,16 +37,83 @@ func CreateOrder(annonce models.Annonce, acheteurId int) (int, error) {
 	return int(orderId), nil
 }
 
-func PaymentHistory(userID int) ([]map[string]interface{}, error) {
+func planNomEtPrix(idPlan int) (string, float64) {
+	switch idPlan {
+	case 2:
+		return "Plus", 45
+	case 3:
+		return "Pro", 99
+	default:
+		return "Premium", 25
+	}
+}
 
+func PaymentHistory(userID int) ([]map[string]interface{}, error) {
+	var history []map[string]interface{}
+
+	achats, err := Db.Query("SELECT o.montant, o.date, a.titre FROM pa2026.`order` o JOIN annonce a ON o.annonce_id = a.id WHERE o.acheteur_id = ?", userID)
+	if err != nil {
+		return nil, err
+	}
+	for achats.Next() {
+		var montant float64
+		var date, titre string
+		achats.Scan(&montant, &date, &titre)
+		history = append(history, map[string]interface{}{
+			"type": "achat", "titre": titre, "montant": montant, "date": date,
+		})
+	}
+	achats.Close()
+
+	ventes, err := Db.Query("SELECT o.montant, o.date, a.titre FROM pa2026.`order` o JOIN annonce a ON o.annonce_id = a.id WHERE a.id_user = ?", userID)
+	if err != nil {
+		return nil, err
+	}
+	for ventes.Next() {
+		var montant float64
+		var date, titre string
+		ventes.Scan(&montant, &date, &titre)
+		history = append(history, map[string]interface{}{
+			"type": "vente", "titre": titre, "montant": montant, "date": date,
+		})
+	}
+	ventes.Close()
+
+	abos, err := Db.Query("SELECT id_plan, date_debut FROM abonnement WHERE id_user = ?", userID)
+	if err != nil {
+		return nil, err
+	}
+	for abos.Next() {
+		var idPlan int
+		var date string
+		abos.Scan(&idPlan, &date)
+		nom, montant := planNomEtPrix(idPlan)
+		history = append(history, map[string]interface{}{
+			"type": "abonnement", "titre": "Abonnement " + nom, "montant": montant, "date": date,
+		})
+	}
+	abos.Close()
+
+	sort.Slice(history, func(i, j int) bool {
+		return history[i]["date"].(string) > history[j]["date"].(string)
+	})
+
+	return history, nil
+}
+
+func GetProInvoices(userID int) ([]map[string]interface{}, error) {
 	query := `
-        SELECT 
-            o.montant_total, 
-            o.date_commande, 
-            a.titre 
+        SELECT
+            o.id_commande,
+            o.date_commande,
+            COALESCE(a.titre, e.titre, 'Transaction') AS titre,
+            o.montant_total,
+            o.commission,
+            COALESCE(o.type, 'annonce') AS type
         FROM pa2026.order o
-        JOIN annonce a ON o.id_annonce = a.id
-        WHERE a.id_user = ?
+        LEFT JOIN pa2026.annonce a ON o.type = 'annonce' AND o.id_annonce = a.id
+        LEFT JOIN pa2026.evenement e ON o.type = 'evenement' AND o.id_annonce = e.id
+        WHERE o.id_acheteur = ?
         ORDER BY o.date_commande DESC`
 
 	rows, err := Db.Query(query, userID)
@@ -54,59 +122,31 @@ func PaymentHistory(userID int) ([]map[string]interface{}, error) {
 	}
 	defer rows.Close()
 
-	var history []map[string]interface{}
-	for rows.Next() {
-		var montant float64
-		var date, titre string
-		rows.Scan(&montant, &date, &titre)
-
-		item := map[string]interface{}{
-			"titre":   titre,
-			"montant": montant,
-			"date":    date,
-		}
-		history = append(history, item)
-	}
-	return history, nil
-}
-
-func GetProInvoices(acheteurID int) ([]map[string]interface{}, error) {
-	query := `
-        SELECT
-            o.id_commande,
-            o.date_commande,
-            a.titre,
-            o.montant_total,
-            o.commission
-        FROM pa2026.order o
-        JOIN pa2026.annonce a ON o.id_annonce = a.id
-        WHERE o.id_acheteur = ?
-        ORDER BY o.date_commande DESC`
-
-	rows, err := Db.Query(query, acheteurID)
-	if err != nil {
-		return nil, fmt.Errorf("erreur SQL GetProInvoices : %v", err)
-	}
-	defer rows.Close()
-
 	var factures []map[string]interface{}
+
 	for rows.Next() {
 		var id int
-		var date, titre string
-		var montant, commission float64
+		var date string
+		var titre string
+		var montant float64
+		var commission float64
+		var typeCommande string
 
-		if err := rows.Scan(&id, &date, &titre, &montant, &commission); err != nil {
+		err := rows.Scan(&id, &date, &titre, &montant, &commission, &typeCommande)
+		if err != nil {
 			continue
 		}
 
 		factures = append(factures, map[string]interface{}{
-			"id_commande": id,
-			"date":        date,
-			"titre":       titre,
-			"montant":     montant,
-			"commission":  commission,
+			"id":         id,
+			"date":       date,
+			"titre":      titre,
+			"montant":    montant,
+			"commission": commission,
+			"type":       typeCommande,
 		})
 	}
+
 	return factures, nil
 }
 

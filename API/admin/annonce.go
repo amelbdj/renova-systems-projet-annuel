@@ -315,6 +315,57 @@ func GetMyAnnonces(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(annonces)
 }
 
+func ToggleSponsorHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Content-Type", "application/json")
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	userID, _ := strconv.Atoi(r.URL.Query().Get("id"))
+	annonceID, _ := strconv.Atoi(r.URL.Query().Get("annonce_id"))
+	if userID == 0 || annonceID == 0 {
+		http.Error(w, `{"error": "Paramètres manquants"}`, http.StatusBadRequest)
+		return
+	}
+
+	var owner int
+	var plan, sponsored string
+	err := bdd.Db.QueryRow(`
+		SELECT a.id_user, COALESCE(u.plan_abo, ''), COALESCE(a.is_sponsored, 0)
+		FROM pa2026.annonce a
+		JOIN pa2026.utilisateur u ON a.id_user = u.id
+		WHERE a.id = ?`, annonceID).Scan(&owner, &plan, &sponsored)
+	if err != nil {
+		http.Error(w, `{"error": "Annonce introuvable"}`, http.StatusNotFound)
+		return
+	}
+
+	if owner != userID {
+		http.Error(w, `{"error": "Cette annonce ne vous appartient pas"}`, http.StatusForbidden)
+		return
+	}
+	if plan != "pro" {
+		http.Error(w, `{"error": "Le boost est réservé au plan Pro"}`, http.StatusForbidden)
+		return
+	}
+
+	newState := 1
+	if sponsored == "1" {
+		newState = 0
+	}
+	if _, err := bdd.Db.Exec("UPDATE pa2026.annonce SET is_sponsored = ? WHERE id = ?", newState, annonceID); err != nil {
+		http.Error(w, `{"error": "Impossible de mettre à jour l'annonce"}`, http.StatusInternalServerError)
+		return
+	}
+
+	json.NewEncoder(w).Encode(map[string]int{"is_sponsored": newState})
+}
+
 func GetValidatedAnnonces(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")

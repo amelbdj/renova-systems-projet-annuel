@@ -28,5 +28,5 @@ func main() {
 	route.RoutesNotifications()
 
 	fmt.Println("test de : http://localhost:8081")
-	http.ListenAndServe(":8081", nil)
+	fmt.Println(http.ListenAndServe(":8081", nil))
 }

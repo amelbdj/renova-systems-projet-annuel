@@ -22,6 +22,8 @@ type Annonce struct {
 	IdCategorie        int     `json:"id_categorie"`
 	Image              string  `json:"image"`
 	StatutVente        string  `json:"statut_vente"`
+	IsSponsored        bool    `json:"is_sponsored"`
+	PlanAbo            string  `json:"plan_abo"`
 }
 
 type Categorie struct {

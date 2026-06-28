@@ -26,6 +26,10 @@ function LoadDashboardData() {
             a.statut_validation.toLowerCase() === "valide"
           ) {
             totalPoidsKg += parseFloat(a.poids_kg) || 0;
+
+            totalPoidsKg += parseFloat(a.poids_kg) || 0;
+
+            totalPoidsKg += parseFloat(a.poids_kg) || 0;
           } else if (
             a.statut_validation &&
             a.statut_validation.toLowerCase() === "en attente"
@@ -84,7 +88,6 @@ function LoadDashboardData() {
         if (elBoxes)
           elBoxes.textContent = `${conteneurs.length} / ${totalCasiers}`;
 
-
         let fetchPromises = conteneurs.map((c) =>
           fetch(`${API_BASE_URL}/api/admin/conteneur/${c.id}/boxes`, {
             headers: { Authorization: "Bearer " + tokenAdmin },
@@ -92,7 +95,6 @@ function LoadDashboardData() {
             .then((res) => res.json())
             .catch(() => []),
         );
-
 
         Promise.all(fetchPromises).then((results) => {
           let maintenanceCount = 0;
@@ -110,7 +112,6 @@ function LoadDashboardData() {
               });
             }
           });
-
 
           if (elAlertMaint) {
             if (maintenanceCount === 0) {
@@ -133,7 +134,6 @@ function LoadDashboardData() {
       let artAValider = 0;
       if (articles) {
         articles.forEach((art) => {
-
           if (art.statut && art.statut.toLowerCase() === "en attente") {
             artAValider++;
           }

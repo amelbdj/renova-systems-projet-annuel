@@ -14,7 +14,7 @@ function fetchActivitesClient() {
     return;
   }
 
-  fetch("http://localhost:8081/user/planning?id=" + userId, {
+  fetch(API_BASE_URL + "/user/planning?id=" + userId, {
     headers: {
       Authorization: "Bearer " + token,
     },

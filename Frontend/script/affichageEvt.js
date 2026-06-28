@@ -1,4 +1,3 @@
-
 window.isProcessingPayment = false;
 
 function LancerRecherche() {
@@ -8,13 +7,13 @@ function LancerRecherche() {
 
 function chargerEvenementsClient(motCle = "") {
   const container = document.getElementById("liste-evenements");
-  if (!container) return; 
+  if (!container) return;
 
   container.innerHTML =
     "<p style='color: var(--txt-m); text-align: center; grid-column: 1 / -1;' data-i18n=\"evenement.loading\">Chargement des événements...</p>";
   if (typeof appliquerTraductions === "function") appliquerTraductions();
 
-  let url = `http://localhost:8081/admin/evenements`;
+  let url = `${API_BASE_URL}/admin/evenements`;
   if (motCle !== "") {
     url += `?search=${encodeURIComponent(motCle)}`;
   }
@@ -32,7 +31,6 @@ function chargerEvenementsClient(motCle = "") {
     .then((evenements) => {
       container.innerHTML = "";
 
-      
       window.evenementData = evenements;
 
       if (!evenements || evenements.length === 0) {
@@ -46,7 +44,6 @@ function chargerEvenementsClient(motCle = "") {
       const maintenant = new Date();
 
       evenements.forEach((evt) => {
-        
         let parts = evt.date_debut.split(" a ");
         let dateParts = parts[0].split("/");
         let timeParts = parts[1].split(":");
@@ -63,17 +60,15 @@ function chargerEvenementsClient(motCle = "") {
 
           const idEvt = evt.id;
 
-          
           const imageCover =
             evt.image_url && evt.image_url.trim() !== ""
-              ? `http://localhost:8081/${evt.image_url}`
+              ? `${API_BASE_URL}/${evt.image_url}`
               : "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=500";
 
           const resume =
             (evt.description || "Pas de description.").substring(0, 100) +
             "...";
 
-          
           let boutonAction = evt.deja_inscrit
             ? `<span style="background-color: #ef4444; color: white; padding: 8px 15px; border-radius: 6px; font-weight: 600; font-size: 14px; margin-top: 10px; display: inline-block; cursor: pointer;" onclick="SeDesinscrire(${idEvt}); event.stopPropagation();" data-i18n="evenement.unsubscribe">Se désinscrire ➔</span>`
             : `<span style="background-color: var(--blue); color: white; padding: 8px 15px; border-radius: 6px; font-weight: 600; font-size: 14px; margin-top: 10px; display: inline-block; cursor: pointer;" onclick="sinscrireEvenement(${idEvt}, ${evt.prix}); event.stopPropagation();" data-i18n="evenement.subscribe">S'inscrire ➔</span>`;
@@ -95,16 +90,15 @@ function chargerEvenementsClient(motCle = "") {
           ? '<p data-i18n="evenement.empty_upcoming">Aucun événement à venir.</p>'
           : htmlContent;
 
-      
       if (typeof appliquerTraductions === "function") appliquerTraductions();
     })
     .catch((err) => {
       console.error("Erreur :", err);
-      container.innerHTML = '<p data-i18n="evenement.error">Erreur de connexion.</p>';
+      container.innerHTML =
+        '<p data-i18n="evenement.error">Erreur de connexion.</p>';
       if (typeof appliquerTraductions === "function") appliquerTraductions();
     });
 }
-
 
 function sinscrireEvenement(idEvent, prixEvent) {
   const idUser = localStorage.getItem("userId");
@@ -115,7 +109,6 @@ function sinscrireEvenement(idEvent, prixEvent) {
     return;
   }
 
-  
   if (window.evenementData) {
     const currentEvt = window.evenementData.find((e) => e.id === idEvent);
     if (currentEvt && currentEvt.deja_inscrit) {
@@ -124,13 +117,11 @@ function sinscrireEvenement(idEvent, prixEvent) {
     }
   }
 
-  
   if (window.isProcessingPayment) return;
   window.isProcessingPayment = true;
 
-  
   if (prixEvent > 0) {
-    fetch("http://localhost:8081/api/web/checkout/evenement", {
+    fetch(API_BASE_URL + "/api/web/checkout/evenement", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -156,11 +147,8 @@ function sinscrireEvenement(idEvent, prixEvent) {
         alert(t("evenement.payment_server_error"));
         window.isProcessingPayment = false;
       });
-  }
-
-  
-  else {
-    fetch("http://localhost:8081/admin/evenements/inscription", {
+  } else {
+    fetch(API_BASE_URL + "/admin/evenements/inscription", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -198,10 +186,9 @@ function OuvrirEvenement(id) {
   const evt = window.evenementData.find((a) => a.id === id);
   if (!evt) return;
 
-  
   const imageCover =
     evt.image_url && evt.image_url.trim() !== ""
-      ? `http://localhost:8081/${evt.image_url}`
+      ? `${API_BASE_URL}/${evt.image_url}`
       : "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=500";
 
   document.getElementById("modalImage").src = imageCover;
@@ -221,7 +208,7 @@ function OuvrirEvenement(id) {
   if (evt.pdf_url && evt.pdf_url.trim() !== "") {
     contenuHtml +=
       `<div style="margin-top: 18px;">` +
-      `<a href="http://localhost:8081/${evt.pdf_url}" target="_blank" ` +
+      `<a href=API_BASE_URL + "/${evt.pdf_url}" target="_blank" ` +
       `style="display:inline-block; background-color: var(--blue); color:#fff; padding:10px 16px; border-radius:6px; font-weight:600; text-decoration:none;">` +
       `📄 Télécharger le support (PDF)</a></div>`;
   }
@@ -233,7 +220,7 @@ function OuvrirEvenement(id) {
 
 function FermerEvenement() {
   const modal = document.getElementById("articleModal");
-  
+
   if (modal) {
     modal.style.display = "none";
   }
@@ -251,7 +238,7 @@ function SeDesinscrire(idEvent) {
     return;
   }
 
-  fetch("http://localhost:8081/admin/evenements/desinscription", {
+  fetch(API_BASE_URL + "/admin/evenements/desinscription", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -273,7 +260,7 @@ function SeDesinscrire(idEvent) {
     .then(function (data) {
       alert("Succès : " + (data.message || "Désinscription validée"));
       FermerEvenement();
-      
+
       chargerEvenementsClient();
     })
     .catch(function (errorMessage) {

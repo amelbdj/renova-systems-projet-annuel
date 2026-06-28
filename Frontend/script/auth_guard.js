@@ -1,6 +1,10 @@
 function checkSession(requiredRole) {
     const token = localStorage.getItem("token");
-    const userRole = localStorage.getItem("userRole");
+    let userRole = localStorage.getItem("userRole");
+
+    if (userRole === "SalariÃ©") {
+        userRole = "Salarié";
+    }
 
     if (!token) {
         if (window.location.pathname.includes("/salarie/")) {
@@ -11,8 +15,18 @@ function checkSession(requiredRole) {
         return;
     }
 
-    if (requiredRole && userRole !== requiredRole) {
-        window.location.href = "/Frontend/403.html";
+    let roleOk = userRole === requiredRole;
+
+    if (requiredRole && requiredRole.indexOf("Salari") === 0 && userRole && userRole.indexOf("Salari") === 0) {
+        roleOk = true;
+    }
+
+    if (requiredRole && !roleOk) {
+        if (window.location.pathname.includes("/salarie/")) {
+            window.location.href = "../403.html";
+        } else {
+            window.location.href = "403.html";
+        }
         return;
     }
 }

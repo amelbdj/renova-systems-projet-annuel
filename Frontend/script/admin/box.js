@@ -1,11 +1,8 @@
 let monToken = localStorage.getItem("token");
 
-
 let currentBoxId = null;
 let currentConteneurId = null;
 let currentConteneurNom = "";
-
-
 
 function GetConteneurs() {
   const container = document.getElementById("box-container");
@@ -83,7 +80,6 @@ function CreateConteneur() {
     return;
   }
 
-
   const adresseComplete = `${adresse}, ${cp} ${ville}`;
 
   const newConteneurData = {
@@ -112,12 +108,9 @@ function CreateConteneur() {
     .catch((error) => console.error("Erreur de création:", error));
 }
 
-
-
 function GetBoxesForConteneur(conteneurId, nomConteneur, adresseConteneur) {
   const container = document.getElementById("box-container");
   const statContainer = document.getElementById("box-stats");
-
 
   currentConteneurId = conteneurId;
   currentConteneurNom = nomConteneur;
@@ -210,7 +203,6 @@ function GetBoxesForConteneur(conteneurId, nomConteneur, adresseConteneur) {
 }
 
 function openNewBoxModal(conteneurId) {
-
   const hiddenInput = document.getElementById("current-conteneur-id");
   if (hiddenInput) hiddenInput.value = conteneurId;
 
@@ -244,8 +236,6 @@ function CreateBox(conteneurId) {
     })
     .catch((error) => console.error("Erreur:", error));
 }
-
-
 
 function openBoxDetail(id, numero, status, localisation, conteneurId) {
   currentBoxId = id;
@@ -295,11 +285,10 @@ function UpdateBoxStatusAPI() {
     .catch((error) => console.error("Erreur:", error));
 }
 
-
 function closeModal(modalId) {
   const modal = document.getElementById(modalId);
   if (modal) modal.style.display = "none";
 }
 
-
+igin / faty;
 document.addEventListener("DOMContentLoaded", GetConteneurs);

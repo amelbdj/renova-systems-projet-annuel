@@ -4,7 +4,6 @@ const Auth = {
   getUserRole: () => localStorage.getItem("userRole"),
   isConnected: () => !!localStorage.getItem("token"),
 
-
   logout: () => {
     localStorage.clear();
     window.location.href = "login.html";
@@ -25,7 +24,6 @@ function GetAnnonce() {
       return res.json();
     })
     .then((annonces) => {
-
       const currentTabId = document.querySelector(".vtab.on").id;
       if (currentTabId !== "tout") container.innerHTML = "";
 
@@ -91,7 +89,6 @@ function GetAnnonce() {
       } else if (!container.innerHTML) {
         container.innerHTML = `<div style="padding:20px" data-i18n="backoffice.ads.no_ads">Aucune annonce en attente.</div>`;
       }
-
 
       if (typeof appliquerTraductions === "function") {
         appliquerTraductions();

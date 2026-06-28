@@ -1,4 +1,3 @@
-
 var monToken = localStorage.getItem("token");
 var userId = localStorage.getItem("userId");
 
@@ -7,7 +6,6 @@ function chargerProfil() {
     window.location.href = "../login.html";
     return;
   }
-
 
   fetch(`${API_BASE_URL}/admin/users/${userId}`, {
     headers: { Authorization: "Bearer " + monToken },
@@ -29,7 +27,6 @@ function chargerProfil() {
     })
     .catch((err) => console.error("Erreur Profil:", err));
 
-
   const statArticle = document.getElementById("stat-article");
   if (statArticle) {
     fetch(`${API_BASE_URL}/admin/articles/salarie/${userId}`, {
@@ -43,7 +40,6 @@ function chargerProfil() {
       .catch((err) => console.error("Erreur stat articles:", err));
   }
 
-
   const statEvent = document.getElementById("stat-event");
   const statValide = document.getElementById("stat-valide");
   if (statEvent || statValide) {
@@ -53,7 +49,6 @@ function chargerProfil() {
       .then((res) => res.json())
       .then((evenements) => {
         if (!evenements) evenements = [];
-
 
         const mesEvts = evenements.filter((e) => {
           const idAuteur =
@@ -67,9 +62,7 @@ function chargerProfil() {
           return String(idAuteur) === String(userId);
         });
 
-
         if (statEvent) statEvent.textContent = mesEvts.length;
-
 
         if (statValide) {
           const enLigne = mesEvts.filter((evt) => {
@@ -92,7 +85,6 @@ function chargerProfil() {
       .catch((err) => console.error("Erreur stat événements:", err));
   }
 
-
   const statForum = document.getElementById("stat-forum");
   if (statForum) {
     fetch(`${API_BASE_URL}/admin/forum/messages`, {
@@ -109,6 +101,7 @@ function chargerProfil() {
           }
         }
         statForum.textContent = nbSignales;
+        statForum.textContent = messages.length;
       })
       .catch((err) => console.error("Erreur stat forum:", err));
   }
@@ -173,9 +166,7 @@ function chargerNotifications() {
           panneau.style.display = "block";
           if (nonLues > 0) {
             fetch(
-              `${API_BASE_URL}/admin/notifications/user/` +
-                userId +
-                "/read",
+              `${API_BASE_URL}/admin/notifications/user/` + userId + "/read",
               {
                 method: "POST",
                 headers: { Authorization: "Bearer " + monToken },

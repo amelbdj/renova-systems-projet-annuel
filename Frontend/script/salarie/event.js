@@ -11,9 +11,6 @@ if (!monToken || !userId) {
   window.location.href = "../login.html";
 }
 
-
-
-
 function openNewEvt() {
   evtEnEdition = null;
   resetEvtForm();
@@ -59,16 +56,6 @@ function resetEvtForm() {
   }
   togglePdfField();
 }
-
-function togglePdfField() {
-  var typeSelect = document.getElementById("evt-type");
-  var pdfGroup = document.getElementById("evt-pdf-group");
-  if (!typeSelect || !pdfGroup) return;
-  pdfGroup.style.display = typeSelect.value === "formation" ? "block" : "none";
-}
-
-
-
 
 function CreateEvent() {
   var titre = document.getElementById("evt-titre").value.trim();
@@ -404,6 +391,7 @@ function GetEvenements() {
         var dateFormatee = evt.date_debut;
         var typeAffichage = evt.type || evt.format || "Événement";
 
+
         var pdfLink = "";
         if (evt.pdf_url && evt.pdf_url !== "") {
           pdfLink =
@@ -418,7 +406,6 @@ function GetEvenements() {
         var topSectionHtml = "";
 
         if (evt.image_url && evt.image_url !== "") {
-
           topSectionHtml =
             `
         <div style="position: relative;">
@@ -490,9 +477,6 @@ function GetEvenements() {
     });
 }
 
-
-
-
 function DeleteEvenement(id) {
   if (!confirm("Êtes-vous sûr de vouloir annuler cet événement ?")) {
     return;
@@ -514,9 +498,6 @@ function DeleteEvenement(id) {
       alert("Une erreur est survenue lors de l'annulation.");
     });
 }
-
-
-
 
 document.addEventListener("DOMContentLoaded", function () {
   GetEvenements();

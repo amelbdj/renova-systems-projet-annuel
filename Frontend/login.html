@@ -12,7 +12,6 @@
     <link rel="stylesheet" href="./style/login.css" />
   </head>
   <body>
-    
     <div
       id="wrapper"
       style="
@@ -46,7 +45,9 @@
           </div>
 
           <div class="left-hero">
-            <div class="left-eyebrow" data-i18n="login.left.eyebrow">Plateforme ReNova</div>
+            <div class="left-eyebrow" data-i18n="login.left.eyebrow">
+              Plateforme ReNova
+            </div>
             <h1 class="left-title" data-i18n="login.left.title">
               L'économie<br />circulaire,<br /><em>réinventée</em>
             </h1>
@@ -68,7 +69,9 @@
       <div class="right">
         <div class="auth-box">
           <div class="form-panel active" id="panelLogin">
-            <div class="form-title" data-i18n="login.form.title">Bon retour 👋</div>
+            <div class="form-title" data-i18n="login.form.title">
+              Bon retour 👋
+            </div>
             <div class="form-sub" data-i18n="login.form.sub">
               Connectez-vous à votre espace ReNova.
             </div>
@@ -88,7 +91,11 @@
                   oninput="validateEmail(this)"
                 />
               </div>
-              <div class="field-err" id="loginEmailErr" data-i18n="login.form.email_err">
+              <div
+                class="field-err"
+                id="loginEmailErr"
+                data-i18n="login.form.email_err"
+              >
                 Adresse e-mail invalide.
               </div>
             </div>
@@ -114,40 +121,40 @@
                   👁
                 </button>
               </div>
-              <div class="field-err" id="loginPwdErr" data-i18n="login.form.pwd_err">
+              <div
+                class="field-err"
+                id="loginPwdErr"
+                data-i18n="login.form.pwd_err"
+              >
                 Mot de passe requis.
               </div>
             </div>
 
-            <div class="forgot">
-              <a
-                href="#"
-                onclick="
-                  showForgot();
-                  return false;
-                "
-                data-i18n="login.form.forgot"
-                >Mot de passe oublié ?</a
-              >
-            </div>
-
             <div style="margin-top: 18px">
-              <button class="btn-primary" onclick="submitLogin()" data-i18n="login.form.submit">
+              <button
+                class="btn-primary"
+                onclick="submitLogin()"
+                data-i18n="login.form.submit"
+              >
                 Se connecter →
               </button>
             </div>
 
-            
-
             <div class="switch-prompt">
-              <span data-i18n="login.form.no_account">Pas encore de compte ?</span>
-              <a href="register.html" data-i18n="login.form.signup">S'inscrire →</a>
+              <span data-i18n="login.form.no_account"
+                >Pas encore de compte ?</span
+              >
+              <a href="register.html" data-i18n="login.form.signup"
+                >S'inscrire →</a
+              >
             </div>
           </div>
 
           <div id="loginSuccess" class="success-msg">
             <div class="success-ico">✅</div>
-            <div class="success-title" data-i18n="login.success.title">Connexion réussie !</div>
+            <div class="success-title" data-i18n="login.success.title">
+              Connexion réussie !
+            </div>
             <div class="success-desc" data-i18n="login.success.desc">
               Vous allez être redirigé vers votre espace dans un instant…
             </div>
@@ -159,7 +166,11 @@
                 flex-wrap: wrap;
               "
             >
-              <button class="btn-ghost" onclick="showSpaceSelect()" data-i18n="login.success.choose">
+              <button
+                class="btn-ghost"
+                onclick="showSpaceSelect()"
+                data-i18n="login.success.choose"
+              >
                 Choisir mon espace →
               </button>
             </div>
@@ -169,7 +180,11 @@
             id="spaceSelect"
             style="display: none; animation: fadeIn 0.3s ease both"
           >
-            <div class="form-title" style="margin-bottom: 6px" data-i18n="login.space.title">
+            <div
+              class="form-title"
+              style="margin-bottom: 6px"
+              data-i18n="login.space.title"
+            >
               Choisir votre espace
             </div>
             <div class="form-sub" data-i18n="login.space.sub">
@@ -199,7 +214,11 @@
                 >
                   🏠
                 </div>
-                <div><div class="sp-name" data-i18n="login.space.individuals">Espace Particuliers</div></div>
+                <div>
+                  <div class="sp-name" data-i18n="login.space.individuals">
+                    Espace Particuliers
+                  </div>
+                </div>
                 <div class="sp-arr" style="color: var(--vi-l); font-size: 16px">
                   ›
                 </div>
@@ -217,7 +236,11 @@
                 <div class="sp-ico" style="background: rgba(0, 212, 180, 0.15)">
                   🔨
                 </div>
-                <div><div class="sp-name" data-i18n="login.space.pros">Espace Professionnels</div></div>
+                <div>
+                  <div class="sp-name" data-i18n="login.space.pros">
+                    Espace Professionnels
+                  </div>
+                </div>
                 <div class="sp-arr" style="color: var(--vi-l); font-size: 16px">
                   ›
                 </div>
@@ -238,7 +261,11 @@
                 >
                   🎓
                 </div>
-                <div><div class="sp-name" data-i18n="login.space.employees">Espace Salariés</div></div>
+                <div>
+                  <div class="sp-name" data-i18n="login.space.employees">
+                    Espace Salariés
+                  </div>
+                </div>
                 <div class="sp-arr" style="color: var(--vi-l); font-size: 16px">
                   ›
                 </div>
@@ -256,7 +283,11 @@
                 <div class="sp-ico" style="background: rgba(255, 152, 0, 0.12)">
                   ⚙️
                 </div>
-                <div><div class="sp-name" data-i18n="login.space.backoffice">Back Office</div></div>
+                <div>
+                  <div class="sp-name" data-i18n="login.space.backoffice">
+                    Back Office
+                  </div>
+                </div>
                 <div class="sp-arr" style="color: #ffb84d; font-size: 16px">
                   ›
                 </div>
@@ -267,7 +298,7 @@
       </div>
     </div>
 
-    
+    <script src="./script/config.js"></script>
     <script src="./script/admin/translate.js"></script>
     <script src="./script/login.js"></script>
   </body>
