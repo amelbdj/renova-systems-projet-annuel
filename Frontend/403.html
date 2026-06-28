@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>403 - Accès interdit</title>
+    <title data-i18n="error403.title">403 - Accès interdit</title>
     <style>
       :root {
         --bg-dark: #121212;
@@ -78,17 +78,20 @@
     </style>
   </head>
   <body>
+<div id="wrapper" style="position:fixed;top:10px;right:10px;z-index:99999;display:flex;gap:5px"></div>
     <div class="container">
       <div class="icon">🚫</div>
       <div class="error-code">403</div>
-      <h1>Accès interdit</h1>
-      <p>
+      <h1 data-i18n="error403.heading">Accès interdit</h1>
+      <p data-i18n="error403.message">
         Désolé, vous n'avez pas la permission d'accéder à cette page. Si vous
         pensez qu'il s'agit d'une erreur, veuillez contacter l'administrateur.
       </p>
-      <button class="btn" onclick="window.location.href = 'login.html'">
+      <button class="btn" data-i18n="error403.back" onclick="window.location.href = 'login.html'">
         Retour à l'accueil
       </button>
     </div>
-  </body>
+    <script src="./script/config.js"></script>
+  <script src="./script/admin/translate.js"></script>
+</body>
 </html>

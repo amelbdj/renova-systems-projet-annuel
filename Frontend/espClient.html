@@ -48,6 +48,7 @@
     </script>
   </head>
   <body>
+<div id="wrapper" style="position:fixed;top:10px;right:10px;z-index:99999;display:flex;gap:5px"></div>
     
     <div id="tut">
       <div class="tut-card">
@@ -58,7 +59,7 @@
             <div class="ttrack" id="td2"></div>
             <div class="ttrack" id="td3"></div>
           </div>
-          <div class="tut-h" id="th">Bienvenue sur ReNova !</div>
+          <div class="tut-h" id="th" data-i18n="client.tut.welcome">Bienvenue sur ReNova !</div>
           <div class="tut-sub" id="tsub">
             Votre espace particulier pour donner, vendre et se former.
           </div>
@@ -73,7 +74,7 @@
               <div class="tfeat">
                 <span class="ti"><i class="fa-solid fa-box-archive"></i></span>
                 <div>
-                  <b>Mes Annonces</b
+                  <b data-i18n="client.my_ads">Mes Annonces</b
                   ><span
                     >Proposez des objets à donner ou vendre — validés par un
                     admin.</span
@@ -85,8 +86,8 @@
                   ><i class="fa-solid fa-boxes-packing"></i
                 ></span>
                 <div>
-                  <b>Conteneurs</b
-                  ><span>5 box sur cette page, disposées en 2 lignes.</span>
+                  <b data-i18n="client.containers">Conteneurs</b
+                  ><span data-i18n="client.tut.boxes_desc">5 box sur cette page, disposées en 2 lignes.</span>
                 </div>
               </div>
               <div class="tfeat">
@@ -94,17 +95,17 @@
                   ><i class="fa-solid fa-shopping-cart"></i
                 ></span>
                 <div>
-                  <b>Catalogue</b
+                  <b data-i18n="client.catalog">Catalogue</b
                   ><span
-                    >Formations, ateliers, événements — paiement Stripe.</span
+                     data-i18n="client.tut.catalog_desc">Formations, ateliers, événements — paiement Stripe.</span
                   >
                 </div>
               </div>
               <div class="tfeat">
                 <span class="ti"><i class="fa-solid fa-leaf"></i></span>
                 <div>
-                  <b>Score écologique</b
-                  ><span>Votre impact en temps réel.</span>
+                  <b data-i18n="client.eco_score">Score écologique</b
+                  ><span data-i18n="client.tut.score_desc">Votre impact en temps réel.</span>
                 </div>
               </div>
             </div>
@@ -118,22 +119,22 @@
               <div class="tfeat">
                 <span class="ti">✏️</span>
                 <div>
-                  <b>Remplissez le formulaire</b
-                  ><span>Titre, catégorie, description, photos.</span>
+                  <b data-i18n="client.tut.step_form_t">Remplissez le formulaire</b
+                  ><span data-i18n="client.tut.step_form_d">Titre, catégorie, description, photos.</span>
                 </div>
               </div>
               <div class="tfeat">
                 <span class="ti">⏳</span>
                 <div>
-                  <b>Validation admin</b
-                  ><span>Votre annonce est examinée sous 24h.</span>
+                  <b data-i18n="client.tut.step_valid_t">Validation admin</b
+                  ><span data-i18n="client.tut.step_valid_d">Votre annonce est examinée sous 24h.</span>
                 </div>
               </div>
               <div class="tfeat">
                 <span class="ti">🎉</span>
                 <div>
-                  <b>Publication</b
-                  ><span>Visible par toute la communauté.</span>
+                  <b data-i18n="client.tut.step_pub_t">Publication</b
+                  ><span data-i18n="client.tut.step_pub_d">Visible par toute la communauté.</span>
                 </div>
               </div>
             </div>
@@ -147,22 +148,22 @@
               <div class="tfeat">
                 <span class="ti">🟢</span>
                 <div>
-                  <b>Conteneurs verts</b
-                  ><span>Libres et disponibles immédiatement.</span>
+                  <b data-i18n="client.tut.green_t">Conteneurs verts</b
+                  ><span data-i18n="client.tut.green_d">Libres et disponibles immédiatement.</span>
                 </div>
               </div>
               <div class="tfeat">
                 <span class="ti">🔵</span>
                 <div>
-                  <b>Conteneurs bleus</b
-                  ><span>Déjà occupés — un des vôtres peut l'être.</span>
+                  <b data-i18n="client.tut.blue_t">Conteneurs bleus</b
+                  ><span data-i18n="client.tut.blue_d">Déjà occupés — un des vôtres peut l'être.</span>
                 </div>
               </div>
               <div class="tfeat">
                 <span class="ti">🟡</span>
                 <div>
-                  <b>Vérification</b
-                  ><span>En cours de contrôle par le système.</span>
+                  <b data-i18n="client.tut.check_t">Vérification</b
+                  ><span data-i18n="client.tut.check_d">En cours de contrôle par le système.</span>
                 </div>
               </div>
             </div>
@@ -177,26 +178,26 @@
                 <span class="ti">💳</span>
                 <div>
                   <b>Stripe</b
-                  ><span>Paiement sécurisé pour toutes les réservations.</span>
+                  ><span data-i18n="client.tut.stripe_d">Paiement sécurisé pour toutes les réservations.</span>
                 </div>
               </div>
               <div class="tfeat">
                 <span class="ti">🔔</span>
                 <div>
-                  <b>OneSignal</b><span>Notifications push en temps réel.</span>
+                  <b>OneSignal</b><span data-i18n="client.tut.onesignal_d">Notifications push en temps réel.</span>
                 </div>
               </div>
               <div class="tfeat">
                 <span class="ti">🌍</span>
                 <div>
-                  <b>Multilingue</b
-                  ><span>Changez la langue en haut à droite.</span>
+                  <b data-i18n="client.tut.multi_t">Multilingue</b
+                  ><span data-i18n="client.tut.multi_d">Changez la langue en haut à droite.</span>
                 </div>
               </div>
             </div>
           </div>
           <div class="tut-foot">
-            <span class="tut-ct" id="tct">Étape 1 / 4</span>
+            <span class="tut-ct" id="tct" data-i18n="client.tut.step1">Étape 1 / 4</span>
             <div style="display: flex; gap: 8px">
               <button
                 class="btn btn-g btn-sm"
@@ -225,15 +226,15 @@
         />
       </div>
       <div class="nav-links">
-        <button class="nav-link active">Accueil</button>
-        <a class="nav-link" href="./annonceAll.html">Annonces</a>
-        <button class="nav-link" onclick="scroll2('cont')">Conteneurs</button>
-        <button class="nav-link" onclick="scroll2('cat')">Catalogue</button>
-        <button class="nav-link" onclick="scroll2('plan')">Planning</button>
-        <button class="nav-link" onclick="scroll2('score')">Mon score</button>
-        <a class="nav-link" href="../Frontend/article.html">Article</a>
-        <a class="nav-link" href="../Frontend/evenement.html">Evenement</a>
-        <a class="nav-link" href="../Frontend/forum.html">Forum</a>
+        <button class="nav-link active" data-i18n="client.nav.home">Accueil</button>
+        <a class="nav-link" href="./annonceAll.html" data-i18n="client.nav.ads">Annonces</a>
+        <button class="nav-link" onclick="scroll2('cont')" data-i18n="client.containers">Conteneurs</button>
+        <button class="nav-link" onclick="scroll2('cat')" data-i18n="client.catalog">Catalogue</button>
+        <button class="nav-link" onclick="scroll2('plan')" data-i18n="client.nav.planning">Planning</button>
+        <button class="nav-link" onclick="scroll2('score')" data-i18n="client.nav.score">Mon score</button>
+        <a class="nav-link" href="../Frontend/article.html" data-i18n="client.nav.article">Article</a>
+        <a class="nav-link" href="../Frontend/evenement.html" data-i18n="client.nav.event">Evenement</a>
+        <a class="nav-link" href="../Frontend/forum.html" data-i18n="client.nav.forum">Forum</a>
       </div>
       <div class="nav-right">
         <button class="nav-link" onclick="showSection('messages-section')">
@@ -262,7 +263,7 @@
           <div class="profile-ava"></div>
           <div>
             <div class="profile-name" id="navName">Your Name</div>
-            <div class="profile-role">Particulier</div>
+            <div class="profile-role" data-i18n="client.role">Particulier</div>
           </div>
         </div>
       </div>
@@ -273,7 +274,7 @@
       
       <section class="hero fu">
         <div class="hero-left">
-          <div class="hero-eyebrow">Espace Particuliers</div>
+          <div class="hero-eyebrow" data-i18n="client.space">Espace Particuliers</div>
           <h1 class="hero-title">
             Bonjour, <em id="heroName">Name</em> <br />Bienvenue sur ReNova
           </h1>
@@ -287,11 +288,11 @@
         <div class="hero-stats">
           <div class="hstat fu fu2">
             <div class="hstat-val">3</div>
-            <div class="hstat-lbl">Annonces</div>
+            <div class="hstat-lbl" data-i18n="client.nav.ads">Annonces</div>
           </div>
           <div class="hstat fu fu3">
             <div class="hstat-val">1</div>
-            <div class="hstat-lbl">Dépôt actif</div>
+            <div class="hstat-lbl" data-i18n="client.deposit_active">Dépôt actif</div>
           </div>
           <div
             class="hstat fu fu4"
@@ -300,7 +301,7 @@
             <div class="hstat-val user-score" style="color: var(--green)">
               724
             </div>
-            <div class="hstat-lbl">Score éco</div>
+            <div class="hstat-lbl" data-i18n="client.eco_score_short">Score éco</div>
           </div>
         </div>
       </section>
@@ -309,7 +310,7 @@
       <section class="ann-section" id="ann">
         <div class="sec-label fu">
           <div class="sec-num">1</div>
-          <div class="sec-title-text">Mes Annonces</div>
+          <div class="sec-title-text" data-i18n="client.my_ads">Mes Annonces</div>
           <div class="sec-divider"></div>
           <span class="tag t-amber" style="flex-shrink: 0">
             Validées par l'admin</span
@@ -331,7 +332,7 @@
                 <div class="cht-i" style="background: rgba(49, 115, 255, 0.1)">
                   <i class="fa-solid fa-pen"></i>
                 </div>
-                <span id="formTitle">Créer une annonce</span>
+                <span id="formTitle" data-i18n="client.create_ad">Créer une annonce</span>
               </div>
               <button class="btn btn-g btn-xs" onclick="toggleAnnForm()">
                 Fermer ✕
@@ -340,14 +341,14 @@
             <div class="card-bd">
               <div class="frow">
                 <div>
-                  <label>Titre <span class="req">*</span></label>
+                  <label><span data-i18n="pro.ads.label_title">Titre</span> <span class="req">*</span></label>
                   <input
                     type="text"
                     placeholder="ex : Chaise en bois vintage"
                   />
                 </div>
                 <div>
-                  <label>Type <span class="req">*</span></label>
+                  <label><span data-i18n="pro.ads.label_type">Type</span> <span class="req">*</span></label>
                   <select onchange="togglePriceField()">
                     <option value="Don gratuit">Don gratuit</option>
                     <option value="Vente">Vente</option>
@@ -356,7 +357,7 @@
               </div>
               <div class="frow">
                 <div>
-                  <label>Catégorie</label>
+                  <label data-i18n="client.form.category">Catégorie</label>
                   <select id="annCategorie">
                     <option value="1">
                       <i class="fa-solid fa-chair"></i> Mobilier
@@ -379,18 +380,18 @@
                   </select>
                 </div>
                 <div id="priceContainer" style="display: none">
-                  <label>Prix (si vente)</label>
+                  <label data-i18n="client.form.price">Prix (si vente)</label>
                   <input type="number" placeholder="0.00 €" value="0" />
                 </div>
               </div>
               <div class="fgroup">
-                <label>Description <span class="req">*</span></label>
+                <label><span data-i18n="pro.ads.description">Description</span> <span class="req">*</span></label>
                 <textarea
                   placeholder="Décrivez l'objet : état, dimensions, matière…"
                 ></textarea>
               </div>
               <div class="fgroup">
-                <label>Photo de l'objet</label>
+                <label data-i18n="client.form.photo">Photo de l'objet</label>
                 <input type="file" id="annPhoto" accept="image/*" />
               </div>
               <div
@@ -422,7 +423,7 @@
       <section class="cont-section" id="cont">
         <div class="sec-label fu">
           <div class="sec-num cyan">2</div>
-          <div class="sec-title-text">Système de Conteneurs</div>
+          <div class="sec-title-text" data-i18n="client.containers_system">Système de Conteneurs</div>
           <div class="sec-divider"></div>
           <div id="cont-stats"></div>
         </div>
@@ -542,13 +543,13 @@
             </div>
             <div class="card-bd">
               <div class="cal-grid">
-                <div class="cal-dow">Lun</div>
-                <div class="cal-dow">Mar</div>
-                <div class="cal-dow">Mer</div>
-                <div class="cal-dow">Jeu</div>
-                <div class="cal-dow">Ven</div>
-                <div class="cal-dow">Sam</div>
-                <div class="cal-dow">Dim</div>
+                <div class="cal-dow" data-i18n="client.day.mon">Lun</div>
+                <div class="cal-dow" data-i18n="client.day.tue">Mar</div>
+                <div class="cal-dow" data-i18n="client.day.wed">Mer</div>
+                <div class="cal-dow" data-i18n="client.day.thu">Jeu</div>
+                <div class="cal-dow" data-i18n="client.day.fri">Ven</div>
+                <div class="cal-dow" data-i18n="client.day.sat">Sam</div>
+                <div class="cal-dow" data-i18n="client.day.sun">Dim</div>
               </div>
               <div class="ev-list"></div>
             </div>
@@ -559,7 +560,7 @@
         <section id="score">
           <div class="sec-label fu">
             <div class="sec-num green">5</div>
-            <div class="sec-title-text">Mon Upcycling Score</div>
+            <div class="sec-title-text" data-i18n="client.score.title">Mon Upcycling Score</div>
             <div class="sec-divider"></div>
           </div>
           <div class="score-card fu fu1">
@@ -628,7 +629,7 @@
           >
             Mes Conversations
           </h2>
-          <p style="color: var(--txt-m)">Retrouvez ici tous vos échanges.</p>
+          <p style="color: var(--txt-m)" data-i18n="client.forum.intro">Retrouvez ici tous vos échanges.</p>
         </div>
 
         <div
@@ -659,7 +660,7 @@
             class="fas fa-comments"
             style="font-size: 3rem; color: var(--b0); margin-bottom: 15px"
           ></i>
-          <p style="color: var(--txt-m)">Aucun message pour le moment.</p>
+          <p style="color: var(--txt-m)" data-i18n="client.forum.empty">Aucun message pour le moment.</p>
         </div>
       </section>
     </div>
@@ -676,7 +677,7 @@
     <div class="modal-bg" id="payModal">
       <div class="modal" style="position: relative">
         <div class="modal-x" onclick="closePay()">✕</div>
-        <div class="modal-h" id="payH">Réserver</div>
+        <div class="modal-h" id="payH" data-i18n="client.reserve">Réserver</div>
         <div class="modal-sub">
           Complétez votre réservation en toute sécurité.
         </div>
@@ -684,14 +685,14 @@
           <span class="stripe-pill">stripe</span>Paiement sécurisé
         </div>
         <div class="fgroup">
-          <label>Nom complet</label><input type="text" value="Marie Dupont" />
+          <label data-i18n="client.pay.fullname">Nom complet</label><input type="text" value="Marie Dupont" />
         </div>
         <div class="fgroup">
           <label>Email</label
           ><input type="email" value="marie.dupont@email.com" />
         </div>
         <div class="fgroup">
-          <label>Numéro de carte</label
+          <label data-i18n="client.pay.card">Numéro de carte</label
           ><input type="text" placeholder="4242 4242 4242 4242" />
         </div>
         <div class="frow">
@@ -1029,6 +1030,7 @@
       });
     </script>
   <script src="./script/config.js"></script>
+  <script src="./script/admin/translate.js"></script>
     <script src="./script/dashClient.js?v=2"></script>
     <script src="../Frontend/script/planning.js"></script>
 

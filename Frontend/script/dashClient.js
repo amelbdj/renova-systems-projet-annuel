@@ -95,7 +95,7 @@ async function loadMyAnnonces() {
     addBox.className = "ann-add";
     addBox.onclick = toggleAnnForm;
     addBox.innerHTML =
-      '<div class="plus">＋</div><span>Ajouter une annonce</span>';
+      `<div class="plus">＋</div><span>${t("client.add_ad")}</span>`;
     annGrid.appendChild(addBox);
   } catch (err) {
     console.error("Erreur chargement annonces:", err);
@@ -192,17 +192,17 @@ async function loadAllUserBoxes() {
       .map((box) => {
         
         const isDepot = box.typeAction === "depot";
-        const pastilleText = isDepot ? "DÉPÔT" : "RÉCUPÉRATION";
+        const pastilleText = isDepot ? t("client.box.deposit_tag") : t("client.box.pickup_tag");
         const pastilleColor = isDepot
           ? "background-color: #f39c12;"
           : "background-color: #27ae60;"; 
         const statutAffichage = isDepot ? box.etat : box.statut_vente;
         const dateAffichage = isDepot
-          ? `Réservé le ${new Date(box.date).toLocaleDateString()}`
-          : `Déposé le ${new Date(box.date_depot).toLocaleDateString()}`;
+          ? `${t("client.box.reserved_on")} ${new Date(box.date).toLocaleDateString()}`
+          : `${t("client.box.deposited_on")} ${new Date(box.date_depot).toLocaleDateString()}`;
         const btnText = isDepot
-          ? "Imprimer le bon de dépôt"
-          : "Imprimer le bon de retrait";
+          ? t("client.box.print_deposit")
+          : t("client.box.print_pickup");
 
         return `
             <div class="cont-card active" style="position: relative;">
@@ -228,8 +228,8 @@ async function loadAllUserBoxes() {
                 <div class="cont-codes">
                     ${
                       isDepot
-                        ? `<span class="ccode blue" style="font-size: 1.1em; font-weight: bold;">PIN de dépôt : ${box.code_pin}</span>`
-                        : `<span class="ccode purple" style="font-size: 1.1em; font-weight: bold;">Code-barre de retrait : ${box.barcode}</span>`
+                        ? `<span class="ccode blue" style="font-size: 1.1em; font-weight: bold;">${t("client.box.deposit_pin")} : ${box.code_pin}</span>`
+                        : `<span class="ccode purple" style="font-size: 1.1em; font-weight: bold;">${t("client.box.pickup_barcode")} : ${box.barcode}</span>`
                     }
                 </div>
                 
@@ -259,7 +259,7 @@ async function loadAllUserBoxes() {
     }
   } catch (error) {
     console.error("Erreur lors du chargement des boxes:", error);
-    grid.innerHTML = "<p>Erreur de connexion au système de conteneurs.</p>";
+    grid.innerHTML = `<p>${t("client.containers_error")}</p>`;
   }
 }
 

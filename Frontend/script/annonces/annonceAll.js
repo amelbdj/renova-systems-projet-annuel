@@ -61,9 +61,9 @@ function displayAnnonces(items) {
     const isSponsored = ann.is_sponsored === true || ann.is_sponsored === 1 || ann.is_sponsored === "1";
     let promoBadge = "";
     if (isSponsored) {
-      promoBadge = '<span class="badge" style="background:rgba(166,124,255,.92);color:#fff">⭐ Sponsorisé</span>';
+      promoBadge = '<span class="badge" data-i18n="annonce.badge.sponsored" style="background:rgba(166,124,255,.92);color:#fff">⭐ Sponsorisé</span>';
     } else if (ann.plan_abo === "plus" || ann.plan_abo === "pro") {
-      promoBadge = '<span class="badge" style="background:rgba(58,142,255,.92);color:#fff">⚡ Prioritaire</span>';
+      promoBadge = '<span class="badge" data-i18n="annonce.badge.priority" style="background:rgba(58,142,255,.92);color:#fff">⚡ Prioritaire</span>';
     }
 
     card.innerHTML = `
