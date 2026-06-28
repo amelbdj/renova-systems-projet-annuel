@@ -57,6 +57,14 @@ function appliquerTraductions() {
       element.placeholder = texteTraduit;
     }
   });
+
+  // Si la page possède le tutoriel pro (en-tête géré par JS), on le rafraîchit
+  // pour qu'il s'affiche dans la bonne langue.
+  if (typeof updTut === "function") {
+    try {
+      updTut();
+    } catch (e) {}
+  }
 }
 
 function ImporterLangue() {

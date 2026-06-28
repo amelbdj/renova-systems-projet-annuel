@@ -37,14 +37,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       );
 
       if (upgradeRes.ok) {
-        alert("Paiement réussi ! Votre abonnement est maintenant actif. 🎉");
+        alert(t("pro.dash.pay_success"));
         window.history.replaceState(null, "", window.location.pathname);
       }
     } catch (err) {
       console.error("Error upgrading account:", err);
     }
   } else if (urlParams.get("abo") === "cancel") {
-    alert("Payment cancelled. You can upgrade anytime!");
+    alert(t("pro.dash.pay_cancelled"));
     window.history.replaceState(null, "", window.location.pathname);
   }
 
@@ -91,7 +91,7 @@ async function loadMyProAnnonces() {
     );
 
     if (actives.length === 0) {
-      list.innerHTML = `<div style="text-align:center;color:var(--txt-m);font-size:13px;padding:16px">Vous n'avez pas encore d'annonces.</div>`;
+      list.innerHTML = `<div style="text-align:center;color:var(--txt-m);font-size:13px;padding:16px">${t("pro.dash.no_ads")}</div>`;
       return;
     }
 
@@ -109,23 +109,23 @@ async function loadMyProAnnonces() {
         <div class="mat-thumb" style="${imgSrc ? `background:url('${imgSrc}') center/cover no-repeat` : "background:rgba(58,142,255,.08)"}">${imgSrc ? "" : "📦"}</div>
         <div class="mat-info">
           <div class="mat-name">${ann.titre} <span class="tag ${tagCls}" style="margin-left:4px">${ann.statut_validation || ""}</span></div>
-          <div class="mat-meta">${ann.prix > 0 ? ann.prix + " €" : "Don gratuit"}</div>
+          <div class="mat-meta">${ann.prix > 0 ? ann.prix + " €" : t("pro.ads.free_donation")}</div>
         </div>
         <div class="mat-action" style="display:flex;gap:6px">
-          <button class="btn btn-g btn-xs" onclick='openEditForm(${JSON.stringify(ann)})'>Modifier</button>
-          <button class="btn btn-xs" style="background:rgba(255,90,90,.1);color:#ff5a5a;border:1px solid rgba(255,90,90,.2)" onclick="deleteAnnoncePro(${ann.id})">Supprimer</button>
+          <button class="btn btn-g btn-xs" onclick='openEditForm(${JSON.stringify(ann)})'>${t("pro.dash.edit")}</button>
+          <button class="btn btn-xs" style="background:rgba(255,90,90,.1);color:#ff5a5a;border:1px solid rgba(255,90,90,.2)" onclick="deleteAnnoncePro(${ann.id})">${t("pro.dash.delete")}</button>
         </div>`;
       list.appendChild(item);
     });
   } catch (err) {
     console.error("Erreur chargement de mes annonces :", err);
-    list.innerHTML = `<div style="text-align:center;color:var(--red);font-size:13px;padding:16px">Erreur de chargement.</div>`;
+    list.innerHTML = `<div style="text-align:center;color:var(--red);font-size:13px;padding:16px">${t("pro.dash.load_error")}</div>`;
   }
 }
 
 function openEditForm(ann) {
   document.getElementById("editAnnId").value = ann.id;
-  document.getElementById("formTitle").textContent = "Modifier l'annonce";
+  document.getElementById("formTitle").textContent = t("pro.dash.edit_ad");
   document.querySelector('#annForm input[type="text"]').value = ann.titre;
   document.querySelector("#annForm select").value = ann.type;
   document.getElementById("annCategorie").value = ann.id_categorie;
@@ -186,7 +186,7 @@ async function submitAnn() {
     });
     if (response.ok) {
       document.getElementById("editAnnId").value = "";
-      document.getElementById("formTitle").textContent = "Créer une annonce";
+      document.getElementById("formTitle").textContent = t("pro.ads.form_title");
       currentEditingImagePath = "";
       toggleAnnForm();
       loadMyProAnnonces();
@@ -196,7 +196,7 @@ async function submitAnn() {
         loadSponsorAnnonces();
       }
     } else {
-      alert("Erreur: " + (await response.text()));
+      alert(t("pro.dash.error_prefix") + (await response.text()));
     }
   } catch (err) {
     console.error("Submit error:", err);
@@ -204,7 +204,7 @@ async function submitAnn() {
 }
 
 async function deleteAnnoncePro(id) {
-  if (!confirm("Voulez-vous supprimer l'annonce ?")) return;
+  if (!confirm(t("pro.dash.confirm_delete_ad"))) return;
   const token = localStorage.getItem("token");
   try {
     const response = await fetch(
@@ -275,11 +275,11 @@ async function subscribeToPlan(plan = "premium") {
     if (stripeData.url) {
       window.location.href = stripeData.url;
     } else {
-      alert("Erreur réseau avec Stripe.");
+      alert(t("pro.dash.stripe_net_error"));
     }
   } catch (error) {
     console.error("Erreur:", error);
-    alert("Impossible de vérifier l'état de votre compte.");
+    alert(t("pro.dash.account_check_error"));
   }
 }
 
@@ -455,7 +455,7 @@ async function loadSponsorAnnonces() {
     );
 
     if (sponsorisables.length === 0) {
-      list.innerHTML = `<div style="text-align:center;color:var(--txt-m);font-size:13px;padding:16px">Vous n'avez aucune annonce disponible à sponsoriser pour l'instant.</div>`;
+      list.innerHTML = `<div style="text-align:center;color:var(--txt-m);font-size:13px;padding:16px">${t("pro.dash.no_sponsor_ads")}</div>`;
       return;
     }
 
@@ -472,19 +472,19 @@ async function loadSponsorAnnonces() {
       item.innerHTML = `
         <div class="mat-thumb" style="${imgSrc ? `background:url('${imgSrc}') center/cover no-repeat` : "background:rgba(166,124,255,.08)"}">${imgSrc ? "" : "📦"}</div>
         <div class="mat-info">
-          <div class="mat-name">${ann.titre} ${boosted ? '<span class="tag t-gold" style="margin-left:4px">⭐ Sponsorisé</span>' : ""}</div>
-          <div class="mat-meta">${ann.prix > 0 ? ann.prix + " €" : "Don"} · ${ann.statut_validation || ""}</div>
+          <div class="mat-name">${ann.titre} ${boosted ? `<span class="tag t-gold" style="margin-left:4px">${t("pro.dash.sponsored")}</span>` : ""}</div>
+          <div class="mat-meta">${ann.prix > 0 ? ann.prix + " €" : t("pro.dash.donation_short")} · ${ann.statut_validation || ""}</div>
         </div>
         <div class="mat-action">
           <button class="btn ${boosted ? "btn-danger" : "btn-pro"} btn-xs" onclick="toggleSponsor(${ann.id})">
-            ${boosted ? "Retirer le boost" : "🚀 Booster"}
+            ${boosted ? t("pro.dash.remove_boost") : t("pro.dash.boost")}
           </button>
         </div>`;
       list.appendChild(item);
     });
   } catch (err) {
     console.error("Erreur chargement annonces à sponsoriser :", err);
-    list.innerHTML = `<div style="text-align:center;color:var(--red);font-size:13px;padding:16px">Erreur de chargement.</div>`;
+    list.innerHTML = `<div style="text-align:center;color:var(--red);font-size:13px;padding:16px">${t("pro.dash.load_error")}</div>`;
   }
 }
 
@@ -502,13 +502,13 @@ async function toggleSponsor(annonceId) {
     );
     if (!res.ok) {
       const e = await res.json().catch(() => ({}));
-      alert(e.error || "Impossible de modifier le boost.");
+      alert(e.error || t("pro.dash.boost_error"));
       return;
     }
     await loadSponsorAnnonces();
   } catch (err) {
     console.error("Erreur toggle sponsor :", err);
-    alert("Erreur réseau.");
+    alert(t("pro.dash.net_error"));
   }
 }
 
@@ -518,7 +518,7 @@ async function cancelPremium() {
 
   if (
     !confirm(
-      "Êtes-vous sûr de vouloir résilier votre abonnement ? L'accès Premium sera retiré immédiatement.",
+      t("pro.dash.confirm_cancel_sub"),
     )
   ) {
     return;
@@ -535,11 +535,11 @@ async function cancelPremium() {
 
     if (!response.ok) throw new Error("Could not cancel subscription");
 
-    alert("Votre abonnement a bien été résilié.");
+    alert(t("pro.dash.sub_cancelled"));
     await checkPremiumStatus(token, userId);
   } catch (err) {
     console.error("Error:", err);
-    alert("Impossible de résilier l'abonnement. Réessayez.");
+    alert(t("pro.dash.sub_cancel_error"));
   }
 }
 
@@ -602,8 +602,8 @@ async function loadProjets() {
 
     const isTermine = p.statut === "termine" || p.statut === "Terminé";
     const badgeHTML = isTermine
-      ? '<span style="background: rgba(46, 204, 113, 0.2); color: #2ecc71; padding: 4px 8px; border-radius: 12px; font-size: 11px; letter-spacing: 0.5px;">✅ Terminé</span>'
-      : '<span style="background: rgba(245, 197, 66, 0.2); color: #f5c542; padding: 4px 8px; border-radius: 12px; font-size: 11px; letter-spacing: 0.5px;">🔄 En cours</span>';
+      ? `<span style="background: rgba(46, 204, 113, 0.2); color: #2ecc71; padding: 4px 8px; border-radius: 12px; font-size: 11px; letter-spacing: 0.5px;">${t("pro.dash.status_done")}</span>`
+      : `<span style="background: rgba(245, 197, 66, 0.2); color: #f5c542; padding: 4px 8px; border-radius: 12px; font-size: 11px; letter-spacing: 0.5px;">${t("pro.dash.status_in_progress")}</span>`;
 
     const co2Value = p.co2_evite ? parseFloat(p.co2_evite).toFixed(1) : "0.0";
 
@@ -614,7 +614,7 @@ async function loadProjets() {
       ? `${API_BASE_URL}${p.photo_apres}`
       : null;
     const heroImg = apresImg || avantImg;
-    const noPhoto = `<div style="height:90px;display:flex;align-items:center;justify-content:center;color:var(--txt-m);font-size:11px;background:var(--bg3);border-radius:8px;margin-top:6px">Pas de photo</div>`;
+    const noPhoto = `<div style="height:90px;display:flex;align-items:center;justify-content:center;color:var(--txt-m);font-size:11px;background:var(--bg3);border-radius:8px;margin-top:6px">${t("pro.dash.no_photo")}</div>`;
 
     card.innerHTML = `
             <div class="proj-banner" style="background:linear-gradient(135deg,#100e03,#1e1a06)">
@@ -629,22 +629,22 @@ async function loadProjets() {
                 <div class="proj-desc">${p.description || ""}</div>
                 <div class="before-after">
                     <div class="ba-col before">
-                        <div class="bal">🗑️ Avant</div>
+                        <div class="bal">${t("pro.dash.before")}</div>
                         ${avantImg ? `<img src="${avantImg}" style="width:100%;height:90px;object-fit:cover;border-radius:8px;margin-top:6px">` : noPhoto}
                     </div>
                     <div class="ba-col after">
-                        <div class="bal">✨ Après</div>
+                        <div class="bal">${t("pro.dash.after")}</div>
                         ${apresImg ? `<img src="${apresImg}" style="width:100%;height:90px;object-fit:cover;border-radius:8px;margin-top:6px">` : noPhoto}
                     </div>
                 </div>
                 <div class="proj-foot">
                     <span style="font-size:12px;color:var(--txt-m)">Projet</span>
                     <div style="display:flex;gap:6px">
-                        <button class="btn btn-g btn-xs" onclick="openEtapesModal(${p.id}, '${p.titre.replace(/'/g, "\\'")}')">Voir →</button>
+                        <button class="btn btn-g btn-xs" onclick="openEtapesModal(${p.id}, '${p.titre.replace(/'/g, "\\'")}')">${t("pro.dash.view")}</button>
 
-                        <button class="btn btn-g btn-xs" onclick="openEditProjet(${p.id}, '${p.titre.replace(/'/g, "\\'")}', '${(p.description || "").replace(/'/g, "\\'")}', '${p.photo_avant || ""}', '${p.photo_apres || ""}', '${p.statut || "en_cours"}', '${p.co2_evite || 0}')">✏️ Modifier</button>
+                        <button class="btn btn-g btn-xs" onclick="openEditProjet(${p.id}, '${p.titre.replace(/'/g, "\\'")}', '${(p.description || "").replace(/'/g, "\\'")}', '${p.photo_avant || ""}', '${p.photo_apres || ""}', '${p.statut || "en_cours"}', '${p.co2_evite || 0}')">✏️ ${t("pro.dash.edit")}</button>
 
-                        <button class="btn btn-xs" style="background:rgba(255,90,90,.1);color:#ff5a5a;border:1px solid rgba(255,90,90,.2)" onclick="deleteProjet(${p.id})">🗑️ Supprimer</button>
+                        <button class="btn btn-xs" style="background:rgba(255,90,90,.1);color:#ff5a5a;border:1px solid rgba(255,90,90,.2)" onclick="deleteProjet(${p.id})">🗑️ ${t("pro.dash.delete")}</button>
                     </div>
                 </div>
             </div>
@@ -672,11 +672,11 @@ function openEditProjet(
   textarea.value = description;
 
   document.getElementById("photoAvantLabel").textContent = photoAvant
-    ? "Photo avant conservée"
-    : "Objet récupéré (avant)";
+    ? t("pro.dash.photo_before_kept")
+    : t("pro.dash.photo_before_hint");
   document.getElementById("photoApresLabel").textContent = photoApres
-    ? "Photo après conservée"
-    : "Après transformation";
+    ? t("pro.dash.photo_after_kept")
+    : t("pro.dash.photo_after_hint");
   document.getElementById("photoAvantInput").value = "";
   document.getElementById("photoApresInput").value = "";
 
@@ -702,7 +702,7 @@ async function saveProjet() {
 
   const titre = inputs[0].value.trim();
   if (!titre) {
-    alert("Le nom du projet est obligatoire.");
+    alert(t("pro.dash.project_name_required"));
     return;
   }
 
@@ -750,7 +750,7 @@ async function saveProjet() {
 }
 
 async function deleteProjet(id) {
-  if (!confirm("Supprimer ce projet ?")) return;
+  if (!confirm(t("pro.dash.confirm_delete_project"))) return;
   const token = localStorage.getItem("token");
   const response = await fetch(
     `${API_BASE_URL}/api/pro/projets/delete?id=${id}`,
@@ -762,7 +762,7 @@ async function deleteProjet(id) {
   if (response.ok) {
     loadProjets();
   } else {
-    alert("Erreur lors de la suppression.");
+    alert(t("pro.dash.delete_error"));
   }
 }
 
@@ -796,7 +796,7 @@ async function loadEtapes(idProjet) {
   list.innerHTML = "";
 
   if (!etapes || etapes.length === 0) {
-    list.innerHTML = `<div style="text-align:center;color:var(--txt-m);font-size:13px;padding:16px">Aucune étape pour l'instant.</div>`;
+    list.innerHTML = `<div style="text-align:center;color:var(--txt-m);font-size:13px;padding:16px">${t("pro.dash.no_steps")}</div>`;
     document.getElementById("etapesCount").textContent = "0 / 0 terminées";
     document.getElementById("etapesProgressBar").style.width = "0%";
     return;
@@ -810,7 +810,7 @@ async function loadEtapes(idProjet) {
 
   etapes.forEach((e) => {
     const statutLabel =
-      { a_faire: "📋 À faire", en_cours: "🔄 En cours", termine: "✅ Terminé" }[
+      { a_faire: t("pro.dash.status_todo"), en_cours: t("pro.dash.status_in_progress"), termine: t("pro.dash.status_done") }[
         e.statut
       ] || e.statut;
     const statutColor = {
@@ -827,9 +827,9 @@ async function loadEtapes(idProjet) {
                 <div style="font-size:14px;font-weight:600;color:var(--txt);margin-bottom:4px">${e.titre}</div>
                 ${e.description ? `<div style="font-size:12.5px;color:var(--txt-m);margin-bottom:6px">${e.description}</div>` : ""}
                 <select onchange="updateStatutEtape(${e.id}, this.value)" style="font-size:12px;padding:4px 8px;border-radius:6px;background:var(--bg);border:1px solid var(--b1);color:${statutColor}">
-                    <option value="a_faire" ${e.statut === "a_faire" ? "selected" : ""}>📋 À faire</option>
-                    <option value="en_cours" ${e.statut === "en_cours" ? "selected" : ""}>🔄 En cours</option>
-                    <option value="termine" ${e.statut === "termine" ? "selected" : ""}>✅ Terminé</option>
+                    <option value="a_faire" ${e.statut === "a_faire" ? "selected" : ""}>${t("pro.dash.status_todo")}</option>
+                    <option value="en_cours" ${e.statut === "en_cours" ? "selected" : ""}>${t("pro.dash.status_in_progress")}</option>
+                    <option value="termine" ${e.statut === "termine" ? "selected" : ""}>${t("pro.dash.status_done")}</option>
                 </select>
             </div>
             <button onclick="deleteEtape(${e.id})" style="background:rgba(255,90,90,.1);color:#ff5a5a;border:1px solid rgba(255,90,90,.2);border-radius:6px;padding:4px 8px;font-size:12px;cursor:pointer;flex-shrink:0">🗑️</button>
@@ -842,7 +842,7 @@ async function addEtape() {
   const token = localStorage.getItem("token");
   const titre = document.getElementById("etapeTitre").value.trim();
   if (!titre) {
-    alert("Le titre est obligatoire.");
+    alert(t("pro.dash.title_required"));
     return;
   }
 
@@ -869,7 +869,7 @@ async function addEtape() {
 }
 
 async function deleteEtape(id) {
-  if (!confirm("Supprimer cette étape ?")) return;
+  if (!confirm(t("pro.dash.confirm_delete_step"))) return;
   const token = localStorage.getItem("token");
   await fetch(`${API_BASE_URL}/api/pro/etapes/delete?id=${id}`, {
     method: "DELETE",
