@@ -32,7 +32,10 @@ function chargerEvenementsClient(motCle = "") {
     .then((evenements) => {
       container.innerHTML = "";
 
+<<<<<<< HEAD
       
+=======
+>>>>>>> origin/faty
       window.evenementData = evenements;
 
       if (!evenements || evenements.length === 0) {
@@ -63,7 +66,10 @@ function chargerEvenementsClient(motCle = "") {
 
           const idEvt = evt.id;
 
+<<<<<<< HEAD
           
+=======
+>>>>>>> origin/faty
           const imageCover =
             evt.image_url && evt.image_url.trim() !== ""
               ? `http://localhost:8081/${evt.image_url}`
@@ -73,7 +79,10 @@ function chargerEvenementsClient(motCle = "") {
             (evt.description || "Pas de description.").substring(0, 100) +
             "...";
 
+<<<<<<< HEAD
           
+=======
+>>>>>>> origin/faty
           let boutonAction = evt.deja_inscrit
             ? `<span style="background-color: #ef4444; color: white; padding: 8px 15px; border-radius: 6px; font-weight: 600; font-size: 14px; margin-top: 10px; display: inline-block; cursor: pointer;" onclick="SeDesinscrire(${idEvt}); event.stopPropagation();" data-i18n="evenement.unsubscribe">Se désinscrire ➔</span>`
             : `<span style="background-color: var(--blue); color: white; padding: 8px 15px; border-radius: 6px; font-weight: 600; font-size: 14px; margin-top: 10px; display: inline-block; cursor: pointer;" onclick="sinscrireEvenement(${idEvt}, ${evt.prix}); event.stopPropagation();" data-i18n="evenement.subscribe">S'inscrire ➔</span>`;
@@ -105,7 +114,10 @@ function chargerEvenementsClient(motCle = "") {
     });
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/faty
 function sinscrireEvenement(idEvent, prixEvent) {
   const idUser = localStorage.getItem("userId");
   const monToken = localStorage.getItem("token");
@@ -115,7 +127,10 @@ function sinscrireEvenement(idEvent, prixEvent) {
     return;
   }
 
+<<<<<<< HEAD
   
+=======
+>>>>>>> origin/faty
   if (window.evenementData) {
     const currentEvt = window.evenementData.find((e) => e.id === idEvent);
     if (currentEvt && currentEvt.deja_inscrit) {
@@ -124,11 +139,17 @@ function sinscrireEvenement(idEvent, prixEvent) {
     }
   }
 
+<<<<<<< HEAD
   
   if (window.isProcessingPayment) return;
   window.isProcessingPayment = true;
 
   
+=======
+  if (window.isProcessingPayment) return;
+  window.isProcessingPayment = true;
+
+>>>>>>> origin/faty
   if (prixEvent > 0) {
     fetch("http://localhost:8081/api/web/checkout/evenement", {
       method: "POST",
@@ -158,7 +179,10 @@ function sinscrireEvenement(idEvent, prixEvent) {
       });
   }
 
+<<<<<<< HEAD
   
+=======
+>>>>>>> origin/faty
   else {
     fetch("http://localhost:8081/admin/evenements/inscription", {
       method: "POST",
@@ -198,7 +222,10 @@ function OuvrirEvenement(id) {
   const evt = window.evenementData.find((a) => a.id === id);
   if (!evt) return;
 
+<<<<<<< HEAD
   
+=======
+>>>>>>> origin/faty
   const imageCover =
     evt.image_url && evt.image_url.trim() !== ""
       ? `http://localhost:8081/${evt.image_url}`
@@ -233,7 +260,10 @@ function OuvrirEvenement(id) {
 
 function FermerEvenement() {
   const modal = document.getElementById("articleModal");
+<<<<<<< HEAD
   
+=======
+>>>>>>> origin/faty
   if (modal) {
     modal.style.display = "none";
   }
@@ -273,7 +303,10 @@ function SeDesinscrire(idEvent) {
     .then(function (data) {
       alert("Succès : " + (data.message || "Désinscription validée"));
       FermerEvenement();
+<<<<<<< HEAD
       
+=======
+>>>>>>> origin/faty
       chargerEvenementsClient();
     })
     .catch(function (errorMessage) {

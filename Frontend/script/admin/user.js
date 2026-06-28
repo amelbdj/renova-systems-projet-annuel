@@ -54,7 +54,10 @@ function OpenEditModalAPI(id, nom, prenom, email, role) {
 function AfficherTableau(users) {
   const container = document.querySelector(".u-table");
 
+<<<<<<< HEAD
   
+=======
+>>>>>>> origin/faty
   if (!container) return;
 
   const totalStat = document.getElementById("totalUser");
@@ -178,9 +181,15 @@ function GetUsers() {
 let currentUserIdToRefuse = null; 
 
 function RefuseUser(userId) {
+<<<<<<< HEAD
   currentUserIdToRefuse = userId; 
   document.getElementById("modalRefus").style.display = "flex";
   document.getElementById("motifTexte").value = ""; 
+=======
+  currentUserIdToRefuse = userId;
+  document.getElementById("modalRefus").style.display = "flex";
+  document.getElementById("motifTexte").value = "";
+>>>>>>> origin/faty
 }
 
 function ValidateUser(userId) {
@@ -306,9 +315,13 @@ function UpdateUser() {
 }
 
 function UpdateValidationCount() {
+<<<<<<< HEAD
   
 
   
+=======
+
+>>>>>>> origin/faty
   const fetchOptions = {
     method: "GET",
     headers: {
@@ -317,7 +330,10 @@ function UpdateValidationCount() {
     },
   };
 
+<<<<<<< HEAD
   
+=======
+>>>>>>> origin/faty
   Promise.all([
     fetch("http://localhost:8081/admin/annonces", fetchOptions).then((res) =>
       res.json(),
@@ -365,7 +381,10 @@ function FermerModaleRefus() {
 
 const btnConfirmerRefus = document.getElementById("btnConfirmerRefus");
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/faty
 if (btnConfirmerRefus) {
   btnConfirmerRefus.onclick = function () {
     const raison = document.getElementById("motifTexte").value;

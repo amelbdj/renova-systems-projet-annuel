@@ -106,7 +106,10 @@ function editerArticle(id) {
     );
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/faty
 function sauvegarderBrouillon() {
   saveArticle("brouillon");
 }
@@ -129,7 +132,10 @@ function saveArticle(action) {
     return;
   }
 
+<<<<<<< HEAD
   
+=======
+>>>>>>> origin/faty
   const formData = new FormData();
   formData.append("id_salarie", userId);
   formData.append("titre", titre);
@@ -149,7 +155,10 @@ function saveArticle(action) {
     method: method,
     headers: {
       Authorization: "Bearer " + monToken,
+<<<<<<< HEAD
       
+=======
+>>>>>>> origin/faty
     },
     body: formData,
   })

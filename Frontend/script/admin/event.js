@@ -29,7 +29,10 @@ function GetEvent() {
             lieu = "";
           }
 
+<<<<<<< HEAD
           
+=======
+>>>>>>> origin/faty
           let dateStr = event.date_debut ? event.date_debut : "Date inconnue";
 
           htmlContent += `
@@ -64,7 +67,10 @@ function GetEvent() {
         container.innerHTML = `<div style="padding:20px" data-i18n="backoffice.events.no_events">Aucun événement en attente.</div>`;
       }
 
+<<<<<<< HEAD
       
+=======
+>>>>>>> origin/faty
       if (typeof appliquerTraductions === "function") {
         appliquerTraductions();
       }

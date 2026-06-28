@@ -51,6 +51,7 @@ function appliquerTraductions() {
 }
 
 
+<<<<<<< HEAD
 function ImporterLangue() {
   const code = document
     .getElementById("input_lang_code")
@@ -68,10 +69,16 @@ function ImporterLangue() {
     alert("Merci de choisir un fichier JSON.");
     return;
   }
+=======
+      if (!container) return;
+
+      container.innerHTML = ""; 
+>>>>>>> origin/faty
 
   const fichier = fichierInput.files[0];
   const lecteur = new FileReader();
 
+<<<<<<< HEAD
   
   lecteur.onload = function () {
     let contenuJson;
@@ -88,6 +95,28 @@ function ImporterLangue() {
       lang_name: nom,
       data: contenuJson,
     };
+=======
+LoadFormulaireTraduction();
+
+const formAddLanguage = document.getElementById("form-add-language");
+
+if (formAddLanguage) {
+  formAddLanguage.addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    const codeLangue = document
+      .getElementById("input_lang_code")
+      .value.toLowerCase();
+    const dataToSend = { lang_code: codeLangue, translations: [] };
+    const inputs = document.querySelectorAll(".input-traduction");
+
+    inputs.forEach((input) => {
+      dataToSend.translations.push({
+        msg_key: input.getAttribute("data-key"),
+        msg_value: input.value,
+      });
+    });
+>>>>>>> origin/faty
 
     fetch("http://localhost:8081/admin/translations/add", {
       method: "POST",
@@ -100,12 +129,18 @@ function ImporterLangue() {
       .then((res) => {
         if (!res.ok) throw new Error("Erreur serveur");
 
+<<<<<<< HEAD
         alert("✅ La langue a été importée avec succès !");
         document.getElementById("input_lang_code").value = "";
         document.getElementById("input_lang_name").value = "";
         fichierInput.value = "";
 
         
+=======
+        alert("La langue a été ajoutée avec succès !");
+        document.getElementById("form-add-language").reset();
+
+>>>>>>> origin/faty
         GetLanguages();
       })
       .catch((err) => {
@@ -146,7 +181,10 @@ function ExporterLangue(code) {
 
 const btnToggleForm = document.getElementById("btn-toggle-form");
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/faty
 if (btnToggleForm) {
   btnToggleForm.addEventListener("click", function () {
     const formContainer = document.getElementById("form-container");
@@ -161,7 +199,10 @@ if (btnToggleForm) {
   });
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/faty
 function GetLanguages() {
   fetch("http://localhost:8081/api/languages", {
     headers: {
@@ -175,7 +216,10 @@ function GetLanguages() {
     .then((languages) => {
       const container = document.getElementById("wrapper");
 
+<<<<<<< HEAD
       
+=======
+>>>>>>> origin/faty
       if (!container) return;
 
       container.innerHTML = ""; 
@@ -193,10 +237,16 @@ function GetLanguages() {
     });
 }
 
+<<<<<<< HEAD
 
 document.addEventListener("DOMContentLoaded", () => {
   GetLanguages();
   
   const langueSauvegardee = localStorage.getItem("langue") || "fr";
   changerLangue(langueSauvegardee);
+=======
+document.addEventListener("DOMContentLoaded", () => {
+  GetLanguages();
+  changerLangue("fr"); 
+>>>>>>> origin/faty
 });

@@ -10,7 +10,10 @@ async function loadOneAnnonce() {
     return;
   }
 
+<<<<<<< HEAD
   
+=======
+>>>>>>> origin/faty
   if (paymentStatus === "success") {
     console.log("Paiement détecté, mise à jour du statut...");
     const buyerId = urlParams.get("buyer_id");
@@ -21,7 +24,11 @@ async function loadOneAnnonce() {
         { method: "POST" },
       );
       if (res.ok) {
+<<<<<<< HEAD
         alert(t("oneAnnonce.payment_success"));
+=======
+        alert(" Paiement réussi ! L'objet est maintenant à vous.");
+>>>>>>> origin/faty
         window.location.href = `oneAnnonce.html?id=${id}`;
       } else {
         console.error("Le serveur a renvoyé une erreur lors de la vente.");

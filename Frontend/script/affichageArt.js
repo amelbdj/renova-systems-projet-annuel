@@ -66,14 +66,20 @@ function chargerArticlesClient(motCle = "") {
 
           const idArt = art.id;
 
+<<<<<<< HEAD
           
+=======
+>>>>>>> origin/faty
           let imageCover =
             "https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=500"; 
           if (art.image_url && art.image_url.trim() !== "") {
             imageCover = "http://localhost:8081/" + art.image_url;
           }
 
+<<<<<<< HEAD
           
+=======
+>>>>>>> origin/faty
           const resume =
             art.contenu.length > 100
               ? art.contenu.substring(0, 100) + "..."
@@ -118,7 +124,10 @@ function OuvrirArticle(id) {
   const art = articlesData.find((a) => a.id === id);
   if (!art) return;
 
+<<<<<<< HEAD
   
+=======
+>>>>>>> origin/faty
   let imageCover =
     "https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=500";
   if (art.image_url && art.image_url.trim() !== "") {

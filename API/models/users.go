@@ -18,6 +18,7 @@ type User struct {
 	StripeVerifCompleted bool    `json:"stripe_verif_completed"`
 	EstPremium           int     `json:"est_premium"`
 	StripeCustomerId     *string `json:"stripe_customer_id"`
+	PlanAbo              *string `json:"plan_abo"`
 }
 
 type UpdatePasswordInput struct {

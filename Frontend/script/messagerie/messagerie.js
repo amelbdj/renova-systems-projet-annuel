@@ -103,6 +103,7 @@ function appendMessageToUI(texte, isMe) {
   container.innerHTML += bulle;
   container.scrollTop = container.scrollHeight;
 }
+<<<<<<< HEAD
 
 const chatInput = document.getElementById("chat-input");
 
@@ -111,6 +112,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const chatInput = document.getElementById("chat-input");
 
   
+=======
+const chatInput = document.getElementById("chat-input");
+
+document.addEventListener("DOMContentLoaded", () => {
+  const chatInput = document.getElementById("chat-input");
+
+>>>>>>> origin/faty
   if (chatInput) {
     chatInput.addEventListener("keypress", function (e) {
       if (e.key === "Enter") {
@@ -144,7 +152,10 @@ function loadMyMessages() {
 
       data.forEach((conv) => {
         const div = document.createElement("div");
+<<<<<<< HEAD
         
+=======
+>>>>>>> origin/faty
         div.className = "conversation-item";
         div.style =
           "padding: 15px; background: var(--bg2); margin-bottom: 10px; border-radius: 8px; cursor: pointer; border: 1px solid var(--b0);";
@@ -156,7 +167,10 @@ function loadMyMessages() {
                 </div>
             `;
 
+<<<<<<< HEAD
         
+=======
+>>>>>>> origin/faty
         div.onclick = () => openChat(conv.annonce_id, conv.contact_id);
         container.appendChild(div);
       });
@@ -167,18 +181,27 @@ function loadMyMessages() {
     });
 }
 function showSection(sectionId) {
+<<<<<<< HEAD
   
+=======
+>>>>>>> origin/faty
   const sections = document.querySelectorAll(
     ".hero, .ann-section, .cont-section, .cat-section, .bottom-row, .dashboard-section",
   );
   sections.forEach((s) => (s.style.display = "none"));
 
+<<<<<<< HEAD
   
+=======
+>>>>>>> origin/faty
   const target = document.getElementById(sectionId);
   if (target) {
     target.style.display = "block";
 
+<<<<<<< HEAD
     
+=======
+>>>>>>> origin/faty
     if (sectionId === "messages-section") {
       loadMyMessages();
     }
@@ -187,30 +210,48 @@ function showSection(sectionId) {
 function appendMessageToUI(texte, isMe) {
   const container = document.getElementById("chat-messages");
 
+<<<<<<< HEAD
   
   const emptyMsg = document.getElementById("empty-chat");
   if (emptyMsg) emptyMsg.remove();
 
   
+=======
+  const emptyMsg = document.getElementById("empty-chat");
+  if (emptyMsg) emptyMsg.remove();
+
+>>>>>>> origin/faty
   if (container.innerText.includes("Chargement")) {
     container.innerHTML = "";
   }
 
+<<<<<<< HEAD
   
   const messageRow = document.createElement("div");
   
   messageRow.className = `message-row ${isMe ? "me" : "them"}`;
 
   
+=======
+  const messageRow = document.createElement("div");
+  messageRow.className = `message-row ${isMe ? "me" : "them"}`;
+
+>>>>>>> origin/faty
   const bubble = document.createElement("div");
   bubble.className = "message-bubble";
   bubble.textContent = texte;
 
+<<<<<<< HEAD
   
   messageRow.appendChild(bubble);
   container.appendChild(messageRow);
 
   
+=======
+  messageRow.appendChild(bubble);
+  container.appendChild(messageRow);
+
+>>>>>>> origin/faty
   container.scrollTo({
     top: container.scrollHeight,
     behavior: "smooth",

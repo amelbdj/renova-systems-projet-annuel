@@ -32,6 +32,7 @@ function goSpace(name) {
   alert("🚀 Redirection vers l'Espace " + name + "…");
 }
 
+<<<<<<< HEAD
 
 function showForgot() {
   const email = document.getElementById("loginEmail").value.trim();
@@ -46,6 +47,9 @@ function showForgot() {
 }
 
 
+=======
+/* ─── SOCIAL LOGIN ────────────────────────── */
+>>>>>>> origin/faty
 function socialLogin(p) {
   alert("🔐 Authentification " + p + " — à connecter au back-end OAuth2.");
 }

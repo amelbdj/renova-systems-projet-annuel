@@ -70,7 +70,6 @@ function chargerProfil() {
         
         if (statEvent) statEvent.textContent = mesEvts.length;
 
-        
         if (statValide) {
           const enLigne = mesEvts.filter((evt) => {
             const statut = (
@@ -109,6 +108,7 @@ function chargerProfil() {
           }
         }
         statForum.textContent = nbSignales;
+        statForum.textContent = messages.length;
       })
       .catch((err) => console.error("Erreur stat forum:", err));
   }
@@ -211,4 +211,4 @@ function goToProfile() {
   window.location.href = `../profil.html?id=${userId}`;
 }
 
-document.addEventListener("DOMContentLoaded", chargerProfil);
+document.addEventListener("DOMContentLoaded", chargerProfil)

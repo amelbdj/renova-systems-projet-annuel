@@ -25,7 +25,11 @@ function LoadDashboardData() {
             a.statut_validation &&
             a.statut_validation.toLowerCase() === "valide"
           ) {
+<<<<<<< HEAD
             totalPoidsKg += parseFloat(a.poids_kg) || 0; 
+=======
+            totalPoidsKg += parseFloat(a.poids_kg) || 0;
+>>>>>>> origin/faty
           } else if (
             a.statut_validation &&
             a.statut_validation.toLowerCase() === "en attente"
@@ -84,7 +88,10 @@ function LoadDashboardData() {
         if (elBoxes)
           elBoxes.textContent = `${conteneurs.length} / ${totalCasiers}`;
 
+<<<<<<< HEAD
         
+=======
+>>>>>>> origin/faty
         let fetchPromises = conteneurs.map((c) =>
           fetch(`http://localhost:8081/api/admin/conteneur/${c.id}/boxes`, {
             headers: { Authorization: "Bearer " + tokenAdmin },
@@ -93,7 +100,10 @@ function LoadDashboardData() {
             .catch(() => []),
         );
 
+<<<<<<< HEAD
         
+=======
+>>>>>>> origin/faty
         Promise.all(fetchPromises).then((results) => {
           let maintenanceCount = 0;
           results.forEach((boxArray) => {
@@ -111,7 +121,10 @@ function LoadDashboardData() {
             }
           });
 
+<<<<<<< HEAD
           
+=======
+>>>>>>> origin/faty
           if (elAlertMaint) {
             if (maintenanceCount === 0) {
               elAlertMaint.textContent = "0 Casier en maintenance";
@@ -133,7 +146,10 @@ function LoadDashboardData() {
       let artAValider = 0;
       if (articles) {
         articles.forEach((art) => {
+<<<<<<< HEAD
           
+=======
+>>>>>>> origin/faty
           if (art.statut && art.statut.toLowerCase() === "en attente") {
             artAValider++;
           }

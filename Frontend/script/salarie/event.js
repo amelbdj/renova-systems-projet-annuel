@@ -1,6 +1,9 @@
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> origin/faty
 var monToken = localStorage.getItem("token");
 var userId = localStorage.getItem("userId");
 var mesEvenementsSalarie = [];
@@ -11,9 +14,12 @@ if (!monToken || !userId) {
   window.location.href = "../login.html";
 }
 
+<<<<<<< HEAD
 
 
 
+=======
+>>>>>>> origin/faty
 function openNewEvt() {
   evtEnEdition = null;
   resetEvtForm();
@@ -60,6 +66,7 @@ function resetEvtForm() {
   togglePdfField();
 }
 
+<<<<<<< HEAD
 function togglePdfField() {
   var typeSelect = document.getElementById("evt-type");
   var pdfGroup = document.getElementById("evt-pdf-group");
@@ -70,6 +77,8 @@ function togglePdfField() {
 
 
 
+=======
+>>>>>>> origin/faty
 function CreateEvent() {
   var titre = document.getElementById("evt-titre").value.trim();
   var type = document.getElementById("evt-type").value;
@@ -137,7 +146,10 @@ function CreateEvent() {
   var datetimeDebut = date + " " + (heureDebut || "00:00") + ":00";
   var datetimeFin = date + " " + (heureFin || "00:00") + ":00";
 
+<<<<<<< HEAD
   
+=======
+>>>>>>> origin/faty
   var formData = new FormData();
   formData.append("idSalarie", userId);
   formData.append("titre", titre);
@@ -349,7 +361,10 @@ function GetEvenements() {
       var statEvent = document.getElementById("stat-event");
       var statAttente = document.getElementById("stat-valide");
 
+<<<<<<< HEAD
       
+=======
+>>>>>>> origin/faty
       var mesEvenements = [];
       for (var i = 0; i < evenements.length; i++) {
         if (
@@ -404,6 +419,7 @@ function GetEvenements() {
         var dateFormatee = evt.date_debut;
         var typeAffichage = evt.type || evt.format || "Événement";
 
+<<<<<<< HEAD
         var pdfLink = "";
         if (evt.pdf_url && evt.pdf_url !== "") {
           pdfLink =
@@ -419,6 +435,11 @@ function GetEvenements() {
 
         if (evt.image_url && evt.image_url !== "") {
           
+=======
+        var topSectionHtml = "";
+
+        if (evt.image_url && evt.image_url !== "") {
+>>>>>>> origin/faty
           topSectionHtml =
             `
         <div style="position: relative;">
@@ -437,7 +458,10 @@ function GetEvenements() {
           </div>
         </div>`;
         } else {
+<<<<<<< HEAD
           
+=======
+>>>>>>> origin/faty
           topSectionHtml =
             `
         <div class="evt-banner" style="background:linear-gradient(135deg,#100820,#1c1040); margin: 0; border-radius: 12px 12px 0 0;">
@@ -492,9 +516,12 @@ function GetEvenements() {
     });
 }
 
+<<<<<<< HEAD
 
 
 
+=======
+>>>>>>> origin/faty
 function DeleteEvenement(id) {
   if (!confirm("Êtes-vous sûr de vouloir annuler cet événement ?")) {
     return;
@@ -517,9 +544,12 @@ function DeleteEvenement(id) {
     });
 }
 
+<<<<<<< HEAD
 
 
 
+=======
+>>>>>>> origin/faty
 document.addEventListener("DOMContentLoaded", function () {
   GetEvenements();
 

@@ -90,9 +90,14 @@ function openArticleModal(id) {
         • Rédigé par <b>${article.prenom_auteur || ""} ${article.nom_auteur || ""}</b>
       `;
 
+<<<<<<< HEAD
       
       const imgElement = document.getElementById("modal-art-image");
       const imageUrl = article.image_url || article.ImageUrl; 
+=======
+      const imgElement = document.getElementById("modal-art-image");
+      const imageUrl = article.image_url || article.ImageUrl;
+>>>>>>> origin/faty
 
       if (imgElement) {
         if (imageUrl && imageUrl.trim() !== "") {

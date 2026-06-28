@@ -1,11 +1,17 @@
 let monToken = localStorage.getItem("token");
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/faty
 let currentBoxId = null;
 let currentConteneurId = null;
 let currentConteneurNom = "";
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/faty
 
 function GetConteneurs() {
   const container = document.getElementById("box-container");
@@ -83,7 +89,10 @@ function CreateConteneur() {
     return;
   }
 
+<<<<<<< HEAD
   
+=======
+>>>>>>> origin/faty
   const adresseComplete = `${adresse}, ${cp} ${ville}`;
 
   const newConteneurData = {
@@ -112,13 +121,19 @@ function CreateConteneur() {
     .catch((error) => console.error("Erreur de création:", error));
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/faty
 
 function GetBoxesForConteneur(conteneurId, nomConteneur, adresseConteneur) {
   const container = document.getElementById("box-container");
   const statContainer = document.getElementById("box-stats");
 
+<<<<<<< HEAD
   
+=======
+>>>>>>> origin/faty
   currentConteneurId = conteneurId;
   currentConteneurNom = nomConteneur;
 
@@ -210,7 +225,10 @@ function GetBoxesForConteneur(conteneurId, nomConteneur, adresseConteneur) {
 }
 
 function openNewBoxModal(conteneurId) {
+<<<<<<< HEAD
   
+=======
+>>>>>>> origin/faty
   const hiddenInput = document.getElementById("current-conteneur-id");
   if (hiddenInput) hiddenInput.value = conteneurId;
 
@@ -236,7 +254,10 @@ function CreateBox(conteneurId) {
       if (response.ok) {
         alert("Nouveau casier ajouté !");
         closeModal("NewBoxModal");
+<<<<<<< HEAD
         
+=======
+>>>>>>> origin/faty
         GetBoxesForConteneur(currentConteneurId, currentConteneurNom, "");
       } else {
         alert("Erreur lors de l'ajout du casier.");
@@ -295,11 +316,17 @@ function UpdateBoxStatusAPI() {
     .catch((error) => console.error("Erreur:", error));
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/faty
 function closeModal(modalId) {
   const modal = document.getElementById(modalId);
   if (modal) modal.style.display = "none";
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/faty
 document.addEventListener("DOMContentLoaded", GetConteneurs);

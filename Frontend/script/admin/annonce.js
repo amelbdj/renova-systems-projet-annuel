@@ -92,7 +92,10 @@ function GetAnnonce() {
         container.innerHTML = `<div style="padding:20px" data-i18n="backoffice.ads.no_ads">Aucune annonce en attente.</div>`;
       }
 
+<<<<<<< HEAD
       
+=======
+>>>>>>> origin/faty
       if (typeof appliquerTraductions === "function") {
         appliquerTraductions();
       }

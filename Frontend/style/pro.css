@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 
+=======
+/* ─── RESET ──────────────────────────────────────── */
+>>>>>>> origin/faty
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 button,input,select,textarea{font-family:inherit;font-size:inherit}
@@ -6,7 +10,11 @@ button,input,select,textarea{font-family:inherit;font-size:inherit}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:#162030;border-radius:3px}
 
+<<<<<<< HEAD
 
+=======
+/* ─── TOKENS ─────────────────────────────────────── */
+>>>>>>> origin/faty
 :root{
   --bg:       #040c0e;
   --bg2:      #070f12;
@@ -35,7 +43,11 @@ button,input,select,textarea{font-family:inherit;font-size:inherit}
   --r2:       10px;
 }
 
+<<<<<<< HEAD
 
+=======
+/* ─── BODY + AMBIENT ─────────────────────────────── */
+>>>>>>> origin/faty
 body{
   font-family:'Outfit',sans-serif;
   background:var(--bg);
@@ -60,7 +72,17 @@ body::after{
   background-size:54px 54px;
 }
 
+<<<<<<< HEAD
 
+=======
+.blurred {
+  filter: blur(5px);
+  pointer-events: none; /* Empêche de cliquer sur les boutons floutés */
+  user-select: none;    /* Empêche de sélectionner le texte flouté */
+  opacity: 0.7;
+}
+/* ─── TUTORIAL OVERLAY ───────────────────────────── */
+>>>>>>> origin/faty
 #tut{
   position:fixed;inset:0;z-index:9999;
   background:rgba(4,12,14,.95);
@@ -110,7 +132,11 @@ body::after{
 .tut-foot{display:flex;align-items:center;justify-content:space-between;margin-top:20px}
 .tut-ct  {font-size:12px;color:var(--txt-d)}
 
+<<<<<<< HEAD
 
+=======
+/* ─── BUTTONS ────────────────────────────────────── */
+>>>>>>> origin/faty
 .btn{
   display:inline-flex;align-items:center;gap:7px;
   padding:9px 20px;border-radius:var(--r2);border:none;
@@ -129,7 +155,11 @@ body::after{
 .btn-stripe{background:linear-gradient(135deg,#635bff,#8b85ff);color:#fff;box-shadow:0 3px 14px rgba(99,91,255,.3)}
 .btn-stripe:hover{transform:translateY(-1px);box-shadow:0 5px 20px rgba(99,91,255,.45)}
 
+<<<<<<< HEAD
 
+=======
+/* ─── TOPNAV ─────────────────────────────────────── */
+>>>>>>> origin/faty
 .topnav{
   position:sticky;top:0;z-index:200;
   background:rgba(4,12,14,.85);
@@ -194,10 +224,17 @@ body::after{
   cursor:pointer;
 }
 
+<<<<<<< HEAD
 
 .wrapper{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:0 28px}
 
 
+=======
+/* ─── WRAPPER ────────────────────────────────────── */
+.wrapper{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:0 28px}
+
+/* ─── TAGS ───────────────────────────────────────── */
+>>>>>>> origin/faty
 .tag{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:100px;font-size:11px;font-weight:500}
 .t-teal  {color:var(--teal-l); background:rgba(0,210,180,.1); border:1px solid rgba(0,210,180,.2)}
 .t-gold  {color:var(--gold-l); background:rgba(245,197,66,.1); border:1px solid rgba(245,197,66,.2)}
@@ -207,14 +244,22 @@ body::after{
 .t-green {color:var(--green);  background:rgba(46,204,113,.1); border:1px solid rgba(46,204,113,.2)}
 .t-purple{color:var(--purple); background:rgba(166,124,255,.1);border:1px solid rgba(166,124,255,.2)}
 
+<<<<<<< HEAD
 
+=======
+/* ─── CARD ───────────────────────────────────────── */
+>>>>>>> origin/faty
 .card{background:var(--card);border:1px solid var(--b0);border-radius:var(--r);overflow:hidden}
 .card-hd{padding:14px 18px;border-bottom:1px solid var(--b0);display:flex;align-items:center;justify-content:space-between;gap:10px}
 .card-ht{display:flex;align-items:center;gap:9px;font-family:'Syne',sans-serif;font-size:13.5px;font-weight:700;color:#fff}
 .cht-i{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px}
 .card-bd{padding:18px}
 
+<<<<<<< HEAD
 
+=======
+/* ─── SECTION LABEL ──────────────────────────────── */
+>>>>>>> origin/faty
 .sec-label{display:flex;align-items:center;gap:12px;margin-bottom:20px}
 .sec-num{
   width:32px;height:32px;border-radius:9px;flex-shrink:0;
@@ -230,7 +275,11 @@ body::after{
 .sec-title-text{font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:700;color:#fff}
 .sec-divider{flex:1;height:1px;background:linear-gradient(90deg,var(--b1),transparent)}
 
+<<<<<<< HEAD
 
+=======
+/* ─── FORMS ──────────────────────────────────────── */
+>>>>>>> origin/faty
 .frow{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
 .fgroup{margin-bottom:14px}
 label{display:block;font-size:12px;font-weight:500;color:var(--txt-m);margin-bottom:5px}
@@ -248,7 +297,11 @@ input:focus,select:focus,textarea:focus{
 textarea{resize:vertical;min-height:78px}
 select option{background:var(--bg3)}
 
+<<<<<<< HEAD
 
+=======
+/* ─── ANIMATIONS ─────────────────────────────────── */
+>>>>>>> origin/faty
 .fu{animation:fadeUp .5s ease both}
 .fu1{animation-delay:.05s}.fu2{animation-delay:.10s}
 .fu3{animation-delay:.15s}.fu4{animation-delay:.20s}
@@ -257,7 +310,13 @@ select option{background:var(--bg3)}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
 
+<<<<<<< HEAD
 
+=======
+/* ═══════════════════════════════════════════════════
+   ① HERO
+═══════════════════════════════════════════════════ */
+>>>>>>> origin/faty
 .hero{padding:48px 0 40px;display:flex;align-items:center;gap:32px}
 .hero-left{flex:1}
 .hero-eyebrow{
@@ -289,7 +348,13 @@ select option{background:var(--bg3)}
 .hstat-val{font-family:'Syne',sans-serif;font-size:1.55rem;font-weight:800;color:#fff;line-height:1}
 .hstat-lbl{font-size:11.5px;color:var(--txt-m);margin-top:4px}
 
+<<<<<<< HEAD
 
+=======
+/* ═══════════════════════════════════════════════════
+   FREEMIUM BANNER
+═══════════════════════════════════════════════════ */
+>>>>>>> origin/faty
 .freemium-banner{
   display:grid;grid-template-columns:1fr 1fr;gap:14px;
   margin-bottom:52px;
@@ -312,6 +377,24 @@ select option{background:var(--bg3)}
   width:220px;height:220px;border-radius:50%;
   background:radial-gradient(circle,rgba(245,197,66,.1) 0%,transparent 65%);
 }
+<<<<<<< HEAD
+=======
+.plan-card.plus{
+  background:linear-gradient(135deg,#04141a,#031f29);
+  border:1px solid rgba(58,142,255,.30);
+  box-shadow:0 0 40px rgba(58,142,255,.06);
+}
+.plan-card.pro{
+  background:linear-gradient(135deg,#120016,#1d0726);
+  border:1px solid rgba(166,124,255,.34);
+  box-shadow:0 0 40px rgba(166,124,255,.08);
+}
+.plan-card.pro::before{
+  content:'';position:absolute;right:-50px;top:-50px;
+  width:220px;height:220px;border-radius:50%;
+  background:radial-gradient(circle,rgba(166,124,255,.12) 0%,transparent 65%);
+}
+>>>>>>> origin/faty
 .plan-badge{
   display:inline-flex;align-items:center;gap:6px;
   padding:4px 12px;border-radius:100px;font-size:11px;font-weight:600;
@@ -319,6 +402,17 @@ select option{background:var(--bg3)}
 }
 .plan-badge.free   {background:rgba(0,210,180,.1);color:var(--teal-l);border:1px solid rgba(0,210,180,.2)}
 .plan-badge.premium{background:rgba(245,197,66,.15);color:var(--gold-l);border:1px solid rgba(245,197,66,.3)}
+<<<<<<< HEAD
+=======
+.plan-badge.plus   {background:rgba(58,142,255,.15);color:#7fb2ff;border:1px solid rgba(58,142,255,.3)}
+.plan-badge.pro    {background:rgba(166,124,255,.15);color:#c4a7ff;border:1px solid rgba(166,124,255,.32)}
+.plan-feat .fi.ok3 {background:rgba(58,142,255,.15);color:#7fb2ff}
+.plan-feat .fi.ok4 {background:rgba(166,124,255,.18);color:#c4a7ff}
+.btn-plus{background:linear-gradient(135deg,#1c5fb8,#3a8eff);color:#fff;box-shadow:0 3px 14px rgba(58,142,255,.3)}
+.btn-plus:hover{transform:translateY(-1px);box-shadow:0 5px 20px rgba(58,142,255,.45)}
+.btn-pro{background:linear-gradient(135deg,#6a3fb8,#a67cff);color:#fff;box-shadow:0 3px 14px rgba(166,124,255,.3)}
+.btn-pro:hover{transform:translateY(-1px);box-shadow:0 5px 20px rgba(166,124,255,.45)}
+>>>>>>> origin/faty
 .plan-name{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;color:#fff;margin-bottom:4px}
 .plan-price{font-size:13px;color:var(--txt-m);margin-bottom:16px}
 .plan-price strong{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;color:#fff}
@@ -338,7 +432,13 @@ select option{background:var(--bg3)}
 .plan-feat.locked{opacity:.45}
 .plan-cta{margin-top:18px}
 
+<<<<<<< HEAD
 
+=======
+/* ═══════════════════════════════════════════════════
+   ② SCAN / RÉCUPÉRATION
+═══════════════════════════════════════════════════ */
+>>>>>>> origin/faty
 .scan-section{padding:0 0 52px}
 .scan-layout{display:grid;grid-template-columns:1fr 1fr;gap:18px}
 
@@ -394,7 +494,13 @@ select option{background:var(--bg3)}
   color:var(--gold-l);flex-shrink:0;
 }
 
+<<<<<<< HEAD
 
+=======
+/* ═══════════════════════════════════════════════════
+   ③ ABONNEMENTS & FACTURES
+═══════════════════════════════════════════════════ */
+>>>>>>> origin/faty
 .invoice-section{padding:0 0 52px}
 .invoice-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
 
@@ -453,7 +559,13 @@ select option{background:var(--bg3)}
 .inv-date{font-size:11.5px;color:var(--txt-m)}
 .inv-amount{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--teal-l);flex-shrink:0}
 
+<<<<<<< HEAD
 
+=======
+/* ═══════════════════════════════════════════════════
+   ④ GESTION DES PROJETS
+═══════════════════════════════════════════════════ */
+>>>>>>> origin/faty
 .proj-section{padding:0 0 52px}
 .proj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
 
@@ -501,10 +613,19 @@ select option{background:var(--bg3)}
 .proj-add .plus{font-size:1.8rem;color:var(--txt-d)}
 .proj-add span{font-size:13px;color:var(--txt-m)}
 
+<<<<<<< HEAD
 
 .bottom-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:0 0 60px}
 
 
+=======
+/* ═══════════════════════════════════════════════════
+   ⑤ TABLEAU DE BORD (premium) + NOTIFICATIONS
+═══════════════════════════════════════════════════ */
+.bottom-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:0 0 60px}
+
+/* analytics cards */
+>>>>>>> origin/faty
 .analytics-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
 .an-card{
   background:var(--bg3);border:1px solid var(--b0);
@@ -519,7 +640,11 @@ select option{background:var(--bg3)}
 .an-val{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;color:#fff;line-height:1}
 .an-lbl{font-size:11.5px;color:var(--txt-m);margin-top:3px}
 
+<<<<<<< HEAD
 
+=======
+/* sparkline mock */
+>>>>>>> origin/faty
 .sparkline{height:30px;display:flex;align-items:flex-end;gap:3px;margin-top:10px}
 .spark-bar{flex:1;border-radius:3px 3px 0 0;background:var(--teal);opacity:.25;transition:.2s}
 .spark-bar.hi{opacity:.8}
@@ -540,7 +665,11 @@ select option{background:var(--bg3)}
   letter-spacing:.03em;
 }
 
+<<<<<<< HEAD
 
+=======
+/* notif feed */
+>>>>>>> origin/faty
 .notif-feed{display:flex;flex-direction:column;gap:0}
 .notif-item{
   display:flex;align-items:flex-start;gap:12px;
@@ -558,7 +687,11 @@ select option{background:var(--bg3)}
 .ni-when{font-size:11px;color:var(--txt-d);margin-top:2px}
 .ni-dot{width:7px;height:7px;border-radius:50%;background:var(--teal);flex-shrink:0;margin-top:5px}
 
+<<<<<<< HEAD
 
+=======
+/* ─── MODAL ──────────────────────────────────────── */
+>>>>>>> origin/faty
 .modal-bg{
   position:fixed;inset:0;z-index:800;
   background:rgba(4,12,14,.88);backdrop-filter:blur(12px);
@@ -584,7 +717,11 @@ select option{background:var(--bg3)}
 .modal-h  {font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:800;color:#fff;margin-bottom:4px}
 .modal-sub{font-size:13px;color:var(--txt-m);margin-bottom:20px}
 
+<<<<<<< HEAD
 
+=======
+/* scan result */
+>>>>>>> origin/faty
 .scan-result{
   background:rgba(0,210,180,.06);border:1px solid rgba(0,210,180,.22);
   border-radius:12px;padding:20px;text-align:center;margin-bottom:18px;
@@ -607,14 +744,22 @@ select option{background:var(--bg3)}
 }
 .stripe-pill{background:linear-gradient(135deg,#635bff,#8b85ff);padding:2px 8px;border-radius:5px;font-size:11px;font-weight:700;color:#fff}
 
+<<<<<<< HEAD
 
+=======
+/* ─── FOOTER ─────────────────────────────────────── */
+>>>>>>> origin/faty
 footer{
   border-top:1px solid var(--b0);padding:28px 0 40px;
   text-align:center;font-size:12.5px;color:var(--txt-d);
 }
 footer strong{color:var(--txt-m)}
 
+<<<<<<< HEAD
 
+=======
+/* ─── RESPONSIVE ─────────────────────────────────── */
+>>>>>>> origin/faty
 @media(max-width:900px){
   .hero{flex-direction:column;padding:32px 0 28px}
   .hero-stats{justify-content:center}
