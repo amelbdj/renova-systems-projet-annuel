@@ -1,3 +1,10 @@
+function texteTrad(cle, texte) {
+  if (typeof t === "function") {
+    return t(cle);
+  }
+  return texte;
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
   const token = localStorage.getItem("token");
   if (!token) {
@@ -351,22 +358,28 @@ function applyPlanLabels(plan) {
   const meta =
     {
       premium: {
-        label: "Premium actif",
-        name: "Plan Premium",
+        labelKey: "pro.plan.premium_active",
+        label: texteTrad("pro.plan.premium_active", "Premium actif"),
+        nameKey: "pro.plan.premium_name",
+        name: texteTrad("pro.plan.premium_name", "Plan Premium"),
         price: "25 €",
         icon: "fa-star",
         color: "var(--gold-l)",
       },
       plus: {
-        label: "Plus actif",
-        name: "Plan Plus",
+        labelKey: "pro.plan.plus_active",
+        label: texteTrad("pro.plan.plus_active", "Plus actif"),
+        nameKey: "pro.plan.plus_name",
+        name: texteTrad("pro.plan.plus_name", "Plan Plus"),
         price: "45 €",
         icon: "fa-medal",
         color: "#7fb2ff",
       },
       pro: {
-        label: "Pro actif",
-        name: "Plan Pro",
+        labelKey: "pro.plan.pro_active",
+        label: texteTrad("pro.plan.pro_active", "Pro actif"),
+        nameKey: "pro.plan.pro_name",
+        name: texteTrad("pro.plan.pro_name", "Plan Pro"),
         price: "99 €",
         icon: "fa-rocket",
         color: "#c4a7ff",
@@ -376,16 +389,20 @@ function applyPlanLabels(plan) {
 
   const tag = document.getElementById("planActiveTag");
   if (tag)
-    tag.innerHTML = `<i class="fa-solid ${meta.icon}"></i> ${meta.label}`;
+    tag.innerHTML = `<i class="fa-solid ${meta.icon}"></i> <span data-i18n="${meta.labelKey}">${meta.label}</span>`;
 
   const name = document.getElementById("contractPlanName");
   if (name) {
-    name.innerHTML = `<i class="fa-solid ${meta.icon}"></i> ${meta.name}`;
+    name.innerHTML = `<i class="fa-solid ${meta.icon}"></i> <span data-i18n="${meta.nameKey}">${meta.name}</span>`;
     name.style.color = meta.color;
   }
 
   const price = document.getElementById("contractPlanPrice");
-  if (price) price.innerHTML = `${meta.price}<span>/mois</span>`;
+  if (price) price.innerHTML = `${meta.price}<span data-i18n="pro.plan.per_month">${texteTrad("pro.plan.per_month", "/mois")}</span>`;
+
+  if (typeof appliquerTraductions === "function") {
+    appliquerTraductions();
+  }
 }
 
 function showUpgradeCards(plan) {
@@ -409,13 +426,13 @@ function showUpgradeCards(plan) {
     section.style.display = "none";
   } else {
     section.style.display = "block";
-    if (title) title.textContent = "Améliorer mon abonnement";
+    if (title) title.textContent = texteTrad("pro.plan.upgrade_title", "Améliorer mon abonnement");
   }
 }
 
 function showAllPlanCards() {
   const title = document.getElementById("planSectionTitle");
-  if (title) title.textContent = "Votre Abonnement";
+  if (title) title.textContent = texteTrad("pro.plan.title", "Votre Abonnement");
   ["free", "premium", "plus", "pro"].forEach((p) => {
     const card = document.getElementById("card-" + p);
     if (card) card.style.display = "";
