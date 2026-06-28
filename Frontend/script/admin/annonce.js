@@ -4,7 +4,7 @@ const Auth = {
   getUserRole: () => localStorage.getItem("userRole"),
   isConnected: () => !!localStorage.getItem("token"),
 
-  
+
   logout: () => {
     localStorage.clear();
     window.location.href = "login.html";
@@ -15,7 +15,7 @@ function GetAnnonce() {
   const container = document.getElementById("result");
   if (!container) return;
 
-  fetch("http://localhost:8081/admin/annonces", {
+  fetch(`${API_BASE_URL}/admin/annonces`, {
     headers: {
       Authorization: "Bearer " + monToken,
     },
@@ -25,7 +25,7 @@ function GetAnnonce() {
       return res.json();
     })
     .then((annonces) => {
-      
+
       const currentTabId = document.querySelector(".vtab.on").id;
       if (currentTabId !== "tout") container.innerHTML = "";
 
@@ -54,10 +54,10 @@ function GetAnnonce() {
                 </div>
 
                 <div class="val-meta">
-                    <span class="material-symbols-outlined" style="font-size:14px; vertical-align:middle;">category</span> 
-                    <b>${annonce.categorie}</b> · 
-                    ${annonce.prenom} ${annonce.nom} · 
-                    
+                    <span class="material-symbols-outlined" style="font-size:14px; vertical-align:middle;">category</span>
+                    <b>${annonce.categorie}</b> ·
+                    ${annonce.prenom} ${annonce.nom} ·
+
                     <span data-i18n="backoffice.ads.published_on">Publiée le</span> ${dateStr}
                 </div>
 
@@ -92,7 +92,7 @@ function GetAnnonce() {
         container.innerHTML = `<div style="padding:20px" data-i18n="backoffice.ads.no_ads">Aucune annonce en attente.</div>`;
       }
 
-      
+
       if (typeof appliquerTraductions === "function") {
         appliquerTraductions();
       }
@@ -101,19 +101,19 @@ function GetAnnonce() {
 }
 
 function ValidateAnnonce(id) {
-  fetch(`http://localhost:8081/admin/annonces/validate/${id}`, {
+  fetch(`${API_BASE_URL}/admin/annonces/validate/${id}`, {
     method: "PUT",
     headers: {
       Authorization: "Bearer " + monToken,
     },
   }).then(() => {
     GetAnnonce();
-    UpdateValidationCount(); 
+    UpdateValidationCount();
   });
 }
 
 function RefuseAnnonce(id) {
-  fetch(`http://localhost:8081/admin/annonces/refuse/${id}`, {
+  fetch(`${API_BASE_URL}/admin/annonces/refuse/${id}`, {
     method: "PUT",
     headers: {
       Authorization: "Bearer " + monToken,

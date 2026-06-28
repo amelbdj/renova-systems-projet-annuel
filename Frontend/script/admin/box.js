@@ -15,7 +15,7 @@ function GetConteneurs() {
   container.innerHTML =
     "<div style='color:var(--txt-m)'>Chargement des conteneurs...</div>";
 
-  fetch("http://localhost:8081/api/admin/conteneurs", {
+  fetch(`${API_BASE_URL}/api/admin/conteneurs`, {
     headers: { Authorization: "Bearer " + monToken },
   })
     .then((response) => response.json())
@@ -83,16 +83,16 @@ function CreateConteneur() {
     return;
   }
 
-  
+
   const adresseComplete = `${adresse}, ${cp} ${ville}`;
 
   const newConteneurData = {
     nom: nom,
     adresse: adresseComplete,
-    nombre_de_boxs: 0, 
+    nombre_de_boxs: 0,
   };
 
-  fetch("http://localhost:8081/api/admin/conteneur/create", {
+  fetch(`${API_BASE_URL}/api/admin/conteneur/create`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -104,7 +104,7 @@ function CreateConteneur() {
       if (response.ok) {
         alert("Nouveau Conteneur déployé avec succès !");
         closeModal("NewConteneurModal");
-        GetConteneurs(); 
+        GetConteneurs();
       } else {
         alert("Erreur lors du déploiement.");
       }
@@ -118,14 +118,14 @@ function GetBoxesForConteneur(conteneurId, nomConteneur, adresseConteneur) {
   const container = document.getElementById("box-container");
   const statContainer = document.getElementById("box-stats");
 
-  
+
   currentConteneurId = conteneurId;
   currentConteneurNom = nomConteneur;
 
   container.innerHTML =
     "<div style='color:var(--txt-m)'>Chargement des casiers</div>";
 
-  fetch(`http://localhost:8081/api/admin/conteneur/${conteneurId}/boxes`, {
+  fetch(`${API_BASE_URL}/api/admin/conteneur/${conteneurId}/boxes`, {
     headers: { Authorization: "Bearer " + monToken },
   })
     .then((response) => response.json())
@@ -195,12 +195,12 @@ function GetBoxesForConteneur(conteneurId, nomConteneur, adresseConteneur) {
             <div class="log-stat-lbl">Erreurs détectées</div>
           </div>
         </div>
-        
+
         <div style="margin-top:8px; display:flex; flex-direction:column; gap:8px;">
           <button class="btn btn-o btn-sm btn-full" onclick="openNewBoxModal(${conteneurId})">
             ＋ Ajouter une porte (Casier)
           </button>
-          
+
           <button class="btn btn-red btn-sm btn-full" onclick="alert('Maintenance demandée pour le meuble.')">
             🛠️ Envoyer maintenance
           </button>
@@ -210,7 +210,7 @@ function GetBoxesForConteneur(conteneurId, nomConteneur, adresseConteneur) {
 }
 
 function openNewBoxModal(conteneurId) {
-  
+
   const hiddenInput = document.getElementById("current-conteneur-id");
   if (hiddenInput) hiddenInput.value = conteneurId;
 
@@ -221,7 +221,7 @@ function openNewBoxModal(conteneurId) {
 function CreateBox(conteneurId) {
   const taille = document.getElementById("add-b-taille").value;
 
-  fetch("http://localhost:8081/api/admin/box/add", {
+  fetch(`${API_BASE_URL}/api/admin/box/add`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -236,7 +236,7 @@ function CreateBox(conteneurId) {
       if (response.ok) {
         alert("Nouveau casier ajouté !");
         closeModal("NewBoxModal");
-        
+
         GetBoxesForConteneur(currentConteneurId, currentConteneurNom, "");
       } else {
         alert("Erreur lors de l'ajout du casier.");
@@ -263,7 +263,7 @@ function openBoxDetail(id, numero, status, localisation, conteneurId) {
   if (modalLocation) modalLocation.textContent = localisation;
 
   const modal = document.getElementById("boxModal");
-  if (modal) modal.style.display = "flex"; 
+  if (modal) modal.style.display = "flex";
 }
 
 function UpdateBoxStatusAPI() {
@@ -272,7 +272,7 @@ function UpdateBoxStatusAPI() {
 
   const nouveauStatut = selectStatut.value;
 
-  fetch("http://localhost:8081/api/admin/box/update", {
+  fetch(`${API_BASE_URL}/api/admin/box/update`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",

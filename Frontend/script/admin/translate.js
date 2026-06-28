@@ -1,9 +1,9 @@
 let currentTranslations = {};
 monToken = localStorage.getItem("token");
 function changerLangue(langue) {
-  localStorage.setItem("langue", langue); 
-  fetch(`http://localhost:8081/api/translations?lang=${langue}`, {
-    cache: "no-store", 
+  localStorage.setItem("langue", langue);
+  fetch(`${API_BASE_URL}/api/translations?lang=${langue}`, {
+    cache: "no-store",
     headers: {
       Authorization: "Bearer " + monToken,
     },
@@ -59,7 +59,7 @@ function ImporterLangue() {
   const nom = document.getElementById("input_lang_name").value.trim();
   const fichierInput = document.getElementById("input_fichier_json");
 
-  
+
   if (code === "" || nom === "") {
     alert("Merci de remplir le code ET le nom de la langue.");
     return;
@@ -72,11 +72,11 @@ function ImporterLangue() {
   const fichier = fichierInput.files[0];
   const lecteur = new FileReader();
 
-  
+
   lecteur.onload = function () {
     let contenuJson;
     try {
-      
+
       contenuJson = JSON.parse(lecteur.result);
     } catch (e) {
       alert("❌ Le fichier n'est pas un JSON valide.");
@@ -89,7 +89,7 @@ function ImporterLangue() {
       data: contenuJson,
     };
 
-    fetch("http://localhost:8081/admin/translations/add", {
+    fetch(`${API_BASE_URL}/admin/translations/add`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -105,7 +105,7 @@ function ImporterLangue() {
         document.getElementById("input_lang_name").value = "";
         fichierInput.value = "";
 
-        
+
         GetLanguages();
       })
       .catch((err) => {
@@ -114,23 +114,23 @@ function ImporterLangue() {
       });
   };
 
-  
+
   lecteur.readAsText(fichier);
 }
 
 
 function ExporterLangue(code) {
-  fetch(`http://localhost:8081/api/translations?lang=${code}`, {
+  fetch(`${API_BASE_URL}/api/translations?lang=${code}`, {
     headers: {
       Authorization: "Bearer " + monToken,
     },
   })
     .then((res) => res.json())
     .then((data) => {
-      
+
       const texte = JSON.stringify(data, null, 2);
 
-      
+
       const blob = new Blob([texte], { type: "application/json" });
       const url = URL.createObjectURL(blob);
 
@@ -139,7 +139,7 @@ function ExporterLangue(code) {
       lien.download = code + ".json";
       lien.click();
 
-      URL.revokeObjectURL(url); 
+      URL.revokeObjectURL(url);
     })
     .catch((err) => console.error("Erreur export:", err));
 }
@@ -163,7 +163,7 @@ if (btnToggleForm) {
 
 
 function GetLanguages() {
-  fetch("http://localhost:8081/api/languages", {
+  fetch(`${API_BASE_URL}/api/languages`, {
     headers: {
       Authorization: "Bearer " + monToken,
     },
@@ -175,10 +175,10 @@ function GetLanguages() {
     .then((languages) => {
       const container = document.getElementById("wrapper");
 
-      
+
       if (!container) return;
 
-      container.innerHTML = ""; 
+      container.innerHTML = "";
 
       languages.forEach((lang) => {
         container.innerHTML += `
@@ -196,7 +196,7 @@ function GetLanguages() {
 
 document.addEventListener("DOMContentLoaded", () => {
   GetLanguages();
-  
+
   const langueSauvegardee = localStorage.getItem("langue") || "fr";
   changerLangue(langueSauvegardee);
 });

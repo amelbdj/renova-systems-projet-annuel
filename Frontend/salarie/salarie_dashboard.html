@@ -3,6 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="../script/auth_guard.js"></script>
+    <script>
+      checkSession("Salari?");
+    </script>
     <title>Espace Salariés — ReNova Systems</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -34,7 +38,7 @@
     </script>
   </head>
   <body>
-    
+
     <div id="wrapper" style="position:fixed; bottom:16px; right:16px; z-index:2000; display:flex; gap:6px;"></div>
 
     <nav class="topnav">
@@ -127,8 +131,9 @@
       </div>
     </footer>
 
-    
+
     <script src="../script/admin/translate.js" defer></script>
-    <script src="../script/salarie/userInfo.js" defer></script>
+    <script src="../script/config.js"></script>
+  <script src="../script/salarie/userInfo.js" defer></script>
   </body>
 </html>

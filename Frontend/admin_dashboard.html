@@ -28,7 +28,7 @@
     <script>
       window.OneSignalDeferred = window.OneSignalDeferred || [];
       OneSignalDeferred.push(async function (OneSignal) {
-        
+
         await OneSignal.init({
           appId: "79a53223-420a-46c8-83d9-1ca162fcb64f",
           safari_web_id:
@@ -36,19 +36,19 @@
           allowLocalhostAsSecureOrigin: true,
           notifyButton: {
             enable: true,
-            displayPredicate: () => true, 
+            displayPredicate: () => true,
           },
         });
 
-        
+
         await OneSignal.Notifications.requestPermission();
 
-        
+
         const userId = localStorage.getItem("userId");
         if (userId) {
           await OneSignal.login(userId);
 
-          
+
           console.log("✅ Admin connecté à OneSignal avec l'ID :", userId);
           console.log(
             "Permission accordée ? :",
@@ -61,7 +61,8 @@
         }
       });
     </script>
-  </head>
+      <script src="../Frontend/script/config.js"></script>
+</head>
   <body
     style="display: flex; min-height: 100vh; margin: 0; background: var(--bg)"
   >
@@ -94,7 +95,7 @@
         ReNova <em style="color: var(--or-l); font-style: normal">Admin</em>
       </div>
 
-      
+
       <nav style="display: flex; flex-direction: column; gap: 8px">
         <a
           href="admin_dashboard.html"
@@ -178,7 +179,7 @@
         </a>
       </nav>
 
-      
+
       <button
         class="btn btn-o btn-full"
         style="margin-top: auto"
@@ -191,9 +192,9 @@
       </button>
     </aside>
 
-    
+
     <main style="flex: 1; padding: 40px; overflow-y: auto">
-      
+
       <section class="hero fu" style="padding-top: 0">
         <div class="hero-left">
           <div class="hero-eyebrow" data-i18n="backoffice.dash.eyebrow">Tableau de bord</div>
@@ -205,7 +206,7 @@
         </div>
       </section>
 
-      
+
       <div class="kpi-grid fu fu1">
         <div class="kpi" style="--kc: rgba(46, 204, 113, 0.08)">
           <div class="kpi-top">
@@ -256,9 +257,9 @@
         </div>
       </div>
 
-      
+
       <div class="frow fu fu2" style="gap: 20px; align-items: start">
-        
+
         <div class="card">
           <div class="card-hd">
             <div class="card-ht">
@@ -368,7 +369,7 @@
           </div>
         </div>
 
-        
+
         <div class="card">
           <div class="card-hd">
             <div class="card-ht">
@@ -467,7 +468,7 @@
         </div>
       </div>
     </main>
-    
+
     <script src="../Frontend/script/admin/translate.js"></script>
     <script src="../Frontend/script/admin/dash.js"></script>
     <script src="../Frontend/script/admin/user.js"></script>

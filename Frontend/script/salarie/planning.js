@@ -10,7 +10,7 @@ function initPlanningSalarie() {
 }
 
 function fetchEvenementsSalarie() {
-  fetch("http://localhost:8081/admin/evenements", {
+  fetch(`${API_BASE_URL}/admin/evenements`, {
     headers: {
       Authorization: "Bearer " + monToken,
     },
@@ -215,7 +215,7 @@ window.ouvrirDetailEvent = function (id) {
 };
 
 function chargerRessources(id) {
-  fetch("http://localhost:8081/admin/evenements/ressources/" + id, {
+  fetch(`${API_BASE_URL}/admin/evenements/ressources/` + id, {
     headers: {
       Authorization: "Bearer " + monToken,
     },
@@ -236,9 +236,9 @@ function chargerRessources(id) {
       let liste = "";
       for (let i = 0; i < ressources.length; i++) {
         liste +=
-          "<p style='margin:4px 0;'><a href='http://localhost:8081/" +
-          ressources[i].url_fichier +
-          "' target='_blank' style='color:#fff; background:var(--vi); padding:6px 12px; border-radius:6px; text-decoration:none;'>📄 " +
+          "<p style='margin:4px 0;'><a href='" +
+          API_BASE_URL + "/" + ressources[i].url_fichier +
+          "' target='_blank' style='color:#fff; background:var(--vi); padding:6px 12px; border-radius:6px; text-decoration:none;'>???? " +
           ressources[i].titre +
           "</a></p>";
       }
@@ -255,7 +255,7 @@ function chargerRessources(id) {
 }
 
 function chargerInscrits(id) {
-  fetch("http://localhost:8081/admin/evenements/inscrits/" + id, {
+  fetch(`${API_BASE_URL}/admin/evenements/inscrits/` + id, {
     headers: {
       Authorization: "Bearer " + monToken,
     },

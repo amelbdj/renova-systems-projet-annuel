@@ -4,7 +4,7 @@ function GetArticle() {
   const container = document.getElementById("result");
   if (!container) return;
 
-  fetch(`http://localhost:8081/admin/articles`, {
+  fetch(`${API_BASE_URL}/admin/articles`, {
     headers: {
       Authorization: "Bearer " + monToken,
     },
@@ -72,7 +72,7 @@ function openArticleModal(id) {
 
   document.getElementById("articleModModal").style.display = "flex";
 
-  fetch(`http://localhost:8081/admin/articles/${id}`, {
+  fetch(`${API_BASE_URL}/admin/articles/${id}`, {
     headers: {
       Authorization: "Bearer " + monToken,
     },
@@ -86,21 +86,21 @@ function openArticleModal(id) {
         article.titre || article.Titre;
 
       document.getElementById("modal-art-meta").innerHTML = `
-        <span class="tag t-vi">${article.type || article.Type || "Article"}</span> 
+        <span class="tag t-vi">${article.type || article.Type || "Article"}</span>
         • Rédigé par <b>${article.prenom_auteur || ""} ${article.nom_auteur || ""}</b>
       `;
 
-      
+
       const imgElement = document.getElementById("modal-art-image");
-      const imageUrl = article.image_url || article.ImageUrl; 
+      const imageUrl = article.image_url || article.ImageUrl;
 
       if (imgElement) {
         if (imageUrl && imageUrl.trim() !== "") {
-          imgElement.src = "http://localhost:8081/" + imageUrl;
-          imgElement.style.display = "block"; 
+          imgElement.src = `${API_BASE_URL}/` + imageUrl;
+          imgElement.style.display = "block";
         } else {
           imgElement.src = "";
-          imgElement.style.display = "none"; 
+          imgElement.style.display = "none";
         }
       }
 
@@ -131,7 +131,7 @@ function closeArticleModal() {
 }
 
 function ValidateArticle(id) {
-  fetch(`http://localhost:8081/admin/articles/validate/${id}`, {
+  fetch(`${API_BASE_URL}/admin/articles/validate/${id}`, {
     method: "PUT",
     headers: {
       Authorization: "Bearer " + monToken,
@@ -143,7 +143,7 @@ function ValidateArticle(id) {
 }
 
 function RefuseArticle(id) {
-  fetch(`http://localhost:8081/admin/articles/refuse/${id}`, {
+  fetch(`${API_BASE_URL}/admin/articles/refuse/${id}`, {
     method: "PUT",
     headers: {
       Authorization: "Bearer " + monToken,

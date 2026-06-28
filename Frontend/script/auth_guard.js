@@ -1,9 +1,13 @@
 function checkSession(requiredRole) {
-    const token = localStorage.getItem('token');
-    const userRole = localStorage.getItem('userRole');
+    const token = localStorage.getItem("token");
+    const userRole = localStorage.getItem("userRole");
 
     if (!token) {
-        window.location.href = "login.html";
+        if (window.location.pathname.includes("/salarie/")) {
+            window.location.href = "../login.html";
+        } else {
+            window.location.href = "login.html";
+        }
         return;
     }
 

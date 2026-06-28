@@ -13,7 +13,7 @@ function chargerKPIsFinance() {
     return;
   }
 
-  fetch("http://localhost:8081/admin/finance/overview", {
+  fetch(`${API_BASE_URL}/admin/finance/overview`, {
     headers: { Authorization: `Bearer ${token}` },
   })
     .then((res) => {
@@ -41,7 +41,7 @@ function chargerTransactions() {
     return;
   }
 
-  fetch("http://localhost:8081/admin/finance/transactions", {
+  fetch(`${API_BASE_URL}/admin/finance/transactions`, {
     headers: { Authorization: `Bearer ${token}` },
   })
     .then((res) => {

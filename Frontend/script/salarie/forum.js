@@ -5,7 +5,7 @@ function GetForumMessages(filtreType) {
   container.innerHTML =
     "<p style='padding:14px; color:var(--txt-m);'>Chargement des messages...</p>";
 
-  let url = "http://localhost:8081/admin/forum/messages";
+  let url = `${API_BASE_URL}/admin/forum/messages`;
   if (filtreType === "flag") {
     url += "?filter=signales";
   }
@@ -82,7 +82,7 @@ window.ModerateMessage = function (idMessage, action) {
     return;
   }
 
-  fetch(`http://localhost:8081/admin/forum/messages/moderate/${idMessage}`, {
+  fetch(`${API_BASE_URL}/admin/forum/messages/moderate/${idMessage}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -119,7 +119,7 @@ window.BanUser = function (idUser) {
     return;
   }
 
-  fetch(`http://localhost:8081/admin/users/ban/${idUser}`, {
+  fetch(`${API_BASE_URL}/admin/users/ban/${idUser}`, {
     method: "PUT",
     headers: {
       Authorization: "Bearer " + monToken,
@@ -137,7 +137,7 @@ window.BanUser = function (idUser) {
 };
 
 function GetForumStats() {
-  fetch("http://localhost:8081/admin/forum/stats", {
+  fetch(`${API_BASE_URL}/admin/forum/stats`, {
     method: "GET",
     headers: {
       Authorization: "Bearer " + monToken,

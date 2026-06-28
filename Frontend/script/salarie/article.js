@@ -3,7 +3,7 @@ if (!monToken || !userId) {
 }
 
 function chargerArticles() {
-  fetch(`http://localhost:8081/admin/articles/salarie/${userId}`, {
+  fetch(`${API_BASE_URL}/admin/articles/salarie/${userId}`, {
     headers: {
       Authorization: "Bearer " + monToken,
     },
@@ -41,10 +41,10 @@ function chargerArticles() {
 
         let typeArt = (art.type || "").toLowerCase();
 
-        
+
         let imageHtml = `<div class="post-ico" style="background:rgba(48,212,192,.09)">📝</div>`;
         if (art.image_url && art.image_url !== "") {
-          imageHtml = `<img src="http://localhost:8081/${art.image_url}" style="width: 50px; height: 50px; border-radius: 8px; object-fit: cover;">`;
+          imageHtml = `<img src="${API_BASE_URL}/${art.image_url}" style="width: 50px; height: 50px; border-radius: 8px; object-fit: cover;">`;
         } else if (typeArt.includes("conseil")) {
           imageHtml = `<div class="post-ico" style="background:rgba(48,212,192,.09)"><span class="material-symbols-outlined">lightbulb</span></div>`;
         }
@@ -86,7 +86,7 @@ function chargerArticles() {
 }
 
 function editerArticle(id) {
-  fetch(`http://localhost:8081/admin/articles/${id}`, {
+  fetch(`${API_BASE_URL}/admin/articles/${id}`, {
     headers: { Authorization: "Bearer " + monToken },
   })
     .then((res) => res.json())
@@ -129,7 +129,7 @@ function saveArticle(action) {
     return;
   }
 
-  
+
   const formData = new FormData();
   formData.append("id_salarie", userId);
   formData.append("titre", titre);
@@ -141,15 +141,15 @@ function saveArticle(action) {
   }
 
   let url = id
-    ? `http://localhost:8081/admin/articles/modify/${id}/${action}`
-    : `http://localhost:8081/admin/articles/add/${action}`;
+    ? `${API_BASE_URL}/admin/articles/modify/${id}/${action}`
+    : `${API_BASE_URL}/admin/articles/add/${action}`;
   let method = id ? "PUT" : "POST";
 
   fetch(url, {
     method: method,
     headers: {
       Authorization: "Bearer " + monToken,
-      
+
     },
     body: formData,
   })
@@ -171,7 +171,7 @@ function saveArticle(action) {
 
 function DeleteArticle(id) {
   if (!confirm("Êtes-vous sûr de vouloir supprimer cet article ?")) return;
-  fetch(`http://localhost:8081/admin/articles/delete/${id}`, {
+  fetch(`${API_BASE_URL}/admin/articles/delete/${id}`, {
     method: "DELETE",
     headers: { Authorization: "Bearer " + monToken },
   })
@@ -201,7 +201,7 @@ function closePost() {
     document.getElementById("post-type").value = "";
 
     const imageInput = document.getElementById("post-image");
-    if (imageInput) imageInput.value = ""; 
+    if (imageInput) imageInput.value = "";
 
     const modalTitle = document.querySelector("#postModal .sec-title-text");
     if (modalTitle) modalTitle.textContent = "Rédiger un article";

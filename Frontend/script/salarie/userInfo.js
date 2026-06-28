@@ -8,8 +8,8 @@ function chargerProfil() {
     return;
   }
 
-  
-  fetch(`http://localhost:8081/admin/users/${userId}`, {
+
+  fetch(`${API_BASE_URL}/admin/users/${userId}`, {
     headers: { Authorization: "Bearer " + monToken },
   })
     .then((res) => {
@@ -29,10 +29,10 @@ function chargerProfil() {
     })
     .catch((err) => console.error("Erreur Profil:", err));
 
-  
+
   const statArticle = document.getElementById("stat-article");
   if (statArticle) {
-    fetch(`http://localhost:8081/admin/articles/salarie/${userId}`, {
+    fetch(`${API_BASE_URL}/admin/articles/salarie/${userId}`, {
       headers: { Authorization: "Bearer " + monToken },
     })
       .then((res) => res.json())
@@ -43,18 +43,18 @@ function chargerProfil() {
       .catch((err) => console.error("Erreur stat articles:", err));
   }
 
-  
+
   const statEvent = document.getElementById("stat-event");
   const statValide = document.getElementById("stat-valide");
   if (statEvent || statValide) {
-    fetch(`http://localhost:8081/admin/evenements`, {
+    fetch(`${API_BASE_URL}/admin/evenements`, {
       headers: { Authorization: "Bearer " + monToken },
     })
       .then((res) => res.json())
       .then((evenements) => {
         if (!evenements) evenements = [];
 
-        
+
         const mesEvts = evenements.filter((e) => {
           const idAuteur =
             e.id_salarie ||
@@ -63,14 +63,14 @@ function chargerProfil() {
             e.idSalarie ||
             e.user_id ||
             e.IdUser;
-          
+
           return String(idAuteur) === String(userId);
         });
 
-        
+
         if (statEvent) statEvent.textContent = mesEvts.length;
 
-        
+
         if (statValide) {
           const enLigne = mesEvts.filter((evt) => {
             const statut = (
@@ -92,10 +92,10 @@ function chargerProfil() {
       .catch((err) => console.error("Erreur stat événements:", err));
   }
 
-  
+
   const statForum = document.getElementById("stat-forum");
   if (statForum) {
-    fetch(`http://localhost:8081/admin/forum/messages`, {
+    fetch(`${API_BASE_URL}/admin/forum/messages`, {
       headers: { Authorization: "Bearer " + monToken },
     })
       .then((res) => res.json())
@@ -121,7 +121,7 @@ function chargerNotifications() {
   if (!pastille) return;
   var cloche = pastille.parentElement;
 
-  fetch("http://localhost:8081/admin/notifications/user/" + userId, {
+  fetch(`${API_BASE_URL}/admin/notifications/user/` + userId, {
     headers: { Authorization: "Bearer " + monToken },
   })
     .then(function (res) {
@@ -173,7 +173,7 @@ function chargerNotifications() {
           panneau.style.display = "block";
           if (nonLues > 0) {
             fetch(
-              "http://localhost:8081/admin/notifications/user/" +
+              `${API_BASE_URL}/admin/notifications/user/` +
                 userId +
                 "/read",
               {

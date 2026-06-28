@@ -81,7 +81,7 @@ function CreateEvent() {
   var capacite = document.getElementById("evt-capacite").value;
   var tarif = document.getElementById("evt-tarif").value;
 
-  
+
   var imageInput = document.getElementById("evt-image");
   var imageFile = null;
   if (imageInput && imageInput.files.length > 0) {
@@ -137,7 +137,7 @@ function CreateEvent() {
   var datetimeDebut = date + " " + (heureDebut || "00:00") + ":00";
   var datetimeFin = date + " " + (heureFin || "00:00") + ":00";
 
-  
+
   var formData = new FormData();
   formData.append("idSalarie", userId);
   formData.append("titre", titre);
@@ -172,12 +172,12 @@ function CreateEvent() {
     formData.append("ressources", ressourcesFiles[j]);
   }
 
-  fetch("http://localhost:8081/admin/evenements/add", {
+  fetch(`${API_BASE_URL}/admin/evenements/add`, {
     method: "POST",
     headers: {
       Authorization: "Bearer " + monToken,
     },
-    body: formData, 
+    body: formData,
   })
     .then(function (reponse) {
       return reponse.text().then(function (txt) {
@@ -298,7 +298,7 @@ function UpdateEvent() {
     prix: tarif ? parseFloat(tarif) : 0,
   };
 
-  fetch("http://localhost:8081/admin/evenements/" + evtEnEdition.id, {
+  fetch(`${API_BASE_URL}/admin/evenements/` + evtEnEdition.id, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -332,7 +332,7 @@ function GetEvenements() {
   var counterEvt = 0;
   var counterValide = 0;
 
-  fetch("http://localhost:8081/admin/evenements", {
+  fetch(`${API_BASE_URL}/admin/evenements`, {
     headers: {
       Authorization: "Bearer " + monToken,
     },
@@ -349,7 +349,7 @@ function GetEvenements() {
       var statEvent = document.getElementById("stat-event");
       var statAttente = document.getElementById("stat-valide");
 
-      
+
       var mesEvenements = [];
       for (var i = 0; i < evenements.length; i++) {
         if (
@@ -407,24 +407,22 @@ function GetEvenements() {
         var pdfLink = "";
         if (evt.pdf_url && evt.pdf_url !== "") {
           pdfLink =
-            "<a href='http://localhost:8081/" +
-            evt.pdf_url +
-            "' target='_blank' class='tag t-vi' style='text-decoration:none; margin-left:6px;'>📄 Support PDF</a>";
+            "<a href='" +
+            API_BASE_URL + "/" + evt.pdf_url +
+            "' target='_blank' class='tag t-vi' style='text-decoration:none; margin-left:6px;'>???? Support PDF</a>";
         }
 
-        
-        
-        
+
+
+
         var topSectionHtml = "";
 
         if (evt.image_url && evt.image_url !== "") {
-          
+
           topSectionHtml =
             `
         <div style="position: relative;">
-          <img src="http://localhost:8081/` +
-            evt.image_url +
-            `" style="width: 100%; height: 160px; object-fit: cover; border-radius: 12px 12px 0 0; display: block;" />
+          <img src="${API_BASE_URL}/${evt.image_url}" style="width: 100%; height: 160px; object-fit: cover; border-radius: 12px 12px 0 0; display: block;" />
           <div style="position: absolute; top: 12px; right: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); border-radius: 20px;">
             ` +
             statusBadge +
@@ -437,11 +435,11 @@ function GetEvenements() {
           </div>
         </div>`;
         } else {
-          
+
           topSectionHtml =
             `
         <div class="evt-banner" style="background:linear-gradient(135deg,#100820,#1c1040); margin: 0; border-radius: 12px 12px 0 0;">
-          📅 
+          📅
           <div class="evt-type-badge etb-formation">` +
             typeAffichage +
             `</div>
@@ -454,11 +452,11 @@ function GetEvenements() {
         htmlContent +=
           `
       <div class="evt-card" style="padding: 0; border: 1px solid var(--b0); border-radius: 12px; background: var(--bg2); margin-bottom: 20px;">
-        
+
         ` +
           topSectionHtml +
           `
-        
+
         <div class="evt-body" style="padding: 20px;">
           <div class="evt-name">` +
           evt.titre +
@@ -500,7 +498,7 @@ function DeleteEvenement(id) {
     return;
   }
 
-  fetch("http://localhost:8081/admin/evenements/delete/" + id, {
+  fetch(`${API_BASE_URL}/admin/evenements/delete/` + id, {
     method: "DELETE",
     headers: {
       Authorization: "Bearer " + monToken,

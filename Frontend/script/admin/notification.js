@@ -18,7 +18,7 @@ function EnvoyerNotification() {
 
   var token = localStorage.getItem("token");
 
-  fetch("http://localhost:8081/admin/notifications/send", {
+  fetch(`${API_BASE_URL}/admin/notifications/send`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

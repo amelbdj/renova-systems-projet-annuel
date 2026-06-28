@@ -8,7 +8,7 @@ function AfficherCategories() {
   if (!container) return;
   container.innerHTML = "";
 
-  fetch("http://localhost:8081/admin/categories", {
+  fetch(`${API_BASE_URL}/admin/categories`, {
     headers: {
       Authorization: "Bearer " + monToken,
     },
@@ -32,7 +32,7 @@ function CreateCategory() {
     return;
   }
 
-  fetch("http://localhost:8081/admin/categories/add", {
+  fetch(`${API_BASE_URL}/admin/categories/add`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -55,7 +55,7 @@ function CreateCategory() {
 
 function DeleteCategory(categoryId) {
   if (confirm(t("backoffice.categories.confirm_delete"))) {
-    fetch(`http://localhost:8081/admin/categories/delete/${categoryId}`, {
+    fetch(`${API_BASE_URL}/admin/categories/delete/${categoryId}`, {
       method: "DELETE",
       headers: {
         Authorization: "Bearer " + monToken,
