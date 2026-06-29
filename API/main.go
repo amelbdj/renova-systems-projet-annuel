@@ -26,6 +26,7 @@ func main() {
 	route.RoutesDivers()
 	route.RoutesPro()
 	route.RoutesNotifications()
+	route.RoutesDocuments()
 
 	fmt.Println("test de : http://localhost:8081")
 	fmt.Println(http.ListenAndServe(":8081", nil))

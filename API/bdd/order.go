@@ -51,45 +51,45 @@ func planNomEtPrix(idPlan int) (string, float64) {
 func PaymentHistory(userID int) ([]map[string]interface{}, error) {
 	var history []map[string]interface{}
 
-	achats, err := Db.Query("SELECT o.montant, o.date, a.titre FROM pa2026.`order` o JOIN annonce a ON o.annonce_id = a.id WHERE o.acheteur_id = ?", userID)
+	achats, err := Db.Query("SELECT o.montant_total, o.date_commande, a.titre, COALESCE((SELECT url_pdf FROM document WHERE id_commande = o.id_commande AND type_doc = 'facture' ORDER BY id_document DESC LIMIT 1), '') FROM pa2026.`order` o JOIN annonce a ON o.id_annonce = a.id WHERE o.id_acheteur = ?", userID)
 	if err != nil {
 		return nil, err
 	}
 	for achats.Next() {
 		var montant float64
-		var date, titre string
-		achats.Scan(&montant, &date, &titre)
+		var date, titre, urlPdf string
+		achats.Scan(&montant, &date, &titre, &urlPdf)
 		history = append(history, map[string]interface{}{
-			"type": "achat", "titre": titre, "montant": montant, "date": date,
+			"type": "achat", "titre": titre, "montant": montant, "date": date, "url_pdf": urlPdf,
 		})
 	}
 	achats.Close()
 
-	ventes, err := Db.Query("SELECT o.montant, o.date, a.titre FROM pa2026.`order` o JOIN annonce a ON o.annonce_id = a.id WHERE a.id_user = ?", userID)
+	ventes, err := Db.Query("SELECT o.montant_total, o.date_commande, a.titre, COALESCE((SELECT url_pdf FROM document WHERE id_commande = o.id_commande AND type_doc = 'facture' ORDER BY id_document DESC LIMIT 1), '') FROM pa2026.`order` o JOIN annonce a ON o.id_annonce = a.id WHERE a.id_user = ?", userID)
 	if err != nil {
 		return nil, err
 	}
 	for ventes.Next() {
 		var montant float64
-		var date, titre string
-		ventes.Scan(&montant, &date, &titre)
+		var date, titre, urlPdf string
+		ventes.Scan(&montant, &date, &titre, &urlPdf)
 		history = append(history, map[string]interface{}{
-			"type": "vente", "titre": titre, "montant": montant, "date": date,
+			"type": "vente", "titre": titre, "montant": montant, "date": date, "url_pdf": urlPdf,
 		})
 	}
 	ventes.Close()
 
-	abos, err := Db.Query("SELECT id_plan, date_debut FROM abonnement WHERE id_user = ?", userID)
+	abos, err := Db.Query("SELECT a.id_plan, a.date_debut, COALESCE((SELECT url_pdf FROM document WHERE id_commande = a.id_abonnement AND type_doc = 'contrat' ORDER BY id_document DESC LIMIT 1), '') FROM abonnement a WHERE a.id_user = ?", userID)
 	if err != nil {
 		return nil, err
 	}
 	for abos.Next() {
 		var idPlan int
-		var date string
-		abos.Scan(&idPlan, &date)
+		var date, urlPdf string
+		abos.Scan(&idPlan, &date, &urlPdf)
 		nom, montant := planNomEtPrix(idPlan)
 		history = append(history, map[string]interface{}{
-			"type": "abonnement", "titre": "Abonnement " + nom, "montant": montant, "date": date,
+			"type": "abonnement", "titre": "Abonnement " + nom, "montant": montant, "date": date, "url_pdf": urlPdf,
 		})
 	}
 	abos.Close()

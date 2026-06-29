@@ -1,6 +1,7 @@
 function texteTrad(cle, texte) {
   if (typeof t === "function") {
-    return t(cle);
+    const trad = t(cle);
+    if (trad && trad !== cle) return trad;
   }
   return texte;
 }
@@ -27,25 +28,30 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   if (urlParams.get("abo") === "success") {
     const sessionId = urlParams.get("session_id");
-    try {
-      const upgradeRes = await fetch(
-        `${API_BASE_URL}/api/pro/upgrade?id=${userId}&session_id=${sessionId}`,
-        {
-          method: "POST",
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
+    window.history.replaceState(null, "", window.location.pathname);
 
-      if (upgradeRes.ok) {
-        alert(t("pro.dash.pay_success"));
-        window.history.replaceState(null, "", window.location.pathname);
+    const dejaTraite = sessionId && sessionStorage.getItem("abo_traite_" + sessionId);
+    if (!dejaTraite) {
+      if (sessionId) sessionStorage.setItem("abo_traite_" + sessionId, "1");
+      try {
+        const upgradeRes = await fetch(
+          `${API_BASE_URL}/api/pro/upgrade?id=${userId}&session_id=${sessionId}`,
+          {
+            method: "POST",
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
+
+        if (upgradeRes.ok) {
+          alert(texteTrad("pro.dash.pay_success", "Paiement réussi ! Votre abonnement est maintenant actif."));
+        }
+      } catch (err) {
+        console.error("Error upgrading account:", err);
       }
-    } catch (err) {
-      console.error("Error upgrading account:", err);
     }
   } else if (urlParams.get("abo") === "cancel") {
-    alert(t("pro.dash.pay_cancelled"));
     window.history.replaceState(null, "", window.location.pathname);
+    alert(texteTrad("pro.dash.pay_cancelled", "Paiement annulé."));
   }
 
   await checkPremiumStatus(token, userId);
@@ -450,7 +456,7 @@ async function loadSponsorAnnonces() {
 
     const sponsorisables = (annonces || []).filter(
       (ann) =>
-        ann.statut_vente === "LIBRE" &&
+        ann.statut_vente === "EN VENTE" &&
         (ann.statut_validation || "").toLowerCase().startsWith("valid"),
     );
 
