@@ -308,7 +308,7 @@ func GetValidatedAnnonces(currentUserID int) ([]models.Annonce, error) {
     LEFT JOIN pa2026.categorie c ON a.id_categorie = c.id
     WHERE a.statut_validation = 'Validé'
     AND a.id_user != ?
-    AND a.statut_vente = 'LIBRE'
+    AND a.statut_vente = 'EN VENTE'
     ORDER BY
         (COALESCE(a.is_sponsored, 0) = 1) DESC,
         CASE COALESCE(u.plan_abo, '')

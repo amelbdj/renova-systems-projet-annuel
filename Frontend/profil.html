@@ -439,8 +439,6 @@
           const data = await response.json();
 
           if (!data || data.length === 0) {
-            historyList.innerHTML = `<div style="padding: 20px; color: var(--txt-m)" data-i18n="profil.pay.no_sales">Aucune vente effectuée pour le moment.</div>`;
-            if (typeof appliquerTraductions === "function") appliquerTraductions();
             historyList.innerHTML = `<div style="padding: 20px; color: var(--txt-m)">Aucune transaction pour le moment.</div>`;
             return;
           }
@@ -453,7 +451,7 @@
                 couleur = "var(--green)";
                 signe = "+";
               } else if (item.type === "abonnement") {
-                libelle = item.titre; // ex : "Abonnement Pro"
+                libelle = item.titre;
                 couleur = "var(--red)";
                 signe = "-";
               } else {
@@ -461,19 +459,24 @@
                 couleur = "var(--red)";
                 signe = "-";
               }
+
+              const docLabel = item.type === "abonnement" ? "📄 Télécharger le contrat" : "📄 Télécharger la facture";
+              const pdfLink = item.url_pdf
+                ? `<a href="http://localhost:8081${item.url_pdf}" target="_blank" style="font-size: 11px; color: #7c5fff; text-decoration: underline; display: inline-block; margin-top: 4px;">${docLabel}</a>`
+                : "";
+
               return `
                 <div style="display: flex; align-items: center; gap: 12px; padding: 13px 20px; border-bottom: 1px solid var(--b0);">
                     <div style="flex: 1">
-                        <div style="color: #fff"><span data-i18n="profil.pay.sale">Vente</span> — ${item.titre}</div>
                         <div style="color: #fff">${libelle}</div>
                         <div style="font-size: 11px; color: var(--txt-m)">${new Date(item.date).toLocaleDateString("fr-FR")}</div>
+                        ${pdfLink}
                     </div>
                     <div style="color: ${couleur}; font-weight: bold;">${signe}${item.montant} €</div>
                 </div>
             `;
             })
             .join("");
-          if (typeof appliquerTraductions === "function") appliquerTraductions();
         } catch (err) {
           console.error("Erreur historique:", err);
           historyList.innerHTML = `<div style="padding: 20px; color: var(--red)" data-i18n="profil.pay.history_error">Impossible de charger l'historique.</div>`;

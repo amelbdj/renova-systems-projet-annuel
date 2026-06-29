@@ -764,9 +764,15 @@ func UpgradeToPremiumHandler(w http.ResponseWriter, r *http.Request) {
 	} else if plan == "pro" {
 		planId = 3
 	}
-	_, aboErr := bdd.Db.Exec("INSERT INTO abonnement (id_user, id_plan, date_debut, statut) VALUES (?, ?, NOW(), 'actif')", userID, planId)
+	res, aboErr := bdd.Db.Exec("INSERT INTO abonnement (id_user, id_plan, date_debut, statut) VALUES (?, ?, NOW(), 'actif')", userID, planId)
 	if aboErr != nil {
 		fmt.Println("Erreur enregistrement abonnement (historique):", aboErr)
+	} else {
+		abonnementID, _ := res.LastInsertId()
+		uid, _ := strconv.Atoi(userID)
+		if _, pdfErr := GenerateContractPDF(uid, plan, int(abonnementID)); pdfErr != nil {
+			fmt.Println("Erreur génération contrat:", pdfErr)
+		}
 	}
 
 	newSubID := ""

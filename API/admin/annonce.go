@@ -441,6 +441,10 @@ func ConfirmPaymentAndOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if _, pdfErr := GenerateInvoicePDF(orderID, buyerID, annonce.Titre, annonce.Prix); pdfErr != nil {
+		fmt.Println("Erreur génération facture:", pdfErr)
+	}
+
 	var sellerID int
 	err = bdd.Db.QueryRow("SELECT id_user FROM annonce WHERE id = ?", annonceID).Scan(&sellerID)
 	if err != nil {

@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Documents — ReNova Admin</title>
+
+    <script src="../Frontend/script/auth_guard.js"></script>
+    <script>
+      checkSession("Administrateur");
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="stylesheet" href="../Frontend/style/admin.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Outfit:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+    />
+    <script src="../Frontend/script/config.js"></script>
+  </head>
+
+  <aside
+    style="
+      width: 260px;
+      background: var(--bg2);
+      border-right: 1px solid var(--b0);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      flex-shrink: 0;
+    "
+  >
+    <div
+      style="
+        font-family: &quot;Syne&quot;, sans-serif;
+        font-size: 24px;
+        font-weight: 800;
+        color: white;
+        text-align: center;
+      "
+    >
+      ReNova <em style="color: var(--or-l); font-style: normal">Admin</em>
+    </div>
+
+    <nav style="display: flex; flex-direction: column; gap: 8px">
+      <a href="admin_dashboard.html" class="nav-link" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
+        <span class="material-symbols-outlined" style="font-size: 20px">dashboard</span>
+        <span>Vue d'ensemble</span>
+      </a>
+      <a href="admin_users.html" class="nav-link" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
+        <span class="material-symbols-outlined" style="font-size: 20px">group</span>
+        <span>Utilisateurs</span>
+      </a>
+      <a href="admin_validations.html" class="nav-link" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
+        <span class="material-symbols-outlined" style="font-size: 20px">check_circle</span>
+        <span>Validations</span>
+      </a>
+      <a href="admin_conteneurs.html" class="nav-link" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
+        <span class="material-symbols-outlined" style="font-size: 20px">inventory_2</span>
+        <span>Logistique & Box</span>
+      </a>
+      <a href="admin_finances.html" class="nav-link" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
+        <span class="material-symbols-outlined" style="font-size: 20px">account_balance</span>
+        <span>Finances</span>
+      </a>
+      <a href="admin_documents.html" class="nav-link active" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
+        <span class="material-symbols-outlined" style="font-size: 20px">description</span>
+        <span>Documents</span>
+      </a>
+    </nav>
+
+    <button class="btn btn-o btn-full" style="margin-top: auto" onclick="logout()">
+      <span class="material-symbols-outlined" style="font-size: 18px">logout</span>
+      <span>Déconnexion</span>
+    </button>
+  </aside>
+
+  <body style="display: flex; min-height: 100vh; margin: 0; background: var(--bg)">
+    <div class="dashboard-content" style="flex: 1; padding: 40px; overflow-y: auto">
+      <div class="header-section" style="margin-bottom: 30px">
+        <h1 style="color: white; font-family: &quot;Syne&quot;; margin: 0; font-size: 2rem;">
+          Bibliothèque de documents
+        </h1>
+        <p style="color: var(--txt-m); margin-top: 5px">
+          Tous les documents PDF générés automatiquement (factures, etc.).
+        </p>
+      </div>
+
+      <div class="bento-box col-span-3">
+        <div class="box-title">
+          <span class="material-symbols-outlined">folder</span>
+          <span>Documents générés</span>
+        </div>
+        <div style="overflow-x: auto">
+          <table class="tx-table">
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Utilisateur</th>
+                <th>Date</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="table-documents">
+              <tr>
+                <td colspan="4" style="text-align: center; color: var(--txt-m)">
+                  Chargement des documents...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <script src="../Frontend/script/admin/documents.js"></script>
+  </body>
+</html>
