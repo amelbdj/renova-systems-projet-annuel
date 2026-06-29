@@ -127,7 +127,7 @@ function selectRole(element, codeRole) {
     roleChoisi = "Utilisateur";
   } else if (codeRole === "pro") {
     document.getElementById("proFields").style.display = "block";
-    roleChoisi = "Prestataire";
+    roleChoisi = "Pro";
   } else if (codeRole === "sal") {
     roleChoisi = "Salarié";
   } else if (codeRole === "adm") {
@@ -195,7 +195,7 @@ async function submitRegister() {
       return;
     }
     infosAEnvoyer.date_naissance = dateNaissance;
-  } else if (roleChoisi === "Prestataire") {
+  } else if (roleChoisi === "Pro") {
     infosAEnvoyer.nom_entreprise = document.getElementById("proName").value;
     infosAEnvoyer.siret = document.getElementById("proSiret").value;
   }

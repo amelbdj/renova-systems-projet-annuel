@@ -146,7 +146,7 @@ function GetBoxesForConteneur(conteneurId, nomConteneur, adresseConteneur) {
             statusClass = "ok";
             ledColor = "g";
             libreCount++;
-          } else if (etat === "OCCUPE" || etat === "RESERVEE") {
+          } else if (etat.startsWith("OCCUP") || etat.startsWith("RESERV")) {
             statusClass = "used";
             ledColor = "b";
             occupeCount++;

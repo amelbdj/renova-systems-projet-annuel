@@ -47,7 +47,7 @@ function LoadDashboardData() {
       }
 
       const elAlertAnn = document.getElementById("alert-annonces");
-      if (elAlertAnn) elAlertAnn.textContent = `${aModerer} Annonces à modérer`;
+      if (elAlertAnn) elAlertAnn.textContent = `${aModerer} ${t("backoffice.kpi.ads_to_moderate")}`;
     })
     .catch((err) => console.error("Erreur KPI Annonces:", err));
 
@@ -69,7 +69,7 @@ function LoadDashboardData() {
       }
       const elAlertEvt = document.getElementById("alert-events");
       if (elAlertEvt)
-        elAlertEvt.textContent = `${aValider} Événements en attente`;
+        elAlertEvt.textContent = `${aValider} ${t("backoffice.kpi.events_pending")}`;
     })
     .catch((err) => console.error("Erreur KPI Evènements:", err));
 
@@ -104,8 +104,8 @@ function LoadDashboardData() {
                 const etat = box.statut ? box.statut.toUpperCase() : "";
                 if (
                   etat !== "LIBRE" &&
-                  etat !== "OCCUPE" &&
-                  etat !== "RESERVEE"
+                  !etat.startsWith("OCCUP") &&
+                  !etat.startsWith("RESERV")
                 ) {
                   maintenanceCount++;
                 }
@@ -115,10 +115,10 @@ function LoadDashboardData() {
 
           if (elAlertMaint) {
             if (maintenanceCount === 0) {
-              elAlertMaint.textContent = "0 Casier en maintenance";
+              elAlertMaint.textContent = `0 ${t("backoffice.kpi.lockers_maintenance")}`;
               elAlertMaint.style.color = "var(--teal)";
             } else {
-              elAlertMaint.textContent = `${maintenanceCount} Casiers en panne !`;
+              elAlertMaint.textContent = `${maintenanceCount} ${t("backoffice.kpi.lockers_down")}`;
             }
           }
         });
@@ -146,7 +146,7 @@ function LoadDashboardData() {
           elAlertArt.textContent = "0 Article en attente";
           elAlertArt.style.color = "var(--txt-m)";
         } else {
-          elAlertArt.textContent = `${artAValider} Articles à modérer`;
+          elAlertArt.textContent = `${artAValider} ${t("backoffice.kpi.articles_to_moderate")}`;
           elAlertArt.style.color = "#2ecc71";
         }
       }
