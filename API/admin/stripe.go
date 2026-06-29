@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"strconv"
+	"strings"
 	"upcycleconnect/bdd"
 
 	"github.com/stripe/stripe-go/v81"
@@ -18,7 +20,25 @@ import (
 
 const StripeSecretKey = "sk_test_51TNFHBHbaxF1KOTtH89RRHNJQSQXSPVtOHMJDHicr1LW4XYeY4ZC6nYWwzVbDvFUUI58YA7KlJs9BiUyP5zD4XU300gaAUPVpI"
 
-// const StripeSecretKey = "sk_test_51TNFHBHbaxF1KOTtH89RRHNJQSQXSPVtOHMJDHicr1LW4XYeY4ZC6nYWwzVbDvFUUI58YA7KlJs9BiUyP5zD4XU300gaAUPVpI"
+func getStripeSecretKey() string {
+	key := os.Getenv("STRIPE_SECRET_KEY")
+	if key != "" {
+		return key
+	}
+	return StripeSecretKey
+}
+
+func getFrontendBaseURL() string {
+	url := os.Getenv("FRONTEND_BASE_URL")
+	if url != "" {
+		return strings.TrimRight(url, "/")
+	}
+	return "http://localhost/renova-systems-projet-annuel/Frontend"
+}
+
+func frontURL(path string) string {
+	return getFrontendBaseURL() + "/" + strings.TrimLeft(path, "/")
+}
 
 func getPlanInfo(plan string) (name string, amountCents int64, ok bool) {
 	switch planKey(plan) {
@@ -54,7 +74,7 @@ func ConnectToStripe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	stripe.Key = StripeSecretKey
+	stripe.Key = getStripeSecretKey()
 
 	userIDStr := r.URL.Query().Get("id")
 	userID, _ := strconv.Atoi(userIDStr)
@@ -84,8 +104,8 @@ func ConnectToStripe(w http.ResponseWriter, r *http.Request) {
 
 	linkParams := &stripe.AccountLinkParams{
 		Account:    stripe.String(stripeID),
-		RefreshURL: stripe.String("http://127.0.0.1:5500/Frontend/profil.html"),
-		ReturnURL:  stripe.String("http://127.0.0.1:5500/Frontend/profil.html?stripe=success"),
+		RefreshURL: stripe.String(frontURL("profil.html")),
+		ReturnURL:  stripe.String(frontURL("profil.html?stripe=success")),
 		Type:       stripe.String("account_onboarding"),
 	}
 
@@ -142,7 +162,7 @@ func PaymentAnnonce(w http.ResponseWriter, r *http.Request) {
 	commission := (unitAmount * 5) / 100
 
 	commissionAppli := commission
-	stripe.Key = StripeSecretKey
+	stripe.Key = getStripeSecretKey()
 	params := &stripe.CheckoutSessionParams{
 		Mode: stripe.String(string(stripe.CheckoutSessionModePayment)),
 		LineItems: []*stripe.CheckoutSessionLineItemParams{
@@ -163,8 +183,8 @@ func PaymentAnnonce(w http.ResponseWriter, r *http.Request) {
 				Destination: stripe.String(stripeAccountIDSeller),
 			},
 		},
-		SuccessURL: stripe.String("http://127.0.0.1:5500/Frontend/oneAnnonce.html?id=" + strconv.Itoa(annonceID) + "&buyer_id=" + strconv.Itoa(buyerID) + "&payment=success"),
-		CancelURL:  stripe.String("http://127.0.0.1:5500/Frontend/oneAnnonce.html?id=" + strconv.Itoa(annonceID)),
+		SuccessURL: stripe.String(frontURL("oneAnnonce.html?id=" + strconv.Itoa(annonceID) + "&buyer_id=" + strconv.Itoa(buyerID) + "&payment=success")),
+		CancelURL:  stripe.String(frontURL("oneAnnonce.html?id=" + strconv.Itoa(annonceID))),
 	}
 
 	s, err := session.New(params)
@@ -202,7 +222,7 @@ func PaymentIntentMobile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	stripe.Key = StripeSecretKey
+	stripe.Key = getStripeSecretKey()
 	unitAmount := int64(prix * 100)
 	commission := (unitAmount * 5) / 100
 
@@ -262,7 +282,7 @@ func CreateEventCheckoutSession(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	stripe.Key = StripeSecretKey
+	stripe.Key = getStripeSecretKey()
 
 	// 2. Calculs (Stripe en centimes, Base de données en euros)
 	unitAmount := int64(prix * 100)
@@ -290,8 +310,8 @@ func CreateEventCheckoutSession(w http.ResponseWriter, r *http.Request) {
 				Destination: stripe.String(stripeAccountId),
 			},
 		},
-		SuccessURL: stripe.String("http://localhost:8081/evenement.html?paiement=success"),
-		CancelURL:  stripe.String("http://localhost:8081/evenement.html?paiement=cancel"),
+		SuccessURL: stripe.String(frontURL("evenement.html?paiement=success")),
+		CancelURL:  stripe.String(frontURL("evenement.html?paiement=cancel")),
 	}
 	params.AddMetadata("id_event", strconv.Itoa(req.IdEvent))
 	params.AddMetadata("id_user", strconv.Itoa(req.IdUser))
@@ -353,8 +373,7 @@ func CreateProSubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	plan = planKey(plan)
 
-	// 1. HARDCODED SECRET KEY
-	stripe.Key = "sk_test_51TNFHBHbaxF1KOTtH89RRHNJQSQXSPVtOHMJDHicr1LW4XYeY4ZC6nYWwzVbDvFUUI58YA7KlJs9BiUyP5zD4XU300gaAUPVpI"
+	stripe.Key = getStripeSecretKey()
 
 	// ---------------------------------------------------------
 	// 🟢 MAGIC TRICK: AUTO-CREATE THE PRODUCT AND PRICE
@@ -397,8 +416,8 @@ func CreateProSubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 				Quantity: stripe.Int64(1),
 			},
 		},
-		SuccessURL:        stripe.String("http://127.0.0.1:5500/Frontend/espPro.html?abo=success&session_id={CHECKOUT_SESSION_ID}"),
-		CancelURL:         stripe.String("http://127.0.0.1:5500/Frontend/espPro.html?abo=cancel"),
+		SuccessURL:        stripe.String(frontURL("espPro.html?abo=success&session_id={CHECKOUT_SESSION_ID}")),
+		CancelURL:         stripe.String(frontURL("espPro.html?abo=cancel")),
 		ClientReferenceID: stripe.String(userID),
 	}
 	params.AddMetadata("plan", plan)
@@ -412,50 +431,3 @@ func CreateProSubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(map[string]string{"url": s.URL})
 }
-
-// func CreateProSubscriptionHandler(w http.ResponseWriter, r *http.Request) {
-// 	w.Header().Set("Access-Control-Allow-Origin", "*")
-// 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-// 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-// 	w.Header().Set("Content-Type", "application/json")
-
-// 	if r.Method == "OPTIONS" {
-// 		w.WriteHeader(http.StatusOK)
-// 		return
-// 	}
-
-// 	userID := r.URL.Query().Get("id")
-// 	if userID == "" {
-// 		http.Error(w, `{"error": "ID utilisateur manquant"}`, http.StatusBadRequest)
-// 		return
-// 	}
-
-// 	// 1. HARDCODE THE KEY DIRECTLY
-// 	stripe.Key = "sk_test_51TNFHBHbaxF1KOTtH89RRHNJQSQXSPVtOHMJDHicr1LW4XYeY4ZC6nYWwzVbDvFUUI58YA7KlJs9BiUyP5zD4XU300gaAUPVpI"
-
-// 	// 2. HARDCODE THE CLEAN PRICE ID
-// 	cleanPriceID := "price_1PQ1xFBbaxF1KOTt65zW0i4W"
-
-// 	params := &stripe.CheckoutSessionParams{
-// 		PaymentMethodTypes: stripe.StringSlice([]string{"card"}),
-// 		Mode:               stripe.String(string(stripe.CheckoutSessionModeSubscription)),
-// 		LineItems: []*stripe.CheckoutSessionLineItemParams{
-// 			{
-// 				Price:    stripe.String(cleanPriceID),
-// 				Quantity: stripe.Int64(1),
-// 			},
-// 		},
-// 		SuccessURL:        stripe.String("http://127.0.0.1:5500/Frontend/espPro.html?abo=success"),
-// 		CancelURL:         stripe.String("http://127.0.0.1:5500/Frontend/espPro.html?abo=cancel"),
-// 		ClientReferenceID: stripe.String(userID),
-// 	}
-
-// 	s, err := session.New(params)
-// 	if err != nil {
-// 		fmt.Println("Stripe Error:", err)
-// 		http.Error(w, `{"error": "Impossible de contacter Stripe"}`, http.StatusInternalServerError)
-// 		return
-// 	}
-
-// 	json.NewEncoder(w).Encode(map[string]string{"url": s.URL})
-// }

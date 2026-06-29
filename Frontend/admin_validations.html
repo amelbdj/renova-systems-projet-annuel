@@ -16,13 +16,22 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
     />
-    <script
-      src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js"
-      defer
-    ></script>
+    <script>
+      if (location.hostname !== "localhost") {
+        const scriptOneSignal = document.createElement("script");
+        scriptOneSignal.src =
+          "https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js";
+        scriptOneSignal.defer = true;
+        document.head.appendChild(scriptOneSignal);
+      }
+    </script>
     <script>
       window.OneSignalDeferred = window.OneSignalDeferred || [];
       OneSignalDeferred.push(async function (OneSignal) {
+        if (location.hostname === "localhost") {
+          console.log("OneSignal desactive sur localhost");
+          return;
+        }
         await OneSignal.init({
           appId: "79a53223-420a-46c8-83d9-1ca162fcb64f",
           notifyButton: {

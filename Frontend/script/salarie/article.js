@@ -44,7 +44,7 @@ function chargerArticles() {
 
         let imageHtml = `<div class="post-ico" style="background:rgba(48,212,192,.09)">📝</div>`;
         if (art.image_url && art.image_url !== "") {
-          imageHtml = `<img src=API_BASE_URL + "/${art.image_url}" style="width: 50px; height: 50px; border-radius: 8px; object-fit: cover;">`;
+          imageHtml = `<img src="${API_BASE_URL}/${art.image_url}" style="width: 50px; height: 50px; border-radius: 8px; object-fit: cover;">`;
         } else if (typeArt.includes("conseil")) {
           imageHtml = `<div class="post-ico" style="background:rgba(48,212,192,.09)"><span class="material-symbols-outlined">lightbulb</span></div>`;
         }

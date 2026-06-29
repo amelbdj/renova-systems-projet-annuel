@@ -83,7 +83,7 @@
   </div>
   <div class="nav-right">
     <div class="premium-badge" id="btnPasserPremium" onclick="subscribeToPremium()" data-i18n="pro.nav.go_premium">⭐ Passer au Premium</div>
-    <div class="premium-badge" id="btnPremiumActif" style="display: none; background-color: #28a745; color: white; border: none;" onclick="cancelPremium()" > <i class="fa-solid fa-square-check"></i>Premium Actif</div>
+    <div class="premium-badge" id="btnPremiumActif" style="display: none; background-color: #28a745; color: white; border: none;" onclick="cancelPremium()" > <i class="fa-solid fa-square-check"></i><span data-i18n="pro.plan.premium_active">Premium Actif</span></div>
     <div class="lang-btn"><i class="fa-solid fa-earth-africa"></i>FR ▾</div>
     <div class="nav-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
     <div class="profile-btn" onclick="goToProfile()" style="cursor: pointer;">
@@ -134,14 +134,14 @@
       <div class="sec-num gold"> </div>
       <div class="sec-title-text" id="planSectionTitle" data-i18n="pro.plan.title">Votre Abonnement</div>
       <div class="sec-divider"></div>
-      <span class="tag t-gold" style="flex-shrink:0" id="planActiveTag"> <i class="fa-solid fa-star"></i> Premium actif</span>
+      <span class="tag t-gold" style="flex-shrink:0" id="planActiveTag"> <i class="fa-solid fa-star"></i> <span data-i18n="pro.plan.premium_active">Premium actif</span></span>
     </div>
     <div class="freemium-banner fu fu1">
       <!-- FREE -->
       <div class="plan-card free" id="card-free">
         <div class="plan-badge free"> Freemium</div>
         <div class="plan-name" data-i18n="pro.plan.free_name">Plan Gratuit</div>
-        <div class="plan-price"><strong>0 €</strong> / mois</div>
+        <div class="plan-price"><strong>0 €</strong> <span data-i18n="pro.plan.per_month">/ mois</span></div>
         <div class="plan-feats">
           <div class="plan-feat"><div class="fi ok">✓</div><span data-i18n="pro.plan.search_items">Recherche d'objets disponibles</span></div>
           <div class="plan-feat"><div class="fi ok">✓</div><span data-i18n="pro.plan.deposit_materials">Dépôt de matériaux dans les conteneurs</span></div>
@@ -161,15 +161,15 @@
         <div class="plan-badge premium"><i class="fa-solid fa-star"></i> Premium</div>
         <div class="plan-name" style="color:var(--gold-l)" data-i18n="pro.plan.premium_name">Plan Premium</div>
         <div class="plan-price" style="color:rgba(245,197,66,.6)">
-          <strong style="color:var(--gold-l)">25 €</strong> / mois · sans engagement
+          <strong style="color:var(--gold-l)">25 €</strong> <span data-i18n="pro.plan.per_month">/ mois</span> · <span data-i18n="pro.plan.no_commitment">sans engagement</span>
         </div>
         <div class="plan-feats">
           <div class="plan-feat"><div class="fi ok2">✓</div><span data-i18n="pro.plan.all_free">Tout le plan Freemium</span></div>
-          <div class="plan-feat"><div class="fi ok2">✓</div><span><strong style="color:#fff">Tableaux de bord avancés</strong></span></div>
-          <div class="plan-feat"><div class="fi ok2">✓</div><span><strong style="color:#fff">Alertes prioritaires de collecte</strong></span></div>
-          <div class="plan-feat"><div class="fi ok2">✓</div><span><strong style="color:#fff">Analyse d'impact écologique détaillée</strong></span></div>
+          <div class="plan-feat"><div class="fi ok2">✓</div><span><span data-i18n="pro.plan.advanced_dashboard">Tableaux de bord avancés</span></span></div>
+          <div class="plan-feat"><div class="fi ok2">✓</div><span data-i18n="pro.plan.priority_alerts">Alertes prioritaires de collecte</span></div>
+          <div class="plan-feat"><div class="fi ok2">✓</div><span data-i18n="pro.plan.impact_analysis">Analyse d'impact écologique détaillée</span></div>
           <!-- <div class="plan-feat"><div class="fi ok2">✓</div><span><strong style="color:#fff">Statistiques disponibilité matériaux</strong></span></div> -->
-          <div class="plan-feat"><div class="fi ok2">✓</div><span><strong style="color:#fff">Accès prioritaire aux annonces</strong></span></div>
+          <div class="plan-feat"><div class="fi ok2">✓</div><span data-i18n="pro.plan.priority_ads">Accès prioritaire aux annonces</span></div>
           <div class="plan-feat"><div class="fi ok2">✓</div><span data-i18n="pro.plan.pdf_invoices">Factures PDF automatiques</span></div>
           <div class="plan-feat"><div class="fi ok2">✓</div><span data-i18n="pro.plan.priority_support">Support prioritaire</span></div>
           <div class="plan-feat"><div class="fi ok2">✓</div><span data-i18n="pro.plan.premium_badge">Badge profil Premium visible</span></div>
@@ -183,12 +183,12 @@
         <div class="plan-badge plus"><i class="fa-solid fa-medal"></i> Plus</div>
         <div class="plan-name" style="color:#7fb2ff" data-i18n="pro.plan.plus_name">Plan Plus</div>
         <div class="plan-price" style="color:rgba(127,178,255,.6)">
-          <strong style="color:#7fb2ff">45 €</strong> / mois · sans engagement
+          <strong style="color:#7fb2ff">45 €</strong> <span data-i18n="pro.plan.per_month">/ mois</span> · <span data-i18n="pro.plan.no_commitment">sans engagement</span>
         </div>
         <div class="plan-feats">
           <div class="plan-feat"><div class="fi ok3">✓</div><span data-i18n="pro.plan.all_premium">Tout le plan Premium</span></div>
-          <div class="plan-feat"><div class="fi ok3">✓</div><span><strong style="color:#fff">Vos annonces affichées en premier</strong> sur la marketplace</span></div>
-          <div class="plan-feat"><div class="fi ok3">✓</div><span>Badge <strong style="color:#fff">Prioritaire</strong> sur vos annonces</span></div>
+          <div class="plan-feat"><div class="fi ok3">✓</div><span><span data-i18n="pro.plan.first_ads">Vos annonces affichées en premier sur la marketplace</span></span></div>
+          <div class="plan-feat"><div class="fi ok3">✓</div><span><span data-i18n="pro.plan.priority_badge">Badge Prioritaire sur vos annonces</span></span></div>
           <div class="plan-feat"><div class="fi ok3">✓</div><span data-i18n="pro.plan.better_visibility">Meilleure visibilité auprès des acheteurs</span></div>
         </div>
         <div class="plan-cta">
@@ -200,11 +200,11 @@
         <div class="plan-badge pro"><i class="fa-solid fa-rocket"></i> Pro</div>
         <div class="plan-name" style="color:#c4a7ff" data-i18n="pro.plan.pro_name">Plan Pro</div>
         <div class="plan-price" style="color:rgba(196,167,255,.6)">
-          <strong style="color:#c4a7ff">99 €</strong> / mois · sans engagement
+          <strong style="color:#c4a7ff">99 €</strong> <span data-i18n="pro.plan.per_month">/ mois</span> · <span data-i18n="pro.plan.no_commitment">sans engagement</span>
         </div>
         <div class="plan-feats">
           <div class="plan-feat"><div class="fi ok4">✓</div><span data-i18n="pro.plan.all_plus">Tout le plan Plus</span></div>
-          <div class="plan-feat"><div class="fi ok4">✓</div><span><strong style="color:#fff">Sponsorisez vos annonces</strong> : boost tout en haut de la marketplace</span></div>
+          <div class="plan-feat"><div class="fi ok4">✓</div><span><span data-i18n="pro.plan.sponsor_ads">Sponsorisez vos annonces : boost tout en haut de la marketplace</span></span></div>
           <div class="plan-feat"><div class="fi ok4">✓</div><span>Badge <strong style="color:#fff">Sponsorisé</strong> ⭐ mis en avant</span></div>
           <div class="plan-feat"><div class="fi ok4">✓</div><span data-i18n="pro.plan.max_visibility">Visibilité maximale auprès des acheteurs</span></div>
         </div>
@@ -746,10 +746,10 @@
       <div style="font-size:13px;color:rgba(245,197,66,.6)">Sans engagement · Résiliable à tout moment</div>
     </div>
     <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px">
-      <div class="tfeat"><span class="ti"><i class="fa-solid fa-chart-line"></i></span><div><b>Tableaux de bord avancés</b><span>Analysez vos performances en détail.</span></div></div>
-      <div class="tfeat"><span class="ti"><i class="fa-solid fa-bell"></i></span><div><b>Alertes prioritaires</b><span>Soyez le premier notifié des nouveaux matériaux.</span></div></div>
+      <div class="tfeat"><span class="ti"><i class="fa-solid fa-chart-line"></i></span><div><b data-i18n="pro.plan.advanced_dashboard">Tableaux de bord avancés</b><span data-i18n="pro.upgrade.advanced_desc">Analysez vos performances en détail.</span></div></div>
+      <div class="tfeat"><span class="ti"><i class="fa-solid fa-bell"></i></span><div><b data-i18n="pro.plan.priority_alerts">Alertes prioritaires</b><span data-i18n="pro.upgrade.alerts_desc">Soyez le premier notifié des nouveaux matériaux.</span></div></div>
       <div class="tfeat"><span class="ti"><i class="fa-solid fa-chart-bar"></i></span><div><b>Stats disponibilité</b><span>Visualisez les stocks en temps réel.</span></div></div>
-      <div class="tfeat"><span class="ti"><i class="fa-solid fa-crown"></i></span><div><b>Accès prioritaire</b><span>Voyez les annonces avant les autres.</span></div></div>
+      <div class="tfeat"><span class="ti"><i class="fa-solid fa-crown"></i></span><div><b data-i18n="pro.plan.priority_ads">Accès prioritaire</b><span data-i18n="pro.upgrade.priority_desc">Voyez les annonces avant les autres.</span></div></div>
     </div>
     <button class="btn btn-gold btn-full" onclick="closeUpgrade();alert('Bienvenue dans le plan Premium !')">Activer Premium →</button>
   </div>
@@ -873,10 +873,12 @@ function closeUpgrade(){document.getElementById('upgradeModal').classList.remove
 });
 </script>
 <script src="./script/config.js?v=2"></script>
-<script src="./script/admin/translate.js"></script>
-<script src="./script/dashPro.js?v=2"></script>
+<script src="./script/admin/translate.js?v=9"></script>
+<script src="./script/dashPro.js?v=3"></script>
 <script>
     loadProjets();
 </script>
 </body>
 </html>
+
+

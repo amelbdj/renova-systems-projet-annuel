@@ -91,6 +91,7 @@
       </div>
     </div>
 
+    <script src="./script/config.js"></script>
     <script>
       let socket;
       let monId;
@@ -107,7 +108,7 @@
         }
 
         
-        socket = new WebSocket(`ws://localhost:8081/ws/chat?userId=${monId}`);
+        socket = new WebSocket(`${WS_BASE_URL}/ws/chat?userId=${monId}`);
 
         
         socket.onopen = () => {

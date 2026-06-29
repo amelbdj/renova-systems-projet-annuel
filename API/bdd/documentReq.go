@@ -5,7 +5,7 @@ import "strings"
 func GetAllDocuments() ([]map[string]interface{}, error) {
 	query := `
 		SELECT d.id_document, d.type_doc, d.url_pdf,
-		       COALESCE(d.date_creation, NOW()),
+		       DATE_FORMAT(NOW(), '%Y-%m-%d %H:%i:%s'),
 		       COALESCE(u.prenom, ''), COALESCE(u.nom, '')
 		FROM document d
 		LEFT JOIN utilisateur u ON d.id_user = u.id

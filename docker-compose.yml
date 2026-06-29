@@ -1,0 +1,84 @@
+# ============================================================
+#  UpcycleConnect - Mission 1 Web (deploiement Docker)
+#  Lancement :  docker compose up -d --build
+#  Site :  http://192.168.50.50        (port 80)
+#  API  :  http://192.168.50.50/api/   (proxy Nginx -> backend)
+#
+#  Les valeurs ${VAR:-defaut} fonctionnent SANS fichier .env
+#  (utile sur une VM fraichement clonee). Copie .env.example en .env
+#  pour personnaliser (mots de passe, cles, port web...).
+# ============================================================
+
+services:
+
+  # ---------- Base de donnees MySQL 8 ----------
+  mysql:
+    image: mysql:8.0
+    container_name: uc_mysql
+    restart: unless-stopped
+    # mysql_native_password : compatibilite simple avec le driver Go (sans TLS)
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootSecret123}
+      MYSQL_DATABASE: ${DB_NAME:-pa2026}          # base dediee
+      MYSQL_USER: ${DB_USER:-upcycle}             # utilisateur dedie (pas root)
+      MYSQL_PASSWORD: ${DB_PASS:-upcyclePass123}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      # Import automatique du schema + donnees au PREMIER demarrage
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - uc_net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${MYSQL_ROOT_PASSWORD:-rootSecret123}"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+
+  # ---------- Backend API Go (port 8081) ----------
+  backend:
+    build: ./API
+    container_name: uc_backend
+    restart: unless-stopped
+    environment:
+      DB_HOST: mysql                 # nom du service MySQL dans le reseau Docker
+      DB_PORT: "3306"
+      DB_USER: ${DB_USER:-upcycle}   # <- utilisateur dedie (correspond a db.go)
+      DB_PASS: ${DB_PASS:-upcyclePass123}
+      DB_NAME: ${DB_NAME:-pa2026}
+      # Cles externes (repli sur les valeurs du code si non definies)
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
+      ONESIGNAL_APP_ID: ${ONESIGNAL_APP_ID:-}
+      ONESIGNAL_API_KEY: ${ONESIGNAL_API_KEY:-}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - uc_net
+    ports:
+      - "8081:8081"           # acces direct au backend (debug / test local)
+    volumes:
+      - uploads_data:/app/uploads        # images d'annonces (persistance)
+      - documents_data:/app/documents    # factures / contrats PDF (persistance)
+
+  # ---------- Frontend (Nginx : statique + proxy /api/) ----------
+  frontend:
+    build: ./Frontend
+    container_name: uc_frontend
+    restart: unless-stopped
+    ports:
+      - "${WEB_PORT:-80}:80"  # 80 par defaut (VM). Local avec WAMP : WEB_PORT=8080
+    depends_on:
+      - backend
+    networks:
+      - uc_net
+
+networks:
+  uc_net:
+    driver: bridge
+
+volumes:
+  mysql_data:
+  uploads_data:
+  documents_data:

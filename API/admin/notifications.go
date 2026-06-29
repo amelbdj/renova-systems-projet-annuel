@@ -116,9 +116,9 @@ func MarkNotificationsRead(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-const (
-	OneSignalAppID  = "79a53223-420a-46c8-83d9-1ca162fcb64f"
-	OneSignalAPIKey = "os_v2_app_pgstei2cbjdmra6zdsqwf7fwj7lecom3g6lu4pumdxlt4rvgw66selidc5gwe5r2gpo7pr7cdhfecc55xgdksr5rplozsejaaghkzsa"
+var (
+	OneSignalAppID  = envOr("ONESIGNAL_APP_ID", "79a53223-420a-46c8-83d9-1ca162fcb64f")
+	OneSignalAPIKey = envOr("ONESIGNAL_API_KEY", "os_v2_app_pgstei2cbjdmra6zdsqwf7fwj7lecom3g6lu4pumdxlt4rvgw66selidc5gwe5r2gpo7pr7cdhfecc55xgdksr5rplozsejaaghkzsa")
 )
 
 func SendPushNotification(userID string, message string) {

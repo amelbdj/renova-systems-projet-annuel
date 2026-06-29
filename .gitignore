@@ -1,2 +1,3 @@
 # Config locale de l'outil Claude Code (ne pas versionner)
 .claude/
+.env

@@ -12,7 +12,7 @@ import (
 	"github.com/stripe/stripe-go/v81/webhook"
 )
 
-const WebhookSecret = "whsec_ca8df90af4b7eb3045da3e1ab058edeb4ea8597a2d49b88adec258b0037f4fbc"
+var WebhookSecret = envOr("STRIPE_WEBHOOK_SECRET", "whsec_ca8df90af4b7eb3045da3e1ab058edeb4ea8597a2d49b88adec258b0037f4fbc")
 
 func StripeWebhookHandler(w http.ResponseWriter, r *http.Request) {
 

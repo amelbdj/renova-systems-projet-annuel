@@ -315,7 +315,7 @@
 
         try {
           const response = await fetch(
-            `http://localhost:8081/user/profile?id=${userId}`,
+            `${API_BASE_URL}/user/profile?id=${userId}`,
             {
               headers: { Authorization: `Bearer ${token}` },
             },
@@ -379,7 +379,7 @@
 
         try {
           const response = await fetch(
-            `http://localhost:8081/admin/connect-stripe?id=${userId}`,
+            `${API_BASE_URL}/admin/connect-stripe?id=${userId}`,
             {
               method: "POST",
               headers: { Authorization: `Bearer ${token}` },
@@ -428,7 +428,7 @@
 
         try {
           const response = await fetch(
-            `http://localhost:8081/api/user/payment-history?id=${userId}`,
+            `${API_BASE_URL}/api/user/payment-history?id=${userId}`,
             {
               headers: { Authorization: `Bearer ${token}` },
             },
@@ -462,7 +462,7 @@
 
               const docLabel = item.type === "abonnement" ? "📄 Télécharger le contrat" : "📄 Télécharger la facture";
               const pdfLink = item.url_pdf
-                ? `<a href="http://localhost:8081${item.url_pdf}" target="_blank" style="font-size: 11px; color: #7c5fff; text-decoration: underline; display: inline-block; margin-top: 4px;">${docLabel}</a>`
+                ? `<a href="${API_BASE_URL}${item.url_pdf}" target="_blank" style="font-size: 11px; color: #7c5fff; text-decoration: underline; display: inline-block; margin-top: 4px;">${docLabel}</a>`
                 : "";
 
               return `
@@ -516,7 +516,7 @@
         }
 
         try {
-          const response = await fetch(`http://localhost:8081/api/user/update-password`, {
+          const response = await fetch(`${API_BASE_URL}/api/user/update-password`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",

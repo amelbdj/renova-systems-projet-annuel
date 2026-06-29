@@ -137,7 +137,7 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("hello from GetAllUsers")
 
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Content-Type", "application/json")
 
 	if r.Method == "OPTIONS" {
@@ -346,7 +346,7 @@ func GetUserById(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if user.StripeAccountId != nil && *user.StripeAccountId != "0" && *user.StripeAccountId != "" && !user.StripeVerifCompleted {
-		stripe.Key = StripeSecretKey
+		stripe.Key = getStripeSecretKey()
 
 		acc, err := account.GetByID(*user.StripeAccountId, nil)
 
@@ -666,7 +666,7 @@ func UpdatePasswordHandler(w http.ResponseWriter, r *http.Request) {
 func ResetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Content-Type", "application/json")
 
 	if r.Method == "OPTIONS" {
@@ -732,8 +732,7 @@ func UpgradeToPremiumHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 🟢 Hardcode your secret key so Go can talk to Stripe
-	stripe.Key = "sk_test_51TNFHBHbaxF1KOTtH89RRHNJQSQXSPVtOHMJDHicr1LW4XYeY4ZC6nYWwzVbDvFUUI58YA7KlJs9BiUyP5zD4XU300gaAUPVpI"
+	stripe.Key = getStripeSecretKey()
 
 	// Ask Stripe for the session details to get the Customer ID
 	s, err := session.Get(sessionID, nil)
@@ -818,12 +817,12 @@ func CustomerPortalHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	stripe.Key = "sk_test_51TNFHBHbaxF1KOTtH89RRHNJQSQXSPVtOHMJDHicr1LW4XYeY4ZC6nYWwzVbDvFUUI58YA7KlJs9BiUyP5zD4XU300gaAUPVpI"
+	stripe.Key = getStripeSecretKey()
 
 	// Create the portal session
 	params := &stripe.BillingPortalSessionParams{
 		Customer:  stripe.String(customerID),
-		ReturnURL: stripe.String("http://127.0.0.1:5500/renova-systems-projet-annuel/Frontend/espPro.html"), // Where they go when they click "Back"
+		ReturnURL: stripe.String(frontURL("espPro.html")),
 	}
 
 	ps, err := portalsession.New(params)
@@ -856,7 +855,7 @@ func CancelSubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	stripe.Key = "sk_test_51TNFHBHbaxF1KOTtH89RRHNJQSQXSPVtOHMJDHicr1LW4XYeY4ZC6nYWwzVbDvFUUI58YA7KlJs9BiUyP5zD4XU300gaAUPVpI"
+	stripe.Key = getStripeSecretKey()
 
 	listParams := &stripe.SubscriptionListParams{
 		Customer: stripe.String(customerID),
@@ -901,7 +900,7 @@ func SyncPremiumStatusHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	stripe.Key = "sk_test_51TNFHBHbaxF1KOTtH89RRHNJQSQXSPVtOHMJDHicr1LW4XYeY4ZC6nYWwzVbDvFUUI58YA7KlJs9BiUyP5zD4XU300gaAUPVpI"
+	stripe.Key = getStripeSecretKey()
 
 	// 2. Demander à Stripe si un abonnement "actif" existe pour ce client
 	params := &stripe.SubscriptionListParams{

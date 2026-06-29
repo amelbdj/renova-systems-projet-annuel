@@ -115,6 +115,7 @@
       <div id="msgRetrait" class="message"></div>
     </div>
 
+    <script src="./script/config.js"></script>
     <script>
       async function simulerDepot() {
         const pin = document.getElementById("pinDepotInput").value.trim();
@@ -129,7 +130,7 @@
         msgDiv.innerText = "Connexion...";
         try {
           const response = await fetch(
-            "http://localhost:8081/api/hardware/simulate-deposit",
+            `${API_BASE_URL}/api/hardware/simulate-deposit`,
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -163,7 +164,7 @@
         msgDiv.innerText = "Connexion...";
         try {
           const response = await fetch(
-            "http://localhost:8081/api/hardware/simulate-withdrawal",
+            `${API_BASE_URL}/api/hardware/simulate-withdrawal`,
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },

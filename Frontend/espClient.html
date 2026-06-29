@@ -21,13 +21,22 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
     />
-    <script
-      src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js"
-      defer
-    ></script>
+    <script>
+      if (location.hostname !== "localhost") {
+        const scriptOneSignal = document.createElement("script");
+        scriptOneSignal.src =
+          "https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js";
+        scriptOneSignal.defer = true;
+        document.head.appendChild(scriptOneSignal);
+      }
+    </script>
     <script>
       window.OneSignalDeferred = window.OneSignalDeferred || [];
       OneSignalDeferred.push(async function (OneSignal) {
+        if (location.hostname === "localhost") {
+          console.log("OneSignal desactive sur localhost");
+          return;
+        }
         await OneSignal.init({
           appId: "79a53223-420a-46c8-83d9-1ca162fcb64f",
           safari_web_id:
@@ -898,7 +907,7 @@
         localStorage.setItem("tutorielVu", "true");
         const userId = localStorage.getItem("userId");
         try {
-          await fetch("http://localhost:8080/update-tutorial", {
+          await fetch(`${API_BASE_URL}/update-tutorial`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ id: parseInt(userId) }),
@@ -961,8 +970,8 @@
           formData.append("old_image_path", currentEditingImagePath);
         }
         const url = editId
-          ? `http://localhost:8081/admin/annonces/modify/${editId}`
-          : "http://localhost:8081/admin/annonces/add";
+          ? `${API_BASE_URL}/admin/annonces/modify/${editId}`
+          : `${API_BASE_URL}/admin/annonces/add`;
         const method = editId ? "PUT" : "POST";
         try {
           const response = await fetch(url, {

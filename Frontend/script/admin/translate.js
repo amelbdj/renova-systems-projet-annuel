@@ -1,8 +1,11 @@
 let currentTranslations = {};
 let monTokenTraduction = localStorage.getItem("token");
+let langueDemandee = "";
 
 function changerLangue(langue) {
   localStorage.setItem("langue", langue);
+  monTokenTraduction = localStorage.getItem("token");
+  langueDemandee = langue;
 
   fetch(`${API_BASE_URL}/api/translations?lang=${langue}`, {
     cache: "no-store",
@@ -12,12 +15,54 @@ function changerLangue(langue) {
   })
     .then((res) => res.json())
     .then((data) => {
+      if (langueDemandee !== langue) {
+        return;
+      }
       currentTranslations = data;
       appliquerTraductions();
+      refreshPageAfterTranslation();
     })
     .catch((err) => {
       console.error("Erreur de chargement des traductions:", err);
     });
+}
+
+window.changerLangue = changerLangue;
+
+function refreshPageAfterTranslation() {
+  if (typeof updTut === "function") {
+    try {
+      updTut();
+    } catch (e) {}
+  }
+
+  if (typeof loadProjets === "function") {
+    try {
+      loadProjets();
+    } catch (e) {}
+  }
+
+  if (typeof loadMyAnnonces === "function") {
+    try {
+      loadMyAnnonces();
+    } catch (e) {}
+  }
+
+  if (typeof loadSponsorAnnonces === "function") {
+    try {
+      loadSponsorAnnonces();
+    } catch (e) {}
+  }
+
+  if (typeof checkPremiumStatus === "function") {
+    const token = localStorage.getItem("token");
+    const userId = localStorage.getItem("userId");
+    if (token && userId) {
+      try {
+        checkPremiumStatus(token, userId);
+      } catch (e) {}
+    }
+  }
 }
 
 function t(cle) {
@@ -38,6 +83,8 @@ function t(cle) {
 
   return cle;
 }
+
+window.t = t;
 
 function appliquerTraductions() {
   document.querySelectorAll("[data-i18n]").forEach((element) => {
@@ -66,6 +113,8 @@ function appliquerTraductions() {
     } catch (e) {}
   }
 }
+
+window.appliquerTraductions = appliquerTraductions;
 
 function ImporterLangue() {
   const code = document.getElementById("input_lang_code").value.trim().toLowerCase();
@@ -172,15 +221,28 @@ function GetLanguages() {
         return;
       }
 
-      container.innerHTML = "";
+      // Position identique sur TOUTES les pages (on force depuis un point unique)
+      container.style.position = "fixed";
+      container.style.top = "12px";
+      container.style.right = "16px";
+      container.style.zIndex = "99999";
 
+      // Langue actuellement sélectionnée (pour pré-cocher l'option)
+      const langueActuelle = localStorage.getItem("langue") || "fr";
+
+      let options = "";
       languages.forEach((lang) => {
-        container.innerHTML += `
-          <button class="btn btn-sm btn-o" onclick="changerLangue('${lang.code}')" style="margin-right: 5px;">
-            ${lang.name}
-          </button>
-        `;
+        const selected = lang.code === langueActuelle ? "selected" : "";
+        options += `<option value="${lang.code}" ${selected}>${lang.name}</option>`;
       });
+
+      // Petite liste déroulante stylée (même rendu sur toutes les pages)
+      container.innerHTML = `
+        <select
+          onchange="changerLangue(this.value)"
+          style="padding:6px 10px;border-radius:8px;border:1px solid #d0d0d0;background:#ffffff;color:#333333;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.12);outline:none;">
+          ${options}
+        </select>`;
     })
     .catch((err) => {
       console.error("Erreur de chargement des boutons :", err);
@@ -190,7 +252,8 @@ function GetLanguages() {
 document.addEventListener("DOMContentLoaded", () => {
   GetLanguages();
 
-  const langueSauvegardee = localStorage.getItem("langue") || "fr";
+  const paramsLangue = new URLSearchParams(window.location.search).get("lang");
+  const langueSauvegardee = paramsLangue || localStorage.getItem("langue") || "fr";
   changerLangue(langueSauvegardee);
 
   const btnToggleForm = document.getElementById("btn-toggle-form");

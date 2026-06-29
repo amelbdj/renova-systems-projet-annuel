@@ -1,0 +1,19 @@
+# Versioning / docs
+.git
+.gitignore
+*.md
+README*
+
+# Fichiers Docker eux-memes
+Dockerfile
+.dockerignore
+
+# Genere a l'execution / artefacts
+documents/
+*.log
+tmp/
+tmphash/
+tmppdf/
+
+# Secrets / config locale
+.env

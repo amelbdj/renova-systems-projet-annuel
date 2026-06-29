@@ -32,6 +32,7 @@ func GetProjetsByUser(idUser int) ([]models.Projet, error) {
 }
 
 func DeleteProjet(id int) error {
+	Db.Exec(`DELETE FROM etapes_projet WHERE id_projet = ?`, id)
 	_, err := Db.Exec(`DELETE FROM projet_pro WHERE id_projet = ?`, id)
 	return err
 }

@@ -1,0 +1,9 @@
+# Versioning / docs
+.git
+.gitignore
+*.md
+README*
+
+# Fichiers Docker (nginx.conf est garde : il est copie explicitement)
+Dockerfile
+.dockerignore
