@@ -30,14 +30,55 @@ function goSpace(name) {
 }
 
 function showForgot() {
-  const email = document.getElementById("loginEmail").value.trim();
-  if (email) {
-    alert("📧 Un e-mail de réinitialisation a été envoyé à : " + email);
+  const box = document.getElementById("forgotBox");
+  const loginEmail = document.getElementById("loginEmail").value.trim();
+  const forgotEmail = document.getElementById("forgotEmail");
+
+  if (box.style.display === "none") {
+    box.style.display = "block";
   } else {
-    alert(
-      'Veuillez entrer votre adresse e-mail, puis cliquer sur "Mot de passe oublié".',
-    );
-    document.getElementById("loginEmail").focus();
+    box.style.display = "none";
+  }
+
+  if (loginEmail !== "") {
+    forgotEmail.value = loginEmail;
+  }
+}
+
+async function submitForgot() {
+  const email = document.getElementById("forgotEmail").value.trim();
+  const msg = document.getElementById("forgotMsg");
+
+  msg.textContent = "";
+  msg.style.color = "#00c97a";
+
+  if (email === "") {
+    msg.style.color = "#ff5a5a";
+    msg.textContent = "Veuillez entrer votre adresse e-mail.";
+    return;
+  }
+
+  try {
+    const reponse = await fetch(API_BASE_URL + "/auth/forgot-password", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email: email }),
+    });
+
+    const data = await reponse.json();
+
+    if (reponse.ok) {
+      msg.textContent = data.message || "Un e-mail a ete envoye si le compte existe.";
+    } else {
+      msg.style.color = "#ff5a5a";
+      msg.textContent = data.error || "Impossible d'envoyer le mail.";
+    }
+  } catch (error) {
+    console.error("Erreur forgot password:", error);
+    msg.style.color = "#ff5a5a";
+    msg.textContent = "Impossible de joindre le serveur.";
   }
 }
 

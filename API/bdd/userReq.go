@@ -45,6 +45,41 @@ func LoginUser(email string, motDePasse string, ip string) (models.User, error) 
 
 	return user, nil
 }
+
+func EnvoyerEmailResetPassword(emailDestinataire string, prenom string, lien string) {
+	expediteur := "noreply@upcycleconnect.fr"
+	motDePasse := "#Projet2026"
+	serveurSMTP := "192.168.80.10"
+	port := "25"
+
+	auth := smtp.PlainAuth("", expediteur, motDePasse, serveurSMTP)
+
+	sujet := "Subject: UpcycleConnect - Reinitialisation du mot de passe\n"
+	typeMIME := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
+	corpsMessage := fmt.Sprintf(`
+		<html>
+			<body style="font-family: Arial, sans-serif; color: #333;">
+				<h2>Bonjour %s,</h2>
+				<p>Vous avez demande a reinitialiser votre mot de passe.</p>
+				<p>Cliquez sur le lien ci-dessous pour choisir un nouveau mot de passe :</p>
+				<p><a href="%s">Reinitialiser mon mot de passe</a></p>
+				<p>Ce lien est valable pendant 1 heure.</p>
+				<br>
+				<p><em>L'equipe UpcycleConnect</em></p>
+			</body>
+		</html>
+	`, prenom, lien)
+
+	messageComplet := []byte(sujet + typeMIME + corpsMessage)
+	adresseServeur := serveurSMTP + ":" + port
+
+	err := smtp.SendMail(adresseServeur, auth, expediteur, []string{emailDestinataire}, messageComplet)
+	if err != nil {
+		fmt.Printf("Erreur d'envoi d'e-mail reset password a %s : %v\n", emailDestinataire, err)
+		return
+	}
+	fmt.Printf(" E-mail reset password envoye avec succes a %s\n", emailDestinataire)
+}
 func GetUsers() ([]models.User, error) {
 
 	var Users []models.User

@@ -11,13 +11,10 @@ func RoutesAuth() {
 	http.HandleFunc("/admin/login", admin.Login)
 	http.HandleFunc("/auth/check-email", admin.VerifierEmail)
 	http.HandleFunc("/auth/inscription", admin.Inscription)
-	// TODO: feature "mot de passe oublie / reset" en cours - handlers a ecrire
-	// (ForgotPasswordHandler / ResetPasswordTokenHandler dans le package admin).
-	// Routes desactivees temporairement pour que le projet compile (build Docker).
-	// http.HandleFunc("POST /auth/forgot-password", admin.ForgotPasswordHandler)
-	// http.HandleFunc("OPTIONS /auth/forgot-password", admin.ForgotPasswordHandler)
-	// http.HandleFunc("POST /auth/reset-password", admin.ResetPasswordTokenHandler)
-	// http.HandleFunc("OPTIONS /auth/reset-password", admin.ResetPasswordTokenHandler)
+	http.HandleFunc("POST /auth/forgot-password", admin.ForgotPasswordHandler)
+	http.HandleFunc("OPTIONS /auth/forgot-password", admin.ForgotPasswordHandler)
+	http.HandleFunc("POST /auth/reset-password", admin.ResetPasswordTokenHandler)
+	http.HandleFunc("OPTIONS /auth/reset-password", admin.ResetPasswordTokenHandler)
 	http.HandleFunc("/update-tutorial", admin.UpdateTutorialStatus)
 
 	http.HandleFunc("/api/upload-document", auth.VerifyTokenMiddleware(admin.UploadDocumentHandler))

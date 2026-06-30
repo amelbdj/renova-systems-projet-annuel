@@ -141,6 +141,28 @@
             </div>
 
             <div class="switch-prompt">
+              <a href="#" onclick="showForgot(); return false;">Mot de passe oublie ?</a>
+            </div>
+
+            <div id="forgotBox" style="display: none; margin-top: 14px">
+              <div class="fgroup">
+                <label>Adresse e-mail <span class="req">*</span></label>
+                <div class="input-wrap has-prefix">
+                  <span class="prefix">@</span>
+                  <input
+                    type="email"
+                    id="forgotEmail"
+                    placeholder="votre@email.com"
+                  />
+                </div>
+              </div>
+              <button class="btn-primary" onclick="submitForgot()" type="button">
+                Envoyer le lien
+              </button>
+              <div id="forgotMsg" style="font-size: 13px; margin-top: 8px"></div>
+            </div>
+
+            <div class="switch-prompt">
               <span data-i18n="login.form.no_account"
                 >Pas encore de compte ?</span
               >

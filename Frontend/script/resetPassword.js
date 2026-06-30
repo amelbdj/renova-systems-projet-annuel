@@ -1,13 +1,3 @@
-/* ─── SÉCURITÉ : il faut être connecté pour accéder à cette page ───── */
-document.addEventListener("DOMContentLoaded", () => {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    alert("Vous devez être connecté pour réinitialiser votre mot de passe.");
-    window.location.href = "login.html";
-  }
-});
-
-/* ─── AFFICHER / CACHER LE MOT DE PASSE ─────────────── */
 function togglePwd(id, btn) {
   const inp = document.getElementById(id);
   if (!inp) return;
@@ -16,9 +6,18 @@ function togglePwd(id, btn) {
   btn.textContent = show ? "🔒" : "👁";
 }
 
-/* ─── RÉINITIALISATION DU MOT DE PASSE (compte connecté) ──────────── */
+document.addEventListener("DOMContentLoaded", () => {
+  const params = new URLSearchParams(window.location.search);
+  const email = params.get("email");
+
+  if (email) {
+    document.getElementById("resetEmail").value = email;
+  }
+});
+
 async function submitReset() {
-  const token = localStorage.getItem("token");
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get("token");
   const email = document.getElementById("resetEmail").value.trim();
   const pwd = document.getElementById("resetPwd").value;
   const confirmation = document.getElementById("resetConfirm").value;
@@ -29,7 +28,8 @@ async function submitReset() {
   okEl.style.display = "none";
 
   if (!token) {
-    window.location.href = "login.html";
+    errEl.textContent = "Lien de reinitialisation invalide.";
+    errEl.style.display = "block";
     return;
   }
 
@@ -38,11 +38,13 @@ async function submitReset() {
     errEl.style.display = "block";
     return;
   }
+
   if (pwd.length < 6) {
-    errEl.textContent = "Le mot de passe doit faire au moins 6 caractères.";
+    errEl.textContent = "Le mot de passe doit faire au moins 6 caracteres.";
     errEl.style.display = "block";
     return;
   }
+
   if (pwd !== confirmation) {
     errEl.textContent = "Les mots de passe ne correspondent pas.";
     errEl.style.display = "block";
@@ -54,22 +56,24 @@ async function submitReset() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ email: email, new_password: pwd }),
+      body: JSON.stringify({
+        email: email,
+        token: token,
+        new_password: pwd,
+      }),
     });
+
     const data = await reponse.json();
 
     if (reponse.ok) {
-      okEl.textContent =
-        "✅ Mot de passe réinitialisé ! Redirection vers votre profil…";
+      okEl.textContent = "Mot de passe reinitialise. Vous pouvez vous connecter.";
       okEl.style.display = "block";
       setTimeout(() => {
-        window.location.href = "profil.html";
+        window.location.href = "login.html";
       }, 2000);
     } else {
-      errEl.textContent =
-        data.error || "Impossible de réinitialiser le mot de passe.";
+      errEl.textContent = data.error || "Impossible de reinitialiser le mot de passe.";
       errEl.style.display = "block";
     }
   } catch (error) {

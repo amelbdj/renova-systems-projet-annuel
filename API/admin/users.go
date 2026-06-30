@@ -1,6 +1,8 @@
 package admin
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -8,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"upcycleconnect/auth"
 	"upcycleconnect/bdd"
@@ -712,6 +715,154 @@ func ResetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]string{"message": "Mot de passe réinitialisé avec succès !"})
+}
+
+func ForgotPasswordHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Content-Type", "application/json")
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	var input struct {
+		Email string `json:"email"`
+	}
+	err := json.NewDecoder(r.Body).Decode(&input)
+	if err != nil {
+		http.Error(w, `{"error": "Donnees invalides"}`, http.StatusBadRequest)
+		return
+	}
+
+	email := strings.TrimSpace(input.Email)
+	if email == "" {
+		http.Error(w, `{"error": "Email obligatoire"}`, http.StatusBadRequest)
+		return
+	}
+
+	var userID int
+	var prenom string
+	err = bdd.Db.QueryRow("SELECT id, prenom FROM pa2026.utilisateur WHERE email = ?", email).Scan(&userID, &prenom)
+	if err != nil {
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(map[string]string{"message": "Si le compte existe, un email a ete envoye."})
+		return
+	}
+
+	creerTableResetPassword()
+
+	token, err := genererTokenReset()
+	if err != nil {
+		http.Error(w, `{"error": "Erreur serveur"}`, http.StatusInternalServerError)
+		return
+	}
+
+	bdd.Db.Exec("UPDATE pa2026.reset_password_token SET used = 1 WHERE id_user = ? AND used = 0", userID)
+	_, err = bdd.Db.Exec(`
+		INSERT INTO pa2026.reset_password_token (id_user, token, expires_at, used)
+		VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 1 HOUR), 0)
+	`, userID, token)
+	if err != nil {
+		http.Error(w, `{"error": "Erreur BDD"}`, http.StatusInternalServerError)
+		return
+	}
+
+	lien := frontURL("reset-password.html?token=" + token + "&email=" + email)
+	go bdd.EnvoyerEmailResetPassword(email, prenom, lien)
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{"message": "Si le compte existe, un email a ete envoye."})
+}
+
+func ResetPasswordTokenHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Content-Type", "application/json")
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	var input struct {
+		Email       string `json:"email"`
+		Token       string `json:"token"`
+		NewPassword string `json:"new_password"`
+	}
+	err := json.NewDecoder(r.Body).Decode(&input)
+	if err != nil {
+		http.Error(w, `{"error": "Donnees invalides"}`, http.StatusBadRequest)
+		return
+	}
+
+	input.Email = strings.TrimSpace(input.Email)
+	input.Token = strings.TrimSpace(input.Token)
+	if input.Email == "" || input.Token == "" {
+		http.Error(w, `{"error": "Lien de reinitialisation invalide"}`, http.StatusBadRequest)
+		return
+	}
+
+	if len(input.NewPassword) < 6 {
+		http.Error(w, `{"error": "Le mot de passe doit faire au moins 6 caracteres"}`, http.StatusBadRequest)
+		return
+	}
+
+	creerTableResetPassword()
+
+	var userID int
+	err = bdd.Db.QueryRow(`
+		SELECT u.id
+		FROM pa2026.reset_password_token r
+		JOIN pa2026.utilisateur u ON u.id = r.id_user
+		WHERE u.email = ? AND r.token = ? AND r.used = 0 AND r.expires_at > NOW()
+	`, input.Email, input.Token).Scan(&userID)
+	if err != nil {
+		http.Error(w, `{"error": "Lien invalide ou expire"}`, http.StatusBadRequest)
+		return
+	}
+
+	newHashedPassword, err := bcrypt.GenerateFromPassword([]byte(input.NewPassword), 10)
+	if err != nil {
+		http.Error(w, `{"error": "Erreur lors du hachage"}`, http.StatusInternalServerError)
+		return
+	}
+
+	_, err = bdd.Db.Exec("UPDATE pa2026.utilisateur SET mot_de_passe = ? WHERE id = ?", string(newHashedPassword), userID)
+	if err != nil {
+		http.Error(w, `{"error": "Erreur de mise a jour en BDD"}`, http.StatusInternalServerError)
+		return
+	}
+
+	bdd.Db.Exec("UPDATE pa2026.reset_password_token SET used = 1 WHERE token = ?", input.Token)
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{"message": "Mot de passe reinitialise avec succes !"})
+}
+
+func creerTableResetPassword() {
+	bdd.Db.Exec(`
+		CREATE TABLE IF NOT EXISTS pa2026.reset_password_token (
+			id INT AUTO_INCREMENT PRIMARY KEY,
+			id_user INT NOT NULL,
+			token VARCHAR(100) NOT NULL,
+			expires_at DATETIME NOT NULL,
+			used TINYINT(1) DEFAULT 0,
+			created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+		)
+	`)
+}
+
+func genererTokenReset() (string, error) {
+	bytes := make([]byte, 32)
+	_, err := rand.Read(bytes)
+	if err != nil {
+		return "", err
+	}
+	return hex.EncodeToString(bytes) + fmt.Sprint(time.Now().Unix()), nil
 }
 
 func UpgradeToPremiumHandler(w http.ResponseWriter, r *http.Request) {
