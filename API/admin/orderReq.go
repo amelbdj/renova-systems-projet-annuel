@@ -60,9 +60,15 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 
 func PaymentHistoryHandler(w http.ResponseWriter, r *http.Request) {
 
-	w.Header().Set("Access-Control-Allow-Origin", "*")
+	origin := r.Header.Get("Origin")
+	if origin == "" {
+		origin = "*"
+	}
+
+	w.Header().Set("Access-Control-Allow-Origin", origin)
 	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Vary", "Origin")
 	w.Header().Set("Content-Type", "application/json")
 
 	if r.Method == "OPTIONS" {

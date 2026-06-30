@@ -3,11 +3,8 @@ package admin
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
-	"os"
 	"strconv"
-	"time"
 	"upcycleconnect/bdd"
 	"upcycleconnect/models"
 )
@@ -184,15 +181,12 @@ func ModifyArticle(w http.ResponseWriter, r *http.Request) {
 	file, handler, errFile := r.FormFile("image")
 	if errFile == nil {
 		defer file.Close()
-		os.MkdirAll("./static/uploads/articles", os.ModePerm)
-		fileName := fmt.Sprintf("%d_%s", time.Now().Unix(), handler.Filename)
-		path := "./static/uploads/articles/" + fileName
-		f, errCreate := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, 0666)
-		if errCreate == nil {
-			defer f.Close()
-			io.Copy(f, file)
-			imageUrl = "static/uploads/articles/" + fileName
+		chemin, errUp := SaveUpload(file, handler, "articles", "image")
+		if errUp != nil {
+			http.Error(w, errUp.Error(), http.StatusBadRequest)
+			return
 		}
+		imageUrl = chemin // ex: uploads/articles/<uuid>.png
 	}
 
 	err = bdd.ModifyArticle(id, titre, contenu, articleType, action, imageUrl)
@@ -235,15 +229,12 @@ func CreateArticle(w http.ResponseWriter, r *http.Request) {
 	file, handler, errFile := r.FormFile("image")
 	if errFile == nil {
 		defer file.Close()
-		os.MkdirAll("./static/uploads/articles", os.ModePerm)
-		fileName := fmt.Sprintf("%d_%s", time.Now().Unix(), handler.Filename)
-		path := "./static/uploads/articles/" + fileName
-		f, errCreate := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, 0666)
-		if errCreate == nil {
-			defer f.Close()
-			io.Copy(f, file)
-			article.ImageUrl = "static/uploads/articles/" + fileName
+		chemin, errUp := SaveUpload(file, handler, "articles", "image")
+		if errUp != nil {
+			http.Error(w, errUp.Error(), http.StatusBadRequest)
+			return
 		}
+		article.ImageUrl = chemin
 	}
 
 	err = bdd.CreateArticle(article, action)

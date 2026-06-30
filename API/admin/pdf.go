@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"os"
+	"path/filepath"
 	"time"
 	"upcycleconnect/bdd"
 
@@ -55,13 +56,13 @@ func GenerateInvoicePDF(orderID int, buyerID int, articleTitre string, montant f
 		return "", err
 	}
 
-	if err := os.MkdirAll("documents/doubles", 0755); err != nil {
+	if err := os.MkdirAll(filepath.Join(UploadDir(), "documents", "doubles"), 0755); err != nil {
 		return "", err
 	}
 
 	fileName := fmt.Sprintf("facture_%d_%d.pdf", orderID, time.Now().Unix())
-	original := "documents/" + fileName
-	double := "documents/doubles/" + fileName
+	original := filepath.Join(UploadDir(), "documents", fileName)
+	double := filepath.Join(UploadDir(), "documents", "doubles", fileName)
 
 	if err := os.WriteFile(original, buf.Bytes(), 0644); err != nil {
 		return "", err
@@ -70,7 +71,7 @@ func GenerateInvoicePDF(orderID int, buyerID int, articleTitre string, montant f
 		return "", err
 	}
 
-	urlPdf := "/view-documents/doubles/" + fileName
+	urlPdf := "/uploads/documents/doubles/" + fileName
 	bdd.Db.Exec("INSERT INTO document (id_user, type_doc, url_pdf, id_commande) VALUES (?, ?, ?, ?)", buyerID, "facture", urlPdf, orderID)
 
 	return urlPdf, nil
@@ -129,13 +130,13 @@ func GenerateContractPDF(userID int, plan string, abonnementID int) (string, err
 		return "", err
 	}
 
-	if err := os.MkdirAll("documents/doubles", 0755); err != nil {
+	if err := os.MkdirAll(filepath.Join(UploadDir(), "documents", "doubles"), 0755); err != nil {
 		return "", err
 	}
 
 	fileName := fmt.Sprintf("contrat_%d_%d.pdf", userID, time.Now().Unix())
-	original := "documents/" + fileName
-	double := "documents/doubles/" + fileName
+	original := filepath.Join(UploadDir(), "documents", fileName)
+	double := filepath.Join(UploadDir(), "documents", "doubles", fileName)
 
 	if err := os.WriteFile(original, buf.Bytes(), 0644); err != nil {
 		return "", err
@@ -144,7 +145,7 @@ func GenerateContractPDF(userID int, plan string, abonnementID int) (string, err
 		return "", err
 	}
 
-	urlPdf := "/view-documents/doubles/" + fileName
+	urlPdf := "/uploads/documents/doubles/" + fileName
 	bdd.Db.Exec("INSERT INTO document (id_user, type_doc, url_pdf, id_commande) VALUES (?, ?, ?, ?)", userID, "contrat", urlPdf, abonnementID)
 
 	return urlPdf, nil

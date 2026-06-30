@@ -328,12 +328,18 @@ function UpdateValidationCount() {
 
 
   Promise.all([
-    fetch(`${API_BASE_URL}/admin/annonces`, fetchOptions).then((res) =>
-      res.json(),
-    ),
-    fetch(`${API_BASE_URL}/admin/evenements`, fetchOptions).then((res) =>
-      res.json(),
-    ),
+    fetch(`${API_BASE_URL}/admin/annonces`, fetchOptions).then((res) => {
+      if (!res.ok) {
+        throw new Error("Erreur chargement annonces");
+      }
+      return res.json();
+    }),
+    fetch(`${API_BASE_URL}/admin/evenements`, fetchOptions).then((res) => {
+      if (!res.ok) {
+        throw new Error("Erreur chargement evenements");
+      }
+      return res.json();
+    }),
   ])
     .then(([annonces, events]) => {
       let total = 0;

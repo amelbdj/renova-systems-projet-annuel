@@ -290,5 +290,4 @@ function closeModal(modalId) {
   if (modal) modal.style.display = "none";
 }
 
-igin / faty;
 document.addEventListener("DOMContentLoaded", GetConteneurs);

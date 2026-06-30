@@ -19,8 +19,8 @@ func GetEvenements(searchWord string, idUser int) ([]models.Evenement, error) {
 		          COALESCE(evenement.plan_cours, '') as plan_cours,
 		          COALESCE((SELECT url_fichier FROM ressource_pedagogique WHERE id_event = evenement.id ORDER BY id_ressource DESC LIMIT 1), '') as pdf_url,
 		          (SELECT COUNT(*) FROM inscription WHERE id_user = ? AND id_event = evenement.id) > 0 AS deja_inscrit
-		          FROM pa2026.Evenement
-		          INNER JOIN utilisateur ON utilisateur.id = Evenement.id_salarie
+		          FROM pa2026.evenement
+		          INNER JOIN utilisateur ON utilisateur.id = evenement.id_salarie
 		          WHERE evenement.titre LIKE ?`
 
 		rows, err := Db.Query(query, idUser, "%"+searchWord+"%")
@@ -49,8 +49,8 @@ func GetEvenements(searchWord string, idUser int) ([]models.Evenement, error) {
 		          COALESCE(evenement.plan_cours, '') as plan_cours,
 		          COALESCE((SELECT url_fichier FROM ressource_pedagogique WHERE id_event = evenement.id ORDER BY id_ressource DESC LIMIT 1), '') as pdf_url,
 		          (SELECT COUNT(*) FROM inscription WHERE id_user = ? AND id_event = evenement.id) > 0 AS deja_inscrit
-		          FROM pa2026.Evenement
-		          INNER JOIN utilisateur ON utilisateur.id = Evenement.id_salarie`
+		          FROM pa2026.evenement
+		          INNER JOIN utilisateur ON utilisateur.id = evenement.id_salarie`
 
 		rows, err := Db.Query(query, idUser)
 		if err != nil {
@@ -71,7 +71,7 @@ func GetEvenements(searchWord string, idUser int) ([]models.Evenement, error) {
 }
 
 func ValidateEvenement(EvenementId int) error {
-	result, err := Db.Exec("UPDATE pa2026.Evenement SET statut_validation = 'valide' WHERE id = ?", EvenementId)
+	result, err := Db.Exec("UPDATE pa2026.evenement SET statut_validation = 'valide' WHERE id = ?", EvenementId)
 	if err != nil {
 		return fmt.Errorf("mise à jour échouée : %v", err)
 	}
@@ -86,7 +86,7 @@ func ValidateEvenement(EvenementId int) error {
 }
 
 func RefuseEvenement(EvenementId int) error {
-	result, err := Db.Exec("UPDATE pa2026.Evenement SET statut_validation = 'refuse' WHERE id = ?", EvenementId)
+	result, err := Db.Exec("UPDATE pa2026.evenement SET statut_validation = 'refuse' WHERE id = ?", EvenementId)
 	if err != nil {
 		return fmt.Errorf("mise à jour échouée : %v", err)
 	}
@@ -101,7 +101,7 @@ func RefuseEvenement(EvenementId int) error {
 }
 
 func CreateEvenement(Evenement models.Evenement) (int64, error) {
-	result, err := Db.Exec("INSERT INTO pa2026.Evenement (titre, description, date_debut, date_fin, nb_places, statut_validation, format, lieu, type, id_salarie, prix, image_url, plan_cours) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+	result, err := Db.Exec("INSERT INTO pa2026.evenement (titre, description, date_debut, date_fin, nb_places, statut_validation, format, lieu, type, id_salarie, prix, image_url, plan_cours) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 		Evenement.Titre, Evenement.Description, Evenement.DateDebut, Evenement.DateFin, Evenement.NbPlaces, "en attente", Evenement.Format, Evenement.Lieu, Evenement.Type, Evenement.IdSalarie, Evenement.Prix, Evenement.ImageUrl, Evenement.PlanCours)
 	if err != nil {
 		return 0, fmt.Errorf("création de l'événement échouée : %v", err)
@@ -144,7 +144,7 @@ func GetRessources(idEvent int) ([]models.Ressource, error) {
 }
 
 func DeleteEvenement(EvenementId int) error {
-	result, err := Db.Exec("DELETE FROM pa2026.Evenement WHERE id = ?", EvenementId)
+	result, err := Db.Exec("DELETE FROM pa2026.evenement WHERE id = ?", EvenementId)
 	if err != nil {
 		return fmt.Errorf("suppression échouée : %v", err)
 	}
@@ -159,7 +159,7 @@ func DeleteEvenement(EvenementId int) error {
 }
 
 func UpdateEvenement(EvenementId int, Evenement models.Evenement) error {
-	result, err := Db.Exec("UPDATE pa2026.Evenement SET titre = ?, description = ?, date_debut = ?, date_fin = ?, nb_places = ?, format = ?, lieu = ?, type = ?, prix = ? WHERE id = ?",
+	result, err := Db.Exec("UPDATE pa2026.evenement SET titre = ?, description = ?, date_debut = ?, date_fin = ?, nb_places = ?, format = ?, lieu = ?, type = ?, prix = ? WHERE id = ?",
 		Evenement.Titre, Evenement.Description, Evenement.DateDebut, Evenement.DateFin, Evenement.NbPlaces, Evenement.Format, Evenement.Lieu, Evenement.Type, Evenement.Prix, EvenementId)
 	if err != nil {
 		return fmt.Errorf("mise à jour échouée : %v", err)

@@ -27,6 +27,29 @@ function closeEvt() {
   document.getElementById("evtModal").style.display = "none";
 }
 
+function togglePdfField() {
+  var typeSelect = document.getElementById("evt-type");
+  var pdfGroup = document.getElementById("evt-pdf-group");
+  var planPdfInput = document.getElementById("evt-plan-pdf");
+  var ressourcesInput = document.getElementById("evt-ressources");
+
+  if (!typeSelect || !pdfGroup) {
+    return;
+  }
+
+  if (typeSelect.value === "formation") {
+    pdfGroup.style.display = "block";
+  } else {
+    pdfGroup.style.display = "none";
+    if (planPdfInput) {
+      planPdfInput.value = "";
+    }
+    if (ressourcesInput) {
+      ressourcesInput.value = "";
+    }
+  }
+}
+
 function resetEvtForm() {
   document.getElementById("evt-titre").value = "";
   document.getElementById("evt-desc").value = "";

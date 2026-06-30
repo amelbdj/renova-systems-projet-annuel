@@ -45,7 +45,12 @@ services:
       DB_PORT: "3306"
       DB_USER: ${DB_USER:-upcycle}   # <- utilisateur dedie (correspond a db.go)
       DB_PASS: ${DB_PASS:-upcyclePass123}
+      DB_PASSWORD: ${DB_PASS:-upcyclePass123}   # alias (au cas ou)
       DB_NAME: ${DB_NAME:-pa2026}
+      # Stockage des fichiers uploades (images annonces/articles, PDF)
+      UPLOAD_DIR: /app/uploads
+      APP_PORT: "8081"
+      PORT: "8081"
       # Cles externes (repli sur les valeurs du code si non definies)
       STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
       STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}

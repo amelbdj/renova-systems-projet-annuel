@@ -34,8 +34,9 @@ COPY --from=builder /app/server ./server
 COPY --from=builder /app/uploads ./uploads
 COPY --from=builder /app/static ./static
 
-# On s'assure que tous les dossiers existent (PDF generes, etc.) + droits
-RUN mkdir -p uploads static documents/doubles && chown -R appuser:appuser /app
+# On s'assure que tous les dossiers existent (uploads + sous-dossiers, PDF, etc.) + droits
+RUN mkdir -p uploads/annonces uploads/articles uploads/documents uploads/events uploads/formations static documents/doubles \
+    && chown -R appuser:appuser /app
 
 USER appuser
 

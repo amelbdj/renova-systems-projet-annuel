@@ -9,7 +9,12 @@ function GetEvent() {
       Authorization: "Bearer " + monToken,
     },
   })
-    .then((res) => res.json())
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error("Erreur chargement evenements");
+      }
+      return res.json();
+    })
     .then((events) => {
       const currentTabId = document.querySelector(".vtab.on").id;
       if (currentTabId !== "tout") container.innerHTML = "";

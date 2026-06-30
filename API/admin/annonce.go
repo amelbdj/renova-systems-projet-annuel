@@ -3,9 +3,7 @@ package admin
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
-	"os"
 	"upcycleconnect/bdd"
 	"upcycleconnect/models"
 
@@ -135,21 +133,15 @@ func CreateAnnonce(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	file, header, err := r.FormFile("image")
-	if err == nil {
+	file, header, errImg := r.FormFile("image")
+	if errImg == nil {
 		defer file.Close()
-
-		filePath := "./uploads/" + header.Filename
-
-		dst, err := os.Create(filePath)
-		if err != nil {
-			http.Error(w, "Erreur stockage image", http.StatusInternalServerError)
+		chemin, errUp := SaveUpload(file, header, "annonces", "image")
+		if errUp != nil {
+			http.Error(w, errUp.Error(), http.StatusBadRequest)
 			return
 		}
-		defer dst.Close()
-		io.Copy(dst, file)
-
-		ann.Image = "/view-uploads/" + header.Filename
+		ann.Image = "/" + chemin // ex: /uploads/annonces/<uuid>.png
 	}
 
 	err = bdd.CreateAnnonce(ann)
@@ -245,14 +237,15 @@ func UpdateAnnonce(w http.ResponseWriter, r *http.Request) {
 	annonce.PoidsKg, _ = strconv.ParseFloat(r.FormValue("poids_kg"), 64)
 	annonce.Quantite, _ = strconv.Atoi(r.FormValue("quantite"))
 
-	file, header, err := r.FormFile("image")
-	if err == nil {
+	file, header, errImg := r.FormFile("image")
+	if errImg == nil {
 		defer file.Close()
-		filePath := "./uploads/" + header.Filename
-		dst, _ := os.Create(filePath)
-		defer dst.Close()
-		io.Copy(dst, file)
-		annonce.Image = "/view-uploads/" + header.Filename
+		chemin, errUp := SaveUpload(file, header, "annonces", "image")
+		if errUp != nil {
+			http.Error(w, errUp.Error(), http.StatusBadRequest)
+			return
+		}
+		annonce.Image = "/" + chemin
 	} else {
 		annonce.Image = r.FormValue("old_image_path")
 	}
@@ -419,7 +412,7 @@ func GetOneAnnonce(w http.ResponseWriter, r *http.Request) {
 func ConfirmPaymentAndOrder(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
 	if r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)

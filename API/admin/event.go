@@ -3,13 +3,9 @@ package admin
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"mime/multipart"
 	"net/http"
-	"os"
-	"path/filepath"
 	"strconv"
-	"strings"
 	"time"
 	"upcycleconnect/bdd"
 	"upcycleconnect/models"
@@ -168,18 +164,12 @@ func CreateEvenement(w http.ResponseWriter, r *http.Request) {
 	file, handler, errFile := r.FormFile("image")
 	if errFile == nil {
 		defer file.Close()
-		os.MkdirAll("./static/uploads/events", os.ModePerm)
-		nomFichier := fmt.Sprintf("%d_%s", time.Now().Unix(), handler.Filename)
-		cheminComplet := "./static/uploads/events/" + nomFichier
-
-		f, err := os.OpenFile(cheminComplet, os.O_WRONLY|os.O_CREATE, 0666)
-		if err == nil {
-			defer f.Close()
-			io.Copy(f, file)
-			Evenement.ImageUrl = "static/uploads/events/" + nomFichier
-		} else {
-			fmt.Println("Erreur création fichier :", err)
+		chemin, errUp := SaveUpload(file, handler, "events", "image")
+		if errUp != nil {
+			http.Error(w, errUp.Error(), http.StatusBadRequest)
+			return
 		}
+		Evenement.ImageUrl = chemin // uploads/events/<uuid>.ext
 	}
 
 	newId, err := bdd.CreateEvenement(Evenement)
@@ -222,20 +212,9 @@ func CreateEvenement(w http.ResponseWriter, r *http.Request) {
 }
 
 func enregistrerPdf(file multipart.File, handler *multipart.FileHeader) (string, error) {
-	if strings.ToLower(filepath.Ext(handler.Filename)) != ".pdf" {
-		return "", fmt.Errorf("le fichier doit être au format PDF")
-	}
-	os.MkdirAll("./static/uploads/formations", os.ModePerm)
-	nomFichier := fmt.Sprintf("%d_%s", time.Now().UnixNano(), handler.Filename)
-	cheminComplet := "./static/uploads/formations/" + nomFichier
-
-	f, err := os.OpenFile(cheminComplet, os.O_WRONLY|os.O_CREATE, 0666)
-	if err != nil {
-		return "", err
-	}
-	defer f.Close()
-	io.Copy(f, file)
-	return "static/uploads/formations/" + nomFichier, nil
+	// Stockage unifie : valide le PDF (ext + MIME + taille) et enregistre
+	// dans UPLOAD_DIR/formations avec un nom unique. Retourne uploads/formations/<uuid>.pdf
+	return SaveUpload(file, handler, "formations", "document")
 }
 
 func GetInscritsEvenement(w http.ResponseWriter, r *http.Request) {

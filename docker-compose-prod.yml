@@ -14,7 +14,7 @@ services:
       - uc_net
 
   backend:
-    image: amelbdj/upcycle-backend:v1
+    image: amelbdj/upcycle-backend:v4
     container_name: upcycle_backend
     restart: unless-stopped
     environment:
@@ -26,13 +26,16 @@ services:
       DB_PASSWORD: upcycle
       APP_PORT: 8081
       PORT: 8081
+      UPLOAD_DIR: /app/uploads
+    volumes:
+      - /mnt/truenas/upcycle/uploads:/app/uploads
     depends_on:
       - mysql
     networks:
       - uc_net
 
   frontend:
-    image: amelbdj/upcycle-frontend:v1
+    image: amelbdj/upcycle-frontend:v7
     container_name: upcycle_frontend
     restart: unless-stopped
     ports:

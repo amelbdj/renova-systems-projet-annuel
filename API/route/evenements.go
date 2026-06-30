@@ -19,6 +19,9 @@ func RoutesEvenements() {
 	http.HandleFunc("OPTIONS /admin/evenements/inscription", admin.InscrireClient)
 	http.HandleFunc("OPTIONS /admin/evenements/desinscription", admin.DesinscriptionHandler)
 	http.HandleFunc("OPTIONS /api/web/checkout/evenement", admin.CreateEventCheckoutSession)
+	http.HandleFunc("OPTIONS /api/admin/evenements", admin.GetAllEvenements)
+	http.HandleFunc("OPTIONS /api/admin/evenements/validate/{id}", admin.ValidateEvenement)
+	http.HandleFunc("OPTIONS /api/admin/evenements/refuse/{id}", admin.RefuseEvenement)
 
 	http.HandleFunc("GET /admin/evenements", auth.VerifyTokenMiddleware(admin.GetAllEvenements))
 	http.HandleFunc("GET /admin/evenements/inscrits/{id}", auth.VerifyTokenMiddleware(admin.GetInscritsEvenement))
@@ -31,4 +34,7 @@ func RoutesEvenements() {
 	http.HandleFunc("POST /admin/evenements/inscription", admin.InscrireClient)
 	http.HandleFunc("POST /admin/evenements/desinscription", admin.DesinscriptionHandler)
 	http.HandleFunc("POST /api/web/checkout/evenement", admin.CreateEventCheckoutSession)
+	http.HandleFunc("GET /api/admin/evenements", auth.VerifyTokenMiddleware(admin.GetAllEvenements))
+	http.HandleFunc("PUT /api/admin/evenements/validate/{id}", auth.VerifyTokenMiddleware(admin.ValidateEvenement))
+	http.HandleFunc("PUT /api/admin/evenements/refuse/{id}", auth.VerifyTokenMiddleware(admin.RefuseEvenement))
 }
