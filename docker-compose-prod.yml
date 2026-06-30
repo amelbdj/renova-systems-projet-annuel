@@ -1,0 +1,50 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: upcycle_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: pa2026
+      MYSQL_USER: upcycle
+      MYSQL_PASSWORD: upcycle
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - uc_net
+
+  backend:
+    image: amelbdj/upcycle-backend:v1
+    container_name: upcycle_backend
+    restart: unless-stopped
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: pa2026
+      DB_USER: upcycle
+      DB_PASS: upcycle
+      DB_PASSWORD: upcycle
+      APP_PORT: 8081
+      PORT: 8081
+    depends_on:
+      - mysql
+    networks:
+      - uc_net
+
+  frontend:
+    image: amelbdj/upcycle-frontend:v1
+    container_name: upcycle_frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - uc_net
+
+volumes:
+  mysql_data:
+
+networks:
+  uc_net:
+    driver: bridge
