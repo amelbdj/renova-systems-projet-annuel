@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="24dp">
+
+    <TextView
+        android:id="@+id/welcomeText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Bonjour"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Bienvenue dans votre espace particulier"
+        android:textSize="14sp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="32dp" />
+
+    <Button
+        android:id="@+id/annoncesButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Voir les annonces"
+        android:layout_marginBottom="12dp" />
+
+    <Button
+        android:id="@+id/deposerButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Déposer une annonce"
+        android:layout_marginBottom="12dp" />
+
+    <Button
+        android:id="@+id/catalogueButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Catalogue / Événements"
+        android:layout_marginBottom="12dp" />
+
+    <Button
+        android:id="@+id/scoreButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Mon Upcycling Score"
+        android:layout_marginBottom="12dp" />
+
+    <Button
+        android:id="@+id/logoutButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Déconnexion"
+        android:layout_marginTop="24dp" />
+
+</LinearLayout>
