@@ -1,5 +1,10 @@
 let currentItem = null;
 
+// Si l'utilisateur est un Pro, on colore la page en teal (comme le dashboard pro)
+if (localStorage.getItem("userRole") === "Pro") {
+  document.documentElement.classList.add("theme-pro");
+}
+
 async function loadOneAnnonce() {
   const urlParams = new URLSearchParams(window.location.search);
   const id = urlParams.get("id");
@@ -107,7 +112,7 @@ function renderPage(item) {
 
   document.getElementById("bcCat").textContent = item.categorie || "Objet";
   document.getElementById("bcTitle").textContent = item.titre;
-  document.title = item.titre + " — ReNova";
+  document.title = item.titre + " — UpcycleConnect";
 
   document.getElementById("pageContent").innerHTML = `
     <div class="page ${isSold ? "is-sold" : ""}">

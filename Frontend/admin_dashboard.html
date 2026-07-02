@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vue d'ensemble — ReNova Admin</title>
+    <title>Vue d'ensemble — UpcycleConnect Admin</title>
 
     <script src="../Frontend/script/auth_guard.js"></script>
     <script>
@@ -101,7 +101,7 @@
           text-align: center;
         "
       >
-        ReNova <em style="color: var(--or-l); font-style: normal">Admin</em>
+        <span style="font-size:18px">UpcycleConnect</span><br /><em style="color: var(--or-l); font-style: normal">Admin</em>
       </div>
 
 
@@ -222,7 +222,7 @@
       <section class="hero fu" style="padding-top: 0">
         <div class="hero-left">
           <div class="hero-eyebrow" data-i18n="backoffice.dash.eyebrow">Tableau de bord</div>
-          <h1 class="hero-title" data-i18n="backoffice.dash.title">Vue d'ensemble <em>ReNova</em></h1>
+          <h1 class="hero-title" data-i18n="backoffice.dash.title">Vue d'ensemble<br /><em>UpcycleConnect</em></h1>
           <p class="hero-desc" data-i18n="backoffice.dash.desc">
             Bienvenue Sylvain. Voici un résumé en temps réel de l'activité de la
             plateforme.
@@ -403,44 +403,7 @@
               <span data-i18n="backoffice.dash.recent_activity">Activité récente</span>
             </div>
           </div>
-          <div class="card-bd tx-list">
-            <div class="tx-row">
-              <div class="tx-ico" style="background: rgba(46, 204, 113, 0.1)">
-                <span class="material-symbols-outlined"> credit_card </span>
-              </div>
-              <div class="tx-info">
-                <div class="tx-name" data-i18n="backoffice.dash.act_premium">Abonnement Premium (Pro)</div>
-                <div class="tx-date">Il y a 10 minutes par Atelier Bois</div>
-              </div>
-              <div class="tx-amt in">+ 30,00 €</div>
-            </div>
-
-            <div class="tx-row">
-              <div class="tx-ico" style="background: rgba(255, 255, 255, 0.05)">
-                <span class="material-symbols-outlined"> person </span>
-              </div>
-              <div class="tx-info">
-                <div class="tx-name" data-i18n="backoffice.dash.act_signup">Nouvelle inscription</div>
-                <div class="tx-date">Il y a 45 minutes - Particulier</div>
-              </div>
-              <div class="tx-amt" style="font-size: 12px; color: var(--txt-m)">
-                -
-              </div>
-            </div>
-
-            <div class="tx-row">
-              <div class="tx-ico" style="background: rgba(74, 144, 240, 0.1)">
-                <span class="material-symbols-outlined"> event </span>
-              </div>
-              <div class="tx-info">
-                <div class="tx-name" data-i18n="backoffice.dash.act_deposit">Dépôt en conteneur réussi</div>
-                <div class="tx-date">Il y a 2 heures - Box 12 (Montreuil)</div>
-              </div>
-              <div class="tx-amt" style="font-size: 12px; color: var(--txt-m)">
-                -
-              </div>
-            </div>
-          </div>
+          <div class="card-bd tx-list" id="recent-activity"></div>
         </div>
 
         <div class="card">

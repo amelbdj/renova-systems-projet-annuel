@@ -3,6 +3,17 @@ if (!localStorage.getItem("token") || !localStorage.getItem("userId")) {
   window.location.replace("login.html");
 }
 
+// La page profil prend la couleur du dashboard selon le role de l'utilisateur
+(function appliquerThemeRole() {
+  const role = localStorage.getItem("userRole") || "";
+  let classe = ""; // vide = violet par defaut
+  if (role === "Utilisateur") classe = "theme-user";
+  else if (role === "Pro") classe = "theme-pro";
+  else if (role.indexOf("Salari") === 0) classe = "theme-salarie"; // gere "Salarié"
+  else if (role === "Administrateur") classe = "theme-admin";
+  if (classe) document.documentElement.classList.add(classe);
+})();
+
 document.addEventListener("DOMContentLoaded", async () => {
   await loadUserProfile();
 

@@ -82,7 +82,7 @@ function ValidateEvent(id) {
       Authorization: "Bearer " + monToken,
     },
   }).then(() => {
-    GetEvent();
+    rechargerValidations();
     UpdateValidationCount();
   });
 }
@@ -94,7 +94,7 @@ function RefuseEvent(id) {
       Authorization: "Bearer " + monToken,
     },
   }).then(() => {
-    GetEvent();
+    rechargerValidations();
     UpdateValidationCount();
   });
 }

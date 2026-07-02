@@ -20,7 +20,7 @@ func GenerateInvoicePDF(orderID int, buyerID int, articleTitre string, montant f
 	pdf.AddPage()
 
 	pdf.SetFont("Arial", "B", 20)
-	pdf.Cell(0, 12, "ReNova Systems")
+	pdf.Cell(0, 12, "UpcycleConnect Systems")
 	pdf.Ln(14)
 
 	pdf.SetFont("Arial", "B", 16)
@@ -49,7 +49,7 @@ func GenerateInvoicePDF(orderID int, buyerID int, articleTitre string, montant f
 	pdf.Ln(15)
 
 	pdf.SetFont("Arial", "I", 9)
-	pdf.MultiCell(0, 5, tr("Merci d'avoir utilise ReNova Systems."), "", "L", false)
+	pdf.MultiCell(0, 5, tr("Merci d'avoir utilise UpcycleConnect Systems."), "", "L", false)
 
 	var buf bytes.Buffer
 	if err := pdf.Output(&buf); err != nil {
@@ -96,7 +96,7 @@ func GenerateContractPDF(userID int, plan string, abonnementID int) (string, err
 	pdf.AddPage()
 
 	pdf.SetFont("Arial", "B", 20)
-	pdf.Cell(0, 12, "ReNova Systems")
+	pdf.Cell(0, 12, "UpcycleConnect Systems")
 	pdf.Ln(14)
 
 	pdf.SetFont("Arial", "B", 16)
@@ -123,7 +123,7 @@ func GenerateContractPDF(userID int, plan string, abonnementID int) (string, err
 	pdf.Ln(6)
 
 	pdf.SetFont("Arial", "I", 9)
-	pdf.MultiCell(0, 5, tr("Merci de votre confiance - ReNova Systems."), "", "L", false)
+	pdf.MultiCell(0, 5, tr("Merci de votre confiance - UpcycleConnect Systems."), "", "L", false)
 
 	var buf bytes.Buffer
 	if err := pdf.Output(&buf); err != nil {

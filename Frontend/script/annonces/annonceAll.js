@@ -1,6 +1,11 @@
 let allAnnonces = [];
 let isListView = false;
 
+// Si l'utilisateur est un Pro, on colore la page en teal (comme le dashboard pro)
+if (localStorage.getItem("userRole") === "Pro") {
+  document.documentElement.classList.add("theme-pro");
+}
+
 if (!localStorage.getItem("token") || !localStorage.getItem("userId")) {
   window.location.replace("login.html");
 }
@@ -26,6 +31,7 @@ async function loadAllAnnonces() {
     );
 
     displayAnnonces(allAnnonces);
+    buildCategoryFilter();
   } catch (err) {
     console.error("Erreur chargement marketplace:", err);
     grid.innerHTML =
@@ -72,7 +78,6 @@ function displayAnnonces(items) {
                 <div class="card-badges">
                     ${isFree ? '<span class="badge b-don" data-i18n="annonce.type.donation">Don gratuit</span>' : '<span class="badge b-ven" data-i18n="annonce.type.sale">Vente</span>'}
                     ${promoBadge}
-                    ${isFree ? '<span class="badge b-don">Don gratuit</span>' : '<span class="badge b-ven">Vente</span>'}
                 </div>
             </div>
             <div class="card-body">
@@ -98,6 +103,41 @@ function displayAnnonces(items) {
 
   
   if (typeof appliquerTraductions === "function") appliquerTraductions();
+}
+
+// Construit la liste des catégories du filtre à partir de celles en base
+// (table categorie via /admin/categories). Le nombre affiché est calculé
+// sur les annonces déjà chargées.
+async function buildCategoryFilter() {
+  const container = document.getElementById("catFilterOpts");
+  if (!container) return;
+
+  const token = localStorage.getItem("token");
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/admin/categories`, {
+      headers: { Authorization: "Bearer " + token },
+    });
+    const categories = await res.json();
+
+    // Compteur du bouton "Toutes"
+    const countAll = document.getElementById("catCountAll");
+    if (countAll) countAll.textContent = allAnnonces.length;
+
+    categories.forEach((cat) => {
+      const nb = allAnnonces.filter(
+        (a) => (a.categorie || "").toLowerCase() === cat.libelle.toLowerCase(),
+      ).length;
+
+      const opt = document.createElement("div");
+      opt.className = "f-opt";
+      opt.setAttribute("onclick", `toggleFilter(this,'cat','${cat.libelle}')`);
+      opt.innerHTML = `<div class="f-opt-left"><div class="check-box"></div><span><i class="fa-solid fa-tag"></i></span><span>${cat.libelle}</span></div><div class="f-count">${nb}</div>`;
+      container.appendChild(opt);
+    });
+  } catch (err) {
+    console.error("Erreur chargement catégories:", err);
+  }
 }
 
 function filterListings() {

@@ -60,7 +60,11 @@ window.ouvrirSujet = function (idTopic, titre) {
 
   document.getElementById("vue-liste-forums").style.display = "none";
   document.getElementById("vue-sujet-actif").style.display = "flex";
-  document.getElementById("titre-sujet-actif").textContent = titre;
+  const titreEl = document.getElementById("titre-sujet-actif");
+  // On retire le data-i18n sinon appliquerTraductions() réécrase le titre
+  // par la traduction "Chargement...".
+  titreEl.removeAttribute("data-i18n");
+  titreEl.textContent = titre;
 
   chargerMessagesSujet(idTopic);
 };

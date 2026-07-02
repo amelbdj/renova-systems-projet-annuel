@@ -223,9 +223,16 @@ function GetLanguages() {
 
       // Position identique sur TOUTES les pages (on force depuis un point unique)
       container.style.position = "fixed";
-      container.style.top = "12px";
+      // On efface un eventuel "top" defini en dur dans le HTML (sinon il
+      // l'emporte sur "bottom" et le bouton reste en haut).
+      container.style.top = "";
+      container.style.bottom = "16px";
       container.style.right = "16px";
       container.style.zIndex = "99999";
+      // On empeche le CSS des pages (ex: admin.css force select{width:100%})
+      // de gonfler le conteneur : il reste a la taille du select.
+      container.style.width = "auto";
+      container.style.display = "inline-block";
 
       // Langue actuellement sélectionnée (pour pré-cocher l'option)
       const langueActuelle = localStorage.getItem("langue") || "fr";
@@ -240,7 +247,7 @@ function GetLanguages() {
       container.innerHTML = `
         <select
           onchange="changerLangue(this.value)"
-          style="padding:6px 10px;border-radius:8px;border:1px solid #d0d0d0;background:#ffffff;color:#333333;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.12);outline:none;">
+          style="width:auto;max-width:160px;padding:6px 10px;border-radius:8px;border:1px solid #d0d0d0;background:#ffffff;color:#333333;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.12);outline:none;">
           ${options}
         </select>`;
     })

@@ -137,7 +137,7 @@ function selectRole(element, codeRole) {
   const labels = {
     part: "Particulier",
     pro: "Professionnel",
-    sal: "Salarié ReNova",
+    sal: "Salarié UpcycleConnect",
     adm: "Administrateur",
   };
   document.getElementById("sumRole").textContent = labels[codeRole];

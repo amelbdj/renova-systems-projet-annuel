@@ -137,7 +137,7 @@ function ValidateArticle(id) {
     },
   }).then(() => {
     alert("Article validé et publié !");
-    GetArticle();
+    rechargerValidations();
   });
 }
 
@@ -149,7 +149,7 @@ function RefuseArticle(id) {
     },
   }).then(() => {
     alert("Article refusé.");
-    GetArticle();
+    rechargerValidations();
   });
 }
 

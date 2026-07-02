@@ -47,14 +47,8 @@
   <aside class="sidebar fu">
     <div class="filter-card">
       <div class="filter-title" data-i18n="annonce.filter.category_title">Catégorie</div>
-      <div class="filter-opts">
-        <div class="f-opt on" onclick="toggleFilter(this,'cat','all')"><div class="f-opt-left"><span><i class="fa-solid fa-earth-africa"></i></span><span data-i18n="annonce.filter.all_f">Toutes</span></div><div class="f-count">18</div></div>
-        <div class="f-opt" onclick="toggleFilter(this,'cat','mobilier')"><div class="f-opt-left"><div class="check-box"></div><span><i class="fa-solid fa-couch"></i></span><span data-i18n="annonce.cat.furniture">Mobilier</span></div><div class="f-count">5</div></div>
-        <div class="f-opt" onclick="toggleFilter(this,'cat','outillage')"><div class="f-opt-left"><div class="check-box"></div><span><i class="fa-solid fa-wrench"></i></span><span data-i18n="annonce.cat.tools">Outillage</span></div><div class="f-count">4</div></div>
-        <div class="f-opt" onclick="toggleFilter(this,'cat','textile')"><div class="f-opt-left"><div class="check-box"></div><span><i class="fa-solid fa-tshirt"></i></span><span data-i18n="annonce.cat.textile">Textile</span></div><div class="f-count">3</div></div>
-        <div class="f-opt" onclick="toggleFilter(this,'cat','electronique')"><div class="f-opt-left"><div class="check-box"></div><span><i class="fa-solid fa-mobile"></i></span><span data-i18n="annonce.cat.electronics">Électronique</span></div><div class="f-count">3</div></div>
-        <div class="f-opt" onclick="toggleFilter(this,'cat','deco')"><div class="f-opt-left"><div class="check-box"></div><span><i class="fa-solid fa-paint-roller"></i></span><span data-i18n="annonce.cat.deco">Déco</span></div><div class="f-count">3</div></div>
-        <div class="f-opt" onclick="toggleFilter(this,'cat','livres')"><div class="f-opt-left"><div class="check-box"></div><span><i class="fa-solid fa-book"></i></span><span data-i18n="annonce.cat.books">Livres</span></div><div class="f-count">1</div></div>
+      <div class="filter-opts" id="catFilterOpts">
+        <div class="f-opt on" onclick="toggleFilter(this,'cat','all')"><div class="f-opt-left"><span><i class="fa-solid fa-earth-africa"></i></span><span data-i18n="annonce.filter.all_f">Toutes</span></div><div class="f-count" id="catCountAll">0</div></div>
       </div>
     </div>
     <div class="filter-card">

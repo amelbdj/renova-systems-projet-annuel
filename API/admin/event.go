@@ -141,6 +141,15 @@ func CreateEvenement(w http.ResponseWriter, r *http.Request) {
 
 	var Evenement models.Evenement
 	Evenement.IdSalarie, _ = strconv.Atoi(r.FormValue("idSalarie"))
+
+	// Un salarie doit avoir un compte Stripe avant de deposer un evenement/formation
+	var compteStripe string
+	bdd.Db.QueryRow("SELECT COALESCE(stripe_account_id, '') FROM utilisateur WHERE id = ?", Evenement.IdSalarie).Scan(&compteStripe)
+	if compteStripe == "" {
+		http.Error(w, "Merci de créer votre compte Stripe avant de déposer une formation ou un événement.", http.StatusBadRequest)
+		return
+	}
+
 	Evenement.Titre = r.FormValue("titre")
 	Evenement.Type = r.FormValue("type")
 	Evenement.Description = r.FormValue("description")

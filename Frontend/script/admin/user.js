@@ -25,6 +25,18 @@ function setVtab(element, type) {
   }
 }
 
+// Recharge proprement l'onglet actuellement selectionne (evite l'accumulation
+// des elements apres une validation / un refus).
+function rechargerValidations() {
+  const actif = document.querySelector(".vtab.on");
+  if (!actif) {
+    GetAnnonce();
+    return;
+  }
+  const typesParId = { tout: "all", ann: "ann", evt: "evt", con: "con" };
+  setVtab(actif, typesParId[actif.id] || "all");
+}
+
 function openNewUser() {
   const modal = document.getElementById("NewuserModal");
   if (modal) modal.style.display = "flex";
@@ -203,7 +215,7 @@ function ValidateUser(userId) {
     },
   })
     .then((res) => res.json())
-    .then(AfficherTableau)
+    .then(() => GetUsers()) // on recharge la liste pour voir le changement direct
     .catch((err) => console.error("Erreur GET Users:", err));
 }
 function GetUserByRole(role) {

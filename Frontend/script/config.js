@@ -9,9 +9,13 @@
   if (window.API_BASE_URL) return;
 
   var p = window.location;
-  // En WAMP, l'URL contient le dossier du projet (.../Frontend/...).
-  // En Docker, le frontend est a la racine -> pas de "/Frontend/" dans le chemin.
-  var estWampLocal = p.pathname.indexOf("/Frontend/") !== -1;
+  // On n'est en WAMP (backend Go direct sur :8081) QUE si :
+  //  - on est sur la machine locale (localhost / 127.0.0.1)
+  //  - ET l'URL contient le dossier du projet (.../Frontend/...)
+  // Sur la VM (IP publique), meme via /Frontend/, on passe toujours par /api.
+  var estMachineLocale =
+    p.hostname === "localhost" || p.hostname === "127.0.0.1";
+  var estWampLocal = estMachineLocale && p.pathname.indexOf("/Frontend/") !== -1;
 
   window.API_BASE_URL = estWampLocal
     ? "http://localhost:8081" // dev local (WAMP) : backend Go direct

@@ -57,6 +57,10 @@ async function loadMyAnnonces() {
       );
     }
 
+    // Compteur "Annonces" du bandeau (nombre d'annonces actives)
+    const statAnnonces = document.getElementById("statAnnonces");
+    if (statAnnonces) statAnnonces.textContent = annoncesActives.length;
+
     if (!annoncesActives || annoncesActives.length === 0) {
       annGrid.innerHTML =
         "<p style=\"color:var(--txt-m); padding:20px;\">Vous n'avez pas encore d'annonces.</p>";
@@ -170,6 +174,10 @@ async function loadAllUserBoxes() {
     
     const deposits = (await resDeposits.json()) || [];
     const pickups = (await resPickups.json()) || [];
+
+    // Compteur "Dépôt actif" du bandeau (nombre d'objets déposés en box)
+    const statDepots = document.getElementById("statDepots");
+    if (statDepots) statDepots.textContent = deposits.length;
 
     
     const allItems = [

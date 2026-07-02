@@ -48,6 +48,8 @@ function LoadDashboardData() {
 
       const elAlertAnn = document.getElementById("alert-annonces");
       if (elAlertAnn) elAlertAnn.textContent = `${aModerer} ${t("backoffice.kpi.ads_to_moderate")}`;
+
+      AfficherActiviteRecente(annonces);
     })
     .catch((err) => console.error("Erreur KPI Annonces:", err));
 
@@ -152,6 +154,56 @@ function LoadDashboardData() {
       }
     })
     .catch((err) => console.error("Erreur KPI Articles:", err));
+
+  // Revenus du mois (commission plateforme) via l'endpoint finances
+  fetch(`${API_BASE_URL}/admin/finance/overview`, {
+    headers: { Authorization: "Bearer " + tokenAdmin },
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      const elRev = document.getElementById("rev-mois-montant");
+      if (elRev) {
+        elRev.textContent =
+          new Intl.NumberFormat("fr-FR").format(data.revenuMois || 0) + " €";
+      }
+      // Pas de comparaison mois precedent disponible : on cache le "+...%"
+      const elPct = document.getElementById("rev-mois-pourcentage");
+      if (elPct) elPct.style.display = "none";
+    })
+    .catch((err) => console.error("Erreur KPI Revenus:", err));
+}
+
+// Activite recente : on affiche les 5 dernieres annonces publiees
+function AfficherActiviteRecente(annonces) {
+  const zone = document.getElementById("recent-activity");
+  if (!zone) return;
+
+  if (!annonces || annonces.length === 0) {
+    zone.innerHTML = `<div style="padding:15px; color:var(--txt-m); font-size:13px;">Aucune activité récente.</div>`;
+    return;
+  }
+
+  // Les plus recentes d'abord (id le plus grand = plus recent)
+  const dernieres = annonces.slice().sort((a, b) => b.id - a.id).slice(0, 5);
+
+  let html = "";
+  dernieres.forEach((a) => {
+    const gratuit = a.type === "Don" || a.prix <= 0;
+    const montant = gratuit ? "Don" : a.prix + " €";
+    html += `
+      <div class="tx-row">
+        <div class="tx-ico" style="background: rgba(74, 144, 240, 0.1)">
+          <span class="material-symbols-outlined"> sell </span>
+        </div>
+        <div class="tx-info">
+          <div class="tx-name">${a.titre}</div>
+          <div class="tx-date">${a.prenom} ${a.nom} · ${a.created_at || ""}</div>
+        </div>
+        <div class="tx-amt ${gratuit ? "" : "in"}">${montant}</div>
+      </div>`;
+  });
+
+  zone.innerHTML = html;
 }
 
 document.addEventListener("DOMContentLoaded", LoadDashboardData);

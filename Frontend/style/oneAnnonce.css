@@ -15,9 +15,12 @@ html {
   --bg4: #150f2c;
   --card: #0d0a1f;
   --card2: #12102a;
-  --b0: rgba(130, 100, 255, 0.08);
-  --b1: rgba(130, 100, 255, 0.18);
-  --b2: rgba(130, 100, 255, 0.38);
+  /* Couleur d'accent (RGB) : violet par defaut, teal pour les Pro (.theme-pro) */
+  --ac: 128, 96, 255;
+  --ac2: 70, 40, 200;
+  --b0: rgba(var(--ac), 0.08);
+  --b1: rgba(var(--ac), 0.18);
+  --b2: rgba(var(--ac), 0.38);
   --vi: #8060ff;
   --vi-l: #ac90ff;
   --vi-d: #4c30d4;
@@ -32,6 +35,25 @@ html {
   --txt-m: #504070;
   --txt-d: #221840;
   --r: 16px;
+}
+
+/* Thème Pro : accent + fond en teal (comme le dashboard pro).
+   Classe ajoutee sur <html> par le JS si l'utilisateur est "Pro". */
+.theme-pro {
+  --ac: 0, 210, 180;
+  --ac2: 0, 153, 133;
+  --vi: #00d2b4;
+  --vi-l: #2decd4;
+  --vi-d: #009985;
+  --bg: #040c0e;
+  --bg2: #070f12;
+  --bg3: #0a1518;
+  --bg4: #0e1c20;
+  --card: #0b1519;
+  --card2: #0f1e23;
+  --txt: #c8dedd;
+  --txt-m: #4a7070;
+  --txt-d: #1e3838;
 }
 body {
   font-family: "DM Sans", sans-serif;
@@ -51,7 +73,7 @@ body::before {
   background:
     radial-gradient(
       ellipse 70% 50% at -5% -5%,
-      rgba(70, 40, 200, 0.16) 0%,
+      rgba(var(--ac2), 0.16) 0%,
       transparent 55%
     ),
     radial-gradient(
@@ -90,7 +112,7 @@ body::before {
   display: inline-block;
 }
 .nav-link:hover {
-  background: rgba(128, 96, 255, 0.08);
+  background: rgba(var(--ac), 0.08);
   color: var(--txt);
 }
 .nav-right {
@@ -109,7 +131,7 @@ body::before {
   justify-content: center;
   font-size: 14px;
   border: 2px solid var(--bg);
-  box-shadow: 0 0 10px rgba(128, 96, 255, 0.35);
+  box-shadow: 0 0 10px rgba(var(--ac), 0.35);
   cursor: pointer;
 }
 .breadcrumb {
@@ -212,8 +234,8 @@ body::before {
 }
 .bb-type.vente {
   color: var(--vi-l);
-  background: rgba(128, 96, 255, 0.12);
-  border: 1px solid rgba(128, 96, 255, 0.25);
+  background: rgba(var(--ac), 0.12);
+  border: 1px solid rgba(var(--ac), 0.25);
 }
 .bb-type.don {
   color: var(--green);
@@ -265,7 +287,7 @@ body::before {
 .btn-buy-now {
   background: linear-gradient(135deg, var(--vi-d), var(--vi));
   color: #fff;
-  box-shadow: 0 4px 20px rgba(128, 96, 255, 0.38);
+  box-shadow: 0 4px 20px rgba(var(--ac), 0.38);
 }
 .btn-reserve {
   background: linear-gradient(135deg, #0a5c2c, var(--green));

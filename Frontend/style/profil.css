@@ -14,9 +14,12 @@ button,input,select,textarea{font-family:inherit;font-size:inherit}
   --bg4:   #120e2c;
   --card:  #0c0920;
   --card2: #100d26;
-  --b0:    rgba(110,80,255,.09);
-  --b1:    rgba(110,80,255,.19);
-  --b2:    rgba(110,80,255,.38);
+  /* Couleur d'accent (RGB). Violet par defaut ; change selon le role
+     (voir les classes .theme-* plus bas, ajoutees par le JS). */
+  --ac:    124,95,255;
+  --b0:    rgba(var(--ac),.09);
+  --b1:    rgba(var(--ac),.19);
+  --b2:    rgba(var(--ac),.38);
   --vi:    #7c5fff;
   --vi-l:  #a88fff;
   --vi-d:  #4c2fd4;
@@ -34,6 +37,41 @@ button,input,select,textarea{font-family:inherit;font-size:inherit}
   --txt-d: #241c3c;
   --r:     14px;
   --r2:    10px;
+}
+
+/* La page profil prend la couleur du dashboard de l'utilisateur.
+   Le JS ajoute une de ces classes sur <html> selon le role. */
+/* Utilisateur : bleu (comme l'espace client) */
+.theme-user{
+  --ac: 49,115,255;
+  --vi: #3173ff; --vi-l: #5b96ff; --vi-d: #1a50d4;
+  --bg: #05080f; --bg2: #090d1a; --bg3: #0d1223; --bg4: #111a2e;
+  --card: #0c1120; --card2: #101828;
+  --txt: #ccdcf5; --txt-m: #5a7899; --txt-d: #253650;
+}
+/* Pro : teal (comme l'espace pro) */
+.theme-pro{
+  --ac: 0,210,180;
+  --vi: #00d2b4; --vi-l: #2decd4; --vi-d: #009985;
+  --bg: #040c0e; --bg2: #070f12; --bg3: #0a1518; --bg4: #0e1c20;
+  --card: #0b1519; --card2: #0f1e23;
+  --txt: #c8dedd; --txt-m: #4a7070; --txt-d: #1e3838;
+}
+/* Salarie : violet (comme l'espace salarie) */
+.theme-salarie{
+  --ac: 138,100,255;
+  --vi: #8a64ff; --vi-l: #a98dff; --vi-d: #5c35d4;
+  --bg: #07050f; --bg2: #0b0818; --bg3: #100c20; --bg4: #150f28;
+  --card: #0e0b1c; --card2: #131026;
+  --txt: #d0c8f0; --txt-m: #5a4e80; --txt-d: #2a2045;
+}
+/* Administrateur : orange (comme le back-office) */
+.theme-admin{
+  --ac: 255,152,0;
+  --vi: #ff9800; --vi-l: #ffb84d; --vi-d: #c46000;
+  --bg: #090600; --bg2: #0f0a00; --bg3: #160e00; --bg4: #1d1300;
+  --card: #110d00; --card2: #181000;
+  --txt: #f0ddb0; --txt-m: #664d1a; --txt-d: #2a1e00;
 }
 
 
@@ -72,11 +110,11 @@ body::before{
   background:
     radial-gradient(ellipse 65% 45% at 5% 0%,   rgba(80,40,200,.14) 0%,transparent 55%),
     radial-gradient(ellipse 45% 35% at 95% 100%, rgba(46,212,180,.08) 0%,transparent 55%),
-    radial-gradient(ellipse 30% 25% at 55% 45%,  rgba(124,95,255,.05) 0%,transparent 65%);
+    radial-gradient(ellipse 30% 25% at 55% 45%,  rgba(var(--ac),.05) 0%,transparent 65%);
 }
 body::after{
   content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
-  background-image:radial-gradient(rgba(110,80,255,.1) 1px,transparent 1px);
+  background-image:radial-gradient(rgba(var(--ac),.1) 1px,transparent 1px);
   background-size:30px 30px;
 }
 
@@ -108,8 +146,8 @@ body::after{
   cursor:pointer;transition:.15s;border:none;background:transparent;
   font-family:'Outfit',sans-serif;
 }
-.nav-link:hover{background:rgba(124,95,255,.08);color:var(--txt)}
-.nav-link.active{color:var(--vi-l);background:rgba(124,95,255,.12)}
+.nav-link:hover{background:rgba(var(--ac),.08);color:var(--txt)}
+.nav-link.active{color:var(--vi-l);background:rgba(var(--ac),.12)}
 .nav-right{margin-left:auto;display:flex;align-items:center;gap:8px}
 .nav-icon{
   width:34px;height:34px;border-radius:9px;
@@ -128,7 +166,7 @@ body::after{
   width:30px;height:30px;border-radius:50%;
   background:linear-gradient(135deg,var(--vi-d),var(--vi));
   display:flex;align-items:center;justify-content:center;
-  font-size:14px;box-shadow:0 0 10px rgba(124,95,255,.35);
+  font-size:14px;box-shadow:0 0 10px rgba(var(--ac),.35);
 }
 .pill-name{font-size:13px;font-weight:500;color:var(--txt)}
 
@@ -145,7 +183,7 @@ body::after{
   background:linear-gradient(135deg,var(--vi-d),var(--vi));
   display:flex;align-items:center;justify-content:center;
   font-size:13px;font-weight:800;color:#fff;font-family:'Syne',sans-serif;
-  box-shadow:0 3px 12px rgba(124,95,255,.32);
+  box-shadow:0 3px 12px rgba(var(--ac),.32);
 }
 .sec-dot.stripe-dot{background:linear-gradient(135deg,#4040cc,var(--stripe));box-shadow:0 3px 12px rgba(99,91,255,.35)}
 .sec-dot.green-dot {background:linear-gradient(135deg,#0a8840,var(--green));box-shadow:0 3px 12px rgba(52,201,122,.3)}
@@ -171,7 +209,7 @@ body::after{
 
 
 .tag{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:100px;font-size:11px;font-weight:500}
-.t-vi   {color:var(--vi-l); background:rgba(124,95,255,.1); border:1px solid rgba(124,95,255,.22)}
+.t-vi   {color:var(--vi-l); background:rgba(var(--ac),.1); border:1px solid rgba(var(--ac),.22)}
 .t-grn  {color:var(--green);background:rgba(52,201,122,.1); border:1px solid rgba(52,201,122,.22)}
 .t-red  {color:var(--red);  background:rgba(240,88,88,.1);  border:1px solid rgba(240,88,88,.22)}
 .t-amber{color:var(--amber);background:rgba(245,168,32,.1); border:1px solid rgba(245,168,32,.22)}
@@ -190,7 +228,7 @@ input[type=text],input[type=email],input[type=tel],select,textarea{
 }
 input:focus,select:focus,textarea:focus{
   border-color:var(--b2);background:var(--card);
-  box-shadow:0 0 0 3px rgba(124,95,255,.08);
+  box-shadow:0 0 0 3px rgba(var(--ac),.08);
 }
 input::placeholder{color:var(--txt-d)}
 textarea{resize:vertical;min-height:80px}
@@ -203,8 +241,8 @@ select option{background:var(--bg3)}
   font-family:'Outfit',sans-serif;font-size:13.5px;font-weight:500;
   cursor:pointer;transition:all .18s;white-space:nowrap;
 }
-.btn-v{background:var(--vi);color:#fff;box-shadow:0 3px 14px rgba(124,95,255,.32)}
-.btn-v:hover{background:var(--vi-l);transform:translateY(-1px);box-shadow:0 5px 20px rgba(124,95,255,.48)}
+.btn-v{background:var(--vi);color:#fff;box-shadow:0 3px 14px rgba(var(--ac),.32)}
+.btn-v:hover{background:var(--vi-l);transform:translateY(-1px);box-shadow:0 5px 20px rgba(var(--ac),.48)}
 .btn-g{background:transparent;color:var(--txt-m);border:1px solid var(--b1)}
 .btn-g:hover{color:var(--txt);border-color:var(--b2)}
 .btn-red{background:rgba(240,88,88,.1);color:var(--red);border:1px solid rgba(240,88,88,.22)}
@@ -227,7 +265,7 @@ select option{background:var(--bg3)}
   display:flex;align-items:center;justify-content:center;
   font-size:2.8rem;
   border:3px solid var(--bg);
-  box-shadow:0 0 0 2px var(--vi),0 8px 32px rgba(124,95,255,.35);
+  box-shadow:0 0 0 2px var(--vi),0 8px 32px rgba(var(--ac),.35);
 }
 .ava-edit{
   position:absolute;bottom:0;right:0;
@@ -256,7 +294,7 @@ select option{background:var(--bg3)}
   color:var(--txt-m);transition:.2s;font-family:'Outfit',sans-serif;
 }
 .ptab:hover{color:var(--txt)}
-.ptab.active{background:var(--vi);color:#fff;box-shadow:0 2px 12px rgba(124,95,255,.35)}
+.ptab.active{background:var(--vi);color:#fff;box-shadow:0 2px 12px rgba(var(--ac),.35)}
 
 
 .tab-panel{display:none}
@@ -265,7 +303,7 @@ select option{background:var(--bg3)}
 
 .ava-ring{
   position:absolute;inset:-4px;border-radius:50%;
-  background:conic-gradient(var(--vi) 0% 72%, rgba(124,95,255,.12) 72% 100%);
+  background:conic-gradient(var(--vi) 0% 72%, rgba(var(--ac),.12) 72% 100%);
   z-index:-1;
 }
 

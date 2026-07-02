@@ -130,7 +130,7 @@ func Inscription(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	fmt.Println("✅ Inscription réussie, j'alerte les admins !")
-	NotifyAllAdmins("👤 Un nouvel utilisateur s'est  sur ReNova !")
+	NotifyAllAdmins("👤 Un nouvel utilisateur s'est  sur UpcycleConnect !")
 
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(map[string]string{"message": "User created successfully"})
@@ -201,7 +201,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	NotifyAllAdmins("👤 Un nouvel utilisateur s'est  sur ReNova !")
+	NotifyAllAdmins("👤 Un nouvel utilisateur s'est  sur UpcycleConnect !")
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)

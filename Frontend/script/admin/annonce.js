@@ -104,7 +104,7 @@ function ValidateAnnonce(id) {
       Authorization: "Bearer " + monToken,
     },
   }).then(() => {
-    GetAnnonce();
+    rechargerValidations();
     UpdateValidationCount();
   });
 }
@@ -116,7 +116,7 @@ function RefuseAnnonce(id) {
       Authorization: "Bearer " + monToken,
     },
   }).then(() => {
-    GetAnnonce();
+    rechargerValidations();
     UpdateValidationCount();
   });
 }
