@@ -130,13 +130,13 @@ async function submitLogin() {
       }
 
       if (donneesServeur.role === "Utilisateur") {
-        window.location.href = "espClient.html";
+        window.location.href = "/client";
       } else if (donneesServeur.role === "Pro") {
-        window.location.href = "espPro.html";
+        window.location.href = "/pro";
       } else if (donneesServeur.role === "Salarié") {
-        window.location.href = "../Frontend/salarie/salarie_dashboard.html";
+        window.location.href = "/salarie";
       } else if (donneesServeur.role === "Administrateur") {
-        window.location.href = "admin_dashboard.html";
+        window.location.href = "/admin";
       } else {
         alert("Rôle inconnu. Contactez l'administrateur.");
       }

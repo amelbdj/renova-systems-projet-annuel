@@ -1,6 +1,6 @@
 let stripePayoutStatus = "none";
 if (!localStorage.getItem("token") || !localStorage.getItem("userId")) {
-  window.location.replace("login.html");
+  window.location.replace("/login");
 }
 
 // La page profil prend la couleur du dashboard selon le role de l'utilisateur
@@ -75,11 +75,11 @@ async function loadUserProfile() {
       const role = user.role.toLowerCase();
 
       if (role.includes("salari")) {
-        linkDash.href = "salarie_dashboard.html"; 
+        linkDash.href = "/salarie"; 
       } else if (role.includes("admin")) {
         linkDash.href = "admin.html"; 
       } else {
-        linkDash.href = "espClient.html"; 
+        linkDash.href = "/client"; 
       }
     }
 
@@ -147,13 +147,13 @@ function showTab(name) {
 
 function logout() {
   localStorage.clear();
-  window.location.href = "login.html";
+  window.location.href = "/login";
 }
 function goToProfile() {
   const userId = localStorage.getItem("userId");
   if (!userId) {
-    window.location.href = "login.html";
+    window.location.href = "/login";
     return;
   }
-  window.location.href = `profil.html?id=${userId}`;
+  window.location.href = `/profil?id=${userId}`;
 }

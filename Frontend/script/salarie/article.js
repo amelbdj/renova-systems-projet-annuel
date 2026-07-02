@@ -1,5 +1,5 @@
 if (!monToken || !userId) {
-  window.location.href = "../login.html";
+  window.location.href = "/login";
 }
 
 function chargerArticles() {

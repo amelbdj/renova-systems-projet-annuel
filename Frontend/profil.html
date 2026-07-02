@@ -264,7 +264,7 @@
               Mettre à jour
             </button>
             <div style="margin-top: 12px;">
-              <a href="reset-password.html" style="font-size: 12px; color: var(--txt-m); text-decoration: underline;">
+              <a href="/reset-password" style="font-size: 12px; color: var(--txt-m); text-decoration: underline;">
                 Mot de passe oublié ?
               </a>
             </div>
@@ -357,11 +357,11 @@
           if (linkDash && user.role) {
             const role = user.role.toLowerCase();
             if (role.includes("salari")) {
-              linkDash.href = "../Frontend/salarie/salarie_dashboard.html"; 
+              linkDash.href = "/salarie"; 
             } else if (role.includes("admin")) {
-              linkDash.href = "admin_dashboard.html"; 
+              linkDash.href = "/admin"; 
             } else {
-              linkDash.href = "espClient.html";
+              linkDash.href = "/client";
             }
           }
 
@@ -499,7 +499,7 @@
 
       function logout() {
         localStorage.clear();
-        window.location.href = "login.html";
+        window.location.href = "/login";
       }
 
       async function updatePassword() {

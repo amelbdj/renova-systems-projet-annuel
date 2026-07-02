@@ -212,7 +212,7 @@ async function submitRegister() {
       document.getElementById("regSuccess").style.display = "block";
 
       setTimeout(function () {
-        window.location.href = "login.html";
+        window.location.href = "/login";
       }, 3000);
     } else {
       alert("Erreur lors de l'inscription. L'email existe peut-être déjà.");

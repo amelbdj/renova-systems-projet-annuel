@@ -8,9 +8,9 @@ function checkSession(requiredRole) {
 
     if (!token) {
         if (window.location.pathname.includes("/salarie/")) {
-            window.location.href = "../login.html";
+            window.location.href = "/login";
         } else {
-            window.location.href = "login.html";
+            window.location.href = "/login";
         }
         return;
     }
@@ -51,7 +51,7 @@ function majBadgeValidations() {
     var token = localStorage.getItem("token");
     if (!token || typeof API_BASE_URL === "undefined") return;
 
-    var badge = document.querySelector('nav a[href$="admin_validations.html"] .tag');
+    var badge = document.querySelector('nav a[href$="/admin/validations"] .tag');
     if (!badge) return;
 
     var opts = { headers: { Authorization: "Bearer " + token } };

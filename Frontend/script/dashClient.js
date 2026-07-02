@@ -2,7 +2,7 @@ let currentEditingImagePath = "";
 document.addEventListener("DOMContentLoaded", () => {
   const token = localStorage.getItem("token");
   if (!token) {
-    window.location.href = "login.html";
+    window.location.href = "/login";
     return;
   }
 
@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function logout() {
   localStorage.clear();
-  window.location.href = "login.html";
+  window.location.href = "/login";
 }
 
 async function loadMyAnnonces() {
@@ -151,11 +151,11 @@ function goToProfile() {
   const role = localStorage.getItem("role");
 
   if (!userId) {
-    window.location.href = "login.html";
+    window.location.href = "/login";
     return;
   }
 
-  window.location.href = `profil.html?id=${userId}`;
+  window.location.href = `/profil?id=${userId}`;
 }
 
 async function loadAllUserBoxes() {

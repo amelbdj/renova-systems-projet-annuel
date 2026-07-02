@@ -9,7 +9,7 @@ function texteTrad(cle, texte) {
 document.addEventListener("DOMContentLoaded", async () => {
   const token = localStorage.getItem("token");
   if (!token) {
-    window.location.href = "login.html";
+    window.location.href = "/login";
     return;
   }
 
@@ -242,7 +242,7 @@ async function subscribeToPlan(plan = "premium") {
   const token = localStorage.getItem("token");
 
   if (!userId || !token) {
-    window.location.href = "login.html";
+    window.location.href = "/login";
     return;
   }
 
@@ -293,11 +293,11 @@ function goToProfile() {
   const userId = localStorage.getItem("userId");
 
   if (!userId) {
-    window.location.href = "login.html";
+    window.location.href = "/login";
     return;
   }
 
-  window.location.href = `profil.html?id=${userId}`;
+  window.location.href = `/profil?id=${userId}`;
 }
 
 async function checkPremiumStatus(token, userId) {

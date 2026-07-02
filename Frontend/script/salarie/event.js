@@ -8,7 +8,7 @@ var evtEnEdition = null;
 
 
 if (!monToken || !userId) {
-  window.location.href = "../login.html";
+  window.location.href = "/login";
 }
 
 function openNewEvt() {

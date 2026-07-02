@@ -30,7 +30,7 @@ async function loadOneAnnonce() {
         } else {
           alert("Paiement reussi ! L'objet est maintenant a vous.");
         }
-        window.location.href = `oneAnnonce.html?id=${id}`;
+        window.location.href = `/annonce?id=${id}`;
       } else {
         console.error("Le serveur a renvoyé une erreur lors de la vente.");
       }
@@ -56,7 +56,7 @@ async function openCheckout(type) {
   const buyerId = localStorage.getItem("userId");
   if (!buyerId) {
     alert(t("oneAnnonce.login_required"));
-    window.location.href = "login.html";
+    window.location.href = "/login";
     return;
   }
 
@@ -69,7 +69,7 @@ async function openCheckout(type) {
 
       if (response.status === 403) {
         alert(t("oneAnnonce.stripe_required"));
-        window.location.href = `profil.html?id=${buyerId}`;
+        window.location.href = `/profil?id=${buyerId}`;
         return;
       }
 

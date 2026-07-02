@@ -30,9 +30,9 @@ var WS_BASE_URL = window.WS_BASE_URL;
 
 function getLoginPage() {
   if (window.location.pathname.indexOf("/salarie/") !== -1) {
-    return "../login.html";
+    return "/login";
   }
-  return "login.html";
+  return "/login";
 }
 
 function logout() {

@@ -70,7 +70,7 @@ async function submitReset() {
       okEl.textContent = "Mot de passe reinitialise. Vous pouvez vous connecter.";
       okEl.style.display = "block";
       setTimeout(() => {
-        window.location.href = "login.html";
+        window.location.href = "/login";
       }, 2000);
     } else {
       errEl.textContent = data.error || "Impossible de reinitialiser le mot de passe.";

@@ -219,10 +219,10 @@ window.validerNouveauSujet = function () {
 function goToProfile() {
   const userId = localStorage.getItem("userId");
   if (!userId) {
-    window.location.href = "login.html";
+    window.location.href = "/login";
     return;
   }
-  window.location.href = `profil.html?id=${userId}`;
+  window.location.href = `/profil?id=${userId}`;
 }
 
 document.addEventListener("DOMContentLoaded", initForum);

@@ -3,7 +3,7 @@ var userId = localStorage.getItem("userId");
 
 function chargerProfil() {
   if (!monToken || !userId) {
-    window.location.href = "../login.html";
+    window.location.href = "/login";
     return;
   }
 
@@ -188,18 +188,18 @@ function chargerNotifications() {
 
 function logout() {
   localStorage.clear();
-  window.location.href = "../login.html";
+  window.location.href = "/login";
 }
 function goToProfile() {
   const userId = localStorage.getItem("userId");
   const role = localStorage.getItem("role");
 
   if (!userId) {
-    window.location.href = "../login.html";
+    window.location.href = "/login";
     return;
   }
 
-  window.location.href = `../profil.html?id=${userId}`;
+  window.location.href = `/profil?id=${userId}`;
 }
 
 document.addEventListener("DOMContentLoaded", chargerProfil);

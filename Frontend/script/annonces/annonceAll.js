@@ -7,7 +7,7 @@ if (localStorage.getItem("userRole") === "Pro") {
 }
 
 if (!localStorage.getItem("token") || !localStorage.getItem("userId")) {
-  window.location.replace("login.html");
+  window.location.replace("/login");
 }
 
 async function loadAllAnnonces() {
@@ -60,7 +60,7 @@ function displayAnnonces(items) {
     const card = document.createElement("a");
     card.className = "listing-card fu";
 
-    card.href = `oneAnnonce.html?id=${ann.id}`;
+    card.href = `/annonce?id=${ann.id}`;
 
     const isFree = ann.prix <= 0 || ann.type === "don";
 

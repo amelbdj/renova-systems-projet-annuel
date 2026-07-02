@@ -93,7 +93,7 @@
 
       <nav style="display: flex; flex-direction: column; gap: 8px">
         <a
-          href="admin_dashboard.html"
+          href="/admin"
           class="nav-link active"
           style="
             display: flex;
@@ -108,7 +108,7 @@
           <span data-i18n="backoffice.sidebar.overview">Vue d'ensemble</span>
         </a>
         <a
-          href="admin_users.html"
+          href="/admin/users"
           class="nav-link"
           style="
             display: flex;
@@ -123,7 +123,7 @@
           <span data-i18n="backoffice.sidebar.users">Utilisateurs</span>
         </a>
         <a
-          href="admin_validations.html"
+          href="/admin/validations"
           class="nav-link"
           style="
             display: flex;
@@ -143,7 +143,7 @@
           >
         </a>
         <a
-          href="admin_conteneurs.html"
+          href="/admin/conteneurs"
           class="nav-link"
           style="
             display: flex;
@@ -158,7 +158,7 @@
           <span data-i18n="backoffice.sidebar.logistics">Logistique & Box</span>
         </a>
         <a
-          href="admin_finances.html"
+          href="/admin/finances"
           class="nav-link"
           style="
             display: flex;
@@ -173,7 +173,7 @@
           <span data-i18n="backoffice.sidebar.finances">Finances</span>
         </a>
         <a
-          href="admin_documents.html"
+          href="/admin/documents"
           class="nav-link"
           style="
             display: flex;
@@ -304,6 +304,8 @@
       </div>
     </div>
 
+    <!-- jsPDF : generation du rapport logistique PDF cote client -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="../Frontend/script/admin/translate.js" defer></script>
     <script src="../Frontend/script/admin/box.js" defer></script>
   </body>
