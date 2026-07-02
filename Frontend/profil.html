@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Mon Profil</title>
+    <link rel="icon" type="image/x-icon" href="../Frontend/assets/logoUpcycle.ico" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
       href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Outfit:wght@300;400;500;600&display=swap"
@@ -14,6 +15,18 @@
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
     />
     <link rel="stylesheet" href="./style/profil.css" />
+    <!-- La page profil prend la couleur du dashboard selon le role -->
+    <script>
+      (function () {
+        var role = localStorage.getItem("userRole") || "";
+        var c = "";
+        if (role === "Utilisateur") c = "theme-user";
+        else if (role === "Pro") c = "theme-pro";
+        else if (role.indexOf("Salari") === 0) c = "theme-salarie";
+        else if (role === "Administrateur") c = "theme-admin";
+        if (c) document.documentElement.classList.add(c);
+      })();
+    </script>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"

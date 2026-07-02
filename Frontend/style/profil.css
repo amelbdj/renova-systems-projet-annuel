@@ -108,7 +108,7 @@ body{
 body::before{
   content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
   background:
-    radial-gradient(ellipse 65% 45% at 5% 0%,   rgba(80,40,200,.14) 0%,transparent 55%),
+    radial-gradient(ellipse 65% 45% at 5% 0%,   rgba(var(--ac),.14) 0%,transparent 55%),
     radial-gradient(ellipse 45% 35% at 95% 100%, rgba(46,212,180,.08) 0%,transparent 55%),
     radial-gradient(ellipse 30% 25% at 55% 45%,  rgba(var(--ac),.05) 0%,transparent 65%);
 }
@@ -133,7 +133,7 @@ body::after{
 
 .topnav{
   position:sticky;top:0;z-index:200;
-  background:rgba(6,4,14,.88);backdrop-filter:blur(18px);
+  background:rgba(0,0,0,.5);backdrop-filter:blur(18px);
   border-bottom:1px solid var(--b0);
   height:60px;display:flex;align-items:center;padding:0 32px;
   position:relative;z-index:200;

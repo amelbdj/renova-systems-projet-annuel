@@ -63,16 +63,36 @@ function OpenEditModalAPI(id, nom, prenom, email, role) {
   modal.dataset.userId = id;
 }
 
+let tousLesUsers = [];
+let pageUsers = 1;
+const USERS_PAR_PAGE = 10;
+
 function AfficherTableau(users) {
+  tousLesUsers = users || [];
+  pageUsers = 1;
+  afficherPageUsers();
+}
+
+function changerPageUsers(delta) {
+  pageUsers = pageUsers + delta;
+  if (pageUsers < 1) pageUsers = 1;
+  afficherPageUsers();
+}
+window.changerPageUsers = changerPageUsers;
+
+function afficherPageUsers() {
   const container = document.querySelector(".u-table");
-
-
   if (!container) return;
 
+  const users = tousLesUsers;
   const totalStat = document.getElementById("totalUser");
-
-  if (!users) users = [];
   if (totalStat) totalStat.innerHTML = users.length;
+
+  // On decoupe la liste en pages de 10 utilisateurs
+  const nbPages = Math.max(1, Math.ceil(users.length / USERS_PAR_PAGE));
+  if (pageUsers > nbPages) pageUsers = nbPages;
+  const debut = (pageUsers - 1) * USERS_PAR_PAGE;
+  const usersPage = users.slice(debut, debut + USERS_PAR_PAGE);
 
   const headerHTML = `
         <div class="u-thead">
@@ -95,7 +115,7 @@ function AfficherTableau(users) {
 
   let rowsHTML = headerHTML;
 
-  users.forEach((user) => {
+  usersPage.forEach((user) => {
     const init =
       ((user.prenom?.[0] || "") + (user.nom?.[0] || "")).toUpperCase() || "?";
 
@@ -169,6 +189,16 @@ function AfficherTableau(users) {
                 </div>
             </div>`;
   });
+
+  // Barre de pagination (seulement s'il y a plus d'une page)
+  if (nbPages > 1) {
+    rowsHTML += `
+      <div style="display:flex; justify-content:center; align-items:center; gap:14px; padding:16px;">
+        <button class="btn btn-xs btn-g" onclick="changerPageUsers(-1)" ${pageUsers === 1 ? "disabled" : ""}>← Précédent</button>
+        <span style="color:var(--txt-m); font-size:13px;">Page ${pageUsers} / ${nbPages}</span>
+        <button class="btn btn-xs btn-g" onclick="changerPageUsers(1)" ${pageUsers === nbPages ? "disabled" : ""}>Suivant →</button>
+      </div>`;
+  }
 
   container.innerHTML = rowsHTML;
 

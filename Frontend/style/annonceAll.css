@@ -77,7 +77,7 @@ body::after{
 
 .topnav{
   position:sticky;top:0;z-index:300;
-  background:rgba(7,5,16,.88);backdrop-filter:blur(20px);
+  background:rgba(0,0,0,.5);backdrop-filter:blur(20px);
   border-bottom:1px solid var(--b0);
   height:62px;display:flex;align-items:center;padding:0 32px;
 }
@@ -101,7 +101,7 @@ body::after{
 
 .hero{
   position:relative;z-index:1;
-  background:linear-gradient(165deg,#0c0824 0%,#140f30 50%,#0c0a20 100%);
+  background:linear-gradient(165deg,var(--bg3) 0%,var(--bg4) 50%,var(--bg2) 100%);
   border-bottom:1px solid var(--b0);overflow:hidden;
 }
 .hero::before{
