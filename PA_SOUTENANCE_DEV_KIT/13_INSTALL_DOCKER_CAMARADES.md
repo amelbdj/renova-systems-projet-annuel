@@ -83,6 +83,30 @@ docker compose down -v          # supprime conteneurs + volumes (efface la base)
 WEB_PORT=8088 docker compose up -d --build
 ```
 
+## Accéder à la base avec phpMyAdmin (interface web)
+
+Un service **phpMyAdmin** est inclus dans `docker-compose.yml`. Après `docker compose up -d` :
+
+- Ouvrir : **http://localhost:8082**
+- Utilisateur : `upcycle` / Mot de passe : `upcyclePass123` (base `pa2026`)
+- ou `root` / `rootSecret123` (accès total)
+
+Il se connecte à MySQL en interne (`PMA_HOST=mysql`) → aucun conflit avec le 3306 de WAMP.
+Changer le port si besoin : `PMA_PORT=8090 docker compose up -d`.
+
+**Alternative sans phpMyAdmin (SQL direct) :**
+```bash
+docker exec -it uc_mysql mysql -uupcycle -pupcyclePass123 pa2026
+```
+
+> ⚠️ Les modifs de base vivent dans le volume `mysql_data` : conservées après `stop/start/down`, mais **effacées par `docker compose down -v`** (réimport de `db/init.sql`). Pour une modif permanente pour tout le monde → la reporter dans `db/init.sql`.
+
+### Sur le serveur de prod (docker-compose-prod.yml)
+- phpMyAdmin utilise l'image publique `phpmyadmin:latest` → **rien à pousser sur Docker Hub**.
+- Ajouter le même bloc de service dans `docker-compose-prod.yml`, mais **bind sur localhost** pour la sécurité :
+  `ports: - "127.0.0.1:8082:80"` puis y accéder par tunnel SSH (`ssh -L 8082:localhost:8082 user@IP`).
+- **Ne jamais exposer phpMyAdmin publiquement** sur le domaine.
+
 ## Résumé express (à coller au camarade)
 ```
 1. Installer Docker Desktop + le lancer (icône verte).

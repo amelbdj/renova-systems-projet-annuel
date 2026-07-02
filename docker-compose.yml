@@ -79,6 +79,24 @@ services:
     networks:
       - uc_net
 
+  # ---------- phpMyAdmin (interface web de la base) ----------
+  # Acces : http://localhost:8082  (user: upcycle / mdp: upcyclePass123, ou root/rootSecret123)
+  # Se connecte a MySQL en interne (PMA_HOST=mysql) -> aucun conflit de port.
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: uc_phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: "3306"
+      UPLOAD_LIMIT: 64M
+    ports:
+      - "${PMA_PORT:-8082}:80"
+    depends_on:
+      - mysql
+    networks:
+      - uc_net
+
 networks:
   uc_net:
     driver: bridge
