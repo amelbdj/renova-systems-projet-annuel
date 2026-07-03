@@ -3,6 +3,7 @@ package route
 import (
 	"net/http"
 	"upcycleconnect/admin"
+	"upcycleconnect/auth"
 )
 
 func RoutesTraductions() {
@@ -14,6 +15,6 @@ func RoutesTraductions() {
 
 	http.HandleFunc("GET /api/translations", admin.GetTranslations)
 	http.HandleFunc("GET /api/languages", admin.GetLanguages)
-	http.HandleFunc("POST /admin/translations/add", admin.AddLanguage)
+	http.HandleFunc("POST /admin/translations/add", auth.VerifyRoleMiddleware(admin.AddLanguage, "Administrateur"))
 	http.HandleFunc("GET /admin/translations/keys", admin.GetTranslationKeysHandler)
 }

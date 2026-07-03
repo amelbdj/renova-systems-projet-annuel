@@ -455,12 +455,74 @@
             <div id="notif-feedback" style="margin-top: 10px; font-size: 13px"></div>
           </div>
         </div>
+
+        <!-- Gestion des categories (liste + ajout + suppression) -->
+        <style>
+          #resultC { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+          #resultC .category { display: flex; align-items: center; justify-content: space-between;
+            background: var(--bg3); border: 1px solid var(--b1); border-radius: 8px; padding: 8px 12px; }
+          #resultC .category h5 { margin: 0; font-size: 14px; font-weight: 600; }
+        </style>
+        <div class="card">
+          <div class="card-hd">
+            <div class="card-ht">
+              <div class="cht-i" style="background: rgba(46, 204, 113, 0.1)">
+                <span class="material-symbols-outlined"> category </span>
+              </div>
+              <span data-i18n="backoffice.categories.title">Catégories</span>
+            </div>
+            <button class="btn btn-g btn-xs" onclick="openNewCategory()">＋ Ajouter</button>
+          </div>
+          <div class="card-bd">
+            <ul id="resultC"></ul>
+          </div>
+        </div>
+
+        <!-- Langues / Traductions : telecharger le modele FR + importer une langue -->
+        <div class="card">
+          <div class="card-hd">
+            <div class="card-ht">
+              <div class="cht-i" style="background: rgba(74, 144, 240, 0.1)">
+                <span class="material-symbols-outlined"> translate </span>
+              </div>
+              <span data-i18n="backoffice.lang.title">Langues / Traductions</span>
+            </div>
+            <button class="btn btn-g btn-xs" id="btn-toggle-form">＋ Ajouter une nouvelle langue</button>
+          </div>
+          <div class="card-bd">
+            <button class="btn btn-v btn-sm btn-full" onclick="ExporterLangue('fr')">
+              ⬇ Télécharger le modèle (FR)
+            </button>
+            <p style="color: var(--txt-m); font-size: 12px; margin: 10px 0 0;">
+              Télécharge le fichier FR, remplace les valeurs par tes traductions, puis importe-le avec un code et un nom de langue.
+            </p>
+            <div id="form-container" style="display: none; margin-top: 14px;">
+              <input id="input_lang_code" type="text" placeholder="Code langue (ex : es, de)" style="width: 100%; margin-bottom: 10px;" />
+              <input id="input_lang_name" type="text" placeholder="Nom de la langue (ex : Español)" style="width: 100%; margin-bottom: 10px;" />
+              <input id="input_fichier_json" type="file" accept="application/json,.json" style="width: 100%; margin-bottom: 10px;" />
+              <button class="btn btn-p btn-sm btn-full" onclick="ImporterLangue()">Importer la langue</button>
+            </div>
+          </div>
+        </div>
       </div>
     </main>
+
+    <!-- Modal : nouvelle categorie -->
+    <div id="NewCategoryModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,.6); align-items: center; justify-content: center; z-index: 1000;">
+      <div style="background: var(--card); padding: 24px; border-radius: 12px; width: 360px; max-width: 90vw; border: 1px solid var(--b1);">
+        <h3 style="margin-top: 0" data-i18n="backoffice.categories.new">Nouvelle catégorie</h3>
+        <input id="add-libelle" type="text" placeholder="Libellé (ex : Verre)" style="width: 100%; margin-bottom: 16px;" />
+        <div style="display: flex; gap: 8px; justify-content: flex-end;">
+          <button class="btn btn-g btn-sm" onclick="closeModal('NewCategoryModal')" data-i18n="backoffice.common.cancel">Annuler</button>
+          <button class="btn btn-v btn-sm" onclick="CreateCategory()" data-i18n="backoffice.common.create">Créer</button>
+        </div>
+      </div>
+    </div>
 
     <script src="../Frontend/script/admin/translate.js"></script>
     <script src="../Frontend/script/admin/dash.js"></script>
     <script src="../Frontend/script/admin/user.js"></script>
+    <script src="../Frontend/script/admin/renova.js"></script>
     <script src="../Frontend/script/admin/finance.js"></script>
     <script src="../Frontend/script/admin/notification.js"></script>
   </body>

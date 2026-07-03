@@ -1,7 +1,5 @@
 # KIT DE SOUTENANCE — MISSION DEV — UpcycleConnect
 
-> Généré à partir de l'analyse du code réel du projet.
-
 
 ---
 
@@ -683,6 +681,119 @@ INSERT INTO translations (lang_code, msg_key, msg_value) VALUES
 
 ---
 
+## J. La pagination (question probable : « comment paginez-vous ? »)
+
+Il y a **2 façons** de paginer. Sache expliquer les deux et **pourquoi j'ai choisi la 1ère**.
+
+### J.1 — Ce qui est fait dans le projet : pagination CÔTÉ CLIENT (JS)
+- **Fichier** : `Frontend/script/admin/user.js`.
+- **Principe** : l'API renvoie **tous** les utilisateurs (`GET /admin/users`), on les garde en mémoire, et on affiche seulement une **tranche de 10** avec `slice`. Les boutons changent l'index de page et ré-affichent.
+- **Pourquoi ce choix ?** Le nombre d'utilisateurs est petit → simple, aucune requête réseau à chaque changement de page, tri/recherche instantanés côté client.
+
+```js
+let tousLesUsers = [];        // toutes les données chargées une fois
+let pageUsers = 1;            // page courante
+const USERS_PAR_PAGE = 10;    // taille d'une page
+
+function AfficherTableau(users) {        // reçoit la liste complète de l'API
+  tousLesUsers = users || [];
+  pageUsers = 1;
+  afficherPageUsers();
+}
+
+function changerPageUsers(delta) {       // bouton Précédent (-1) / Suivant (+1)
+  pageUsers += delta;
+  if (pageUsers < 1) pageUsers = 1;
+  afficherPageUsers();
+}
+
+function afficherPageUsers() {
+  const nbPages = Math.max(1, Math.ceil(tousLesUsers.length / USERS_PAR_PAGE));
+  if (pageUsers > nbPages) pageUsers = nbPages;
+  const debut = (pageUsers - 1) * USERS_PAR_PAGE;          // index de départ
+  const usersPage = tousLesUsers.slice(debut, debut + USERS_PAR_PAGE); // la tranche
+  // ... on génère le HTML uniquement pour usersPage ...
+  // + une barre "Page X / Y" avec 2 boutons onclick="changerPageUsers(-1|1)"
+}
+```
+> Points clés à dire : `Math.ceil(total / taille)` = nombre de pages ; `slice(debut, debut + taille)` = la tranche ; on désactive les boutons aux extrémités.
+
+### J.2 — Comment on le ferait CÔTÉ SERVEUR en Go (SQL LIMIT / OFFSET)
+À utiliser si la table devient **grosse** (des milliers de lignes) : on ne renvoie qu'une page depuis la base.
+
+**Requête SQL** — la clé, c'est `LIMIT taille OFFSET (page-1)*taille` :
+```sql
+SELECT id, nom, prenom, email, role FROM utilisateur
+ORDER BY id
+LIMIT ? OFFSET ?;      -- LIMIT = 10, OFFSET = (page-1)*10
+```
+
+**DB** — `API/bdd/userReq.go` :
+```go
+func GetUsersPagines(page, taille int) ([]models.User, int, error) {
+    if page < 1 { page = 1 }
+    offset := (page - 1) * taille
+
+    // total (pour calculer le nombre de pages)
+    var total int
+    Db.QueryRow("SELECT COUNT(*) FROM utilisateur").Scan(&total)
+
+    rows, err := Db.Query(
+        "SELECT id, nom, prenom, email, role FROM utilisateur ORDER BY id LIMIT ? OFFSET ?",
+        taille, offset,
+    )
+    if err != nil { return nil, 0, err }
+    defer rows.Close()
+
+    var users []models.User
+    for rows.Next() {
+        var u models.User
+        rows.Scan(&u.Id, &u.Nom, &u.Prenom, &u.Email, &u.Role)
+        users = append(users, u)
+    }
+    return users, total, nil
+}
+```
+
+**Handler** — `API/admin/users.go` (lit `?page=` et `?limit=`) :
+```go
+func GetUsersPagines(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Access-Control-Allow-Origin", "*")
+    w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+    if r.Method == "OPTIONS" { w.WriteHeader(http.StatusOK); return }
+
+    page, _ := strconv.Atoi(r.URL.Query().Get("page"))
+    taille, _ := strconv.Atoi(r.URL.Query().Get("limit"))
+    if taille <= 0 { taille = 10 }
+
+    users, total, err := bdd.GetUsersPagines(page, taille)
+    if err != nil { http.Error(w, "erreur", 500); return }
+
+    json.NewEncoder(w).Encode(map[string]interface{}{
+        "users": users,
+        "total": total,
+        "page":  page,
+        "pages": (total + taille - 1) / taille,  // arrondi supérieur
+    })
+}
+```
+
+**Route** — `API/route/users.go` :
+```go
+http.HandleFunc("OPTIONS /admin/users/paginated", admin.GetUsersPagines)
+http.HandleFunc("GET /admin/users/paginated", auth.VerifyRoleMiddleware(admin.GetUsersPagines, "Administrateur"))
+```
+
+**Test** :
+```bash
+curl "http://localhost:8081/admin/users/paginated?page=2&limit=10" -H "Authorization: Bearer $TOKEN"
+```
+
+### J.3 — Phrase à dire à l'oral
+« J'ai paginé **côté client** car le volume est faible : je charge la liste une fois et j'affiche des tranches de 10 avec `slice`. Si la table devenait volumineuse, je passerais **côté serveur** avec une requête SQL `LIMIT / OFFSET` et un handler qui renvoie la page + le total, pour ne transférer que 10 lignes à la fois. »
+
+---
+
 ## I. Checklist « je viens de modifier, ça ne marche pas »
 1. Erreur Go ? → `cd API && go build ./...` (lit l'erreur exacte).
 2. Conteneur rebuild ? → `docker compose up -d --build backend|frontend`.
@@ -1317,4 +1428,127 @@ docker exec uc_backend env | grep -E "DB_|STRIPE|UPLOAD"
 2. A1 + A2 (endpoint + règle métier) — les plus impressionnants.
 3. A3 (protection par rôle) — la question sécurité classique.
 4. D1 + T1 (colonne DB + rebuild/logs) — le réflexe complet.
+
+
+---
+
+# 13 — Installer le projet avec Docker sur un autre PC (Windows)
+
+> But : que le projet tourne **à l'identique** chez un camarade, sans WAMP, sans Go, sans MySQL installé. **Docker fait tout.**
+> Résultat attendu : site accessible sur `http://localhost:8088`.
+
+## Étape 0 — Prérequis à installer (une fois)
+
+1. **Docker Desktop** (Windows) : https://www.docker.com/products/docker-desktop/
+   - À l'installation, laisser coché **WSL 2** (recommandé).
+   - Redémarrer le PC si demandé.
+   - Lancer Docker Desktop et **attendre l'icône verte** (« Engine running »).
+2. **Git** (pour récupérer le projet) : https://git-scm.com/download/win
+   - *(Alternative sans Git : copier tout le dossier du projet sur une clé USB.)*
+
+Vérifier que Docker fonctionne (dans un terminal PowerShell ou Git Bash) :
+```bash
+docker --version
+docker compose version
+```
+
+## Étape 1 — Récupérer le projet
+
+**Option A — avec Git :**
+```bash
+cd C:/Users/NOM/Desktop
+git clone <URL_DU_DEPOT> upcycleconnect
+cd upcycleconnect
+```
+
+**Option B — sans Git :** copier le dossier complet du projet (celui qui contient `docker-compose.yml`, `API/`, `Frontend/`, `db/`) sur le PC, puis ouvrir un terminal **dans ce dossier**.
+
+> ⚠️ Il faut que le dossier contienne bien : `docker-compose.yml`, `API/Dockerfile`, `Frontend/Dockerfile`, `db/init.sql`.
+
+## Étape 2 — Lancer le projet
+
+Dans le terminal, **à la racine du projet** :
+```bash
+WEB_PORT=8088 docker compose up -d --build
+```
+- La **première fois** : le build prend **2 à 5 minutes** (téléchargement des images + compilation Go). C'est normal.
+- `WEB_PORT=8088` évite le conflit avec le port 80.
+
+> Sur **PowerShell** (si `WEB_PORT=8088 ...` ne marche pas), faire :
+> ```powershell
+> $env:WEB_PORT=8088 ; docker compose up -d --build
+> ```
+
+## Étape 3 — Vérifier que tout tourne
+
+```bash
+docker ps
+```
+On doit voir **3 conteneurs Up** : `uc_mysql` (healthy), `uc_backend`, `uc_frontend`.
+
+Puis ouvrir dans le navigateur : **http://localhost:8088**
+La page d'accueil doit s'afficher. Se connecter avec un compte de test (voir `09_COMPTES_TEST.md`).
+
+> La base de données se remplit **automatiquement** au 1er démarrage via `db/init.sql` — rien à importer à la main.
+
+## Étape 4 — Arrêter / relancer
+
+```bash
+docker compose stop      # arrêter (garde les données)
+docker compose start     # relancer
+docker compose down      # arrêter et supprimer les conteneurs (garde les volumes/données)
+```
+
+---
+
+## Dépannage (les 5 problèmes classiques)
+
+| Problème | Cause | Solution |
+|---|---|---|
+| **« port is already allocated » / 8088 ou 8081 occupé** | Un autre programme utilise le port | Changer le port : `WEB_PORT=8090 docker compose up -d`. Pour le 8081, fermer WAMP/un `go run` qui tourne. |
+| **Docker Desktop pas démarré** (`error during connect ... pipe`) | L'Engine n'est pas lancé | Ouvrir **Docker Desktop**, attendre l'icône verte, réessayer. |
+| **`uc_mysql` reste « unhealthy »** | Ancien volume MySQL incompatible | `docker compose down -v` puis `docker compose up -d` (réinitialise la base). |
+| **Le site ne charge pas / erreurs API** | Front lancé seul sans backend | Toujours lancer la **stack complète** : `docker compose up -d`. |
+| **Modif invisible dans le navigateur** | Cache | **Ctrl+Shift+R**. |
+
+## Reset complet (repartir de zéro proprement)
+```bash
+docker compose down -v          # supprime conteneurs + volumes (efface la base)
+WEB_PORT=8088 docker compose up -d --build
+```
+
+## Accéder à la base avec phpMyAdmin (interface web)
+
+Un service **phpMyAdmin** est inclus dans `docker-compose.yml`. Après `docker compose up -d` :
+
+- Ouvrir : **http://localhost:8082**
+- Utilisateur : `upcycle` / Mot de passe : `upcyclePass123` (base `pa2026`)
+- ou `root` / `rootSecret123` (accès total)
+
+Il se connecte à MySQL en interne (`PMA_HOST=mysql`) → aucun conflit avec le 3306 de WAMP.
+Changer le port si besoin : `PMA_PORT=8090 docker compose up -d`.
+
+**Alternative sans phpMyAdmin (SQL direct) :**
+```bash
+docker exec -it uc_mysql mysql -uupcycle -pupcyclePass123 pa2026
+```
+
+> ⚠️ Les modifs de base vivent dans le volume `mysql_data` : conservées après `stop/start/down`, mais **effacées par `docker compose down -v`** (réimport de `db/init.sql`). Pour une modif permanente pour tout le monde → la reporter dans `db/init.sql`.
+
+### Sur le serveur de prod (docker-compose-prod.yml)
+- phpMyAdmin utilise l'image publique `phpmyadmin:latest` → **rien à pousser sur Docker Hub**.
+- Ajouter le même bloc de service dans `docker-compose-prod.yml`, mais **bind sur localhost** pour la sécurité :
+  `ports: - "127.0.0.1:8082:80"` puis y accéder par tunnel SSH (`ssh -L 8082:localhost:8082 user@IP`).
+- **Ne jamais exposer phpMyAdmin publiquement** sur le domaine.
+
+## Résumé express (à coller au camarade)
+```
+1. Installer Docker Desktop + le lancer (icône verte).
+2. Récupérer le dossier du projet (git clone ou copie).
+3. Terminal dans le dossier :  WEB_PORT=8088 docker compose up -d --build
+4. Attendre ~3 min, puis ouvrir http://localhost:8088
+5. Se connecter avec un compte de test.
+```
+
+> ✅ Pas besoin d'installer Go, MySQL, ni WAMP : **tout est dans les conteneurs**. Le seul prérequis est **Docker Desktop**.
 

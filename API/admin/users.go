@@ -121,6 +121,14 @@ func Inscription(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Securite : on interdit l'auto-inscription en tant qu'Administrateur ou Salarie.
+	// Ces comptes internes sont crees uniquement par un admin (via /admin/users/add).
+	// HasPrefix "Salari" gere aussi "Salarie" et les variantes d'encodage du "é".
+	if newUser.Role == "Administrateur" || strings.HasPrefix(newUser.Role, "Salari") {
+		http.Error(w, "Création de ce type de compte non autorisée", http.StatusForbidden)
+		return
+	}
+
 	hashedPwd, _ := auth.HashPassword(newUser.MotDePasse)
 	newUser.MotDePasse = hashedPwd
 

@@ -281,6 +281,119 @@ INSERT INTO translations (lang_code, msg_key, msg_value) VALUES
 
 ---
 
+## J. La pagination (question probable : « comment paginez-vous ? »)
+
+Il y a **2 façons** de paginer. Sache expliquer les deux et **pourquoi j'ai choisi la 1ère**.
+
+### J.1 — Ce qui est fait dans le projet : pagination CÔTÉ CLIENT (JS)
+- **Fichier** : `Frontend/script/admin/user.js`.
+- **Principe** : l'API renvoie **tous** les utilisateurs (`GET /admin/users`), on les garde en mémoire, et on affiche seulement une **tranche de 10** avec `slice`. Les boutons changent l'index de page et ré-affichent.
+- **Pourquoi ce choix ?** Le nombre d'utilisateurs est petit → simple, aucune requête réseau à chaque changement de page, tri/recherche instantanés côté client.
+
+```js
+let tousLesUsers = [];        // toutes les données chargées une fois
+let pageUsers = 1;            // page courante
+const USERS_PAR_PAGE = 10;    // taille d'une page
+
+function AfficherTableau(users) {        // reçoit la liste complète de l'API
+  tousLesUsers = users || [];
+  pageUsers = 1;
+  afficherPageUsers();
+}
+
+function changerPageUsers(delta) {       // bouton Précédent (-1) / Suivant (+1)
+  pageUsers += delta;
+  if (pageUsers < 1) pageUsers = 1;
+  afficherPageUsers();
+}
+
+function afficherPageUsers() {
+  const nbPages = Math.max(1, Math.ceil(tousLesUsers.length / USERS_PAR_PAGE));
+  if (pageUsers > nbPages) pageUsers = nbPages;
+  const debut = (pageUsers - 1) * USERS_PAR_PAGE;          // index de départ
+  const usersPage = tousLesUsers.slice(debut, debut + USERS_PAR_PAGE); // la tranche
+  // ... on génère le HTML uniquement pour usersPage ...
+  // + une barre "Page X / Y" avec 2 boutons onclick="changerPageUsers(-1|1)"
+}
+```
+> Points clés à dire : `Math.ceil(total / taille)` = nombre de pages ; `slice(debut, debut + taille)` = la tranche ; on désactive les boutons aux extrémités.
+
+### J.2 — Comment on le ferait CÔTÉ SERVEUR en Go (SQL LIMIT / OFFSET)
+À utiliser si la table devient **grosse** (des milliers de lignes) : on ne renvoie qu'une page depuis la base.
+
+**Requête SQL** — la clé, c'est `LIMIT taille OFFSET (page-1)*taille` :
+```sql
+SELECT id, nom, prenom, email, role FROM utilisateur
+ORDER BY id
+LIMIT ? OFFSET ?;      -- LIMIT = 10, OFFSET = (page-1)*10
+```
+
+**DB** — `API/bdd/userReq.go` :
+```go
+func GetUsersPagines(page, taille int) ([]models.User, int, error) {
+    if page < 1 { page = 1 }
+    offset := (page - 1) * taille
+
+    // total (pour calculer le nombre de pages)
+    var total int
+    Db.QueryRow("SELECT COUNT(*) FROM utilisateur").Scan(&total)
+
+    rows, err := Db.Query(
+        "SELECT id, nom, prenom, email, role FROM utilisateur ORDER BY id LIMIT ? OFFSET ?",
+        taille, offset,
+    )
+    if err != nil { return nil, 0, err }
+    defer rows.Close()
+
+    var users []models.User
+    for rows.Next() {
+        var u models.User
+        rows.Scan(&u.Id, &u.Nom, &u.Prenom, &u.Email, &u.Role)
+        users = append(users, u)
+    }
+    return users, total, nil
+}
+```
+
+**Handler** — `API/admin/users.go` (lit `?page=` et `?limit=`) :
+```go
+func GetUsersPagines(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Access-Control-Allow-Origin", "*")
+    w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+    if r.Method == "OPTIONS" { w.WriteHeader(http.StatusOK); return }
+
+    page, _ := strconv.Atoi(r.URL.Query().Get("page"))
+    taille, _ := strconv.Atoi(r.URL.Query().Get("limit"))
+    if taille <= 0 { taille = 10 }
+
+    users, total, err := bdd.GetUsersPagines(page, taille)
+    if err != nil { http.Error(w, "erreur", 500); return }
+
+    json.NewEncoder(w).Encode(map[string]interface{}{
+        "users": users,
+        "total": total,
+        "page":  page,
+        "pages": (total + taille - 1) / taille,  // arrondi supérieur
+    })
+}
+```
+
+**Route** — `API/route/users.go` :
+```go
+http.HandleFunc("OPTIONS /admin/users/paginated", admin.GetUsersPagines)
+http.HandleFunc("GET /admin/users/paginated", auth.VerifyRoleMiddleware(admin.GetUsersPagines, "Administrateur"))
+```
+
+**Test** :
+```bash
+curl "http://localhost:8081/admin/users/paginated?page=2&limit=10" -H "Authorization: Bearer $TOKEN"
+```
+
+### J.3 — Phrase à dire à l'oral
+« J'ai paginé **côté client** car le volume est faible : je charge la liste une fois et j'affiche des tranches de 10 avec `slice`. Si la table devenait volumineuse, je passerais **côté serveur** avec une requête SQL `LIMIT / OFFSET` et un handler qui renvoie la page + le total, pour ne transférer que 10 lignes à la fois. »
+
+---
+
 ## I. Checklist « je viens de modifier, ça ne marche pas »
 1. Erreur Go ? → `cd API && go build ./...` (lit l'erreur exacte).
 2. Conteneur rebuild ? → `docker compose up -d --build backend|frontend`.

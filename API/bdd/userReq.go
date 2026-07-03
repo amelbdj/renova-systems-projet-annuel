@@ -247,7 +247,7 @@ func GetUserById(id int) (models.User, error) {
 func GetUserByRole(role string) ([]models.User, error) {
 	var Users []models.User
 
-	rows, err := Db.Query("SELECT id, nom, prenom, email, mot_de_passe, role, type_statut, nom_entreprise, siret, score FROM pa2026.utilisateur WHERE role = ?", role)
+	rows, err := Db.Query("SELECT id, nom, prenom, email, mot_de_passe, role, type_statut, nom_entreprise, siret, score, COALESCE(validation,'') FROM pa2026.utilisateur WHERE role = ?", role)
 
 	if err != nil {
 		return nil, fmt.Errorf("get User by role : %v", err.Error())
@@ -257,7 +257,7 @@ func GetUserByRole(role string) ([]models.User, error) {
 	for rows.Next() {
 		var User models.User
 
-		err := rows.Scan(&User.Id, &User.Nom, &User.Prenom, &User.Email, &User.MotDePasse, &User.Role, &User.TypeStatut, &User.NomEntreprise, &User.Siret, &User.Score)
+		err := rows.Scan(&User.Id, &User.Nom, &User.Prenom, &User.Email, &User.MotDePasse, &User.Role, &User.TypeStatut, &User.NomEntreprise, &User.Siret, &User.Score, &User.Validation)
 
 		if err != nil {
 			return nil, fmt.Errorf("get User by role : %v", err.Error())
@@ -279,7 +279,7 @@ func GetUserByName(query string, role string) ([]models.User, error) {
 	search := "%" + query + "%"
 	if role != "Tous les rôles" && role != "" {
 		var Users []models.User
-		rows, err := Db.Query("SELECT id, nom, prenom, email, mot_de_passe, role, type_statut, nom_entreprise, siret, score FROM pa2026.utilisateur WHERE (UPPER(nom) LIKE ? OR UPPER(prenom) LIKE ?) AND role = ?", search, search, role)
+		rows, err := Db.Query("SELECT id, nom, prenom, email, mot_de_passe, role, type_statut, nom_entreprise, siret, score, COALESCE(validation,'') FROM pa2026.utilisateur WHERE (UPPER(nom) LIKE ? OR UPPER(prenom) LIKE ?) AND role = ?", search, search, role)
 
 		if err != nil {
 			fmt.Println("Erreur lors de l'exécution de la requête : ", err)
@@ -290,7 +290,7 @@ func GetUserByName(query string, role string) ([]models.User, error) {
 		for rows.Next() {
 			var User models.User
 
-			err := rows.Scan(&User.Id, &User.Nom, &User.Prenom, &User.Email, &User.MotDePasse, &User.Role, &User.TypeStatut, &User.NomEntreprise, &User.Siret, &User.Score)
+			err := rows.Scan(&User.Id, &User.Nom, &User.Prenom, &User.Email, &User.MotDePasse, &User.Role, &User.TypeStatut, &User.NomEntreprise, &User.Siret, &User.Score, &User.Validation)
 
 			if err != nil {
 				fmt.Println("Erreur lors de l'exécution de la requête : ", err)
@@ -309,7 +309,7 @@ func GetUserByName(query string, role string) ([]models.User, error) {
 	} else {
 		var Users []models.User
 		search := "%" + query + "%"
-		rows, err := Db.Query("SELECT id, nom, prenom, email, mot_de_passe, role, type_statut, nom_entreprise, siret, score FROM pa2026.utilisateur WHERE (UPPER(nom) LIKE ? OR UPPER(prenom) LIKE ?)", search, search)
+		rows, err := Db.Query("SELECT id, nom, prenom, email, mot_de_passe, role, type_statut, nom_entreprise, siret, score, COALESCE(validation,'') FROM pa2026.utilisateur WHERE (UPPER(nom) LIKE ? OR UPPER(prenom) LIKE ?)", search, search)
 
 		if err != nil {
 			return nil, fmt.Errorf("get User by name : %v", err.Error())
@@ -319,7 +319,7 @@ func GetUserByName(query string, role string) ([]models.User, error) {
 		for rows.Next() {
 			var User models.User
 
-			err := rows.Scan(&User.Id, &User.Nom, &User.Prenom, &User.Email, &User.MotDePasse, &User.Role, &User.TypeStatut, &User.NomEntreprise, &User.Siret, &User.Score)
+			err := rows.Scan(&User.Id, &User.Nom, &User.Prenom, &User.Email, &User.MotDePasse, &User.Role, &User.TypeStatut, &User.NomEntreprise, &User.Siret, &User.Score, &User.Validation)
 
 			if err != nil {
 				return nil, fmt.Errorf("get User by name : %v", err.Error())
