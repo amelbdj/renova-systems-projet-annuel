@@ -46,12 +46,8 @@ func SendNotificationToAudience(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, id := range ids {
+		// SendPushNotification cree aussi la notif "cloche" en base.
 		go SendPushNotification(id, req.Message)
-
-		idInt, errConv := strconv.Atoi(id)
-		if errConv == nil {
-			bdd.CreateNotification(idInt, req.Message)
-		}
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -122,6 +118,12 @@ var (
 )
 
 func SendPushNotification(userID string, message string) {
+	// Notification "cloche" en base (en plus du push OneSignal), pour que
+	// l'utilisateur la retrouve dans l'app meme sans push / hors HTTPS.
+	if idInt, err := strconv.Atoi(userID); err == nil {
+		bdd.CreateNotification(idInt, message)
+	}
+
 	payload := map[string]interface{}{
 		"app_id": OneSignalAppID,
 		"include_aliases": map[string][]string{

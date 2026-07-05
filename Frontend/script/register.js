@@ -172,6 +172,23 @@ function olderThan18(dateTexte) {
   }
 }
 
+// Verifie un SIRET : 14 chiffres + cle de controle de Luhn.
+function siretValide(siret) {
+  if (!siret || siret.length !== 14) return false;
+  let somme = 0;
+  for (let i = 0; i < 14; i++) {
+    let c = siret[i];
+    if (c < "0" || c > "9") return false;
+    let n = parseInt(c, 10);
+    if ((14 - i) % 2 === 0) {
+      n = n * 2;
+      if (n > 9) n = n - 9;
+    }
+    somme = somme + n;
+  }
+  return somme % 10 === 0;
+}
+
 
 async function submitRegister() {
   if (!document.getElementById("chkCgu").checked) {
@@ -196,8 +213,13 @@ async function submitRegister() {
     }
     infosAEnvoyer.date_naissance = dateNaissance;
   } else if (roleChoisi === "Pro") {
+    let siret = document.getElementById("proSiret").value.replace(/\s/g, "");
+    if (siretValide(siret) === false) {
+      alert("SIRET invalide : il doit contenir 14 chiffres avec une clé de contrôle correcte.");
+      return;
+    }
     infosAEnvoyer.nom_entreprise = document.getElementById("proName").value;
-    infosAEnvoyer.siret = document.getElementById("proSiret").value;
+    infosAEnvoyer.siret = siret;
   }
 
   try {

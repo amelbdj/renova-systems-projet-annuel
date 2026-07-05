@@ -78,7 +78,6 @@ func ValidateEvenement(w http.ResponseWriter, r *http.Request) {
 	if errInfo == nil && idSalarie != 0 {
 		msg := fmt.Sprintf("✅ Votre événement '%s' a été validé et est maintenant en ligne !", titre)
 		go SendPushNotification(strconv.Itoa(idSalarie), msg)
-		bdd.CreateNotification(idSalarie, msg)
 	}
 
 	w.WriteHeader(http.StatusOK)
@@ -113,7 +112,6 @@ func RefuseEvenement(w http.ResponseWriter, r *http.Request) {
 	if errInfo == nil && idSalarie != 0 {
 		msg := fmt.Sprintf("❌ Votre événement '%s' a été refusé par un responsable.", titre)
 		go SendPushNotification(strconv.Itoa(idSalarie), msg)
-		bdd.CreateNotification(idSalarie, msg)
 	}
 
 	w.WriteHeader(http.StatusOK)

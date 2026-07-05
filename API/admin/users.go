@@ -104,6 +104,32 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(reponse)
 }
 
+// siretValide verifie qu'un SIRET est correct : 14 chiffres + cle de controle
+// de Luhn (on double un chiffre sur deux en partant de la droite, et la somme
+// totale doit etre un multiple de 10). Detecte les SIRET inventes.
+func siretValide(siret string) bool {
+	if len(siret) != 14 {
+		return false
+	}
+	somme := 0
+	for i := 0; i < 14; i++ {
+		c := siret[i]
+		if c < '0' || c > '9' {
+			return false // caractere non numerique
+		}
+		n := int(c - '0')
+		// Position depuis la droite = 14 - i ; on double les positions paires.
+		if (14-i)%2 == 0 {
+			n *= 2
+			if n > 9 {
+				n -= 9
+			}
+		}
+		somme += n
+	}
+	return somme%10 == 0
+}
+
 func Inscription(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
@@ -127,6 +153,18 @@ func Inscription(w http.ResponseWriter, r *http.Request) {
 	if newUser.Role == "Administrateur" || strings.HasPrefix(newUser.Role, "Salari") {
 		http.Error(w, "Création de ce type de compte non autorisée", http.StatusForbidden)
 		return
+	}
+
+	// Un professionnel doit fournir un SIRET valide (14 chiffres + cle de Luhn).
+	if newUser.Role == "Pro" || newUser.Role == "Professionnel" {
+		siret := ""
+		if newUser.Siret != nil {
+			siret = *newUser.Siret
+		}
+		if !siretValide(siret) {
+			http.Error(w, "SIRET invalide : 14 chiffres avec une clé de contrôle correcte", http.StatusBadRequest)
+			return
+		}
 	}
 
 	hashedPwd, _ := auth.HashPassword(newUser.MotDePasse)
