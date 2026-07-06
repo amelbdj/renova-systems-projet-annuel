@@ -1,106 +1,175 @@
-# 10 — Script de démonstration (15 minutes)
+# 10 — Script de démonstration détaillé (15 min, avec répliques mot à mot)
 
-> Objectif : montrer une plateforme **complète, déployée en ligne, multi-rôles**, en valorisant les **4 tableaux de bord** (Particulier, Professionnel, Salarié, Administrateur) et leurs **fonctionnalités clés**.
-> Support : **https://upcycleconnect.pro/** (prod, preuve de mise en ligne). Garder un onglet local `http://localhost:8088` prêt pour une éventuelle modif en direct.
-> Avoir les 4 comptes de test déjà notés (voir `09_COMPTES_TEST.md`).
+> **Mode d'emploi :** 🎬 = action à faire à l'écran · 🗣️ = **à dire, texte à réciter**.
+> Support : **https://upcycleconnect.pro/** (prod). Onglet local `http://localhost:8088` prêt en secours.
+> Avant de commencer : être **déconnecté**, avoir les 4 comptes notés, DevTools fermés, cache désactivé si tu montres du local.
 
-## Minutage global (15 min)
-| Temps | Séquence |
+---
+
+## SÉQUENCE 0 — Introduction (0:00 → 1:30)
+
+🎬 *Afficher la page d'accueil `https://upcycleconnect.pro/`.*
+
+🗣️ « Bonjour. Je vais vous présenter **UpcycleConnect**, notre plateforme d'économie circulaire, développée pour **Renova Systems**. »
+
+🗣️ « Le principe est simple : les **particuliers** donnent ou vendent des objets, les **professionnels** récupèrent la matière pour la transformer, et le tout transite par un **réseau de conteneurs connectés**. »
+
+🎬 *Pointer le sélecteur de langue, puis la barre d'adresse.*
+
+🗣️ « L'application est **multilingue**, français et anglais, et surtout elle est **déjà déployée en ligne**, en HTTPS, sur une vraie infrastructure Docker — ce n'est pas du localhost. »
+
+🗣️ « Elle gère **quatre rôles**, chacun avec son tableau de bord : le particulier, le professionnel, le salarié, et l'administrateur. Je vais vous les montrer un par un. »
+
+🎬 *Cliquer sur « Connexion » → saisir le compte particulier → se connecter.*
+
+🗣️ « Commençons par le compte le plus courant : le particulier. »
+
+---
+
+## SÉQUENCE 1 — Dashboard PARTICULIER (1:30 → 4:00)
+
+🎬 *La page `/client` s'affiche.*
+
+🗣️ « Voici l'espace particulier. En haut, trois indicateurs : le nombre d'**annonces**, les **dépôts actifs** en conteneur, et le **score écologique**. Ces chiffres sont **calculés en temps réel** depuis la base, ils ne sont pas codés en dur. »
+
+🎬 *Cliquer sur « ＋ Ajouter une annonce ».*
+
+🗣️ « La fonction principale du particulier, c'est de publier une annonce. Je remplis un titre… je choisis une **catégorie** — et ces catégories viennent directement de la base de données, elles sont gérées par l'admin… »
+
+🎬 *Remplir titre, catégorie, type (Vente/Don), prix, description, et surtout ajouter une photo.*
+
+🗣️ « … je précise si c'est un **don** ou une **vente**, j'ajoute une **photo** de l'objet, et je soumets. »
+
+🎬 *Cliquer « Soumettre l'annonce ».*
+
+🗣️ « Point important : l'annonce n'est **pas publiée immédiatement**. Elle passe en **attente de validation** — c'est l'administrateur qui contrôle. On retrouvera cette annonce tout à l'heure dans le back-office. »
+
+🎬 *Aller sur `/annonces`.*
+
+🗣️ « Voici la marketplace. On peut **filtrer par catégorie**, par type, rechercher, trier. Et remarquez la couleur de l'interface : le particulier est en **violet**. Gardez ça en tête, ça va changer avec le professionnel. »
+
+🎬 *Revenir sur `/client`, pointer la section conteneurs et le score.*
+
+🗣️ « Enfin, quand un objet est vendu, le particulier reçoit un **code PIN** pour le déposer dans un casier, et l'acheteur un **code-barres** pour le récupérer. À chaque objet récupéré, l'utilisateur gagne des points sur son **Upcycling Score**. »
+
+🗣️ « Passons maintenant du côté professionnel. »
+
+---
+
+## SÉQUENCE 2 — Dashboard PROFESSIONNEL (4:00 → 6:30)
+
+🎬 *Se déconnecter, se reconnecter avec le compte pro → `/pro`.*
+
+🗣️ « Voici l'espace professionnel. Première chose : l'interface est maintenant en **teal**, plus en violet. L'application **s'adapte au rôle** de l'utilisateur, y compris sur la page des annonces. »
+
+🎬 *Ouvrir `/annonces` pour montrer les couleurs pro, puis revenir sur `/pro`.*
+
+🗣️ « Le pro consulte les mêmes annonces, mais dans son thème. S'il achète, le paiement passe par **Stripe**, et la plateforme prélève une **commission de 5 %** — techniquement via Stripe Connect, l'argent est reversé au vendeur moins la commission. »
+
+🎬 *Pointer l'encart abonnement.*
+
+🗣️ « On a un modèle **Freemium / Premium** : gratuitement, le pro accède aux annonces de base ; en Premium, il débloque des tableaux de bord avancés, des alertes prioritaires et une meilleure visibilité. »
+
+🎬 *Montrer un projet avec photos avant/après.*
+
+🗣️ « Le pro peut aussi documenter ses **projets d'upcycling**, avec des photos **avant / après** et une estimation du **CO₂ évité** — c'est le cœur de la valeur écologique. Et il peut **sponsoriser** une annonce pour la mettre en avant. »
+
+🗣️ « Ces annonces, ces conteneurs, ces événements… tout ça est animé par l'équipe interne. C'est le rôle du salarié. »
+
+---
+
+## SÉQUENCE 3 — Dashboard SALARIÉ (6:30 → 9:00)
+
+🎬 *Se reconnecter avec le compte salarié → `/salarie`.*
+
+🗣️ « Voici l'espace salarié, l'équipe interne d'UpcycleConnect. Il dispose de plusieurs sous-espaces : les **événements**, un **planning**, les **contenus et articles**, et un **forum**. »
+
+🎬 *Aller sur `/salarie/evenements` → ouvrir le formulaire de création.*
+
+🗣️ « Sa fonction clé, c'est de créer des **événements et des formations**. Je renseigne un titre, une date, un lieu, un tarif, une **image**, et je peux joindre un **plan en PDF** et des **ressources pédagogiques**. »
+
+🎬 *Soumettre (ou expliquer sans soumettre).*
+
+🗣️ « Comme pour les annonces, l'événement part **en attente de validation** de l'admin. Et il y a une règle métier importante : pour proposer un événement **payant**, le salarié doit d'abord avoir un **compte Stripe** — cette vérification est faite **côté serveur**, on ne fait jamais confiance au navigateur. »
+
+🎬 *Pointer la cloche de notifications.*
+
+🗣️ « Le salarié est prévenu par une **notification** dès que l'admin valide ou refuse son contenu. On y arrive justement : le back-office administrateur. »
+
+---
+
+## SÉQUENCE 4 — Dashboard ADMINISTRATEUR (9:00 → 13:00) — LE POINT FORT
+
+🎬 *Se reconnecter avec le compte admin → `/admin`.*
+
+🗣️ « Voici le cœur de la plateforme : le back-office. La **Vue d'ensemble** affiche des indicateurs — utilisateurs, revenus du mois, conteneurs — une **activité récente** dynamique, et un **badge** qui compte les éléments à valider. »
+
+🎬 *Cliquer sur « Validations » (`/admin/validations`).*
+
+🗣️ « Et voici l'annonce que j'ai créée tout à l'heure en tant que particulier. Je l'**approuve**… »
+
+🎬 *Cliquer « Approuver » sur l'annonce.*
+
+🗣️ « … et elle **disparaît immédiatement** de la liste des éléments en attente. La mise à jour est en direct, sans recharger la page. L'annonce est maintenant publiée sur la marketplace. »
+
+🎬 *Aller sur `/admin/users`.*
+
+🗣️ « La gestion des utilisateurs : la liste est **paginée**, dix par page, avec une **recherche**. Je peux **valider**, **refuser** ou **bannir** un compte. Par exemple, un professionnel qui s'inscrit passe en attente, et c'est ici que je vérifie son dossier avant de l'activer. »
+
+🎬 *Aller sur `/admin/conteneurs`, ouvrir un conteneur.*
+
+🗣️ « La logistique : je gère les **conteneurs** et l'état de chaque **casier** — libre, occupé, en maintenance. Je peux en créer, en ajouter, et générer un **rapport logistique en PDF**. »
+
+🎬 *Cliquer « 📄 Rapport logistique » → le PDF se télécharge.*
+
+🗣️ « Et voilà, le PDF est généré et téléchargé. »
+
+🎬 *Aller sur `/admin/finances`.*
+
+🗣️ « Les **finances** : le volume d'affaires, les **revenus issus de la commission de 5 %**, et le détail des transactions. »
+
+🎬 *Revenir sur `/admin` et pointer les cartes Catégories / Langues / Notification.*
+
+🗣️ « Et depuis la Vue d'ensemble, l'admin gère aussi les **catégories** — j'en ajoute une, elle apparaît aussitôt dans le filtre des annonces — l'ajout d'une **nouvelle langue** par import d'un fichier de traduction, et l'**envoi de notifications** à une audience. »
+
+🗣️ « Un point technique essentiel : **toutes** ces actions sont protégées **côté serveur** par un contrôle de rôle. Un particulier, même en manipulant le code du navigateur, ne pourra **jamais** accéder à ce back-office. »
+
+---
+
+## SÉQUENCE 5 — Preuve technique & conclusion (13:00 → 15:00)
+
+🎬 *Basculer sur un terminal, taper `docker ps`.*
+
+🗣️ « Côté technique : l'application tourne en **trois conteneurs Docker** — la base MySQL, l'API en Go, et le serveur web Nginx. Le front et le back sont **séparés** et orchestrés par Docker Compose. »
+
+🎬 *Montrer un appel API (Postman ou curl) : login puis une route protégée.*
+
+🗣️ « L'API est écrite en **Go**. Je me connecte, je récupère un **jeton JWT**, et je l'utilise pour appeler une route protégée. Sans jeton valide, l'API répond une erreur 401 : la sécurité est bien **côté serveur**. »
+
+🎬 *Revenir au navigateur, pointer le cadenas HTTPS et l'URL.*
+
+🗣️ « Et pour finir, la preuve que tout ceci est **réellement en ligne** : le site est accessible sur `upcycleconnect.pro`, en **HTTPS**, derrière Nginx, sur une IP publique. »
+
+🗣️ « **Pour résumer** : quatre rôles, quatre tableaux de bord, un parcours complet du dépôt à la récupération, un paiement sécurisé par Stripe, une API Go protégée par JWT, le tout déployé en production avec Docker, Nginx et HTTPS. Je vous remercie, je suis prêt à répondre à vos questions. »
+
+---
+
+## Antisèche minutage
+| Séquence | Fin visée |
 |---|---|
-| 0:00 – 1:30 | Intro + accueil + connexion |
-| 1:30 – 4:00 | **Dashboard Particulier** |
-| 4:00 – 6:30 | **Dashboard Professionnel** |
-| 6:30 – 9:00 | **Dashboard Salarié** |
-| 9:00 – 13:00 | **Dashboard Administrateur** (le point fort) |
-| 13:00 – 15:00 | Preuve technique (Docker / API / HTTPS) + conclusion |
+| Intro + connexion | 1:30 |
+| Particulier | 4:00 |
+| Professionnel | 6:30 |
+| Salarié | 9:00 |
+| Admin | 13:00 |
+| Technique + conclusion | 15:00 |
 
----
+## À ÉVITER
+- Dérouler un **paiement Stripe complet** en live (le décrire suffit).
+- Tester le **push OneSignal en local** (HTTPS requis).
+- Montrer des données de test brutes (comptes « Rejeté », annonces `azerty…`).
+- Rester bloqué sur un bug : passer à la **capture de secours** et continuer.
 
-## 0:00 – 1:30 · Introduction & connexion
-**À montrer** : la page d'accueil sur `https://upcycleconnect.pro/`.
-**À dire :**
-> « UpcycleConnect est une plateforme d'économie circulaire : les particuliers donnent ou vendent des objets, les professionnels récupèrent la matière, via un réseau de **conteneurs connectés**. Elle est **déployée en ligne**, en HTTPS, sur une infrastructure Docker. Elle gère **4 rôles**, chacun avec son tableau de bord dédié. »
-
-- Montrer rapidement : le **sélecteur de langue** (FR/EN) et les **URLs propres** (`/login`, `/annonces`).
-- Cliquer **Connexion** → se connecter en **Particulier**.
-
----
-
-## 1:30 – 4:00 · Dashboard PARTICULIER (`/client`)
-> Fil conducteur : « le parcours d'un objet, du dépôt à la récupération ».
-
-**Fonctionnalités clés à mettre en valeur :**
-1. **Tableau de bord dynamique** : montrer les 3 indicateurs en haut — **Annonces**, **Dépôt actif**, **Score éco** (« ces chiffres sont calculés en temps réel, pas codés en dur »).
-2. **Créer une annonce** (action forte) : cliquer **＋ Ajouter une annonce** → remplir titre, **catégorie** (issue de la base), type Vente/Don, prix, **photo** → **Soumettre**.
-   > « L'annonce part en **validation** : rien n'est publié sans contrôle admin. »
-3. **Marketplace** (`/annonces`) : montrer les **filtres par catégorie** (dynamiques) et le **thème violet** du particulier.
-4. **Conteneurs & Upcycling Score** : montrer la section conteneurs (code PIN / code-barres) et l'encart **score écologique**.
-   > « Quand l'objet déposé est récupéré, l'utilisateur gagne des points d'impact. »
-
-**À dire (transition) :** « Voyons maintenant le même écosystème côté professionnel. »
-
----
-
-## 4:00 – 6:30 · Dashboard PROFESSIONNEL (`/pro`)
-> Se déconnecter, se reconnecter en **Pro**.
-
-**Fonctionnalités clés :**
-1. **Interface adaptée au rôle** : montrer que l'espace pro est en **teal**, et que la page annonces reprend **les couleurs pro** (thème dynamique selon le rôle).
-2. **Modèle Freemium / Premium** : montrer l'encart abonnement (« Passer au Premium »).
-   > « Le paiement passe par **Stripe**, avec une **commission de 5 %** prélevée par la plateforme via Stripe Connect. »
-3. **Projets d'upcycling** : montrer un projet avec **photos avant / après** et **CO₂ évité**.
-4. **Sponsoring** : mentionner qu'un pro peut mettre une annonce en avant.
-
-**À dire (transition) :** « Ces contenus et événements sont animés par l'équipe interne — les salariés. »
-
----
-
-## 6:30 – 9:00 · Dashboard SALARIÉ (`/salarie`)
-> Se reconnecter en **Salarié**.
-
-**Fonctionnalités clés :**
-1. **Espace interne** : présenter les sous-espaces (Événements, Planning, Contenus, Forum).
-2. **Créer un événement / une formation** (`/salarie/evenements`) : ouvrir le formulaire, montrer les champs (titre, date, lieu, tarif, **image**, **PDF de plan/ressources**) → soumettre.
-   > « L'événement part **en attente de validation**. Et un salarié doit avoir un **compte Stripe** pour proposer un événement payant — contrôle fait côté serveur. »
-3. **Notifications** : montrer la **cloche** 🔔 — « le salarié est notifié quand l'admin valide ou refuse son contenu ».
-
-**À dire (transition) :** « Toutes ces validations, c'est le rôle de l'administrateur — le cœur du back-office. »
-
----
-
-## 9:00 – 13:00 · Dashboard ADMINISTRATEUR (`/admin`) — POINT FORT
-> Se reconnecter en **Admin**. Prendre le temps ici, c'est le module le plus riche.
-
-**Fonctionnalités clés (dans l'ordre) :**
-1. **Vue d'ensemble** : KPI (utilisateurs, revenus, conteneurs), **activité récente dynamique**, **badge de validations** dans le menu.
-2. **Validations** (`/admin/validations`) — *effet « waouh »* : approuver **l'annonce créée à l'étape Particulier** → elle **disparaît en direct** de la liste, et le badge se met à jour.
-3. **Utilisateurs** (`/admin/users`) : montrer la **pagination (10/page)**, la **recherche**, et **valider / refuser / bannir** un compte.
-4. **Logistique & Box** (`/admin/conteneurs`) : ouvrir un conteneur → casiers, puis cliquer **« 📄 Rapport logistique »** → **un PDF se télécharge** (génération côté client).
-5. **Finances** (`/admin/finances`) : volume, **commission 5 %**, transactions.
-6. **Modules avancés** (sur la Vue d'ensemble) : montrer rapidement **Catégories** (ajout en direct → apparaît dans le filtre annonces), **Langues/Traductions** (import d'une langue), **Envoyer une notification** (cloche + push).
-
-**À dire :**
-> « Chaque action sensible est **vérifiée côté serveur** avec un contrôle de rôle : le back-office est totalement protégé, un particulier ne peut jamais y accéder même en manipulant le front. »
-
----
-
-## 13:00 – 15:00 · Preuve technique & conclusion
-**À montrer (terminal + navigateur) :**
-- `docker ps` → **3 conteneurs Up** (base, API Go, front Nginx) : « front et back séparés, orchestrés par Docker Compose ».
-- Un appel **API** en direct (Postman/curl) : `POST /admin/login` → token, puis une route protégée : « API en Go, sécurisée par **JWT** ».
-- La barre d'adresse **https://upcycleconnect.pro** avec le **cadenas HTTPS** : « déployé en ligne, derrière Nginx, sur IP publique — ce n'est pas du localhost ».
-
-**Phrase de clôture :**
-> « En résumé : 4 rôles, 4 tableaux de bord, un parcours complet du dépôt à la récupération, un paiement sécurisé, le tout déployé en production avec Docker, Nginx et HTTPS. »
-
----
-
-## À ÉVITER pendant la démo
-- Dérouler un **paiement Stripe complet** en live (dépend des comptes Connect + webhook — risque de blocage). Le **décrire** suffit.
-- Tester le **push OneSignal en local** (désactivé sur localhost, HTTPS requis) — le montrer en prod ou l'expliquer.
-- Ouvrir des données de test brutes/incohérentes (comptes « Rejeté », annonces `azerty…`).
-- Rester bloqué sur un bug live : avoir des **captures de secours** de chaque écran clé.
-
-## Plan B (si le réseau/la prod tombe)
-- Basculer sur `http://localhost:8088` (stack Docker locale) — même parcours.
+## Plan B
+- Si la prod tombe : basculer sur `http://localhost:8088` (même parcours).
 - Si tout tombe : dérouler avec les **captures d'écran** de secours.
