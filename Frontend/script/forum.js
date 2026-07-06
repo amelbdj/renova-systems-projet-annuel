@@ -1,4 +1,5 @@
 let sujetActifId = null;
+let sondageForum = null; // intervalle de rafraichissement auto des messages
 
 function initForum() {
   chargerForum();
@@ -67,10 +68,24 @@ window.ouvrirSujet = function (idTopic, titre) {
   titreEl.textContent = titre;
 
   chargerMessagesSujet(idTopic);
+
+  // Rafraichissement automatique : on recharge les messages toutes les 4 s
+  // (mode silencieux, sans afficher "Chargement...") pour voir en direct
+  // les messages postes par les autres utilisateurs.
+  if (sondageForum) clearInterval(sondageForum);
+  sondageForum = setInterval(function () {
+    if (sujetActifId) chargerMessagesSujet(sujetActifId, true);
+  }, 4000);
 };
 
 window.retourListeForums = function () {
   sujetActifId = null;
+
+  // on arrete le rafraichissement automatique quand on quitte le sujet
+  if (sondageForum) {
+    clearInterval(sondageForum);
+    sondageForum = null;
+  }
 
   document.getElementById("vue-sujet-actif").style.display = "none";
   document.getElementById("vue-liste-forums").style.display = "block";
@@ -78,10 +93,12 @@ window.retourListeForums = function () {
   chargerForum();
 };
 
-function chargerMessagesSujet(idTopic) {
+function chargerMessagesSujet(idTopic, silencieux) {
   const token = localStorage.getItem("token");
   const zone = document.getElementById("zone-messages");
-  zone.innerHTML = "<p>Chargement...</p>";
+  // En mode silencieux (rafraichissement auto), on n'affiche pas "Chargement..."
+  // pour eviter le clignotement toutes les 4 secondes.
+  if (!silencieux) zone.innerHTML = "<p>Chargement...</p>";
 
   fetch(API_BASE_URL + "/user/forums/messages?topic_id=" + idTopic, {
     headers: { Authorization: "Bearer " + token },

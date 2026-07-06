@@ -35,6 +35,18 @@ html {
   --r2: 10px;
 }
 
+/* Thème Pro : accent bleu -> teal (comme l'espace pro).
+   Classe ajoutée sur <html> par navRole.js si l'utilisateur est "Pro". */
+.theme-pro {
+  --blue: #00d2b4;
+  --blue-l: #2decd4;
+  --blue-d: #009985;
+  --b0: rgba(0, 210, 180, 0.08);
+  --b1: rgba(0, 210, 180, 0.16);
+  --b2: rgba(0, 210, 180, 0.32);
+  --glow: rgba(0, 210, 180, 0.1);
+}
+
 ::-webkit-scrollbar {
   width: 5px;
 }

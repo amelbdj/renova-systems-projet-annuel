@@ -1,175 +1,171 @@
-# 10 — Script de démonstration détaillé (15 min, avec répliques mot à mot)
+# 10 — Script de démonstration détaillé (≈15 min, avec répliques mot à mot)
 
-> **Mode d'emploi :** 🎬 = action à faire à l'écran · 🗣️ = **à dire, texte à réciter**.
-> Support : **https://upcycleconnect.pro/** (prod). Onglet local `http://localhost:8088` prêt en secours.
-> Avant de commencer : être **déconnecté**, avoir les 4 comptes notés, DevTools fermés, cache désactivé si tu montres du local.
+> **Légende :** 🎬 = action à l'écran · 🗣️ = **texte à réciter**.
+> Support : **https://upcycleconnect.pro/** (prod) · onglet local `http://localhost:8088` en secours.
+> **Carte bancaire de test Stripe** : `4242 4242 4242 4242`, date future quelconque (ex 12/34), CVC quelconque (ex 123).
+> **Préparer avant** : avoir en base **un événement payant** validé (pour l'inscription), et **une réservation de casier active** avec son **PIN** et son **code-barres** (pour le simulateur). Noter ces codes sur un papier.
 
----
-
-## SÉQUENCE 0 — Introduction (0:00 → 1:30)
-
-🎬 *Afficher la page d'accueil `https://upcycleconnect.pro/`.*
-
-🗣️ « Bonjour. Je vais vous présenter **UpcycleConnect**, notre plateforme d'économie circulaire, développée pour **Renova Systems**. »
-
-🗣️ « Le principe est simple : les **particuliers** donnent ou vendent des objets, les **professionnels** récupèrent la matière pour la transformer, et le tout transite par un **réseau de conteneurs connectés**. »
-
-🎬 *Pointer le sélecteur de langue, puis la barre d'adresse.*
-
-🗣️ « L'application est **multilingue**, français et anglais, et surtout elle est **déjà déployée en ligne**, en HTTPS, sur une vraie infrastructure Docker — ce n'est pas du localhost. »
-
-🗣️ « Elle gère **quatre rôles**, chacun avec son tableau de bord : le particulier, le professionnel, le salarié, et l'administrateur. Je vais vous les montrer un par un. »
-
-🎬 *Cliquer sur « Connexion » → saisir le compte particulier → se connecter.*
-
-🗣️ « Commençons par le compte le plus courant : le particulier. »
+## Minutage
+| Séquence | Fin visée |
+|---|---|
+| 0. Intro + connexion | 1:15 |
+| 1. Particulier (annonce) | 3:15 |
+| 2. Box / conteneurs (simulateur) | 5:00 |
+| 3. Salarié (créer un événement) | 6:45 |
+| 4. **Paiement + inscription** (Stripe) | 9:00 |
+| 5. Professionnel | 10:30 |
+| 6. Administrateur | 13:30 |
+| 7. Technique + conclusion | 15:00 |
 
 ---
 
-## SÉQUENCE 1 — Dashboard PARTICULIER (1:30 → 4:00)
+## SÉQUENCE 0 — Introduction (0:00 → 1:15)
+🎬 *Page d'accueil `https://upcycleconnect.pro/`.*
 
-🎬 *La page `/client` s'affiche.*
+🗣️ « Bonjour. Je vous présente **UpcycleConnect**, notre plateforme d'économie circulaire développée pour **Renova Systems**. »
 
-🗣️ « Voici l'espace particulier. En haut, trois indicateurs : le nombre d'**annonces**, les **dépôts actifs** en conteneur, et le **score écologique**. Ces chiffres sont **calculés en temps réel** depuis la base, ils ne sont pas codés en dur. »
+🗣️ « Le principe : les **particuliers** donnent ou vendent des objets, les **professionnels** récupèrent la matière, et tout transite par un **réseau de conteneurs connectés**. Le site est **déployé en ligne**, en HTTPS, sur une infrastructure Docker. »
 
-🎬 *Cliquer sur « ＋ Ajouter une annonce ».*
+🗣️ « L'application gère **quatre rôles**, chacun avec son tableau de bord. Je vais tous vous les montrer, ainsi que le **paiement** et le **parcours des conteneurs**. Commençons par le particulier. »
 
-🗣️ « La fonction principale du particulier, c'est de publier une annonce. Je remplis un titre… je choisis une **catégorie** — et ces catégories viennent directement de la base de données, elles sont gérées par l'admin… »
+🎬 *Connexion → compte particulier → `/client`.*
 
-🎬 *Remplir titre, catégorie, type (Vente/Don), prix, description, et surtout ajouter une photo.*
+---
 
-🗣️ « … je précise si c'est un **don** ou une **vente**, j'ajoute une **photo** de l'objet, et je soumets. »
+## SÉQUENCE 1 — Particulier : l'annonce (1:15 → 3:15)
+🗣️ « Voici l'espace particulier. En haut, trois indicateurs **calculés en temps réel** : annonces, dépôts actifs, et score écologique. »
 
-🎬 *Cliquer « Soumettre l'annonce ».*
+🎬 *Cliquer « ＋ Ajouter une annonce », remplir titre, catégorie, type Vente, prix, description, **ajouter une photo**, puis Soumettre.*
 
-🗣️ « Point important : l'annonce n'est **pas publiée immédiatement**. Elle passe en **attente de validation** — c'est l'administrateur qui contrôle. On retrouvera cette annonce tout à l'heure dans le back-office. »
+🗣️ « La fonction principale : publier une annonce. Je choisis une **catégorie** — elles viennent de la base, gérées par l'admin — j'ajoute une **photo**, et je soumets. »
+
+🗣️ « Point clé : l'annonce n'est **pas publiée directement**, elle passe en **validation**. On la retrouvera dans le back-office admin. »
 
 🎬 *Aller sur `/annonces`.*
 
-🗣️ « Voici la marketplace. On peut **filtrer par catégorie**, par type, rechercher, trier. Et remarquez la couleur de l'interface : le particulier est en **violet**. Gardez ça en tête, ça va changer avec le professionnel. »
-
-🎬 *Revenir sur `/client`, pointer la section conteneurs et le score.*
-
-🗣️ « Enfin, quand un objet est vendu, le particulier reçoit un **code PIN** pour le déposer dans un casier, et l'acheteur un **code-barres** pour le récupérer. À chaque objet récupéré, l'utilisateur gagne des points sur son **Upcycling Score**. »
-
-🗣️ « Passons maintenant du côté professionnel. »
+🗣️ « Voici la marketplace, avec **filtres par catégorie** et recherche. Notez la couleur **violette** de l'interface particulier — elle changera pour le professionnel. »
 
 ---
 
-## SÉQUENCE 2 — Dashboard PROFESSIONNEL (4:00 → 6:30)
+## SÉQUENCE 2 — Les conteneurs & le simulateur (3:15 → 5:00)
+🗣️ « Le cœur du concept, c'est le **réseau de conteneurs**. Quand un objet est vendu, le système réserve un **casier** et génère deux codes : un **code PIN** pour que le vendeur dépose l'objet, et un **code-barres** pour que l'acheteur le récupère. »
 
-🎬 *Se déconnecter, se reconnecter avec le compte pro → `/pro`.*
+🎬 *Ouvrir `/simulateur`.*
 
-🗣️ « Voici l'espace professionnel. Première chose : l'interface est maintenant en **teal**, plus en violet. L'application **s'adapte au rôle** de l'utilisateur, y compris sur la page des annonces. »
+🗣️ « Comme nous n'avons pas de serrure physique ici, voici un **simulateur** qui reproduit le boîtier électronique du conteneur. »
 
-🎬 *Ouvrir `/annonces` pour montrer les couleurs pro, puis revenir sur `/pro`.*
+🎬 *Dans « Digicode Vendeur » (`#pinDepotInput`), saisir le **PIN** noté → valider.*
 
-🗣️ « Le pro consulte les mêmes annonces, mais dans son thème. S'il achète, le paiement passe par **Stripe**, et la plateforme prélève une **commission de 5 %** — techniquement via Stripe Connect, l'argent est reversé au vendeur moins la commission. »
+🗣️ « Côté vendeur, je saisis le **code PIN**… et le système confirme le **dépôt** : le casier passe en “occupé”, et l'objet est marqué comme déposé. »
 
-🎬 *Pointer l'encart abonnement.*
+🎬 *Dans « Digicode Acheteur » (`#pinRetraitInput`), saisir le **code-barres** (ex `UC-7-1`) → valider.*
 
-🗣️ « On a un modèle **Freemium / Premium** : gratuitement, le pro accède aux annonces de base ; en Premium, il débloque des tableaux de bord avancés, des alertes prioritaires et une meilleure visibilité. »
+🗣️ « Côté acheteur, je scanne le **code-barres**… et là, le retrait est validé : le casier se **libère**, l'objet passe en “récupéré”, et — c'est important — l'utilisateur gagne des points sur son **Upcycling Score**. »
 
-🎬 *Montrer un projet avec photos avant/après.*
-
-🗣️ « Le pro peut aussi documenter ses **projets d'upcycling**, avec des photos **avant / après** et une estimation du **CO₂ évité** — c'est le cœur de la valeur écologique. Et il peut **sponsoriser** une annonce pour la mettre en avant. »
-
-🗣️ « Ces annonces, ces conteneurs, ces événements… tout ça est animé par l'équipe interne. C'est le rôle du salarié. »
+🗣️ « Tout le cycle — réservation, dépôt, retrait — est tracé en base dans une table dédiée. Passons à la création de contenu par l'équipe interne. »
 
 ---
 
-## SÉQUENCE 3 — Dashboard SALARIÉ (6:30 → 9:00)
+## SÉQUENCE 3 — Salarié : créer un événement (5:00 → 6:45)
+🎬 *Se reconnecter avec le compte salarié → `/salarie` → `/salarie/evenements`.*
 
-🎬 *Se reconnecter avec le compte salarié → `/salarie`.*
+🗣️ « Voici l'espace salarié, l'équipe interne. Sa fonction clé : créer des **événements et formations**. »
 
-🗣️ « Voici l'espace salarié, l'équipe interne d'UpcycleConnect. Il dispose de plusieurs sous-espaces : les **événements**, un **planning**, les **contenus et articles**, et un **forum**. »
+🎬 *Ouvrir le formulaire, montrer les champs (titre, date, lieu, **tarif**, image, PDF).*
 
-🎬 *Aller sur `/salarie/evenements` → ouvrir le formulaire de création.*
+🗣️ « Je renseigne un titre, une date, un lieu, un **tarif** — car un événement peut être payant — une image, et je peux joindre un **PDF** de ressources. »
 
-🗣️ « Sa fonction clé, c'est de créer des **événements et des formations**. Je renseigne un titre, une date, un lieu, un tarif, une **image**, et je peux joindre un **plan en PDF** et des **ressources pédagogiques**. »
-
-🎬 *Soumettre (ou expliquer sans soumettre).*
-
-🗣️ « Comme pour les annonces, l'événement part **en attente de validation** de l'admin. Et il y a une règle métier importante : pour proposer un événement **payant**, le salarié doit d'abord avoir un **compte Stripe** — cette vérification est faite **côté serveur**, on ne fait jamais confiance au navigateur. »
-
-🎬 *Pointer la cloche de notifications.*
-
-🗣️ « Le salarié est prévenu par une **notification** dès que l'admin valide ou refuse son contenu. On y arrive justement : le back-office administrateur. »
+🗣️ « Deux règles métier importantes : l'événement part **en attente de validation** de l'admin, et pour proposer un événement **payant**, le salarié doit avoir un **compte Stripe** — vérifié **côté serveur**. »
 
 ---
 
-## SÉQUENCE 4 — Dashboard ADMINISTRATEUR (9:00 → 13:00) — LE POINT FORT
+## SÉQUENCE 4 — Paiement & inscription à un événement (6:45 → 9:00) ⭐
+🎬 *Se reconnecter avec le compte particulier (ou pro) → aller sur `/evenements`.*
 
+🗣️ « Maintenant, la partie **paiement**, essentielle sur une plateforme comme celle-ci. Un utilisateur veut s'inscrire à une **formation payante**. »
+
+🎬 *Sur la carte d'un événement payant, cliquer « S'inscrire ➔ ».*
+
+🗣️ « Je clique sur **S'inscrire**. Comme l'événement est payant, l'application appelle notre API, qui crée une **session de paiement Stripe** et me redirige vers la page de paiement sécurisée. »
+
+🎬 *La page **Stripe Checkout** s'affiche. Saisir la carte de test `4242 4242 4242 4242`, date `12/34`, CVC `123`, puis payer.*
+
+🗣️ « Nous sommes maintenant sur **Stripe**, en mode test. Je saisis une carte de test… et je valide le paiement. »
+
+🗣️ « Techniquement, le paiement passe par **Stripe Connect** : l'argent va au salarié organisateur, **moins une commission de 5 %** qui revient à la plateforme. Une **facture PDF** est générée automatiquement, et l'inscription est confirmée par un **webhook** Stripe. »
+
+> ⚠️ *Si le retour de paiement échoue en live : rester sur la page Stripe (c'est déjà la preuve de l'intégration réelle) et enchaîner. Alternative sûre : s'inscrire à un événement **gratuit** pour montrer l'inscription instantanée.*
+
+---
+
+## SÉQUENCE 5 — Professionnel (9:00 → 10:30)
+🎬 *Se reconnecter avec le compte pro → `/pro`.*
+
+🗣️ « Voici l'espace professionnel. Première chose : l'interface est en **teal**, plus en violet — l'application **s'adapte au rôle**, y compris sur la page des annonces. »
+
+🎬 *Pointer l'encart abonnement et un projet avant/après.*
+
+🗣️ « Le pro fonctionne en **Freemium / Premium** : l'abonnement Premium, lui aussi payé via Stripe, débloque des tableaux avancés et une meilleure visibilité. Il documente ses **projets d'upcycling** avec des photos **avant / après** et le **CO₂ évité**, et peut **sponsoriser** ses annonces. »
+
+---
+
+## SÉQUENCE 6 — Administrateur (10:30 → 13:30) — POINT FORT
 🎬 *Se reconnecter avec le compte admin → `/admin`.*
 
-🗣️ « Voici le cœur de la plateforme : le back-office. La **Vue d'ensemble** affiche des indicateurs — utilisateurs, revenus du mois, conteneurs — une **activité récente** dynamique, et un **badge** qui compte les éléments à valider. »
+🗣️ « Le cœur de la plateforme : le back-office. La Vue d'ensemble affiche les KPI — utilisateurs, **revenus du mois issus des commissions**, conteneurs — l'activité récente, et un badge des éléments à valider. »
 
-🎬 *Cliquer sur « Validations » (`/admin/validations`).*
+🎬 *`/admin/validations` → approuver l'annonce créée au début.*
 
-🗣️ « Et voici l'annonce que j'ai créée tout à l'heure en tant que particulier. Je l'**approuve**… »
+🗣️ « Et voici l'annonce que j'ai créée tout à l'heure. Je l'**approuve**… et elle **disparaît en direct** de la liste : elle est maintenant publiée. »
 
-🎬 *Cliquer « Approuver » sur l'annonce.*
+🎬 *`/admin/users`.*
 
-🗣️ « … et elle **disparaît immédiatement** de la liste des éléments en attente. La mise à jour est en direct, sans recharger la page. L'annonce est maintenant publiée sur la marketplace. »
+🗣️ « La gestion des utilisateurs : liste **paginée**, recherche, et je peux **valider, refuser ou bannir** un compte — par exemple contrôler un professionnel avant de l'activer. »
 
-🎬 *Aller sur `/admin/users`.*
+🎬 *`/admin/conteneurs` → ouvrir un conteneur → « 📄 Rapport logistique » (PDF se télécharge).*
 
-🗣️ « La gestion des utilisateurs : la liste est **paginée**, dix par page, avec une **recherche**. Je peux **valider**, **refuser** ou **bannir** un compte. Par exemple, un professionnel qui s'inscrit passe en attente, et c'est ici que je vérifie son dossier avant de l'activer. »
+🗣️ « La logistique : je gère les conteneurs et l'état des casiers, et je génère un **rapport PDF**… voilà, il est téléchargé. »
 
-🎬 *Aller sur `/admin/conteneurs`, ouvrir un conteneur.*
+🎬 *`/admin/finances`.*
 
-🗣️ « La logistique : je gère les **conteneurs** et l'état de chaque **casier** — libre, occupé, en maintenance. Je peux en créer, en ajouter, et générer un **rapport logistique en PDF**. »
+🗣️ « Les finances : le volume d'affaires et les **revenus de la commission de 5 %**, avec le détail des transactions Stripe. »
 
-🎬 *Cliquer « 📄 Rapport logistique » → le PDF se télécharge.*
+🎬 *Revenir sur `/admin`, pointer Catégories / Langues / Notification.*
 
-🗣️ « Et voilà, le PDF est généré et téléchargé. »
-
-🎬 *Aller sur `/admin/finances`.*
-
-🗣️ « Les **finances** : le volume d'affaires, les **revenus issus de la commission de 5 %**, et le détail des transactions. »
-
-🎬 *Revenir sur `/admin` et pointer les cartes Catégories / Langues / Notification.*
-
-🗣️ « Et depuis la Vue d'ensemble, l'admin gère aussi les **catégories** — j'en ajoute une, elle apparaît aussitôt dans le filtre des annonces — l'ajout d'une **nouvelle langue** par import d'un fichier de traduction, et l'**envoi de notifications** à une audience. »
-
-🗣️ « Un point technique essentiel : **toutes** ces actions sont protégées **côté serveur** par un contrôle de rôle. Un particulier, même en manipulant le code du navigateur, ne pourra **jamais** accéder à ce back-office. »
+🗣️ « Enfin, l'admin gère les **catégories**, l'ajout d'une **langue** par import de fichier, et l'**envoi de notifications**. Et tout ceci est protégé **côté serveur** par un contrôle de rôle : un particulier ne peut jamais y accéder. »
 
 ---
 
-## SÉQUENCE 5 — Preuve technique & conclusion (13:00 → 15:00)
+## SÉQUENCE 7 — Technique & conclusion (13:30 → 15:00)
+🎬 *Terminal : `docker ps`.*
 
-🎬 *Basculer sur un terminal, taper `docker ps`.*
+🗣️ « Techniquement : l'application tourne en **trois conteneurs Docker** — MySQL, l'API Go, et Nginx. Front et back sont **séparés** et orchestrés par Docker Compose. »
 
-🗣️ « Côté technique : l'application tourne en **trois conteneurs Docker** — la base MySQL, l'API en Go, et le serveur web Nginx. Le front et le back sont **séparés** et orchestrés par Docker Compose. »
+🎬 *Postman/curl : login → route protégée.*
 
-🎬 *Montrer un appel API (Postman ou curl) : login puis une route protégée.*
+🗣️ « L'API est en **Go**, sécurisée par **JWT** : sans jeton valide, elle répond 401. La sécurité est côté serveur. »
 
-🗣️ « L'API est écrite en **Go**. Je me connecte, je récupère un **jeton JWT**, et je l'utilise pour appeler une route protégée. Sans jeton valide, l'API répond une erreur 401 : la sécurité est bien **côté serveur**. »
+🎬 *Navigateur : pointer le cadenas HTTPS.*
 
-🎬 *Revenir au navigateur, pointer le cadenas HTTPS et l'URL.*
+🗣️ « Et tout est **réellement en ligne** : `upcycleconnect.pro`, en HTTPS, derrière Nginx, sur IP publique. »
 
-🗣️ « Et pour finir, la preuve que tout ceci est **réellement en ligne** : le site est accessible sur `upcycleconnect.pro`, en **HTTPS**, derrière Nginx, sur une IP publique. »
-
-🗣️ « **Pour résumer** : quatre rôles, quatre tableaux de bord, un parcours complet du dépôt à la récupération, un paiement sécurisé par Stripe, une API Go protégée par JWT, le tout déployé en production avec Docker, Nginx et HTTPS. Je vous remercie, je suis prêt à répondre à vos questions. »
+🗣️ « **Pour résumer** : quatre rôles et quatre tableaux de bord, le parcours complet d'un objet du dépôt à la récupération via nos conteneurs, un **paiement sécurisé par Stripe avec commission**, une API Go protégée par JWT, le tout **déployé en production** avec Docker, Nginx et HTTPS. Merci, je suis prêt pour vos questions. »
 
 ---
 
-## Antisèche minutage
-| Séquence | Fin visée |
-|---|---|
-| Intro + connexion | 1:30 |
-| Particulier | 4:00 |
-| Professionnel | 6:30 |
-| Salarié | 9:00 |
-| Admin | 13:00 |
-| Technique + conclusion | 15:00 |
-
-## À ÉVITER
-- Dérouler un **paiement Stripe complet** en live (le décrire suffit).
-- Tester le **push OneSignal en local** (HTTPS requis).
-- Montrer des données de test brutes (comptes « Rejeté », annonces `azerty…`).
-- Rester bloqué sur un bug : passer à la **capture de secours** et continuer.
+## À ÉVITER / précautions
+- Le **retour** après paiement Stripe peut échouer en live → rester sur la page Stripe (preuve suffisante) ou utiliser un événement **gratuit** en secours.
+- **Push OneSignal** : ne pas tester en local (HTTPS requis).
+- Ne pas montrer de données brutes incohérentes (comptes « Rejeté », annonces `azerty…`).
+- Bug live → passer à la **capture de secours** et continuer.
 
 ## Plan B
-- Si la prod tombe : basculer sur `http://localhost:8088` (même parcours).
-- Si tout tombe : dérouler avec les **captures d'écran** de secours.
+- Prod HS → basculer sur `http://localhost:8088` (même parcours ; le paiement Stripe fonctionne aussi en test).
+- Tout HS → dérouler avec les **captures d'écran** de secours (dont la page **Stripe Checkout** et un **PDF de facture**).
+
+## Check-list de préparation (à faire la veille)
+- [ ] Un **événement payant** validé et visible sur `/evenements`.
+- [ ] Une **réservation de casier active** → noter le **PIN** (dépôt) et le **code-barres** (retrait) pour le simulateur.
+- [ ] Le salarié organisateur a bien un **stripe_account_id**.
+- [ ] Carte de test Stripe notée : `4242 4242 4242 4242`.
+- [ ] Captures de secours prêtes (Stripe Checkout, facture PDF, chaque dashboard).
