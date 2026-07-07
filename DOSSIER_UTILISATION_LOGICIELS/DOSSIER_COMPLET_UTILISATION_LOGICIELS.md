@@ -201,12 +201,12 @@ Le projet est **entièrement conteneurisé** : le seul prérequis obligatoire es
 
 | Logiciel | Nécessaire ? | Usage |
 |---|---|---|
-| **Docker Desktop** + **Docker Compose** | ✅ Obligatoire | Lance toute la stack (base, API, front) |
+| **Docker Desktop** + **Docker Compose** | Obligatoire | Lance toute la stack (base, API, front) |
 | **Git** | Recommandé | Récupérer le dépôt (`git clone`) |
 | **Go** (1.25) | Optionnel | Uniquement pour lancer l'API **sans** Docker |
 | **MySQL 8** | Optionnel | Uniquement en mode « sans Docker » (sinon fourni par le conteneur) |
-| **Node / npm** | ❌ Non requis | Le front est du HTML/JS statique, **pas de build** |
-| **PostgreSQL** | ❌ Non | Le projet utilise **MySQL**, pas PostgreSQL |
+| **Node / npm** | Non requis | Le front est du HTML/JS statique, **pas de build** |
+| **PostgreSQL** | Non | Le projet utilise **MySQL**, pas PostgreSQL |
 
 > Résumé : avec **Docker Desktop** seul, tout fonctionne. Go/MySQL ne servent que pour un lancement manuel avancé.
 
@@ -235,14 +235,14 @@ Le fichier `Frontend/script/config.js` choisit automatiquement l'adresse de l'AP
 
 | Rôle | Email | Mot de passe | Utilité du compte | Parcours à tester |
 |---|---|---|---|---|
-| **Administrateur** | `test.admin@renova.test` | *à compléter* | Back-office complet | Valider un compte / une annonce, voir finances, conteneurs, catégories |
-| Administrateur | `test.admin@test.fr` | *à compléter* | (secours) | idem |
-| **Salarié** | `test.salarie@renova.test` | *à compléter* | Espace interne | Créer un événement/formation, un article (soumis à validation) |
-| Salarié | `test.salarie@test.fr` | *à compléter* | (secours) | idem |
-| **Professionnel** | `test.pro@renova.test` | *à compléter* | Espace pro | Consulter les annonces, abonnement, projet upcycling, sponsoring |
-| Professionnel | `test.pro@test.fr` | *à compléter* | (secours) | idem |
-| **Particulier** | `test.client@renova.test` | *à compléter* | Espace client | Créer une annonce, suivre son statut, score éco, conteneurs |
-| Particulier | `test.user@test.fr` | *à compléter* | (secours) | idem |
+| **Administrateur** | `test.admin@renova.test` | *Test1234!* | Back-office complet | Valider un compte / une annonce, voir finances, conteneurs, catégories |
+| Administrateur | `test.admin@test.fr` | *Test1234!* | (secours) | idem |
+| **Salarié** | `test.salarie@renova.test` | *Test1234!* | Espace interne | Créer un événement/formation, un article (soumis à validation) |
+| Salarié | `test.salarie@test.fr` | *Test1234!*| (secours) | idem |
+| **Professionnel** | `test.pro@renova.test` |*Test1234!*| Espace pro | Consulter les annonces, abonnement, projet upcycling, sponsoring |
+| Professionnel | `test.pro@test.fr` | *Test1234!* | (secours) | idem |
+| **Particulier** | `test.client@renova.test` | *Test1234!* | Espace client | Créer une annonce, suivre son statut, score éco, conteneurs |
+| Particulier | `test.user@test.fr` | *Test1234!* | (secours) | idem |
 
 > **Vérifier la liste à jour** : `SELECT email, role, validation FROM utilisateur WHERE email LIKE 'test.%';`
 
@@ -257,10 +257,10 @@ Aucun identifiant : accès aux pages publiques uniquement (accueil, connexion, i
 ### Liste de comptes recommandés à préparer pour une démo
 | Rôle | Email suggéré | Mot de passe suggéré |
 |---|---|---|
-| Administrateur | `test.admin@renova.test` | *(à définir, ex : Admin2026!)* |
-| Salarié | `test.salarie@renova.test` | *(à définir)* |
-| Professionnel | `test.pro@renova.test` | *(à définir)* |
-| Particulier | `test.client@renova.test` | *(à définir)* |
+| Administrateur | `test.admin@test.fr` |  *Test1234!* |
+| Salarié | `test.salarie@test.fr` | *Test1234!* |
+| Professionnel | `test.pro@test.fr` | *Test1234!* |
+| Particulier | `test.user@test.fr` |  *Test1234!* |
 
 > Pour redéfinir un mot de passe connu sur un compte de test, le plus simple est de recréer le compte via `/register` (particulier/pro) ou via l'admin (tous rôles), puis de le valider.
 
@@ -276,7 +276,6 @@ Le **visiteur** est un internaute non authentifié. Il a accès aux pages publiq
 2. La page d'accueil (landing) présente le concept UpcycleConnect.
 3. Le **sélecteur de langue** (FR/EN) est disponible en bas à droite de l'écran.
 
-*(Capture à ajouter : `accueil.png`.)*
 
 ## Pages accessibles sans compte
 | Page | URL propre | Contenu |
@@ -302,7 +301,6 @@ Le **visiteur** est un internaute non authentifié. Il a accès aux pages publiq
 1. Cliquer sur **Connexion** (`/login`).
 2. Saisir email + mot de passe → redirection automatique vers l'espace correspondant au rôle.
 
-*(Captures à ajouter : `connexion.png`, `inscription.png`.)*
 
 ## Limitations d'un visiteur
 - Ne peut **pas** créer d'annonce, ni déposer/récupérer en conteneur.
@@ -321,14 +319,12 @@ Le **Particulier** donne ou vend des objets et suit son impact écologique. Espa
 2. Saisir l'email et le mot de passe du compte particulier (voir `03_COMPTES_DE_DEMONSTRATION.md`).
 3. **Résultat** : redirection automatique vers **`/client`** (Espace Particulier).
 
-*(Capture : `connexion.png`.)*
 
 ## 2. Tableau de bord
 - **Page** : `/client`.
 - Affiche en haut trois indicateurs **dynamiques** : **Annonces** (nombre d'annonces actives), **Dépôt actif** (objets en conteneur), **Score éco**.
 - Plus bas : la liste **Mes Annonces** et le **Système de Conteneurs**.
 
-*(Capture : `dashboard_particulier.png`.)*
 
 ## 3. Créer une annonce
 1. Sur `/client`, cliquer sur **＋ (Ajouter une annonce)** dans la section « Mes Annonces ».
@@ -338,7 +334,6 @@ Le **Particulier** donne ou vend des objets et suit son impact écologique. Espa
 3. Cliquer sur **Soumettre l'annonce**.
 4. **Résultat attendu** : message « Votre annonce sera soumise à validation avant d'être publiée (délai 24 h max) ». L'annonce apparaît avec le statut **En attente**.
 
-*(Captures : `creation_annonce.png`, `upload_photo.png`.)*
 
 ## 4. Suivre le statut d'une annonce
 - Dans « Mes Annonces », chaque carte affiche un **badge de statut** :
@@ -352,7 +347,6 @@ Le **Particulier** donne ou vend des objets et suit son impact écologique. Espa
 - **Filtres** : par **catégorie** (dynamique depuis la base) et par **type** (Vente / Don).
 - **Recherche** par mot-clé, **tri** (plus récentes, prix, A→Z), vue grille/liste.
 
-*(Capture : `marketplace.png`.)*
 
 ## 6. Conteneurs : dépôt et retrait
 Quand un objet est vendu/réservé, un **casier** est attribué :
@@ -361,7 +355,6 @@ Quand un objet est vendu/réservé, un **casier** est attribué :
 3. **Retrait** : l'acheteur scanne le **code-barres** → l'objet est récupéré.
 - Un **simulateur** (`/simulateur`) permet de tester dépôt et retrait sans matériel physique.
 
-*(Capture : `conteneurs_particulier.png`.)*
 
 ## 7. Upcycling Score
 - **Page** : `/client`, encart « Mon Upcycling Score ».
@@ -393,7 +386,6 @@ Le **Professionnel** récupère de la matière première de réemploi et gère s
 - Indicateurs : **Projets actifs**, **CO₂ évité**.
 - Encart **abonnement** (Freemium / Premium / Pro).
 
-*(Capture : `dashboard_pro.png`.)*
 
 ## 3. Catalogue / consultation des annonces
 - **Page** : `/annonces` (mêmes annonces que les particuliers, mais l'interface prend les **couleurs pro**).
@@ -406,14 +398,12 @@ Le **Professionnel** récupère de la matière première de réemploi et gère s
 - **Actions** : « Passer au Premium », gestion via le **portail Stripe**, résiliation.
 - Endpoints associés : `POST /api/pro/subscribe`, `/upgrade`, `/cancel`, `/portal`.
 
-*(Capture : `abonnement_pro.png`.)*
 
 ## 5. Projets d'upcycling
 - Depuis `/pro`, section **Projets** : créer un projet avec **photos avant / après** et **CO₂ évité estimé**.
 - Suivi par **étapes** (à faire / en cours / terminé).
 - Endpoints : `POST /api/pro/projets/create`, `GET /api/pro/projets`, `POST /api/pro/etapes/create`, `PUT /api/pro/etapes/statut`.
 
-*(Capture : `projet_pro.png`.)*
 
 ## 6. Sponsoring d'annonces
 - Un pro peut **sponsoriser** une de ses annonces pour la mettre en avant sur la marketplace.
@@ -457,7 +447,6 @@ Le **Salarié** anime la plateforme : il publie des événements/formations et d
 
 > **Prérequis important** : pour déposer un événement **payant**, le salarié doit disposer d'un **compte Stripe** (identifiant `stripe_account_id`). Sans cela, un message invite à créer son compte Stripe.
 
-*(Capture : `creation_evenement.png`.)*
 
 ## 4. Planning
 - **Page** : `/salarie/planning` : vue calendrier des événements, gestion des inscrits, des ressources.
@@ -487,7 +476,6 @@ L'**Administrateur** dispose d'un back-office complet. Espace : **`/admin`**. To
 1. Ouvrir `/login`, saisir un compte **Administrateur** (voir `03_COMPTES_DE_DEMONSTRATION.md`).
 2. **Résultat** : redirection vers **`/admin`** (Vue d'ensemble). Le menu latéral donne accès aux modules.
 
-*(Capture : `backoffice_admin.png`.)*
 
 ---
 
@@ -508,7 +496,6 @@ L'**Administrateur** dispose d'un back-office complet. Espace : **`/admin`**. To
 - **Résultat attendu** : le statut se met à jour immédiatement dans le tableau.
 - **Précaution** : un refus/bannissement peut déclencher un e-mail/une notification ; vérifier l'identité avant d'agir.
 
-*(Captures : `validation_utilisateur.png`, `liste_utilisateurs.png`.)*
 
 ## Module 3 — Validations (`/admin/validations`)
 - **Objectif** : modérer les contenus soumis.
@@ -516,7 +503,6 @@ L'**Administrateur** dispose d'un back-office complet. Espace : **`/admin`**. To
 - **Actions** : **Approuver** ou **Refuser** une annonce, un événement, un article.
 - **Résultat attendu** : l'élément validé/refusé **disparaît de la liste en direct** ; le badge de validations se met à jour ; l'auteur reçoit une notification.
 
-*(Capture : `validation_annonce.png`.)*
 
 ## Module 4 — Logistique & Box (`/admin/conteneurs`)
 - **Objectif** : gérer le réseau physique.
@@ -526,14 +512,11 @@ L'**Administrateur** dispose d'un back-office complet. Espace : **`/admin`**. To
   - **Générer un rapport logistique PDF** (bouton « 📄 Rapport logistique »).
 - **Précaution** : ne pas supprimer un conteneur contenant des objets déposés.
 
-*(Capture : `conteneurs.png`.)*
 
 ## Module 5 — Finances (`/admin/finances`)
 - **Objectif** : suivre l'activité financière.
 - **Contenu** : volume d'affaires du mois, **revenus (commission 5 %)**, tableau des transactions (facture/annonce, montant, commission, statut).
 - Endpoints : `GET /admin/finance/overview`, `GET /admin/finance/transactions`.
-
-*(Capture : `finances.png`.)*
 
 ## Module 6 — Documents (`/admin/documents`)
 - **Objectif** : consulter les factures/contrats PDF.
@@ -1011,7 +994,6 @@ docker compose pull && docker compose up -d
 
 # 14 — Captures d'écran à ajouter
 
-> Prendre ces captures sur **https://upcycleconnect.pro/** (ou en local) et les placer dans un sous-dossier `DOSSIER_UTILISATION_LOGICIELS/captures/`.
 
 | # | Nom de fichier | Page / URL | Pourquoi | Section du dossier |
 |---|---|---|---|---|
