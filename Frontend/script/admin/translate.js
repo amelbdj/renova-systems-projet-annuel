@@ -105,8 +105,8 @@ function appliquerTraductions() {
     }
   });
 
-  // Si la page possède le tutoriel pro (en-tête géré par JS), on le rafraîchit
-  // pour qu'il s'affiche dans la bonne langue.
+  
+  
   if (typeof updTut === "function") {
     try {
       updTut();
@@ -221,20 +221,20 @@ function GetLanguages() {
         return;
       }
 
-      // Position identique sur TOUTES les pages (on force depuis un point unique)
+      
       container.style.position = "fixed";
-      // On efface un eventuel "top" defini en dur dans le HTML (sinon il
-      // l'emporte sur "bottom" et le bouton reste en haut).
+      
+      
       container.style.top = "";
       container.style.bottom = "16px";
       container.style.right = "16px";
       container.style.zIndex = "99999";
-      // On empeche le CSS des pages (ex: admin.css force select{width:100%})
-      // de gonfler le conteneur : il reste a la taille du select.
+      
+      
       container.style.width = "auto";
       container.style.display = "inline-block";
 
-      // Langue actuellement sélectionnée (pour pré-cocher l'option)
+      
       const langueActuelle = localStorage.getItem("langue") || "fr";
 
       let options = "";
@@ -243,7 +243,6 @@ function GetLanguages() {
         options += `<option value="${lang.code}" ${selected}>${lang.name}</option>`;
       });
 
-      // Petite liste déroulante stylée (même rendu sur toutes les pages)
       container.innerHTML = `
         <select
           onchange="changerLangue(this.value)"

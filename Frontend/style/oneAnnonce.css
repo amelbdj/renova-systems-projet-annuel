@@ -15,7 +15,7 @@ html {
   --bg4: #150f2c;
   --card: #0d0a1f;
   --card2: #12102a;
-  /* Couleur d'accent (RGB) : violet par defaut, teal pour les Pro (.theme-pro) */
+  
   --ac: 128, 96, 255;
   --ac2: 70, 40, 200;
   --b0: rgba(var(--ac), 0.08);
@@ -37,8 +37,7 @@ html {
   --r: 16px;
 }
 
-/* Thème Pro : accent + fond en teal (comme le dashboard pro).
-   Classe ajoutee sur <html> par le JS si l'utilisateur est "Pro". */
+
 .theme-pro {
   --ac: 0, 210, 180;
   --ac2: 0, 153, 133;

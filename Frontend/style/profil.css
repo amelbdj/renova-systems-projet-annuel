@@ -14,8 +14,7 @@ button,input,select,textarea{font-family:inherit;font-size:inherit}
   --bg4:   #120e2c;
   --card:  #0c0920;
   --card2: #100d26;
-  /* Couleur d'accent (RGB). Violet par defaut ; change selon le role
-     (voir les classes .theme-* plus bas, ajoutees par le JS). */
+  
   --ac:    124,95,255;
   --b0:    rgba(var(--ac),.09);
   --b1:    rgba(var(--ac),.19);
@@ -39,9 +38,8 @@ button,input,select,textarea{font-family:inherit;font-size:inherit}
   --r2:    10px;
 }
 
-/* La page profil prend la couleur du dashboard de l'utilisateur.
-   Le JS ajoute une de ces classes sur <html> selon le role. */
-/* Utilisateur : bleu (comme l'espace client) */
+
+
 .theme-user{
   --ac: 49,115,255;
   --vi: #3173ff; --vi-l: #5b96ff; --vi-d: #1a50d4;
@@ -49,7 +47,7 @@ button,input,select,textarea{font-family:inherit;font-size:inherit}
   --card: #0c1120; --card2: #101828;
   --txt: #ccdcf5; --txt-m: #5a7899; --txt-d: #253650;
 }
-/* Pro : teal (comme l'espace pro) */
+
 .theme-pro{
   --ac: 0,210,180;
   --vi: #00d2b4; --vi-l: #2decd4; --vi-d: #009985;
@@ -57,7 +55,7 @@ button,input,select,textarea{font-family:inherit;font-size:inherit}
   --card: #0b1519; --card2: #0f1e23;
   --txt: #c8dedd; --txt-m: #4a7070; --txt-d: #1e3838;
 }
-/* Salarie : violet (comme l'espace salarie) */
+
 .theme-salarie{
   --ac: 138,100,255;
   --vi: #8a64ff; --vi-l: #a98dff; --vi-d: #5c35d4;
@@ -65,7 +63,7 @@ button,input,select,textarea{font-family:inherit;font-size:inherit}
   --card: #0e0b1c; --card2: #131026;
   --txt: #d0c8f0; --txt-m: #5a4e80; --txt-d: #2a2045;
 }
-/* Administrateur : orange (comme le back-office) */
+
 .theme-admin{
   --ac: 255,152,0;
   --vi: #ff9800; --vi-l: #ffb84d; --vi-d: #c46000;

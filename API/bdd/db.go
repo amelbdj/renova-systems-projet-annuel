@@ -12,9 +12,6 @@ const driver = "mysql"
 
 var Db *sql.DB
 
-// env retourne la variable d'environnement si elle existe, sinon la valeur par defaut.
-// -> En local (WAMP) les valeurs par defaut s'appliquent : rien a changer.
-// -> En Docker, docker-compose fournit DB_HOST, DB_USER, etc.
 func env(cle string, defaut string) string {
 	if v := os.Getenv(cle); v != "" {
 		return v

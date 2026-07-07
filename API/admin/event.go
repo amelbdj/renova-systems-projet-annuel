@@ -140,7 +140,6 @@ func CreateEvenement(w http.ResponseWriter, r *http.Request) {
 	var Evenement models.Evenement
 	Evenement.IdSalarie, _ = strconv.Atoi(r.FormValue("idSalarie"))
 
-	// Un salarie doit avoir un compte Stripe avant de deposer un evenement/formation
 	var compteStripe string
 	bdd.Db.QueryRow("SELECT COALESCE(stripe_account_id, '') FROM utilisateur WHERE id = ?", Evenement.IdSalarie).Scan(&compteStripe)
 	if compteStripe == "" {
@@ -176,7 +175,7 @@ func CreateEvenement(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, errUp.Error(), http.StatusBadRequest)
 			return
 		}
-		Evenement.ImageUrl = chemin // uploads/events/<uuid>.ext
+		Evenement.ImageUrl = chemin
 	}
 
 	newId, err := bdd.CreateEvenement(Evenement)
@@ -219,8 +218,7 @@ func CreateEvenement(w http.ResponseWriter, r *http.Request) {
 }
 
 func enregistrerPdf(file multipart.File, handler *multipart.FileHeader) (string, error) {
-	// Stockage unifie : valide le PDF (ext + MIME + taille) et enregistre
-	// dans UPLOAD_DIR/formations avec un nom unique. Retourne uploads/formations/<uuid>.pdf
+
 	return SaveUpload(file, handler, "formations", "document")
 }
 

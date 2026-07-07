@@ -35,8 +35,7 @@ html {
   --r2: 10px;
 }
 
-/* Thème Pro : accent bleu -> teal (comme l'espace pro).
-   Classe ajoutée sur <html> par navRole.js si l'utilisateur est "Pro". */
+
 .theme-pro {
   --blue: #00d2b4;
   --blue-l: #2decd4;

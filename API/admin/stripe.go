@@ -284,10 +284,9 @@ func CreateEventCheckoutSession(w http.ResponseWriter, r *http.Request) {
 
 	stripe.Key = getStripeSecretKey()
 
-	// 2. Calculs (Stripe en centimes, Base de données en euros)
 	unitAmount := int64(prix * 100)
-	commissionCentimes := int64(float64(unitAmount) * 0.05) // 5% pour Stripe
-	commissionEuros := prix * 0.05                          // 5% pour la BDD
+	commissionCentimes := int64(float64(unitAmount) * 0.05)
+	commissionEuros := prix * 0.05
 
 	params := &stripe.CheckoutSessionParams{
 		PaymentMethodTypes: stripe.StringSlice([]string{"card"}),
@@ -322,8 +321,6 @@ func CreateEventCheckoutSession(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 4. ÉTAPE BDD 1 : Création de la commande dans la table `order`
-	// Utilisation des backticks pour `order` car c'est un mot réservé en SQL
 	queryOrder := "INSERT INTO `order` (id_acheteur, id_annonce, montant_total, commission, date_commande) VALUES (?, ?, ?, ?, NOW())"
 
 	result, errOrder := bdd.Db.Exec(queryOrder, req.IdUser, req.IdEvent, prix, commissionEuros)
@@ -375,9 +372,6 @@ func CreateProSubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 
 	stripe.Key = getStripeSecretKey()
 
-	// ---------------------------------------------------------
-	// 🟢 MAGIC TRICK: AUTO-CREATE THE PRODUCT AND PRICE
-	// ---------------------------------------------------------
 	prodParams := &stripe.ProductParams{
 		Name: stripe.String(planName),
 	}
@@ -404,15 +398,13 @@ func CreateProSubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Println("price id works:", newPrice.ID)
-	// ---------------------------------------------------------
 
-	// 3. USE THE FRESHLY CREATED PRICE
 	params := &stripe.CheckoutSessionParams{
 		PaymentMethodTypes: stripe.StringSlice([]string{"card"}),
 		Mode:               stripe.String(string(stripe.CheckoutSessionModeSubscription)),
 		LineItems: []*stripe.CheckoutSessionLineItemParams{
 			{
-				Price:    stripe.String(newPrice.ID), // We use the new ID directly!
+				Price:    stripe.String(newPrice.ID),
 				Quantity: stripe.Int64(1),
 			},
 		},

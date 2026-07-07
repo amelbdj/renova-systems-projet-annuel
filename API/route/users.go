@@ -23,7 +23,6 @@ func RoutesUsers() {
 	http.HandleFunc("OPTIONS /api/user/update-password", admin.UpdatePasswordHandler)
 	http.HandleFunc("OPTIONS /api/user/profile", admin.UpdateProfileHandler)
 
-	// --- Routes d'administration des comptes : réservées au personnel (Salarié / Administrateur) ---
 	http.HandleFunc("GET /admin/users", auth.VerifyRoleMiddleware(admin.GetAllUsers, "Salarié", "Administrateur"))
 	http.HandleFunc("POST /admin/users/add", auth.VerifyTokenMiddleware(admin.CreateUser))
 	http.HandleFunc("DELETE /admin/users/delete/{id}", auth.VerifyRoleMiddleware(admin.DeletedUser, "Salarié", "Administrateur"))
@@ -34,8 +33,6 @@ func RoutesUsers() {
 	http.HandleFunc("PUT /admin/users/refuse/{id}", auth.VerifyRoleMiddleware(admin.RefuseUser, "Salarié", "Administrateur"))
 	http.HandleFunc("PUT /admin/users/ban/{id}", auth.VerifyRoleMiddleware(admin.BanUserHandler, "Salarié", "Administrateur"))
 
-	// GET /admin/users/{id} : laissé accessible à tout utilisateur connecté
-	// (l'app mobile s'en sert pour afficher SON propre profil)
 	http.HandleFunc("GET /user/profile", admin.GetUserById)
 	http.HandleFunc("GET /admin/users/{id}", auth.VerifyTokenMiddleware(admin.GetUserById))
 	http.HandleFunc("GET /api/user/payment-history", admin.PaymentHistoryHandler)

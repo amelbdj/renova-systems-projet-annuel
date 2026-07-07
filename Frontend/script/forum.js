@@ -1,5 +1,5 @@
 let sujetActifId = null;
-let sondageForum = null; // intervalle de rafraichissement auto des messages
+let sondageForum = null; 
 
 function initForum() {
   chargerForum();
@@ -62,16 +62,16 @@ window.ouvrirSujet = function (idTopic, titre) {
   document.getElementById("vue-liste-forums").style.display = "none";
   document.getElementById("vue-sujet-actif").style.display = "flex";
   const titreEl = document.getElementById("titre-sujet-actif");
-  // On retire le data-i18n sinon appliquerTraductions() réécrase le titre
-  // par la traduction "Chargement...".
+  
+  
   titreEl.removeAttribute("data-i18n");
   titreEl.textContent = titre;
 
   chargerMessagesSujet(idTopic);
 
-  // Rafraichissement automatique : on recharge les messages toutes les 4 s
-  // (mode silencieux, sans afficher "Chargement...") pour voir en direct
-  // les messages postes par les autres utilisateurs.
+  
+  
+  
   if (sondageForum) clearInterval(sondageForum);
   sondageForum = setInterval(function () {
     if (sujetActifId) chargerMessagesSujet(sujetActifId, true);
@@ -81,7 +81,7 @@ window.ouvrirSujet = function (idTopic, titre) {
 window.retourListeForums = function () {
   sujetActifId = null;
 
-  // on arrete le rafraichissement automatique quand on quitte le sujet
+  
   if (sondageForum) {
     clearInterval(sondageForum);
     sondageForum = null;
@@ -96,8 +96,8 @@ window.retourListeForums = function () {
 function chargerMessagesSujet(idTopic, silencieux) {
   const token = localStorage.getItem("token");
   const zone = document.getElementById("zone-messages");
-  // En mode silencieux (rafraichissement auto), on n'affiche pas "Chargement..."
-  // pour eviter le clignotement toutes les 4 secondes.
+  
+  
   if (!silencieux) zone.innerHTML = "<p>Chargement...</p>";
 
   fetch(API_BASE_URL + "/user/forums/messages?topic_id=" + idTopic, {

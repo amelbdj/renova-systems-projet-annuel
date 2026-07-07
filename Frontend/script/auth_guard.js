@@ -31,8 +31,8 @@ function checkSession(requiredRole) {
     }
 }
 
-// Surligne dans la sidebar le lien correspondant a la page ouverte
-// (evite le surlignage fige sur "Vue d'ensemble").
+
+
 function surlignerLienActif() {
     var pageCourante = window.location.pathname.split("/").pop();
     var liens = document.querySelectorAll("nav .nav-link");
@@ -46,7 +46,7 @@ function surlignerLienActif() {
     });
 }
 
-// Met a jour le petit badge rouge (nb de validations en attente) dans la sidebar
+
 function majBadgeValidations() {
     var token = localStorage.getItem("token");
     if (!token || typeof API_BASE_URL === "undefined") return;
@@ -77,7 +77,7 @@ function majBadgeValidations() {
         });
 
         badge.textContent = total;
-        badge.style.display = total > 0 ? "" : "none"; // on cache le badge si rien en attente
+        badge.style.display = total > 0 ? "" : "none"; 
     });
 }
 

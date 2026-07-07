@@ -172,7 +172,7 @@ function olderThan18(dateTexte) {
   }
 }
 
-// Verifie un SIRET : 14 chiffres + cle de controle de Luhn.
+
 function siretValide(siret) {
   if (!siret || siret.length !== 14) return false;
   let somme = 0;

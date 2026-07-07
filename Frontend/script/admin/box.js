@@ -292,7 +292,7 @@ function closeModal(modalId) {
   if (modal) modal.style.display = "none";
 }
 
-// Genere un rapport logistique PDF (liste des conteneurs) cote client avec jsPDF
+
 function genererRapportLogistique() {
   if (!window.jspdf || !window.jspdf.jsPDF) {
     alert("La librairie PDF n'est pas chargée.");
@@ -308,7 +308,7 @@ function genererRapportLogistique() {
 
   const dateStr = new Date().toLocaleDateString("fr-FR");
 
-  // En-tete
+  
   doc.setFontSize(18);
   doc.text("UpcycleConnect", 14, 18);
   doc.setFontSize(14);
@@ -316,7 +316,7 @@ function genererRapportLogistique() {
   doc.setFontSize(10);
   doc.text("Date : " + dateStr, 14, 36);
 
-  // En-tetes de colonnes
+  
   let y = 50;
   doc.setFontSize(11);
   doc.text("Conteneur", 14, y);
@@ -325,27 +325,27 @@ function genererRapportLogistique() {
   doc.line(14, y + 2, 196, y + 2);
   y += 10;
 
-  // Lignes
+  
   let totalPortes = 0;
   doc.setFontSize(10);
   tousLesConteneurs.forEach((c) => {
     totalPortes += c.total_boxes || 0;
 
-    // Nouvelle page si on arrive en bas
+    
     if (y > 275) {
       doc.addPage();
       y = 20;
     }
 
     doc.text(String(c.nom || "-"), 14, y);
-    // On coupe l'adresse si trop longue
+    
     const adresse = String(c.adresse || "-");
     doc.text(adresse.length > 55 ? adresse.slice(0, 55) + "..." : adresse, 70, y);
     doc.text(String(c.total_boxes || 0), 180, y, { align: "right" });
     y += 8;
   });
 
-  // Totaux
+  
   y += 4;
   doc.line(14, y, 196, y);
   y += 8;

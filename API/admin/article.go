@@ -186,7 +186,7 @@ func ModifyArticle(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, errUp.Error(), http.StatusBadRequest)
 			return
 		}
-		imageUrl = chemin // ex: uploads/articles/<uuid>.png
+		imageUrl = chemin
 	}
 
 	err = bdd.ModifyArticle(id, titre, contenu, articleType, action, imageUrl)

@@ -141,7 +141,7 @@ func CreateAnnonce(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, errUp.Error(), http.StatusBadRequest)
 			return
 		}
-		ann.Image = "/" + chemin // ex: /uploads/annonces/<uuid>.png
+		ann.Image = "/" + chemin
 	}
 
 	err = bdd.CreateAnnonce(ann)

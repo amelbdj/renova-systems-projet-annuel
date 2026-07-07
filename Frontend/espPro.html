@@ -54,7 +54,7 @@
         <div class="tut-feats">
           <div class="tfeat"><span class="ti"><i class="fas fa-bell"></i></span><div><b data-i18n="pro.tut.f3a_t">Alertes OneSignal</b><span data-i18n="pro.tut.f3a_d">Soyez notifié dès qu'un nouveau matériau correspond à vos critères.</span></div></div>
           <div class="tfeat"><span class="ti"><i class="fas fa-chart-bar"></i></span><div><b data-i18n="pro.tut.f3b_t">Impact écologique</b><span data-i18n="pro.tut.f3b_d">Chaque projet affiche le CO₂ évité et les ressources récupérées.</span></div></div>
-          <!-- <div class="tfeat"><span class="ti"><i class="fas fa-file-pdf"></i></span><div><b>Factures PDF auto</b><span>Générées automatiquement après chaque transaction.</span></div></div> -->
+          
         </div>
       </div>
       <div class="tut-foot">
@@ -68,15 +68,13 @@
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════
-   TOPNAV
-═══════════════════════════════════════════ -->
+
 <nav class="topnav">
   <div class="nav-logo"><img src="../Frontend/assets/logoUpcycle.png" alt="UpcycleConnect"></div>
   <div class="nav-links">
     <button class="nav-link active" data-i18n="pro.nav.home">Accueil</button>
      <a class="nav-link" href="/annonces" data-i18n="pro.nav.ads">Annonces</a>
-    <!-- <button class="nav-link" onclick="s('inv')">Factures</button> -->
+    
       <a class="nav-link" href="/article" data-i18n="pro.nav.article">Article</a>
       <a class="nav-link" href="/evenements" data-i18n="pro.nav.event">Evenement</a>
       <a class="nav-link" href="/forum" data-i18n="pro.nav.forum">Forum</a>
@@ -95,9 +93,7 @@
   </div>
 </nav>
 
-<!-- ═══════════════════════════════════════════
-   HERO
-═══════════════════════════════════════════ -->
+
 <div class="wrapper">
   <section class="hero fu">
     <div class="hero-left">
@@ -105,15 +101,12 @@
       <h1 class="welcome-text"><span data-i18n="pro.hero.hello">Bonjour,</span> <span class="highlight" id="heroName">Prénom</span></h1>
       <p class="hero-desc" data-i18n="pro.hero.desc">Sourcez vos matériaux, gérez vos projets de création et mesurez votre impact — tout depuis votre espace dédié.</p>
       <div class="hero-actions">
-        <!-- <button class="btn btn-t" onclick="openScan()">📷 Scanner un code-barres</button> -->
+        
         <button class="btn btn-g" onclick="s('proj')" data-i18n="pro.hero.see_projects">Voir mes projets →</button>
       </div>
     </div>
     <div class="hero-stats">
-      <!-- <div class="hstat fu fu2">
-        <div class="hstat-val">24</div>
-        <div class="hstat-lbl">Matériaux récupérés</div>
-      </div> -->
+      
       
       <div class="hstat fu fu4" style="border-color:rgba(46,204,113,.2)">
         <div class="hstat-val count-projets-en-cours" style="color:var(--green)">0</div>
@@ -126,9 +119,7 @@
     </div>
   </section>
 
-  <!-- ═══════════════════════════════════════
-   ① PLANS FREEMIUM / PREMIUM
-  ═══════════════════════════════════════ -->
+  
   <section id="plan" style="padding:0 0 52px">
     <div class="sec-label fu">
       <div class="sec-num gold"> </div>
@@ -137,7 +128,7 @@
       <span class="tag t-gold" style="flex-shrink:0" id="planActiveTag"> <i class="fa-solid fa-star"></i> <span data-i18n="pro.plan.premium_active">Premium actif</span></span>
     </div>
     <div class="freemium-banner fu fu1">
-      <!-- FREE -->
+      
       <div class="plan-card free" id="card-free">
         <div class="plan-badge free"> Freemium</div>
         <div class="plan-name" data-i18n="pro.plan.free_name">Plan Gratuit</div>
@@ -149,14 +140,14 @@
           <div class="plan-feat locked"><div class="fi no">✕</div><span data-i18n="pro.plan.advanced_dashboard">Tableaux de bord avancés</span></div>
           <div class="plan-feat locked"><div class="fi no">✕</div><span data-i18n="pro.plan.priority_alerts">Alertes prioritaires de collecte</span></div>
           <div class="plan-feat locked"><div class="fi no">✕</div><span data-i18n="pro.plan.impact_analysis">Analyse d'impact écologique détaillée</span></div>
-          <!-- <div class="plan-feat locked"><div class="fi no">✕</div><span>Statistiques disponibilité matériaux</span></div> -->
+          
           <div class="plan-feat locked"><div class="fi no">✕</div><span data-i18n="pro.plan.priority_ads">Accès prioritaire aux annonces</span></div>
         </div>
         <div class="plan-cta">
           <button class="btn btn-g btn-full" style="opacity:.5;cursor:default" data-i18n="pro.plan.current">Plan actuel</button>
         </div>
       </div>
-      <!-- PREMIUM -->
+      
       <div class="plan-card premium" id="card-premium">
         <div class="plan-badge premium"><i class="fa-solid fa-star"></i> Premium</div>
         <div class="plan-name" style="color:var(--gold-l)" data-i18n="pro.plan.premium_name">Plan Premium</div>
@@ -168,7 +159,7 @@
           <div class="plan-feat"><div class="fi ok2">✓</div><span><span data-i18n="pro.plan.advanced_dashboard">Tableaux de bord avancés</span></span></div>
           <div class="plan-feat"><div class="fi ok2">✓</div><span data-i18n="pro.plan.priority_alerts">Alertes prioritaires de collecte</span></div>
           <div class="plan-feat"><div class="fi ok2">✓</div><span data-i18n="pro.plan.impact_analysis">Analyse d'impact écologique détaillée</span></div>
-          <!-- <div class="plan-feat"><div class="fi ok2">✓</div><span><strong style="color:#fff">Statistiques disponibilité matériaux</strong></span></div> -->
+          
           <div class="plan-feat"><div class="fi ok2">✓</div><span data-i18n="pro.plan.priority_ads">Accès prioritaire aux annonces</span></div>
           <div class="plan-feat"><div class="fi ok2">✓</div><span data-i18n="pro.plan.pdf_invoices">Factures PDF automatiques</span></div>
           <div class="plan-feat"><div class="fi ok2">✓</div><span data-i18n="pro.plan.priority_support">Support prioritaire</span></div>
@@ -178,7 +169,7 @@
           <button class="btn btn-gold btn-full" onclick="subscribeToPlan('premium')"><i class="fa-solid fa-star"></i> <span data-i18n="pro.plan.choose_premium">Choisir Premium →</span></button>
         </div>
       </div>
-      <!-- PLUS -->
+      
       <div class="plan-card plus" id="card-plus">
         <div class="plan-badge plus"><i class="fa-solid fa-medal"></i> Plus</div>
         <div class="plan-name" style="color:#7fb2ff" data-i18n="pro.plan.plus_name">Plan Plus</div>
@@ -195,7 +186,7 @@
           <button class="btn btn-plus btn-full" onclick="subscribeToPlan('plus')"><i class="fa-solid fa-medal"></i> <span data-i18n="pro.plan.choose_plus">Choisir Plus →</span></button>
         </div>
       </div>
-      <!-- PRO -->
+      
       <div class="plan-card pro" id="card-pro">
         <div class="plan-badge pro"><i class="fa-solid fa-rocket"></i> Pro</div>
         <div class="plan-name" style="color:#c4a7ff" data-i18n="pro.plan.pro_name">Plan Pro</div>
@@ -215,90 +206,14 @@
     </div>
   </section>
 
-  <!-- ═══════════════════════════════════════
-   ② RÉCUPÉRATION DES MATÉRIAUX
-  ═══════════════════════════════════════ -->
-  <!-- <section class="scan-section" id="scan">
-    <div class="sec-label fu">
-      <div class="sec-num"> </div>
-      <div class="sec-title-text">Récupération des Matériaux</div>
-      <div class="sec-divider"></div>
-      <span class="tag t-teal" style="flex-shrink:0">📷 Scan code-barres</span>
-    </div>
-    <div class="scan-layout fu fu1">
-      <div class="scan-input-card">
-        <h3>Scanner / Saisir un code</h3>
-        <p>Utilisez le code-barres fourni par le particulier lors du dépôt de l'objet dans le conteneur.</p>
-        <div class="scan-box" onclick="openScan()">
-          <span class="sb-ico">📷</span>
-          <p>Cliquez pour scanner</p>
-          <span>Ou utilisez la caméra de votre appareil</span>
-        </div>
-        <div class="scan-or">ou</div>
-        <div class="fgroup">
-          <label>Code-barres manuel</label>
-          <div style="display:flex;gap:8px">
-            <input type="text" id="manualCode" placeholder="ex : 4829301-042" style="flex:1">
-            <button class="btn btn-t" onclick="scanManual()">Valider</button>
-          </div>
-        </div>
-      </div> -->
+  
+  
 
-      <!-- Annonces disponibles -->
-      <!-- <div>
-        <div class="card-hd" style="background:var(--card);border:1px solid var(--b0);border-radius:var(--r) var(--r) 0 0;margin:0">
-          <div class="card-ht"><div class="cht-i" style="background:rgba(0,210,180,.1)">📦</div>Annonces disponibles</div>
-          <span class="tag t-gold">⭐ Accès prioritaire</span>
-        </div>
-        <div class="mat-list" style="background:var(--card);border:1px solid var(--b0);border-top:none;border-radius:0 0 var(--r) var(--r);padding:14px">
-          <div class="mat-item">
-            <div class="mat-thumb" style="background:rgba(0,210,180,.08)">🪵</div>
-            <div class="mat-info">
-              <div class="mat-name">Palettes bois (x6)</div>
-              <div class="mat-meta">Don · Mobilier · Paris 11e · BOX-017</div>
-            </div>
-            <div class="mat-action"><button class="btn btn-t btn-xs" onclick="openScanResult('Palettes bois (x6)','BOX-017','4829301-017')">Récupérer</button></div>
-          </div>
-          <div class="mat-item">
-            <div class="mat-thumb" style="background:rgba(58,142,255,.08)">🔩</div>
-            <div class="mat-info">
-              <div class="mat-name">Lot visserie métal</div>
-              <div class="mat-meta">Don · Outillage · Paris 3e · BOX-031</div>
-            </div>
-            <div class="mat-action"><button class="btn btn-t btn-xs" onclick="openScanResult('Lot visserie métal','BOX-031','5512847-031')">Récupérer</button></div>
-          </div>
-          <div class="mat-item">
-            <div class="mat-thumb" style="background:rgba(166,124,255,.08)">🧵</div>
-            <div class="mat-info">
-              <div class="mat-name">Chutes de tissu (3 kg)</div>
-              <div class="mat-meta">Don · Textile · Paris 20e · BOX-042</div>
-            </div>
-            <div class="mat-action"><button class="btn btn-t btn-xs" onclick="openScanResult('Chutes de tissu','BOX-042','4829301-042')">Récupérer</button></div>
-          </div>
-          <div class="mat-item premium-only">
-            <div class="mat-thumb" style="background:rgba(245,197,66,.08)">🔧</div>
-            <div class="mat-info">
-              <div class="mat-name">Outillage électroportatif</div>
-              <div class="mat-meta">Vente · 45 € · Outillage · Paris 8e <span class="tag t-gold" style="margin-left:4px"> <i class="fa-solid fa-star"></i> Prioritaire</span></div>
-            </div>
-            <div class="mat-action"><button class="btn btn-t btn-xs" onclick="openScanResult('Outillage électroportatif','BOX-055','7740291-055')">Récupérer</button></div>
-          </div>
-          <div class="mat-item premium-only">
-            <div class="mat-thumb" style="background:rgba(0,210,180,.08)">🪟</div>
-            <div class="mat-info">
-              <div class="mat-name">Châssis de fenêtres (x4)</div>
-              <div class="mat-meta">Don · Bâtiment · Vincennes · BOX-064 <span class="tag t-gold" style="margin-left:4px">⭐ Prioritaire</span></div>
-            </div>
-            <div class="mat-action"><button class="btn btn-t btn-xs" onclick="openScanResult('Châssis de fenêtres','BOX-064','9920183-064')">Récupérer</button></div>
-          </div>
-        </div>
-      </div> -->
-    <!-- </div>
-  </section> -->
+      
+      
+    
 
-  <!-- ═══════════════════════════════════════
-   ③ ABONNEMENTS & FACTURES
-  ═══════════════════════════════════════ -->
+  
   <section class="invoice-section" >
     <div class="sec-label fu">
       <div class="sec-num blue"> </div>
@@ -307,7 +222,7 @@
       <span class="tag t-teal" style="flex-shrink:0"> <i class="fa-solid fa-file-invoice"></i> Abbonement Pro</span>
     </div>
     <div class="invoice-grid fu fu1" id="inv">
-      <!-- Contrat actuel -->
+      
       <div class="contract-card">
         <div class="contract-top">
           <div>
@@ -324,61 +239,17 @@
           <div class="cstat"><div class="cstat-v  count-projets-en-pause">0</div><div class="cstat-l" data-i18n="pro.stats.paused">Projet en pause</div></div>
           <div class="cstat"><div class="cstat-v count-co2-total">0 kg</div><div class="cstat-l" data-i18n="pro.stats.total_co2">CO₂ total évité</div></div>
         </div>
-        <!-- <div style="font-size:12px;color:var(--txt-m);margin-bottom:5px">Utilisation ce cycle</div>
-        <div class="contract-bar"><div class="contract-bar-fill"></div></div>
-        <div class="contract-bar-labels"><span>0</span><span style="color:var(--teal-l)">62%</span><span>Illimité</span></div> -->
+        
         <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap" id="contractActions">
           <button class="btn btn-danger btn-sm" style="background:rgba(255,90,90,.07);color:var(--red);border:1px solid rgba(255,90,90,.2)" onclick="cancelPremium()" data-i18n="pro.sub.cancel">Résilier</button>
         </div>
       </div>
 
-      <!-- Factures -->
-      <!-- <div class="card">
-        <div class="card-hd">
-          <div class="card-ht"><div class="cht-i" style="background:rgba(58,142,255,.1)">🧾</div>Historique des factures</div>
-          <button class="btn btn-g btn-xs">Tout télécharger</button>
-        </div>
-        <div class="card-bd">
-          <div class="inv-table">
-            <div class="inv-row">
-              <div class="inv-ico" style="background:rgba(0,210,180,.1)">📄</div>
-              <div class="inv-info"><div class="inv-num">FAC-2026-03-001</div><div class="inv-date">1 mars 2026 · Premium</div></div>
-              <div class="inv-amount">25 €</div>
-              <button class="btn btn-g btn-xs">📥 PDF</button>
-            </div>
-            <div class="inv-row">
-              <div class="inv-ico" style="background:rgba(0,210,180,.1)">📄</div>
-              <div class="inv-info"><div class="inv-num">FAC-2026-02-001</div><div class="inv-date">1 fév. 2026 · Premium</div></div>
-              <div class="inv-amount">25 €</div>
-              <button class="btn btn-g btn-xs">📥 PDF</button>
-            </div>
-            <div class="inv-row">
-              <div class="inv-ico" style="background:rgba(0,210,180,.1)">📄</div>
-              <div class="inv-info"><div class="inv-num">FAC-2026-01-001</div><div class="inv-date">1 jan. 2026 · Premium</div></div>
-              <div class="inv-amount">25 €</div>
-              <button class="btn btn-g btn-xs">📥 PDF</button>
-            </div>
-            <div class="inv-row">
-              <div class="inv-ico" style="background:rgba(245,197,66,.1)">📝</div>
-              <div class="inv-info"><div class="inv-num">FAC-2025-12-001</div><div class="inv-date">1 déc. 2025 · Premium</div></div>
-              <div class="inv-amount">25 €</div>
-              <button class="btn btn-g btn-xs">📥 PDF</button>
-            </div>
-            <div class="inv-row">
-              <div class="inv-ico" style="background:rgba(245,197,66,.1)">📝</div>
-              <div class="inv-info"><div class="inv-num">CTR-2025-11-001</div><div class="inv-date">15 nov. 2025 · Contrat initial</div></div>
-              <div class="inv-amount">—</div>
-              <button class="btn btn-g btn-xs">📥 PDF</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div> -->
+      
+      
   </section>
 
-  <!-- ═══════════════════════════════════════
-   ③·4 MES ANNONCES (TOUS LES PROS)
-  ═══════════════════════════════════════ -->
+  
   <section id="annonceSection" style="padding:0 0 52px">
     <div class="sec-label fu">
       <div class="sec-num blue"> </div>
@@ -449,9 +320,7 @@
     </div>
   </section>
 
-  <!-- ═══════════════════════════════════════
-   ③·5 SPONSORING (PLAN PRO UNIQUEMENT)
-  ═══════════════════════════════════════ -->
+  
   <section id="sponsorSection" style="display:none;padding:0 0 52px">
     <div class="sec-label fu">
       <div class="sec-num purple"> </div>
@@ -467,9 +336,7 @@
     </div>
   </section>
 
-  <!-- ═══════════════════════════════════════
-   ④ GESTION DES PROJETS
-  ═══════════════════════════════════════ -->
+  
   <section class="proj-section" id="proj">
     <div class="sec-label fu">
       <div class="sec-num purple"> </div>
@@ -486,12 +353,10 @@
     </div>
 </section>
 
-  <!-- ═══════════════════════════════════════
-   ⑤ DASHBOARD PREMIUM + NOTIFICATIONS
-  ═══════════════════════════════════════ -->
+  
   <div class="bottom-row" id="dash">
 
-    <!-- ANALYTICS (Premium) -->
+    
     <section id="premiumDashboard" style="display: none;">
       <div class="sec-label fu">
         <div class="sec-num gold"> </div>
@@ -546,50 +411,13 @@
         </div>
       </div>
 
-      <!-- Materials availability (Premium locked for free) -->
-      <!-- <div class="card fu fu2">
-        <div class="card-hd">
-          <div class="card-ht"><div class="cht-i" style="background:rgba(245,197,66,.1)">📊</div>Disponibilité matériaux</div>
-          <span class="tag t-gold">⭐ Premium</span>
-        </div>
-        <div class="card-bd">
-          <div style="display:flex;flex-direction:column;gap:10px">
-            <div style="display:flex;align-items:center;gap:10px">
-              <span style="font-size:12.5px;color:var(--txt-m);width:90px;flex-shrink:0">🪵 Bois</span>
-              <div style="flex:1;height:6px;background:var(--b0);border-radius:3px;overflow:hidden">
-                <div style="width:78%;height:100%;background:var(--teal);border-radius:3px;animation:bfw 1.5s ease both"></div>
-              </div>
-              <span style="font-size:12px;color:var(--teal-l);flex-shrink:0">78%</span>
-            </div>
-            <div style="display:flex;align-items:center;gap:10px">
-              <span style="font-size:12.5px;color:var(--txt-m);width:90px;flex-shrink:0">🔩 Métal</span>
-              <div style="flex:1;height:6px;background:var(--b0);border-radius:3px;overflow:hidden">
-                <div style="width:45%;height:100%;background:var(--blue);border-radius:3px;animation:bfw 1.5s .1s ease both"></div>
-              </div>
-              <span style="font-size:12px;color:var(--blue);flex-shrink:0">45%</span>
-            </div>
-            <div style="display:flex;align-items:center;gap:10px">
-              <span style="font-size:12.5px;color:var(--txt-m);width:90px;flex-shrink:0">🧵 Textile</span>
-              <div style="flex:1;height:6px;background:var(--b0);border-radius:3px;overflow:hidden">
-                <div style="width:62%;height:100%;background:var(--purple);border-radius:3px;animation:bfw 1.5s .2s ease both"></div>
-              </div>
-              <span style="font-size:12px;color:var(--purple);flex-shrink:0">62%</span>
-            </div>
-            <div style="display:flex;align-items:center;gap:10px">
-              <span style="font-size:12.5px;color:var(--txt-m);width:90px;flex-shrink:0">🪟 Vitrerie</span>
-              <div style="flex:1;height:6px;background:var(--b0);border-radius:3px;overflow:hidden">
-                <div style="width:22%;height:100%;background:var(--amber);border-radius:3px;animation:bfw 1.5s .3s ease both"></div>
-              </div>
-              <span style="font-size:12px;color:var(--amber);flex-shrink:0">22%</span>
-            </div>
-          </div>
-        </div>
-      </div> -->
+      
+      
     </section>
 
 
 
-</div><!-- /wrapper -->
+</div>
 
 <footer>
   <div class="wrapper">
@@ -597,9 +425,7 @@
   </div>
 </footer>
 
-<!-- ═══════════════════════════════════════════
-   SCAN RESULT MODAL
-═══════════════════════════════════════════ -->
+
 <div class="modal-bg" id="scanModal">
   <div class="modal">
     <div class="modal-x" onclick="closeScan()">✕</div>
@@ -623,7 +449,7 @@
   </div>
 </div>
 
-<!-- PAYMENT MODAL -->
+
 <div class="modal-bg" id="payModal">
   <div class="modal">
     <div class="modal-x" onclick="closePay()">✕</div>
@@ -645,7 +471,7 @@
   </div>
 </div>
 
-<!-- NEW PROJECT MODAL -->
+
 <div class="modal-bg" id="projModal">
   <div class="modal">
     <div class="modal-x" onclick="closeProjModal()">✕</div>
@@ -691,14 +517,14 @@
   </div>
 </div>
 
-<!-- ETAPES MODAL -->
+
 <div class="modal-bg" id="etapesModal">
   <div class="modal" style="max-width:600px;width:90%">
     <div class="modal-x" onclick="closeEtapesModal()">✕</div>
     <div class="modal-h" id="etapesModalTitre"><i class="fa-solid fa-hammer"></i> Étapes du projet</div>
     <div class="modal-sub">Suivez et documentez la transformation étape par étape.</div>
 
-    <!-- Progression -->
+    
     <div id="etapesProgression" style="margin-bottom:16px">
       <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--txt-m);margin-bottom:6px">
         <span>Progression</span>
@@ -709,10 +535,10 @@
       </div>
     </div>
 
-    <!-- Liste des étapes -->
+    
     <div id="etapesList" style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;max-height:300px;overflow-y:auto"></div>
 
-    <!-- Formulaire ajout étape -->
+    
     <div style="border:1px solid var(--b1);border-radius:10px;padding:14px;background:var(--bg3)">
       <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--txt)"><i class="fa-solid fa-plus"></i> Nouvelle étape</div>
       <div class="fgroup" style="margin-bottom:8px">
@@ -733,7 +559,7 @@
   </div>
 </div>
 
-<!-- UPGRADE MODAL -->
+
 <div class="modal-bg" id="upgradeModal">
   <div class="modal">
     <div class="modal-x" onclick="closeUpgrade()">✕</div>
@@ -771,7 +597,7 @@
 </div>
 
 <script>
-/* ── TUTORIAL ─────────────────────────────────── */
+
 const ts=[
   {i:'🔨',h:'pro.tut.s0_h',s:'pro.tut.s0_s'},
   {i:'⭐',h:'pro.tut.s1_h',          s:'pro.tut.s1_s'},
@@ -802,10 +628,10 @@ function tutNext(){
 }
 function tutPrev(){if(ci>0){ci--;updTut();}}
 
-/* ── SCROLL ────────────────────────────────────── */
+
 function s(id){document.getElementById(id)?.scrollIntoView({behavior:'smooth',block:'start'})}
 
-/* ── SCAN ──────────────────────────────────────── */
+
 const emojis={'Palettes bois':'🪵','Lot visserie':'🔩','Chutes de tissu':'🧵','Outillage':'🔧','Châssis de fenêtres':'🪟'};
 const openCodes=['3T8K','9M2Z','4KP1','7WX3','LQ58'];
 function openScan(){openScanResult('Palettes bois (x6)','BOX-017','4829301-017')}
@@ -827,7 +653,7 @@ function scanManual(){
 }
 function closeScan(){document.getElementById('scanModal').classList.remove('open')}
 
-/* ── PAYMENT ────────────────────────────────────── */
+
 function openPay(n,a){
   document.getElementById('payH').textContent=n;
   document.getElementById('payItem').textContent=n;
@@ -837,7 +663,7 @@ function openPay(n,a){
 function closePay(){document.getElementById('payModal').classList.remove('open')}
 function confirmPay(){closePay();alert('🎉 Paiement confirmé ! Facture PDF disponible sous peu.')}
 
-/* ── PROJECT MODAL ──────────────────────────────── */
+
 function openNewProject() {
     const modal = document.getElementById("projModal");
     delete modal.dataset.editId;
@@ -861,11 +687,11 @@ function openNewProject() {
 
 function closeProjModal(){document.getElementById('projModal').classList.remove('open');}
 
-/* ── UPGRADE MODAL ──────────────────────────────── */
+
 function openUpgrade(){document.getElementById('upgradeModal').classList.add('open')}
 function closeUpgrade(){document.getElementById('upgradeModal').classList.remove('open')}
 
-/* ── CLOSE ON BG ────────────────────────────────── */
+
 ['scanModal','payModal','projModal','upgradeModal','etapesModal'].forEach(id=>{
   document.getElementById(id).addEventListener('click',function(e){
     if(e.target===this)this.classList.remove('open');

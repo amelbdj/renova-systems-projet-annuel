@@ -1,8 +1,8 @@
-// Cloche de notifications — script partagé (admin / client / pro).
-// - Utilise l'element .notif-dot existant dans la nav si present.
-// - Sinon, cree une cloche flottante en haut a droite.
-// Recupere les notifs de l'utilisateur, affiche une pastille si non lues,
-// et un panneau au clic (marque comme lues a l'ouverture).
+
+
+
+
+
 (function () {
   function creerClocheFlottante() {
     var btn = document.createElement("div");
@@ -22,7 +22,7 @@
     var token = localStorage.getItem("token");
     var userId = localStorage.getItem("userId");
     if (!token || !userId) return;
-    if (window.__notifClocheInit) return; // evite les doublons (ex: page salarie)
+    if (window.__notifClocheInit) return; 
     window.__notifClocheInit = true;
 
     var pastille = document.querySelector(".notif-dot") || creerClocheFlottante();

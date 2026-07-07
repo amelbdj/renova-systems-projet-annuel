@@ -359,7 +359,7 @@ func AddSingleBoxToConteneur(conteneurID int, taille string) error {
 }
 
 func UpdateBoxStatus(boxID int, statut string) error {
-	// On normalise le statut en minuscules pour rester cohérent (libre, occupee, reservee, maintenance)
+
 	statut = strings.ToLower(strings.TrimSpace(statut))
 	_, err := Db.Exec("UPDATE box SET statut = ? WHERE id = ?", statut, boxID)
 	return err

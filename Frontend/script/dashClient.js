@@ -57,7 +57,7 @@ async function loadMyAnnonces() {
       );
     }
 
-    // Compteur "Annonces" du bandeau (nombre d'annonces actives)
+    
     const statAnnonces = document.getElementById("statAnnonces");
     if (statAnnonces) statAnnonces.textContent = annoncesActives.length;
 
@@ -175,7 +175,7 @@ async function loadAllUserBoxes() {
     const deposits = (await resDeposits.json()) || [];
     const pickups = (await resPickups.json()) || [];
 
-    // Compteur "Dépôt actif" du bandeau (nombre d'objets déposés en box)
+    
     const statDepots = document.getElementById("statDepots");
     if (statDepots) statDepots.textContent = deposits.length;
 

@@ -155,7 +155,7 @@ function LoadDashboardData() {
     })
     .catch((err) => console.error("Erreur KPI Articles:", err));
 
-  // Revenus du mois (commission plateforme) via l'endpoint finances
+  
   fetch(`${API_BASE_URL}/admin/finance/overview`, {
     headers: { Authorization: "Bearer " + tokenAdmin },
   })
@@ -166,14 +166,14 @@ function LoadDashboardData() {
         elRev.textContent =
           new Intl.NumberFormat("fr-FR").format(data.revenuMois || 0) + " €";
       }
-      // Pas de comparaison mois precedent disponible : on cache le "+...%"
+      
       const elPct = document.getElementById("rev-mois-pourcentage");
       if (elPct) elPct.style.display = "none";
     })
     .catch((err) => console.error("Erreur KPI Revenus:", err));
 }
 
-// Activite recente : on affiche les 5 dernieres annonces publiees
+
 function AfficherActiviteRecente(annonces) {
   const zone = document.getElementById("recent-activity");
   if (!zone) return;
@@ -183,7 +183,7 @@ function AfficherActiviteRecente(annonces) {
     return;
   }
 
-  // Les plus recentes d'abord (id le plus grand = plus recent)
+  
   const dernieres = annonces.slice().sort((a, b) => b.id - a.id).slice(0, 5);
 
   let html = "";

@@ -13,8 +13,6 @@ import (
 	"strings"
 )
 
-// UploadDir : dossier racine des fichiers uploades (configurable via UPLOAD_DIR).
-// Defaut "./uploads" -> en Docker WORKDIR=/app donc ./uploads == /app/uploads.
 func UploadDir() string {
 	if d := os.Getenv("UPLOAD_DIR"); d != "" {
 		return d
@@ -26,18 +24,13 @@ var extensionsImages = map[string]bool{".jpg": true, ".jpeg": true, ".png": true
 var extensionsDocs = map[string]bool{".pdf": true}
 
 const (
-	maxImageSize int64 = 5 << 20  // 5 Mo
-	maxDocSize   int64 = 10 << 20 // 10 Mo
+	maxImageSize int64 = 5 << 20
+	maxDocSize   int64 = 10 << 20
 )
 
-// SaveUpload valide puis sauvegarde un fichier dans UPLOAD_DIR/<sousDossier>/.
-//   - kind : "image" (jpg/jpeg/png/webp, 5 Mo) ou "document" (pdf, 10 Mo)
-//   - genere un nom UNIQUE (on ne fait jamais confiance au nom d'origine)
-//   - renvoie le chemin public RELATIF : "uploads/<sousDossier>/<nom>"
 func SaveUpload(file multipart.File, header *multipart.FileHeader, sousDossier string, kind string) (string, error) {
 	ext := strings.ToLower(filepath.Ext(header.Filename))
 
-	// 1) Validation extension + taille
 	var maxSize int64
 	if kind == "document" {
 		if !extensionsDocs[ext] {
@@ -54,7 +47,6 @@ func SaveUpload(file multipart.File, header *multipart.FileHeader, sousDossier s
 		return "", fmt.Errorf("fichier trop volumineux (max %d Mo)", maxSize>>20)
 	}
 
-	// 2) Verification du type MIME reel (512 premiers octets)
 	tete := make([]byte, 512)
 	n, _ := file.Read(tete)
 	mimeType := http.DetectContentType(tete[:n])
@@ -69,14 +61,12 @@ func SaveUpload(file multipart.File, header *multipart.FileHeader, sousDossier s
 		return "", err
 	}
 
-	// 3) Nom de fichier unique et sur
 	buf := make([]byte, 16)
 	if _, err := rand.Read(buf); err != nil {
 		return "", err
 	}
 	nom := hex.EncodeToString(buf) + ext
 
-	// 4) Creation du sous-dossier + ecriture
 	dossier := filepath.Join(UploadDir(), sousDossier)
 	if err := os.MkdirAll(dossier, 0755); err != nil {
 		return "", err
@@ -90,6 +80,5 @@ func SaveUpload(file multipart.File, header *multipart.FileHeader, sousDossier s
 		return "", err
 	}
 
-	// 5) Chemin public relatif (sans slash initial)
 	return "uploads/" + sousDossier + "/" + nom, nil
 }

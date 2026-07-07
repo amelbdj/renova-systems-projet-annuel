@@ -104,9 +104,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(reponse)
 }
 
-// siretValide verifie qu'un SIRET est correct : 14 chiffres + cle de controle
-// de Luhn (on double un chiffre sur deux en partant de la droite, et la somme
-// totale doit etre un multiple de 10). Detecte les SIRET inventes.
 func siretValide(siret string) bool {
 	if len(siret) != 14 {
 		return false
@@ -115,10 +112,10 @@ func siretValide(siret string) bool {
 	for i := 0; i < 14; i++ {
 		c := siret[i]
 		if c < '0' || c > '9' {
-			return false // caractere non numerique
+			return false
 		}
 		n := int(c - '0')
-		// Position depuis la droite = 14 - i ; on double les positions paires.
+
 		if (14-i)%2 == 0 {
 			n *= 2
 			if n > 9 {
@@ -147,15 +144,11 @@ func Inscription(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Securite : on interdit l'auto-inscription en tant qu'Administrateur ou Salarie.
-	// Ces comptes internes sont crees uniquement par un admin (via /admin/users/add).
-	// HasPrefix "Salari" gere aussi "Salarie" et les variantes d'encodage du "é".
 	if newUser.Role == "Administrateur" || strings.HasPrefix(newUser.Role, "Salari") {
 		http.Error(w, "Création de ce type de compte non autorisée", http.StatusForbidden)
 		return
 	}
 
-	// Un professionnel doit fournir un SIRET valide (14 chiffres + cle de Luhn).
 	if newUser.Role == "Pro" || newUser.Role == "Professionnel" {
 		siret := ""
 		if newUser.Siret != nil {
@@ -644,7 +637,6 @@ func BanUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// On récupère l'utilisateur AVANT le bannissement pour avoir son email et son prénom
 	user, errUser := bdd.GetUserById(userId)
 
 	err = bdd.BanUser(userId)
@@ -653,7 +645,6 @@ func BanUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// On envoie l'email d'information (en arrière-plan, pour ne pas bloquer la réponse)
 	if errUser == nil && user.Email != "" {
 		go bdd.EnvoyerEmailBannissement(user.Email, user.Prenom)
 	} else {
@@ -922,7 +913,7 @@ func UpgradeToPremiumHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userID := r.URL.Query().Get("id")
-	sessionID := r.URL.Query().Get("session_id") // 🟢 Get the session ID from the URL
+	sessionID := r.URL.Query().Get("session_id")
 
 	if userID == "" || sessionID == "" {
 		http.Error(w, `{"error": "Missing parameters"}`, http.StatusBadRequest)
@@ -931,7 +922,6 @@ func UpgradeToPremiumHandler(w http.ResponseWriter, r *http.Request) {
 
 	stripe.Key = getStripeSecretKey()
 
-	// Ask Stripe for the session details to get the Customer ID
 	s, err := session.Get(sessionID, nil)
 	if err != nil {
 		fmt.Println("Error fetching Stripe session:", err)
@@ -1005,7 +995,6 @@ func CustomerPortalHandler(w http.ResponseWriter, r *http.Request) {
 
 	userID := r.URL.Query().Get("id")
 
-	// Fetch their Customer ID from your database
 	var customerID string
 	err := bdd.Db.QueryRow("SELECT stripe_customer_id FROM utilisateur WHERE id = ?", userID).Scan(&customerID)
 
@@ -1016,7 +1005,6 @@ func CustomerPortalHandler(w http.ResponseWriter, r *http.Request) {
 
 	stripe.Key = getStripeSecretKey()
 
-	// Create the portal session
 	params := &stripe.BillingPortalSessionParams{
 		Customer:  stripe.String(customerID),
 		ReturnURL: stripe.String(frontURL("espPro.html")),
@@ -1090,7 +1078,6 @@ func SyncPremiumStatusHandler(w http.ResponseWriter, r *http.Request) {
 	userID := r.URL.Query().Get("id")
 	var customerID string
 
-	// 1. Récupérer le Stripe Customer ID
 	err := bdd.Db.QueryRow("SELECT stripe_customer_id FROM utilisateur WHERE id = ?", userID).Scan(&customerID)
 	if err != nil || customerID == "" {
 		http.Error(w, `{"error": "Aucun compte Stripe trouvé"}`, http.StatusNotFound)
@@ -1099,7 +1086,6 @@ func SyncPremiumStatusHandler(w http.ResponseWriter, r *http.Request) {
 
 	stripe.Key = getStripeSecretKey()
 
-	// 2. Demander à Stripe si un abonnement "actif" existe pour ce client
 	params := &stripe.SubscriptionListParams{
 		Customer: stripe.String(customerID),
 		Status:   stripe.String("active"),
@@ -1108,10 +1094,9 @@ func SyncPremiumStatusHandler(w http.ResponseWriter, r *http.Request) {
 
 	estPremium := 0
 	if iter.Next() {
-		estPremium = 1 // On a trouvé un abonnement actif !
+		estPremium = 1
 	}
 
-	// 3. Mettre à jour la base de données avec la vraie réponse de Stripe
 	if estPremium == 0 {
 		bdd.Db.Exec("UPDATE utilisateur SET est_premium = 0, plan_abo = NULL WHERE id = ?", userID)
 	} else {

@@ -1,6 +1,6 @@
 let currentItem = null;
 
-// Si l'utilisateur est un Pro, on colore la page en teal (comme le dashboard pro)
+
 if (localStorage.getItem("userRole") === "Pro") {
   document.documentElement.classList.add("theme-pro");
 }

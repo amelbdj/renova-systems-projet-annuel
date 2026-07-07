@@ -1,0 +1,481 @@
+openapi: 3.0.3
+info:
+  title: UpcycleConnect API
+  version: "1.0.0"
+  description: >
+    API REST de la plateforme **UpcycleConnect** (Renova Systems).
+    Écrite en Go (net/http). Authentification par **JWT** (header `Authorization: Bearer <token>`).
+    Documentation générée à partir des routes réelles du code (aucun Swagger natif dans le projet).
+  contact:
+    name: Renova Systems
+
+servers:
+  - url: https://upcycleconnect.pro/api
+    description: Production (Nginx retire le préfixe /api)
+  - url: http://localhost:8081
+    description: Développement local (accès direct au backend)
+
+tags:
+  - name: Authentification
+  - name: Utilisateurs
+  - name: Annonces
+  - name: Catégories
+  - name: Conteneurs & Box
+  - name: Événements
+  - name: Finance
+  - name: Pro
+  - name: Forum
+  - name: Notifications
+  - name: Traductions
+  - name: Documents
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    LoginRequest:
+      type: object
+      properties:
+        email: { type: string, example: test.admin@renova.test }
+        mot_de_passe: { type: string, example: "MotDePasse" }
+      required: [email, mot_de_passe]
+    LoginResponse:
+      type: object
+      properties:
+        token: { type: string }
+        id: { type: integer }
+        role: { type: string, enum: [Utilisateur, Pro, Salarié, Administrateur] }
+        prenom: { type: string }
+        score: { type: number }
+        validation: { type: string, enum: ["En attente", "Validé", "Rejeté"] }
+    InscriptionRequest:
+      type: object
+      properties:
+        nom: { type: string }
+        prenom: { type: string }
+        email: { type: string }
+        mot_de_passe: { type: string }
+        role: { type: string, enum: [Utilisateur, Pro], example: Utilisateur }
+        siret: { type: string, description: "Requis si role=Pro (14 chiffres + clé de Luhn)" }
+      required: [email, mot_de_passe, role]
+    User:
+      type: object
+      properties:
+        id: { type: integer }
+        nom: { type: string }
+        prenom: { type: string }
+        email: { type: string }
+        role: { type: string }
+        validation: { type: string }
+        score: { type: number }
+    Annonce:
+      type: object
+      properties:
+        id: { type: integer }
+        titre: { type: string }
+        description: { type: string }
+        type: { type: string }
+        prix: { type: number }
+        categorie: { type: string }
+        ville: { type: string }
+        statut_validation: { type: string }
+        statut_vente: { type: string }
+        image: { type: string }
+    Categorie:
+      type: object
+      properties:
+        id: { type: integer }
+        libelle: { type: string }
+    Message:
+      type: object
+      properties:
+        message: { type: string }
+
+security:
+  - bearerAuth: []
+
+paths:
+  /admin/login:
+    post:
+      tags: [Authentification]
+      summary: Connexion (retourne un JWT)
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/LoginRequest' }
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/LoginResponse' }
+        '401': { description: Email ou mot de passe incorrect }
+  /auth/inscription:
+    post:
+      tags: [Authentification]
+      summary: Inscription (Particulier ou Pro uniquement)
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/InscriptionRequest' }
+      responses:
+        '201': { description: Compte créé }
+        '400': { description: Données invalides ou SIRET invalide }
+        '403': { description: Création Admin/Salarié interdite }
+  /auth/forgot-password:
+    post:
+      tags: [Authentification]
+      summary: Demande de réinitialisation de mot de passe
+      security: []
+      responses: { '200': { description: OK } }
+  /auth/reset-password:
+    post:
+      tags: [Authentification]
+      summary: Réinitialisation via token
+      security: []
+      responses: { '200': { description: OK }, '400': { description: Token invalide } }
+
+  /admin/users:
+    get:
+      tags: [Utilisateurs]
+      summary: Liste des utilisateurs
+      responses:
+        '200':
+          description: Liste
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/User' } }
+        '401': { description: Non authentifié }
+        '403': { description: Rôle non autorisé }
+  /admin/users/{id}:
+    get:
+      tags: [Utilisateurs]
+      summary: Détail d'un utilisateur
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses: { '200': { description: OK }, '401': { description: Non authentifié } }
+  /admin/users/search:
+    get:
+      tags: [Utilisateurs]
+      summary: Rechercher des utilisateurs
+      parameters:
+        - { name: search, in: query, schema: { type: string } }
+      responses: { '200': { description: OK } }
+  /admin/users/add:
+    post:
+      tags: [Utilisateurs]
+      summary: Créer un utilisateur (admin)
+      responses: { '201': { description: Créé }, '401': { description: Non authentifié } }
+  /admin/users/validate/{id}:
+    put:
+      tags: [Utilisateurs]
+      summary: Valider un compte
+      parameters: [ { name: id, in: path, required: true, schema: { type: integer } } ]
+      responses: { '200': { description: OK } }
+  /admin/users/refuse/{id}:
+    put:
+      tags: [Utilisateurs]
+      summary: Refuser un compte
+      parameters: [ { name: id, in: path, required: true, schema: { type: integer } } ]
+      responses: { '200': { description: OK } }
+  /admin/users/ban/{id}:
+    put:
+      tags: [Utilisateurs]
+      summary: Bannir un compte
+      parameters: [ { name: id, in: path, required: true, schema: { type: integer } } ]
+      responses: { '200': { description: OK } }
+  /admin/users/delete/{id}:
+    delete:
+      tags: [Utilisateurs]
+      summary: Supprimer un utilisateur
+      parameters: [ { name: id, in: path, required: true, schema: { type: integer } } ]
+      responses: { '200': { description: OK } }
+
+  /api/annonces/all:
+    get:
+      tags: [Annonces]
+      summary: Liste publique des annonces validées
+      security: []
+      parameters: [ { name: id, in: query, schema: { type: integer }, description: id utilisateur } ]
+      responses:
+        '200':
+          description: Liste
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/Annonce' } }
+  /mes-annonces:
+    get:
+      tags: [Annonces]
+      summary: Mes annonces
+      parameters: [ { name: id, in: query, schema: { type: integer } } ]
+      responses: { '200': { description: OK } }
+  /admin/annonces:
+    get:
+      tags: [Annonces]
+      summary: Toutes les annonces (admin)
+      responses: { '200': { description: OK } }
+  /admin/annonces/add:
+    post:
+      tags: [Annonces]
+      summary: Créer une annonce (multipart, avec image)
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                titre: { type: string }
+                description: { type: string }
+                type: { type: string }
+                prix: { type: number }
+                id_categorie: { type: integer }
+                image: { type: string, format: binary }
+      responses: { '201': { description: Créée } }
+  /admin/annonces/validate/{id}:
+    put:
+      tags: [Annonces]
+      summary: Valider une annonce
+      parameters: [ { name: id, in: path, required: true, schema: { type: integer } } ]
+      responses: { '200': { description: OK } }
+  /admin/annonces/refuse/{id}:
+    put:
+      tags: [Annonces]
+      summary: Refuser une annonce
+      parameters: [ { name: id, in: path, required: true, schema: { type: integer } } ]
+      responses: { '200': { description: OK } }
+  /admin/annonces/delete/{id}:
+    delete:
+      tags: [Annonces]
+      summary: Supprimer une annonce
+      parameters: [ { name: id, in: path, required: true, schema: { type: integer } } ]
+      responses: { '200': { description: OK } }
+
+  /admin/categories:
+    get:
+      tags: [Catégories]
+      summary: Liste des catégories
+      responses:
+        '200':
+          description: Liste
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/Categorie' } }
+  /admin/categories/add:
+    post:
+      tags: [Catégories]
+      summary: Ajouter une catégorie
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, properties: { libelle: { type: string } } }
+      responses: { '200': { description: OK } }
+  /admin/categories/delete/{id}:
+    delete:
+      tags: [Catégories]
+      summary: Supprimer une catégorie
+      parameters: [ { name: id, in: path, required: true, schema: { type: integer } } ]
+      responses: { '200': { description: OK } }
+
+  /api/admin/conteneurs:
+    get:
+      tags: [Conteneurs & Box]
+      summary: Liste des conteneurs
+      responses: { '200': { description: OK } }
+  /api/admin/conteneur/{id}/boxes:
+    get:
+      tags: [Conteneurs & Box]
+      summary: Casiers d'un conteneur
+      parameters: [ { name: id, in: path, required: true, schema: { type: integer } } ]
+      responses: { '200': { description: OK } }
+  /api/admin/conteneur/create:
+    post:
+      tags: [Conteneurs & Box]
+      summary: Créer un conteneur
+      responses: { '200': { description: OK } }
+  /api/admin/box/add:
+    post:
+      tags: [Conteneurs & Box]
+      summary: Ajouter un casier
+      responses: { '200': { description: OK } }
+  /api/admin/box/update:
+    put:
+      tags: [Conteneurs & Box]
+      summary: Modifier le statut d'un casier
+      responses: { '200': { description: OK } }
+  /api/hardware/simulate-deposit:
+    post:
+      tags: [Conteneurs & Box]
+      summary: Simuler un dépôt (code PIN)
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, properties: { pin: { type: string } } }
+      responses: { '200': { description: OK }, '400': { description: PIN invalide } }
+  /api/hardware/simulate-withdrawal:
+    post:
+      tags: [Conteneurs & Box]
+      summary: Simuler un retrait (code-barres)
+      responses: { '200': { description: OK }, '400': { description: Code invalide } }
+  /api/user/boxes:
+    get:
+      tags: [Conteneurs & Box]
+      summary: Dépôts d'un utilisateur
+      parameters: [ { name: user_id, in: query, schema: { type: integer } } ]
+      responses: { '200': { description: OK } }
+
+  /admin/evenements:
+    get:
+      tags: [Événements]
+      summary: Liste des événements
+      responses: { '200': { description: OK } }
+  /admin/evenements/add:
+    post:
+      tags: [Événements]
+      summary: Créer un événement (multipart)
+      responses: { '200': { description: OK }, '400': { description: Compte Stripe requis } }
+  /admin/evenements/validate/{id}:
+    put:
+      tags: [Événements]
+      summary: Valider un événement
+      parameters: [ { name: id, in: path, required: true, schema: { type: integer } } ]
+      responses: { '200': { description: OK } }
+  /api/web/checkout/evenement:
+    post:
+      tags: [Événements]
+      summary: Créer une session de paiement Stripe pour un événement
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, properties: { id_user: { type: integer }, id_event: { type: integer } } }
+      responses:
+        '200':
+          description: URL de paiement Stripe
+          content:
+            application/json:
+              schema: { type: object, properties: { checkout_url: { type: string } } }
+
+  /admin/finance/overview:
+    get:
+      tags: [Finance]
+      summary: Synthèse financière (volume + commission)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: object, properties: { volumeMois: { type: number }, revenuMois: { type: number } } }
+  /admin/finance/transactions:
+    get:
+      tags: [Finance]
+      summary: Liste des transactions
+      responses: { '200': { description: OK } }
+  /api/user/stats:
+    get:
+      tags: [Finance]
+      summary: Statistiques éco d'un utilisateur (Upcycling Score)
+      parameters: [ { name: user_id, in: query, schema: { type: integer } } ]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: object, properties: { score: { type: number }, objets_donnes: { type: integer }, dechets_evites: { type: number } } }
+
+  /api/pro/subscribe:
+    post:
+      tags: [Pro]
+      summary: Souscrire un abonnement (Stripe)
+      responses: { '200': { description: OK } }
+  /api/pro/projets:
+    get:
+      tags: [Pro]
+      summary: Projets d'upcycling du pro
+      responses: { '200': { description: OK } }
+  /api/pro/projets/create:
+    post:
+      tags: [Pro]
+      summary: Créer un projet
+      responses: { '200': { description: OK } }
+  /api/pro/annonces/sponsor:
+    post:
+      tags: [Pro]
+      summary: Sponsoriser une annonce
+      responses: { '200': { description: OK } }
+
+  /user/forums:
+    get:
+      tags: [Forum]
+      summary: Liste des sujets
+      responses: { '200': { description: OK } }
+    post:
+      tags: [Forum]
+      summary: Créer un sujet
+      responses: { '200': { description: OK } }
+  /user/forums/messages:
+    get:
+      tags: [Forum]
+      summary: Messages d'un sujet
+      parameters: [ { name: topic_id, in: query, schema: { type: integer } } ]
+      responses: { '200': { description: OK } }
+    post:
+      tags: [Forum]
+      summary: Poster un message
+      responses: { '200': { description: OK } }
+
+  /admin/notifications/send:
+    post:
+      tags: [Notifications]
+      summary: Envoyer une notification à une audience
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, properties: { cible: { type: string, enum: [particuliers, pros, tous] }, message: { type: string } } }
+      responses: { '200': { description: OK } }
+  /admin/notifications/user/{id}:
+    get:
+      tags: [Notifications]
+      summary: Notifications d'un utilisateur
+      parameters: [ { name: id, in: path, required: true, schema: { type: integer } } ]
+      responses: { '200': { description: OK } }
+  /admin/notifications/user/{id}/read:
+    post:
+      tags: [Notifications]
+      summary: Marquer les notifications comme lues
+      parameters: [ { name: id, in: path, required: true, schema: { type: integer } } ]
+      responses: { '200': { description: OK } }
+
+  /api/translations:
+    get:
+      tags: [Traductions]
+      summary: Traductions d'une langue
+      security: []
+      parameters: [ { name: lang, in: query, schema: { type: string, example: fr } } ]
+      responses: { '200': { description: OK } }
+  /api/languages:
+    get:
+      tags: [Traductions]
+      summary: Langues disponibles
+      security: []
+      responses: { '200': { description: OK } }
+  /admin/translations/add:
+    post:
+      tags: [Traductions]
+      summary: Importer une langue (Admin)
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, properties: { lang_code: { type: string }, lang_name: { type: string }, data: { type: object } } }
+      responses: { '200': { description: OK }, '401': { description: Non authentifié } }
+
+  /admin/documents:
+    get:
+      tags: [Documents]
+      summary: Liste des documents (factures/contrats PDF)
+      responses: { '200': { description: OK } }

@@ -375,7 +375,6 @@ func RefuseUser(id int, motif string) (string, string, error) {
 	return prenom, email, nil
 }
 
-// Dans ton fichier bdd/documents.go (ou là où tu gères la BDD)
 func InsertDocument(userID string, typeDocument string, cheminFichier string) error {
 
 	requeteSQL := `

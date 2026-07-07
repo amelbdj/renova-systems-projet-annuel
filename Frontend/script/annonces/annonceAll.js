@@ -1,7 +1,7 @@
 let allAnnonces = [];
 let isListView = false;
 
-// Si l'utilisateur est un Pro, on colore la page en teal (comme le dashboard pro)
+
 if (localStorage.getItem("userRole") === "Pro") {
   document.documentElement.classList.add("theme-pro");
 }
@@ -105,9 +105,6 @@ function displayAnnonces(items) {
   if (typeof appliquerTraductions === "function") appliquerTraductions();
 }
 
-// Construit la liste des catégories du filtre à partir de celles en base
-// (table categorie via /admin/categories). Le nombre affiché est calculé
-// sur les annonces déjà chargées.
 async function buildCategoryFilter() {
   const container = document.getElementById("catFilterOpts");
   if (!container) return;
@@ -120,7 +117,7 @@ async function buildCategoryFilter() {
     });
     const categories = await res.json();
 
-    // Compteur du bouton "Toutes"
+    
     const countAll = document.getElementById("catCountAll");
     if (countAll) countAll.textContent = allAnnonces.length;
 

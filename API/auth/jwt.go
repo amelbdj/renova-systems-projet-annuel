@@ -77,11 +77,8 @@ func VerifyTokenMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-// VerifyRoleMiddleware vérifie le token ET que le rôle de l'utilisateur fait partie
-// des rôles autorisés. À utiliser à la place de VerifyTokenMiddleware sur les routes sensibles.
-// Exemple : VerifyRoleMiddleware(admin.DeletedUser, "Salarié", "Administrateur")
 func VerifyRoleMiddleware(next http.HandlerFunc, rolesAutorises ...string) http.HandlerFunc {
-	// On réutilise la vérification du token, puis on contrôle le rôle juste après.
+
 	return VerifyTokenMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		role, _ := r.Context().Value("userRole").(string)
 

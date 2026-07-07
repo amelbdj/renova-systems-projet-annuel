@@ -772,7 +772,7 @@ async function deleteProjet(id) {
   }
 }
 
-// --- ETAPES ---
+
 
 let currentProjetId = null;
 

@@ -25,8 +25,8 @@ function setVtab(element, type) {
   }
 }
 
-// Recharge proprement l'onglet actuellement selectionne (evite l'accumulation
-// des elements apres une validation / un refus).
+
+
 function rechargerValidations() {
   const actif = document.querySelector(".vtab.on");
   if (!actif) {
@@ -88,7 +88,7 @@ function afficherPageUsers() {
   const totalStat = document.getElementById("totalUser");
   if (totalStat) totalStat.innerHTML = users.length;
 
-  // On decoupe la liste en pages de 10 utilisateurs
+  
   const nbPages = Math.max(1, Math.ceil(users.length / USERS_PAR_PAGE));
   if (pageUsers > nbPages) pageUsers = nbPages;
   const debut = (pageUsers - 1) * USERS_PAR_PAGE;
@@ -190,7 +190,6 @@ function afficherPageUsers() {
             </div>`;
   });
 
-  // Barre de pagination (seulement s'il y a plus d'une page)
   if (nbPages > 1) {
     rowsHTML += `
       <div style="display:flex; justify-content:center; align-items:center; gap:14px; padding:16px;">
@@ -245,7 +244,7 @@ function ValidateUser(userId) {
     },
   })
     .then((res) => res.json())
-    .then(() => GetUsers()) // on recharge la liste pour voir le changement direct
+    .then(() => GetUsers()) 
     .catch((err) => console.error("Erreur GET Users:", err));
 }
 function GetUserByRole(role) {

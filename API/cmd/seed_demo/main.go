@@ -70,7 +70,6 @@ func main() {
 		return
 	}
 
-	// Comptes demo principaux.
 	_, err = tx.Exec(`
 		UPDATE utilisateur
 		SET stripe_customer_id = 'cus_demo_client_0001',
@@ -113,7 +112,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// On nettoie les anciennes annonces demo pour pouvoir relancer le script.
 	_, err = tx.Exec("DELETE FROM annonce WHERE titre LIKE '[DEMO] %'")
 	if err != nil {
 		tx.Rollback()

@@ -20,15 +20,13 @@ func RoutesAuth() {
 
 	http.HandleFunc("/api/upload-document", auth.VerifyTokenMiddleware(admin.UploadDocumentHandler))
 
-	// Dossier d'uploads configurable (UPLOAD_DIR), defaut ./uploads (== /app/uploads en Docker)
 	uploadDir := os.Getenv("UPLOAD_DIR")
 	if uploadDir == "" {
 		uploadDir = "./uploads"
 	}
-	// Nouvelle route propre : /uploads/annonces/..., /uploads/articles/..., /uploads/documents/...
+
 	http.Handle("/uploads/", http.StripPrefix("/uploads/", http.FileServer(http.Dir(uploadDir))))
 
-	// Routes legacy (compat avec les anciennes donnees deja en base)
 	http.Handle("/view-uploads/", http.StripPrefix("/view-uploads/", http.FileServer(http.Dir(uploadDir))))
 	http.Handle("/view-documents/", http.StripPrefix("/view-documents/", http.FileServer(http.Dir("./documents"))))
 }

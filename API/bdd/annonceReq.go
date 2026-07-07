@@ -292,7 +292,7 @@ func GetAnnoncesByUser(userID int) ([]models.Annonce, error) {
 func GetValidatedAnnonces(currentUserID int) ([]models.Annonce, error) {
 	var Annonces []models.Annonce
 
-    query := `
+	query := `
         SELECT
         a.id, a.titre, a.description, a.type, a.prix, a.statut_validation,
         a.code_postal, a.ville, a.etat, a.poids_kg, a.quantite,
@@ -324,20 +324,20 @@ func GetValidatedAnnonces(currentUserID int) ([]models.Annonce, error) {
 	}
 	defer rows.Close()
 
-    for rows.Next() {
-        var a models.Annonce
-        err := rows.Scan(
-            &a.Id, &a.Titre, &a.Description, &a.Type, &a.Prix, &a.StatutValidation,
-            &a.CodePostal, &a.Ville, &a.Etat, &a.PoidsKg, &a.Quantite,
-            &a.Nom, &a.Prenom, &a.Categorie, &a.Image, &a.StatutVente,
-            &a.IsSponsored, &a.PlanAbo,
-        )
-        if err != nil {
-            return nil, fmt.Errorf("Erreur Scan: %v", err)
-        }
-        Annonces = append(Annonces, a)
-    }
-    return Annonces, nil
+	for rows.Next() {
+		var a models.Annonce
+		err := rows.Scan(
+			&a.Id, &a.Titre, &a.Description, &a.Type, &a.Prix, &a.StatutValidation,
+			&a.CodePostal, &a.Ville, &a.Etat, &a.PoidsKg, &a.Quantite,
+			&a.Nom, &a.Prenom, &a.Categorie, &a.Image, &a.StatutVente,
+			&a.IsSponsored, &a.PlanAbo,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("Erreur Scan: %v", err)
+		}
+		Annonces = append(Annonces, a)
+	}
+	return Annonces, nil
 }
 
 func GetUserEcoStats(userID int) (map[string]interface{}, error) {
