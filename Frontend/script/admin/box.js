@@ -3,7 +3,7 @@ let monToken = localStorage.getItem("token");
 let currentBoxId = null;
 let currentConteneurId = null;
 let currentConteneurNom = "";
-let tousLesConteneurs = []; // gardes pour le rapport PDF
+let tousLesConteneurs = [];
 
 function GetConteneurs() {
   const container = document.getElementById("box-container");

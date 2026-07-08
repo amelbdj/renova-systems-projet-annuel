@@ -6,7 +6,7 @@ if (!localStorage.getItem("token") || !localStorage.getItem("userId")) {
 
 (function appliquerThemeRole() {
   const role = localStorage.getItem("userRole") || "";
-  let classe = ""; // vide = violet par defaut
+  let classe = "";
   if (role === "Utilisateur") classe = "theme-user";
   else if (role === "Pro") classe = "theme-pro";
   else if (role.indexOf("Salari") === 0) classe = "theme-salarie"; 

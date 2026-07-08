@@ -36,9 +36,6 @@ function openChat(annonceId, destinataireId) {
         chatContainer.innerHTML =
           "<div id='empty-chat' style='text-align:center; color:var(--txt-m); padding-top:20px;'>Aucun message. Lancez la discussion !</div>";
       }
-
-      // En prod le websocket peut etre bloque par le proxy.
-      // Les messages sont envoyes avec /api/chat/send, donc la messagerie marche sans websocket.
     })
     .catch((err) => {
       console.error("Erreur historique:", err);
