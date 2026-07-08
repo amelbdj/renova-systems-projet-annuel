@@ -222,5 +222,55 @@ func GetAdminTransactions() ([]map[string]interface{}, error) {
 		transactions = append(transactions, item)
 	}
 
+	abos, err := Db.Query(`
+        SELECT
+            a.id_abonnement,
+            a.date_debut,
+            a.id_plan,
+            COALESCE(a.statut, 'actif') AS statut,
+            COALESCE(u.email, 'Utilisateur') AS email
+        FROM pa2026.abonnement a
+        LEFT JOIN pa2026.utilisateur u ON a.id_user = u.id
+        ORDER BY a.date_debut DESC
+        LIMIT 50`)
+	if err != nil {
+		return nil, fmt.Errorf("Erreur SQL Abonnements: %v", err)
+	}
+	defer abos.Close()
+
+	for abos.Next() {
+		var id int
+		var date string
+		var idPlan int
+		var statut string
+		var email string
+
+		err := abos.Scan(&id, &date, &idPlan, &statut, &email)
+		if err != nil {
+			continue
+		}
+
+		nom, montant := planNomEtPrix(idPlan)
+
+		item := map[string]interface{}{
+			"id":         id,
+			"date":       date,
+			"titre":      "Abonnement " + nom + " - " + email,
+			"montant":    montant,
+			"commission": montant,
+			"type":       "abonnement",
+			"statut":     statut,
+		}
+		transactions = append(transactions, item)
+	}
+
+	sort.Slice(transactions, func(i, j int) bool {
+		return transactions[i]["date"].(string) > transactions[j]["date"].(string)
+	})
+
+	if len(transactions) > 50 {
+		transactions = transactions[:50]
+	}
+
 	return transactions, nil
 }

@@ -40,6 +40,43 @@ func frontURL(path string) string {
 	return getFrontendBaseURL() + "/" + strings.TrimLeft(path, "/")
 }
 
+func getFrontendBaseURLFromRequest(r *http.Request) string {
+	url := os.Getenv("FRONTEND_BASE_URL")
+	if url != "" {
+		return strings.TrimRight(url, "/")
+	}
+
+	origin := r.Header.Get("Origin")
+	if origin != "" {
+		return strings.TrimRight(origin, "/")
+	}
+
+	proto := r.Header.Get("X-Forwarded-Proto")
+	host := r.Header.Get("X-Forwarded-Host")
+
+	if host == "" {
+		host = r.Host
+	}
+
+	if proto == "" {
+		if r.TLS != nil {
+			proto = "https"
+		} else {
+			proto = "http"
+		}
+	}
+
+	if host != "" {
+		return proto + "://" + host
+	}
+
+	return getFrontendBaseURL()
+}
+
+func frontURLFromRequest(r *http.Request, path string) string {
+	return getFrontendBaseURLFromRequest(r) + "/" + strings.TrimLeft(path, "/")
+}
+
 func getPlanInfo(plan string) (name string, amountCents int64, ok bool) {
 	switch planKey(plan) {
 	case "premium":
@@ -104,8 +141,8 @@ func ConnectToStripe(w http.ResponseWriter, r *http.Request) {
 
 	linkParams := &stripe.AccountLinkParams{
 		Account:    stripe.String(stripeID),
-		RefreshURL: stripe.String(frontURL("profil.html")),
-		ReturnURL:  stripe.String(frontURL("profil.html?stripe=success")),
+		RefreshURL: stripe.String(frontURLFromRequest(r, "profil.html")),
+		ReturnURL:  stripe.String(frontURLFromRequest(r, "profil.html?stripe=success")),
 		Type:       stripe.String("account_onboarding"),
 	}
 
@@ -183,8 +220,8 @@ func PaymentAnnonce(w http.ResponseWriter, r *http.Request) {
 				Destination: stripe.String(stripeAccountIDSeller),
 			},
 		},
-		SuccessURL: stripe.String(frontURL("oneAnnonce.html?id=" + strconv.Itoa(annonceID) + "&buyer_id=" + strconv.Itoa(buyerID) + "&payment=success")),
-		CancelURL:  stripe.String(frontURL("oneAnnonce.html?id=" + strconv.Itoa(annonceID))),
+		SuccessURL: stripe.String(frontURLFromRequest(r, "oneAnnonce.html?id="+strconv.Itoa(annonceID)+"&buyer_id="+strconv.Itoa(buyerID)+"&payment=success")),
+		CancelURL:  stripe.String(frontURLFromRequest(r, "oneAnnonce.html?id="+strconv.Itoa(annonceID))),
 	}
 
 	s, err := session.New(params)
@@ -309,8 +346,8 @@ func CreateEventCheckoutSession(w http.ResponseWriter, r *http.Request) {
 				Destination: stripe.String(stripeAccountId),
 			},
 		},
-		SuccessURL: stripe.String(frontURL("evenement.html?paiement=success")),
-		CancelURL:  stripe.String(frontURL("evenement.html?paiement=cancel")),
+		SuccessURL: stripe.String(frontURLFromRequest(r, "evenement.html?paiement=success")),
+		CancelURL:  stripe.String(frontURLFromRequest(r, "evenement.html?paiement=cancel")),
 	}
 	params.AddMetadata("id_event", strconv.Itoa(req.IdEvent))
 	params.AddMetadata("id_user", strconv.Itoa(req.IdUser))
@@ -408,8 +445,8 @@ func CreateProSubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 				Quantity: stripe.Int64(1),
 			},
 		},
-		SuccessURL:        stripe.String(frontURL("espPro.html?abo=success&session_id={CHECKOUT_SESSION_ID}")),
-		CancelURL:         stripe.String(frontURL("espPro.html?abo=cancel")),
+		SuccessURL:        stripe.String(frontURLFromRequest(r, "espPro.html?abo=success&session_id={CHECKOUT_SESSION_ID}")),
+		CancelURL:         stripe.String(frontURLFromRequest(r, "espPro.html?abo=cancel")),
 		ClientReferenceID: stripe.String(userID),
 	}
 	params.AddMetadata("plan", plan)

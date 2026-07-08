@@ -14,7 +14,7 @@ services:
       - uc_net
 
   backend:
-    image: amelbdj/upcycle-backend:v4
+    image: amelbdj/upcycle-backend:v16
     container_name: upcycle_backend
     restart: unless-stopped
     environment:
@@ -27,6 +27,9 @@ services:
       APP_PORT: 8081
       PORT: 8081
       UPLOAD_DIR: /app/uploads
+      FRONTEND_BASE_URL: ${FRONTEND_BASE_URL:-}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
     volumes:
       - /mnt/truenas/upcycle/uploads:/app/uploads
     depends_on:

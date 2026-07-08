@@ -80,6 +80,18 @@ function togglePriceField() {
   }
 }
 
+function showProMessages() {
+  const messagesSection = document.getElementById("messages-section");
+  if (!messagesSection) return;
+
+  messagesSection.style.display = "block";
+  messagesSection.scrollIntoView({ behavior: "smooth", block: "start" });
+
+  if (typeof loadMyMessages === "function") {
+    loadMyMessages();
+  }
+}
+
 async function loadMyProAnnonces() {
   const userId = localStorage.getItem("userId");
   const list = document.getElementById("proAnnList");

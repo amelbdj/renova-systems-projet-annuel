@@ -807,7 +807,7 @@ func ForgotPasswordHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	lien := frontURL("reset-password.html?token=" + token + "&email=" + email)
+	lien := frontURLFromRequest(r, "reset-password.html?token="+token+"&email="+email)
 	go bdd.EnvoyerEmailResetPassword(email, prenom, lien)
 
 	w.WriteHeader(http.StatusOK)
@@ -1007,7 +1007,7 @@ func CustomerPortalHandler(w http.ResponseWriter, r *http.Request) {
 
 	params := &stripe.BillingPortalSessionParams{
 		Customer:  stripe.String(customerID),
-		ReturnURL: stripe.String(frontURL("espPro.html")),
+		ReturnURL: stripe.String(frontURLFromRequest(r, "espPro.html")),
 	}
 
 	ps, err := portalsession.New(params)

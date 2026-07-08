@@ -37,7 +37,8 @@ function openChat(annonceId, destinataireId) {
           "<div id='empty-chat' style='text-align:center; color:var(--txt-m); padding-top:20px;'>Aucun message. Lancez la discussion !</div>";
       }
 
-      connectWebSocket(monUserId);
+      // En prod le websocket peut etre bloque par le proxy.
+      // Les messages sont envoyes avec /api/chat/send, donc la messagerie marche sans websocket.
     })
     .catch((err) => {
       console.error("Erreur historique:", err);
@@ -51,18 +52,30 @@ function connectWebSocket(monUserId) {
 
   chatSocket = new WebSocket(`${WS_BASE_URL}/ws/chat?userId=${monUserId}`);
 
+  chatSocket.onopen = function () {
+    console.log("Messagerie connectee");
+  };
+
   chatSocket.onmessage = function (event) {
     const msg = JSON.parse(event.data);
     if (msg.annonce_id === currentChatAnnonceId) {
       appendMessageToUI(msg.contenu, false);
     }
   };
+
+  chatSocket.onerror = function () {
+    console.log("Erreur websocket messagerie");
+  };
+
+  chatSocket.onclose = function () {
+    console.log("Messagerie fermee");
+  };
 }
 
-function sendChatMessage() {
+async function sendChatMessage() {
   const input = document.getElementById("chat-input");
   const texte = input.value.trim();
-  if (!texte || !chatSocket) return;
+  if (!texte) return;
 
   const msgData = {
     annonce_id: currentChatAnnonceId,
@@ -71,9 +84,27 @@ function sendChatMessage() {
     contenu: texte,
   };
 
-  chatSocket.send(JSON.stringify(msgData));
-  appendMessageToUI(texte, true);
-  input.value = "";
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/chat/send`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + localStorage.getItem("token"),
+      },
+      body: JSON.stringify(msgData),
+    });
+
+    if (!response.ok) {
+      alert("Erreur lors de l'envoi du message.");
+      return;
+    }
+
+    appendMessageToUI(texte, true);
+    input.value = "";
+  } catch (err) {
+    console.error("Erreur envoi message:", err);
+    alert("Impossible d'envoyer le message.");
+  }
 }
 
 function closeChat() {

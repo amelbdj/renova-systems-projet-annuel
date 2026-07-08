@@ -64,19 +64,24 @@ function chargerTransactions() {
               minute: "2-digit",
             });
 
-          var typeLabel =
-            tx.type === "evenement" ? "Formation / Événement" : "Annonce";
+          var typeLabel = "Annonce";
+          if (tx.type === "evenement") {
+            typeLabel = "Formation / Événement";
+          }
+          if (tx.type === "abonnement") {
+            typeLabel = "Abonnement";
+          }
 
           var statut = (tx.statut || "").toLowerCase();
           var statutTexte = tx.statut;
           var statutCouleur = "#4ade80";
-          if (statut === "succeeded" || statut === "payé" || statut === "paid") {
+          if (statut === "succeeded" || statut === "payé" || statut === "paid" || statut === "actif") {
             statutTexte = "Payé";
             statutCouleur = "#4ade80";
           } else if (statut === "pending") {
             statutTexte = "En attente";
             statutCouleur = "#f5a623";
-          } else if (statut === "failed" || statut === "refunded") {
+          } else if (statut === "failed" || statut === "refunded" || statut === "resilie") {
             statutTexte = "Échoué";
             statutCouleur = "#ef4444";
           }

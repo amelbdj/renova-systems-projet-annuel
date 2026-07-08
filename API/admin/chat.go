@@ -99,6 +99,48 @@ func GetChatHistoryHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(messages)
 }
 
+func SendMessageHandler(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	var msg models.Message
+	err := json.NewDecoder(r.Body).Decode(&msg)
+	if err != nil {
+		http.Error(w, "Message invalide", http.StatusBadRequest)
+		return
+	}
+
+	if msg.AnnonceID == 0 || msg.ExpediteurID == 0 || msg.DestinataireID == 0 || msg.Contenu == "" {
+		http.Error(w, "Informations manquantes", http.StatusBadRequest)
+		return
+	}
+
+	err = bdd.SaveMessage(msg)
+	if err != nil {
+		log.Println("Erreur SaveMessage:", err)
+		http.Error(w, "Erreur sauvegarde message", http.StatusInternalServerError)
+		return
+	}
+
+	clientsMu.Lock()
+	destConn, online := clients[msg.DestinataireID]
+	clientsMu.Unlock()
+
+	if online {
+		destConn.WriteJSON(msg)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"message": "Message envoye"})
+}
+
 func GetConversationsHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Access-Control-Allow-Origin", "*")

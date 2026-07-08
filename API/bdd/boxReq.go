@@ -209,28 +209,26 @@ func generateRandomPIN() string {
 
 func CalculateAndAddScore(annonceId int, professionnelId int) error {
 	var poids float64
-	var materiau string
+	var idCategorie int
 	var particulierId int
 
-	err := Db.QueryRow("SELECT poids_kg, id_user FROM pa2026.annonce WHERE id = ?", annonceId).Scan(&poids, &particulierId)
+	err := Db.QueryRow("SELECT poids_kg, id_user, COALESCE(id_categorie, 0) FROM pa2026.annonce WHERE id = ?", annonceId).Scan(&poids, &particulierId, &idCategorie)
 	if err != nil {
 		return err
 	}
 
-	coefficients := map[string]float64{
-		"textile":   15.0,
-		"metal":     10.0,
-		"bois":      5.0,
-		"plastique": 8.0,
-		"autre":     3.0,
+	coef := 3.0
+	if idCategorie == 1 {
+		coef = 15.0
+	} else if idCategorie == 2 {
+		coef = 5.0
+	} else if idCategorie == 3 {
+		coef = 8.0
+	} else if idCategorie == 4 {
+		coef = 10.0
 	}
 
-	coef, exists := coefficients[materiau]
-	if !exists {
-		coef = coefficients["autre"]
-	}
-
-	gainScore := poids * coef
+	gainScore := int(poids * coef)
 	_, err = Db.Exec("UPDATE pa2026.utilisateur SET score = score + ? WHERE id = ?", gainScore, particulierId)
 	return err
 }
@@ -375,7 +373,7 @@ func CollectObject(pinCode string, professionnelId int) error {
 		return errors.New("code PIN de retrait invalide ou objet déjà récupéré")
 	}
 
-	_, err = Db.Exec("UPDATE historique_conteneurs SET date_retrait_effective = NOW(), professionnel_id = ? WHERE id = ?", professionnelId, histID)
+	_, err = Db.Exec("UPDATE historique_conteneurs SET date_retrait_effective = NOW() WHERE id = ?", histID)
 	if err != nil {
 		return err
 	}
@@ -446,9 +444,14 @@ func SimulateHardwareWithdrawal(codeBarre string) error {
 		return err
 	}
 
-	_, err = Db.Exec("UPDATE annonce SET statut_vente = 'VENDU' WHERE id = ?", annonceId)
+	_, err = Db.Exec("UPDATE annonce SET statut_vente = 'RECUPERE' WHERE id = ?", annonceId)
 	if err != nil {
 		return err
+	}
+
+	err = CalculateAndAddScore(annonceId, 0)
+	if err != nil {
+		fmt.Println("Erreur lors du calcul du score :", err)
 	}
 
 	return nil
