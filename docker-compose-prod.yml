@@ -35,7 +35,7 @@ services:
       - uc_net
 
   frontend:
-    image: amelbdj/upcycle-frontend:v7
+    image: amelbdj/upcycle-frontend:v44
     container_name: upcycle_frontend
     restart: unless-stopped
     ports:

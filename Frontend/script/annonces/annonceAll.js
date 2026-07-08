@@ -1,5 +1,8 @@
 let allAnnonces = [];
 let isListView = false;
+let annoncesAffichees = [];
+let pageAnnonce = 1;
+const ANN_PAR_PAGE = 24;
 
 
 if (localStorage.getItem("userRole") === "Pro") {
@@ -41,9 +44,23 @@ async function loadAllAnnonces() {
 }
 
 function displayAnnonces(items) {
+  annoncesAffichees = items || [];
+  pageAnnonce = 1;
+  renderPageAnnonces();
+}
+
+function changerPageAnnonce(delta) {
+  pageAnnonce += delta;
+  if (pageAnnonce < 1) pageAnnonce = 1;
+  renderPageAnnonces();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function renderPageAnnonces() {
   const grid = document.getElementById("listingsGrid");
   grid.innerHTML = "";
 
+  const items = annoncesAffichees;
   if (!items || items.length === 0) {
     grid.innerHTML =
       '<div class="empty"><div class="empty-ico">🔍</div><div class="empty-title" data-i18n="annonce.empty.title">Aucune annonce validée</div></div>';
@@ -54,7 +71,12 @@ function displayAnnonces(items) {
 
   document.getElementById("resultCount").textContent = items.length;
 
-  items.forEach((ann) => {
+  const nbPages = Math.max(1, Math.ceil(items.length / ANN_PAR_PAGE));
+  if (pageAnnonce > nbPages) pageAnnonce = nbPages;
+  const debut = (pageAnnonce - 1) * ANN_PAR_PAGE;
+  const pageItems = items.slice(debut, debut + ANN_PAR_PAGE);
+
+  pageItems.forEach((ann) => {
     const imgSrc = ann.image ? `${API_BASE_URL}${ann.image}` : null;
 
     const card = document.createElement("a");
@@ -101,7 +123,25 @@ function displayAnnonces(items) {
     grid.appendChild(card);
   });
 
-  
+  if (nbPages > 1) {
+    const bar = document.createElement("div");
+    bar.style.cssText =
+      "grid-column:1/-1; display:flex; justify-content:center; align-items:center; gap:16px; padding:24px 0;";
+    bar.innerHTML =
+      '<button class="btn btn-g btn-sm" onclick="changerPageAnnonce(-1)" ' +
+      (pageAnnonce === 1 ? "disabled" : "") +
+      ">← Précédent</button>" +
+      '<span style="color:var(--txt-m); font-size:13px;">Page ' +
+      pageAnnonce +
+      " / " +
+      nbPages +
+      "</span>" +
+      '<button class="btn btn-g btn-sm" onclick="changerPageAnnonce(1)" ' +
+      (pageAnnonce === nbPages ? "disabled" : "") +
+      ">Suivant →</button>";
+    grid.appendChild(bar);
+  }
+
   if (typeof appliquerTraductions === "function") appliquerTraductions();
 }
 
